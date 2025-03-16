@@ -1,0 +1,101 @@
+extends ../layouts/mainLayout
+
+block initScipts
+  script(type="module", src="/js/chatScript.js") 
+
+block content
+  //- CHAT BOX LIST CONTAINER
+  section(class="w-[25%] h-full p-2 bg-white rounded-2xl", style="box-shadow: rgba(0, 0, 0, 0.1) 0 0 5px 2px;") 
+    div(class="flex justify-between items-center h-[10%] px-2")
+      //- Tittle 
+      h1(class="text-2xl font-bold")
+        = "Đoạn chat"
+
+      div(class="text-xl")
+        //- setting btn 
+        a(href="/me", class="mr-2")
+          i(class='bx bx-cog p-2 rounded-full bg-gray-200 hover:opacity-50')  
+        //- new chat btn 
+        a(href="")            
+          i(class='bx bxs-edit p-2 rounded-full bg-gray-200 hover:opacity-50')
+
+    //- Search bar 
+    div(class="h-[10%] flex items-center py-4 px-2")
+      form(action="", class="relative w-full") 
+        input(type="text", class="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500", placeholder="Tìm kiếm đoạn chat")
+        i(class="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500") 
+
+    //- chat box list 
+    div#chat-box-list(class="h-[80%] overflow-y-scroll")    
+      .chat-box(class="flex w-full items-center h-18 hover:bg-gray-200 cursor-pointer p-4 rounded-2xl")
+        div(class="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test.jpg)")  
+        div(class="flex-auto px-2")
+          h1(class="font-bold")
+            = "Phương My"
+          span(class="text-gray-500 text-[0.75rem]")  
+            = "Vk iu ck <3 <3 <3 ·2 giờ"
+        div(class="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test.jpg)")      
+                    
+  //- CHAT CONTAINER 
+  section(class="w-[50%] h-full p-4 bg-white rounded-2xl", style="box-shadow: rgba(0, 0, 0, 0.1) 0 0 5px 2px;") 
+    //- top bar 
+    .container(class="flex items-center justify-between h-[5%]")
+      //- user info 
+      div(class="flex items-center")
+        div(class="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test.jpg)")  
+        div(class="ml-4")
+          h1(class="font-bold")
+          = "Phương My"
+          div(class="text-gray-500 text-[0.75rem]")  
+            = "Hoạt động 2 giờ trước"
+          
+      //- action btns 
+      div(class="text-2xl")
+        a(href="")
+          i(class='bx bx-phone p-2 rounded-full hover:bg-gray-200')  
+        a(href="")            
+          i(class='bx bxs-video p-2 rounded-full hover:bg-gray-200')
+        a(href="")            
+          i(class='bx bx-dots-horizontal-rounded p-2 rounded-full hover:bg-gray-200')
+        
+    //- CHAT BODY    
+    .container(class="h-[90%] overflow-y-scroll flex flex-col justify-end text-[0.9rem]")
+      .msg-group(class=" py-4")
+        .msg-time(class="text-center text-gray-400 text-[0.75rem]")          
+          = "20:51 20 tháng 1, 2025"
+        .sent-msg(class="flex justify-baseline items-center gap-2")
+          div(class="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test.jpg)")     
+          span(class="p-2 bg-gray-200 rounded-2xl")
+            = "Em iu anh"
+        .receive-msg(class="flex justify-end items-center gap-2")
+          span(class="p-2 bg-blue-400 rounded-2xl")
+            = "Anh cũng iu em"
+          div(class="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test2.JPG)")                   
+
+    //- Bot bar 
+    .container(class="h-[5%]")
+      form(action="/m/send-message/67bc5eac1789ab18565b7d66", method="POST", class="relative w-full flex items-center justify-between") 
+        a(href="", class="rounded-full mr-2") 
+          i(class='bx bx-image text-2xl p-2 rounded-full hover:bg-gray-200') 
+        input(type="text", name = "msgBody", class="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500", placeholder="Aa")
+        a(href="", class="rounded-full ml-2")
+          i(class='bx bxs-hand text-2xl p-2 rounded-full hover:bg-gray-200') 
+
+  //- CHAT DETAILS 
+  section(class="w-[25%] h-full p-4 bg-white rounded-2xl", style="box-shadow: rgba(0, 0, 0, 0.1) 0 0 5px 2px;")
+  
+    .container(class="flex flex-col items-center")
+      div(class="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center", style="background-image: url(/images/test.jpg)")  
+      h1(class="font-bold")
+        = "Phương My"
+      div(class="text-gray-500 text-[0.75rem]")  
+        = "@my.phuong.379154"
+      div(class="text-gray-500 text-[0.75rem] mt-2")  
+        = "Hoạt động 2 giờ trước"
+
+    .container(class="flex justify-center gap-8 py-4")
+      a(href="", class="rounded-full")
+        i(class='bx bxs-bell text-2xl p-2 rounded-full bg-gray-200 hover:opacity-50') 
+      a(href="", class="rounded-full")
+        i(class='bx bx-search text-2xl p-2 rounded-full bg-gray-200 hover:opacity-50')           
+    

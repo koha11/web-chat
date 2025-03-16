@@ -1,0 +1,37 @@
+extends ../layouts/mainLayout
+
+block content
+  //- CHAT BOX LIST CONTAINER
+  section(class="w-[25%] h-full p-2 bg-white rounded-2xl", style="box-shadow: rgba(0, 0, 0, 0.1) 0 0 5px 2px;") 
+
+    div(class="flex justify-between items-center h-[10%] px-2")
+      //- Tittle 
+      h1(class="text-2xl font-bold")
+        = "Cài đặt"
+
+      div(class="text-xl")
+        //- setting btn 
+        a(href="/m", class="mr-2")
+          i(class='bx bxs-left-arrow-alt p-2 rounded-full bg-gray-200 hover:opacity-50')  
+        //- new chat btn 
+        a(href="")            
+          i(class='bx bxs-edit p-2 rounded-full bg-gray-200 hover:opacity-50')
+    
+
+    div(class="flex flex-col gap-4 items-center py-4 px-2")
+      a.container(href="#", class="flex items-center h-12 bg-blue-300 p-4 rounded-2xl cursor-default")
+        i(class='bx bx-user p-2 rounded-full bg-gray-300')
+        span(class="font-bold ml-8")  
+          = "Thông tin tài khoản"
+
+      a.container(href="", class="flex items-center h-12 bg-gray-200 cursor-pointer p-4 rounded-2xl hover:opacity-50")
+        i(class='bx bx-cog p-2 rounded-full bg-gray-300')
+        span(class="font-bold ml-8")  
+          = "Tuỳ chỉnh đoạn chat"
+
+      a.container(href="", class="flex items-center h-12 bg-gray-200 cursor-pointer p-4 rounded-2xl hover:opacity-50")
+        i(class='bx bxs-contact p-2 rounded-full bg-gray-300')
+        span(class="font-bold ml-8")  
+          = "Danh sách kết nối"
+
+  section(class="flex-auto h-full p-4 bg-white rounded-2xl", style="box-shadow: rgba(0, 0, 0, 0.1) 0 0 5px 2px;") 

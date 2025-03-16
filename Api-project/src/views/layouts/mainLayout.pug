@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title My Web App
+    link(rel="stylesheet", href="/css/output.css")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap")
+    link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap")
+    link(rel="stylesheet", href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css")
+    block links
+    block initScipts
+    style.
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+  body
+    main
+      div(class="flex justify-center text-black h-[100vh]")
+        .container(class="flex bg-white gap-4 py-4")
+          block content
+      block scripts
