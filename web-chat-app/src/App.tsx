@@ -10,6 +10,7 @@ import ChatDetails from './pages/chat/ChatDetails.tsx';
 import ChatLayout from './layouts/ChatLayout.tsx';
 
 import './App.css';
+import Contact from './pages/contact/Contact.tsx';
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
 
       <Route path="/me">
         <Route index element={<ChatIndex />}></Route>
+      </Route>
+
+      <Route path="/contact">
+        <Route index element={<Contact />}></Route>
       </Route>
     </Routes>
   );

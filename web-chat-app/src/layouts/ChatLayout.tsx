@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { getData } from '../services/api';
 import { ChatRowProps, ChatRow } from '../components/ChatRow';
-import { Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import WebSocketConnection from './../services/WebSocketConnection';
+import { Modal, Ripple, initTWE } from 'tw-elements';
 
 export default function ChatLayout() {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const socket = WebSocketConnection.getConnection();
   useEffect(() => {
-    getData('/m/get-chatlist').then((data) => setChatList(data));
+    getData('/m/get-chatlist').then((data) => {
+      setChatList(data);
+      initTWE({ Modal, Ripple });
+    });
+
     // const socket = WebSocketConnection.getConnection();
 
     // socket.on('connect', () => {
@@ -33,9 +38,12 @@ export default function ChatLayout() {
               <a href="/me" className="mr-2">
                 <i className="bx bx-cog p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
               </a>
-              <a href="">
-                <i className="bx bxs-edit p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
+              <a href="/" className="mr-2">
+                <i className="bx bxs-edit p-2 rounded-full bg-gray-200 ho ver:opacity-50"></i>
               </a>
+              <Link to="/contact" className="mr-2">
+                <i className="bx bxs-contact p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
+              </Link>
             </div>
           </div>
           <div className="h-[10%] flex items-center py-4 px-2">
@@ -50,7 +58,8 @@ export default function ChatLayout() {
               <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
             </form>
           </div>
-          <nav id="chat-box-list" className="h-[80%] overflow-y-scroll">
+
+          <nav id="chat-box-list" className="h-[75%] overflow-y-scroll">
             {chatList.map((chat: ChatRowProps) => (
               <ChatRow
                 key={chat.id}
@@ -60,6 +69,30 @@ export default function ChatLayout() {
               ></ChatRow>
             ))}
           </nav>
+
+          {/* <nav className="h-[5%] flex">
+            <NavLink
+              to={'/m'}
+              className={({ isActive }) =>
+                isActive
+                  ? 'flex justify-center items-center flex-1 bg-gray-400'
+                  : 'flex justify-center items-center flex-1 hover:bg-gray-200'
+              }
+            >
+              <i className="bx bxs-message-dots text-2xl"></i>
+            </NavLink>
+
+            <NavLink
+              to={'/contact-list'}
+              className={({ isActive }) =>
+                isActive
+                  ? 'flex justify-center items-center flex-1 bg-gray-400'
+                  : 'flex justify-center items-center flex-1 hover:bg-gray-200'
+              }
+            >
+              <i className="bx bxs-contact text-2xl"></i>
+            </NavLink>
+          </nav> */}
         </section>
         <Outlet />
       </div>

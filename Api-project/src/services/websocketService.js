@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const MessageService = require('./MessageService');
-const Message = require('../models/Message');
+const UserService = require('./UserService');
 
 function setupWebSocket(server) {
   const io = new Server(server, {
@@ -13,7 +13,7 @@ function setupWebSocket(server) {
   const users = new Map();
 
   io.on('connection', (socket) => {
-    let user;
+    let userID;
 
     jwt.verify(
       socket.handshake.auth.token,
@@ -21,15 +21,14 @@ function setupWebSocket(server) {
       (err, decoded) => {
         if (err) {
         }
-        user = decoded;
+        userID = decoded.id;
       }
     );
 
-    if (user == null) return;
-
-    const userID = user.id;
+    if (userID == null) return;
 
     users.set(userID, socket.id);
+    UserService.setStatus(userID, true);
 
     console.log('Added user ' + userID);
 
@@ -50,6 +49,8 @@ function setupWebSocket(server) {
 
     socket.on('disconnect', () => {
       console.log(userID + ' disconnected');
+      users.delete(userID);
+      UserService.setStatus(userID, false);
     });
   });
 

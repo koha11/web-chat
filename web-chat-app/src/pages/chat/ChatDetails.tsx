@@ -29,7 +29,7 @@ const ChatDetails = () => {
       socketRef.current = WebSocketConnection.getConnection();
 
       socketRef.current.on('sendMsgFromServer', (msg: msgObject) => {
-        setMsgList((oldMsgs) => [...oldMsgs, msg]<[msgObject]>);
+        setMsgList((oldMsgs: [msgObject]) => [...oldMsgs, msg]);
       });
 
       socketRef.current.on('soIsTyping', (chatID: string) => {
@@ -86,7 +86,7 @@ const ChatDetails = () => {
       className="w-[75%] h-full p-4 bg-white rounded-2xl"
       style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0 0 5px 2px' }}
     >
-      <div className="container flex items-center justify-between h-[5%]">
+      <div className="container flex items-center justify-between h-[10%]">
         <div className="flex items-center">
           <div
             className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
@@ -115,7 +115,7 @@ const ChatDetails = () => {
       </div>
 
       <div
-        className="container h-[90%] overflow-y-scroll flex flex-col text-[0.9rem] py-4"
+        className="container h-[85%] overflow-y-scroll flex flex-col text-[0.9rem] py-4"
         ref={msgsContainerRef}
       >
         {msgList?.map((msg) => {
