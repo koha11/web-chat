@@ -11,9 +11,9 @@ class WebSocketConnection {
 
   private constructor() {
     WebSocketConnection.connection = io(this.url, {
-      auth: {
-        token: Cookies.get('accessToken'),
-      },
+      // auth: {
+      //   token: Cookies.get('accessToken'),
+      // },
       // autoConnect: false,
     });
   }

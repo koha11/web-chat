@@ -1,8 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { postData } from '../../services/api';
-import Cookies from 'js-cookie';
+import { Link, useNavigate } from "react-router-dom";
+import { postData } from "../../services/api";
+import Cookies from "js-cookie";
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -10,19 +10,21 @@ function Login() {
 
     try {
       const formData = new FormData(event.currentTarget);
+      localStorage.setItem("username", formData.get("username")?.toString() ?? "")
+      navigate("/m");
 
-      const response: AuthResponse = await postData('/auth/login', formData);
-      console.log(response);
-      if (response.status == 0) {
-      }
+      // const response: AuthResponse = await postData("/auth/login", formData);
+      // console.log(response);
+      // if (response.status == 0) {
+      // }
 
-      if (response.status == 1) {
-        console.log('login successfully');
-        Cookies.set('accessToken', response.accessToken, {
-          expires: response.expiresIn / 24,
-        });
-        navigate('/m');
-      }
+      // if (response.status == 1) {
+      //   console.log("login successfully");
+      //   Cookies.set("accessToken", response.accessToken, {
+      //     expires: response.expiresIn / 24,
+      //   });
+      //   navigate("/m");
+      // }
     } catch (error) {
       console.error(error);
     }
@@ -70,12 +72,6 @@ function Login() {
       </div>
     </section>
   );
-}
-
-type AuthResponse = {
-  status: number;
-  accessToken: string;
-  expiresIn: number;
 };
 
 export default Login;

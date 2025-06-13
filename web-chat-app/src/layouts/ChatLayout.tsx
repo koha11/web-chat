@@ -9,19 +9,23 @@ export default function ChatLayout() {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   useEffect(() => {
-    getData("/chat/get-chat-list").then((data) => {
-      setChatList(data);
-      initTWE({ Modal, Ripple });
-    });
-
-    // const socket = WebSocketConnection.getConnection();
-
-    // socket.on('connect', () => {
-    //   console.log(socket.id + ' is on connect ...');
-    //   // socket.on('message', (message) => {
-    //   //   console.log(`Receiving message "${message}" ...`);
-    //   // });
+    // getData("/chat/get-chat-list").then((data) => {
+    //   setChatList(data);
+    //   initTWE({ Modal, Ripple });
     // });
+
+    const socket = WebSocketConnection.getConnection();
+
+    socket.on("connect", () => {
+      console.log(socket.id + " is on connect ...");
+      // socket.on('message', (message) => {
+      //   console.log(`Receiving message "${message}" ...`);
+      // });
+
+      socket.on("receive_message", (msg) => {
+        console.log(`received "${msg}"`);
+      });
+    });
   }, []);
 
   return (

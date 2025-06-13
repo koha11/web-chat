@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, RouterProvider } from 'react-router-dom';
 
 import Home from './pages/home/Home.tsx';
 import Login from './pages/home/Login.tsx';
@@ -11,9 +11,13 @@ import ChatLayout from './layouts/ChatLayout.tsx';
 
 import './App.css';
 import Contact from './pages/contact/Contact.tsx';
+import router from "./routes"
 
 function App() {
-  return (
+  // return <RouterProvider router={router}>
+
+  // </RouterProvider>
+  return (    
     <Routes>
       <Route path="/">
         <Route index element={<Home />} />
