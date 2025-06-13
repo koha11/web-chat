@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { getData } from '../services/api';
-import { ChatRowProps, ChatRow } from '../components/ChatRow';
-import { Link, Outlet } from 'react-router-dom';
-import WebSocketConnection from './../services/WebSocketConnection';
-import { Modal, Ripple, initTWE } from 'tw-elements';
+import { useEffect, useState } from "react";
+import { getData } from "../services/api";
+import { ChatRowProps, ChatRow } from "../components/ChatRow";
+import { Link, Outlet } from "react-router-dom";
+import WebSocketConnection from "./../services/WebSocketConnection";
+import { Modal, Ripple, initTWE } from "tw-elements";
 
 export default function ChatLayout() {
   const [chatList, setChatList] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   useEffect(() => {
-    getData('/chat/get-chat-list').then((data) => {
+    getData("/chat/get-chat-list").then((data) => {
       setChatList(data);
       initTWE({ Modal, Ripple });
     });
@@ -29,7 +29,7 @@ export default function ChatLayout() {
       <div className="container flex bg-white gap-4 py-4">
         <section
           className="w-[25%] h-full p-2 bg-white rounded-2xl"
-          style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0 0 5px 2px' }}
+          style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
         >
           <div className="flex justify-between items-center h-[10%] px-2">
             <h1 className="text-2xl font-bold">Đoạn chat</h1>
@@ -61,6 +61,7 @@ export default function ChatLayout() {
           <nav id="chat-box-list" className="h-[75%] overflow-y-scroll">
             {chatList.map((chat: ChatRowProps) => (
               <ChatRow
+                chatName="test"
                 key={chat.id}
                 id={chat.id}
                 user={chat.user}
