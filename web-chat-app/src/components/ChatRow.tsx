@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-const ChatRow = ({ id, user, lastMessage }: ChatRowProps) => {
+const ChatRow = ({ id, chatName, users, lastMessage }: ChatRowProps) => {
   return (
     <NavLink
       to={`/m/${id}`}
@@ -30,7 +30,8 @@ const ChatRow = ({ id, user, lastMessage }: ChatRowProps) => {
 
 export type ChatRowProps = {
   id: string;
-  user: {
+  chatName: string;
+  users: {
     avatar: string;
     fullname: string;
   };

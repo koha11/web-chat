@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { SingleMsg } from '../../components/SingleMsg';
 import WebSocketConnection from '../../services/WebSocketConnection';
 import { Socket } from 'socket.io-client';
-import { List } from 'postcss/lib/list';
 
 const ChatDetails = () => {
   const { id } = useParams();

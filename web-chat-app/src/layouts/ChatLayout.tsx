@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getData } from '../services/api';
 import { ChatRowProps, ChatRow } from '../components/ChatRow';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import WebSocketConnection from './../services/WebSocketConnection';
 import { Modal, Ripple, initTWE } from 'tw-elements';
 
 export default function ChatLayout() {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-  const socket = WebSocketConnection.getConnection();
   useEffect(() => {
-    getData('/m/get-chatlist').then((data) => {
+    getData('/chat/get-chat-list').then((data) => {
       setChatList(data);
       initTWE({ Modal, Ripple });
     });

@@ -11,16 +11,17 @@ function Login() {
     try {
       const formData = new FormData(event.currentTarget);
 
-      const response = await postData('/signin', formData);
-      if (response.status == 1) {
+      const response: AuthResponse = await postData('/auth/login', formData);
+      console.log(response);
+      if (response.status == 0) {
       }
 
-      if (response.status == 2) {
-        Cookies.set('accessToken', response.access_token, {
-          expires: parseInt(response.expiresIn) / 24,
+      if (response.status == 1) {
+        console.log('login successfully');
+        Cookies.set('accessToken', response.accessToken, {
+          expires: response.expiresIn / 24,
         });
         navigate('/m');
-        // window.location.href = 'http://' + window.location.host + '/m';
       }
     } catch (error) {
       console.error(error);
@@ -70,5 +71,11 @@ function Login() {
     </section>
   );
 }
+
+type AuthResponse = {
+  status: number;
+  accessToken: string;
+  expiresIn: number;
+};
 
 export default Login;
