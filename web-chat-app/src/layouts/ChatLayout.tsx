@@ -4,23 +4,23 @@ import { ChatRowProps, ChatRow } from "../components/ChatRow";
 import { Link, Outlet } from "react-router-dom";
 import WebSocketConnection from "./../services/WebSocketConnection";
 import { Modal, Ripple, initTWE } from "tw-elements";
+import { fetchChatListEvent } from "../services/chatService";
 
 export default function ChatLayout() {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   useEffect(() => {
-    // getData("/chat/get-chat-list").then((data) => {
-    //   setChatList(data);
-    //   initTWE({ Modal, Ripple });
-    // });
+    getData("/chat/get-chat-list").then((data) => {
+      setChatList(data);
+      initTWE({ Modal, Ripple });
+    });
 
     const socket = WebSocketConnection.getConnection();
 
     socket.on("connect", () => {
       console.log(socket.id + " is on connect ...");
-      // socket.on('message', (message) => {
-      //   console.log(`Receiving message "${message}" ...`);
-      // });
+
+      fetchChatListEvent(socket);
 
       socket.on("receive_message", (msg) => {
         console.log(`received "${msg}"`);
