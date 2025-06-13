@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-export const MONGO_URI = process.env.MONGO_URI!;
-export const PORT = process.env.PORT || "300000";
+const ENV = process.env;
+
+export const MONGO_URI = `mongodb://${ENV.DB_HOST}:${ENV.DB_PORT}/${ENV.DB_NAME}`;
+export const PORT = process.env.PORT || "3000";
