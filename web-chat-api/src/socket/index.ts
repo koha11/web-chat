@@ -15,16 +15,10 @@ export const connectSocketIo = (server: Server) => {
     }
 
     const user = authService.verifyToken(token);
+    console.log(user);
 
     socket.data.user = user;
-
-    // try {
-    //   const user = jwt.verify(token, process.env.JWT_SECRET!);
-    //   socket.data.user = user; // Attach user info
-    //   next();
-    // } catch (err) {
-    //   return next(new Error("Invalid token"));
-    // }
+    next();
   });
 
   io.on("connection", (socket) => {
@@ -34,7 +28,7 @@ export const connectSocketIo = (server: Server) => {
       io.emit("chat message", msg);
     });
 
-    chatService.fetchChatListEvent(io);
+    chatService.fetchChatListEvent(io, socket.data.user.id);
 
     messageService.listenChangeMessage(socket, io);
 

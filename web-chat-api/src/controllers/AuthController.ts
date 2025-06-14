@@ -7,9 +7,7 @@ class AuthController {
   login(req: Request, res: Response) {
     const loginRequest = req.body as ILoginRequest;
     authService.login(loginRequest).then((response) => {
-      res
-        .status(response.status)
-        .json({ data: response.data, message: response.message });
+      res.status(response.status).json(response);
     });
   }
 
@@ -17,9 +15,7 @@ class AuthController {
     const registerRequest = req.body as IRegisterRequest;
 
     authService.register(registerRequest).then((response) => {
-      res
-        .status(response.status)
-        .json({ data: response.data, message: response.message });
+      res.status(response.status).json(response);
     });
   }
 }

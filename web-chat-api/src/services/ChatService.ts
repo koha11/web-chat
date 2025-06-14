@@ -2,12 +2,15 @@ import { Server } from "socket.io";
 import Chat from "../models/Chat.model";
 
 class ChatService {
-  getChatList = async () => {
-    await Chat.find();
+  getChatList = async (id: string) => {
+    const chatList = await Chat.find({ users: id });
+
+    return chatList;
   };
 
-  fetchChatListEvent = async (io: Server) => {
-    const data = await this.getChatList();
+  fetchChatListEvent = async (io: Server, id: string) => {
+    const data = await this.getChatList(id);
+
     io.emit("fetch-chat-list", data);
   };
 }

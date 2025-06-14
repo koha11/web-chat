@@ -52,11 +52,10 @@ class AuthService {
         message: "Username is already exists",
       };
 
-    const hashedPwd = bcrypt.hashSync(registerRequest.password);
-
-    registerRequest.password = hashedPwd;
-
-    const newUser = await User.create(registerRequest);
+    const newUser = await User.create({
+      ...registerRequest,
+      password: bcrypt.hashSync(registerRequest.password),
+    });
 
     const token = this.createToken({
       expiresIn: "24h",
