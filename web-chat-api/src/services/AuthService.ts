@@ -3,7 +3,7 @@ import { ILoginRequest } from "../interfaces/auth/loginRequest.interface";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
 import { IMyResponse } from "../interfaces/myResponse.interface";
 import jwt from "jsonwebtoken";
-import User from "../models/User.model";
+import User, { IUser } from "../models/User.model";
 import bcrypt from "bcryptjs";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface";
 
@@ -51,6 +51,10 @@ class AuthService {
         status: 409,
         message: "Username is already exists",
       };
+
+    const hashedPwd = bcrypt.hashSync(registerRequest.password);
+
+    registerRequest.password = hashedPwd;
 
     const newUser = await User.create(registerRequest);
 
