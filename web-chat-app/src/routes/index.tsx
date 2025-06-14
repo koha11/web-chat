@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Loading from "../components/ui/loading";
 import ChatLayout from "../layouts/ChatLayout";
+import PrivateRoute from "./privateRoute";
 
 const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
@@ -37,39 +38,44 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/contact",
-    element: (
-      <Suspense fallback={<Loading></Loading>}>
-        <Contact />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/me",
-    element: (
-      <Suspense fallback={<Loading></Loading>}>
-        <Me />
-      </Suspense>
-    ),
-  },
-  {
-    element: <ChatLayout /> ,
-    path: "/m",
+    element: <PrivateRoute />,
     children: [
       {
+        path: "/contact",
         element: (
           <Suspense fallback={<Loading></Loading>}>
-            <ChatIndex />
+            <Contact />
           </Suspense>
         ),
       },
       {
-        path: ":id",
+        path: "/me",
         element: (
           <Suspense fallback={<Loading></Loading>}>
-            <ChatDetails />
+            <Me />
           </Suspense>
         ),
+      },
+      {
+        element: <ChatLayout />,
+        path: "/m",
+        children: [
+          {
+            element: (
+              <Suspense fallback={<Loading></Loading>}>
+                <ChatIndex />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Suspense fallback={<Loading></Loading>}>
+                <ChatDetails />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },

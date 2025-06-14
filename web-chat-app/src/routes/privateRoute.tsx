@@ -1,17 +1,20 @@
 
-import { Navigate, Outlet, replace } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const PrivateRoute = () => {
-  // const { data: user, isLoading, error } = useGetProfile();
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
+  const token = Cookies.get("accessToken")
 
-  // if (!user || error) {
-  //   return <Navigate to="/auth/login" replace={true} />;
-  // }
 
-  return Outlet;
+  if (!token) {
+    return <Navigate to="/login" replace={true} />;
+  }
+
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 };
 
 export default PrivateRoute;

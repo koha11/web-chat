@@ -5,20 +5,18 @@ import { Link, Outlet } from "react-router-dom";
 import WebSocketConnection from "./../services/WebSocketConnection";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import { fetchChatListEvent } from "../services/chatService";
+import Cookies from "js-cookie";
 
-export default function ChatLayout() {
+const ChatLayout = () => {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  useEffect(() => {
-    getData("/chat/get-chat-list").then((data) => {
-      setChatList(data);
-      initTWE({ Modal, Ripple });
-    });
 
+  useEffect(() => {
     const socket = WebSocketConnection.getConnection();
 
     socket.on("connect", () => {
       console.log(socket.id + " is on connect ...");
+      console.log(socket.auth);
 
       fetchChatListEvent(socket);
 
@@ -41,7 +39,15 @@ export default function ChatLayout() {
               <a href="/me" className="mr-2">
                 <i className="bx bx-cog p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
               </a>
-              <a href="/" className="mr-2">
+              <a
+                href="/"
+                className="mr-2"
+                onClick={() => {
+                  const token = Cookies.get("accessToken");
+
+                  if (token) Cookies.remove("accessToken");
+                }}
+              >
                 <i className="bx bxs-edit p-2 rounded-full bg-gray-200 ho ver:opacity-50"></i>
               </a>
               <Link to="/contact" className="mr-2">
@@ -102,4 +108,6 @@ export default function ChatLayout() {
       </div>
     </div>
   );
-}
+};
+
+export default ChatLayout;

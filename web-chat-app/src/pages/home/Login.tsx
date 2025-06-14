@@ -3,31 +3,25 @@ import { postData } from "../../services/api";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
+import { useMutation } from "@tanstack/react-query";
+import { useLogin } from "../../hooks/auth.hook";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm<ILoginRequest>();
 
-  const handleLogin = async (data: ILoginRequest) => {
-    try {
-      navigate("/m");
+  const { mutate, isPending } = useLogin();
 
-      // const response: AuthResponse = await postData("/auth/login", formData);
-      // console.log(response);
-      // if (response.status == 0) {
-      // }
-
-      // if (response.status == 1) {
-      //   console.log("login successfully");
-      //   Cookies.set("accessToken", response.accessToken, {
-      //     expires: response.expiresIn / 24,
-      //   });
-      //   navigate("/m");
-      // }
-    } catch (error) {
-      console.error(error);
-    }
+  const handleLogin = (data: ILoginRequest) => {
+    mutate(data, {
+      onSuccess: (response) => {
+        if (response.status == 200 && response.data != undefined) {
+          Cookies.set("accessToken", response.data.accessToken);
+          navigate("/m");
+        }
+      },
+    });
   };
 
   return (

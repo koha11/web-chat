@@ -3,6 +3,7 @@ export interface IUser {
   password: string;
   fullname: string;
   email: string;
+  isConfirmedEmail: boolean;
   isOnline?: boolean;
   lastLogined?: string;
   isActive?: boolean;

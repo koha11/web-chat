@@ -1,13 +1,25 @@
-import { Link, redirect } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import { postData } from "../../services/api";
 import { useForm } from "react-hook-form";
 import { IRegisterRequest } from "../../interfaces/auth/registerRequest.interface";
+import { useRegister } from "../../hooks/auth.hook";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const { handleSubmit, register, watch, control } =
     useForm<IRegisterRequest>();
 
-  const handleRegister = async (data: IRegisterRequest) => {};
+  const { mutate, isPending } = useRegister();
+
+  const handleRegister = (data: IRegisterRequest) => {
+    mutate(data, {
+      onSuccess: (response) => {
+        console.log(response);
+        if (response.status == 200) navigate("/m");
+      },
+    });
+  };
 
   return (
     <section className="flex justify-center items-center flex-col h-[100vh]">
@@ -23,22 +35,22 @@ const Register = () => {
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
         ></input>
         <input
-          {...register("fullname")}
+          {...register("email")}
           placeholder="Email"
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
         ></input>
         <input
-          {...register("fullname")}
+          {...register("username")}
           placeholder="Username"
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
         ></input>
         <input
-          {...register("fullname")}
+          {...register("password")}
           placeholder="Password"
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
         ></input>
         <input
-          {...register("fullname")}
+          {...register("rePassword")}
           placeholder="Retype Password"
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
         ></input>
