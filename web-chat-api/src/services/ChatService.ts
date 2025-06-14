@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import Chat from "src/models/Chat.model";
+import Chat from "../models/Chat.model";
 
 class ChatService {
   getChatList = async () => {
