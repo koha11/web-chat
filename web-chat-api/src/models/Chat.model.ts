@@ -10,6 +10,10 @@ import { IMessage } from "./Message.model";
 export interface IChat extends Document {
   users: IUser[] | Types.ObjectId[];
   messages: IMessage[] | Types.ObjectId[];
+  nicknames: { [id: string]: string }[];
+  chatName: string;
+  chatAvatar: string;
+
   createdAt?: Date;
   updatedAt?: Date;
   deleted?: boolean;
@@ -19,8 +23,11 @@ export interface IChat extends Document {
 // Schema definition
 const ChatSchema = new Schema<IChat>(
   {
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
+    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    nicknames: [{ type: Map }],
+    chatName: { type: String, default: "" },
+    chatAvatar: { type: String, default: "" },
   },
   { timestamps: true }
 );
