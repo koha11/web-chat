@@ -15,8 +15,7 @@ const Register = () => {
   const handleRegister = (data: IRegisterRequest) => {
     mutate(data, {
       onSuccess: (response) => {
-        console.log(response);
-        if (response.status == 200) navigate("/m");
+        if (response.status == 200) navigate("/login");
       },
     });
   };

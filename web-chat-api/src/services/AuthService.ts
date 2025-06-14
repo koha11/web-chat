@@ -6,12 +6,13 @@ import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User.model";
 import bcrypt from "bcryptjs";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface";
+import Account, { IAccount } from "../models/Account.model";
 
 class AuthService {
   async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
-    const user = await User.findOne({ username: loginRequest.username });
+    const account = await Account.findOne({ username: loginRequest.username });
 
-    if (!user)
+    if (!account)
       return {
         status: 401,
         message: "Username is wrong",
@@ -19,13 +20,21 @@ class AuthService {
 
     var passwordIsValid = bcrypt.compareSync(
       loginRequest.password,
-      user.password
+      account.password
     );
 
     if (!passwordIsValid)
       return {
         status: 401,
         message: "Password is wrong",
+      };
+
+    const user = await User.findOne({ username: loginRequest.username });
+
+    if (!user)
+      return {
+        status: 400,
+        message: "sai id roi",
       };
 
     const token = this.createToken({
@@ -44,30 +53,40 @@ class AuthService {
   }
 
   async register(registerRequest: IRegisterRequest): Promise<IMyResponse> {
-    const user = await User.findOne({ username: registerRequest.username });
+    const isUsernameExists = await Account.findOne({
+      username: registerRequest.username,
+    });
 
-    if (user)
+    if (isUsernameExists)
       return {
         status: 409,
         message: "Username is already exists",
       };
 
-    const newUser = await User.create({
-      ...registerRequest,
-      password: bcrypt.hashSync(registerRequest.password),
+    const isEmailExists = await Account.findOne({
+      email: registerRequest.email,
     });
 
-    const token = this.createToken({
-      expiresIn: "24h",
-      id: newUser.id,
-      username: newUser.username,
-    });
+    if (isEmailExists)
+      return {
+        status: 409,
+        message: "Email is already exists",
+      };
+
+    const account = await Account.create({
+      username: registerRequest.username,
+      password: bcrypt.hashSync(registerRequest.password),
+      email: registerRequest.email,
+    } as IAccount);
+
+    const user = await User.create({
+      _id: account._id,
+      username: account.username,
+      fullname: registerRequest.fullname,
+    } as IUser);
 
     return {
       status: 200,
-      data: {
-        accessToken: token,
-      },
       message: "register success",
     };
   }
