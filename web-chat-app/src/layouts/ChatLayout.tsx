@@ -6,23 +6,28 @@ import WebSocketConnection from "./../services/WebSocketConnection";
 import { Modal, Ripple, initTWE } from "tw-elements";
 import { fetchChatListEvent } from "../services/chatService";
 import Cookies from "js-cookie";
+import { Socket } from "socket.io-client";
+import { listenReceiveMessage } from "../services/messageService";
 
 const ChatLayout = () => {
   const [chatList, setChatList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [message, setMessage] = useState("");
+
+  const socket = WebSocketConnection.getConnection();
 
   useEffect(() => {
-    const socket = WebSocketConnection.getConnection();
-
     socket.on("connect", () => {
       console.log(socket.id + " is on connect ...");
 
       fetchChatListEvent(socket);
 
-      socket.on("receive-message", (msg) => {
-        console.log(`received "${msg}"`);
-      });
+      listenReceiveMessage(socket);
     });
+
+    // return () => {
+    //   socket.off("receive_message");
+    // };
   }, []);
 
   return (
@@ -35,9 +40,18 @@ const ChatLayout = () => {
           <div className="flex justify-between items-center h-[10%] px-2">
             <h1 className="text-2xl font-bold">Đoạn chat</h1>
             <div className="text-xl">
-              <a href="/me" className="mr-2">
-                <i className="bx bx-cog p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
-              </a>
+              <Link to="/me" className="mr-2">
+                <i className="bx bxs-contact p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
+              </Link>
+              <button
+                onClick={() => {
+                  const myMsg = new Date().toString();
+                  socket.emit("send-message", myMsg);
+                  setMessage(myMsg);
+                }}
+              >
+                test
+              </button>
               <a
                 href="/"
                 className="mr-2"
@@ -77,6 +91,7 @@ const ChatLayout = () => {
                 lastMessage={chat.lastMessage}
               ></ChatRow>
             ))}
+            <div>{message}</div>
           </nav>
 
           {/* <nav className="h-[5%] flex">

@@ -3,7 +3,7 @@ import Chat from "../models/Chat.model";
 
 class ChatService {
   getChatList = async (id: string) => {
-    const chatList = await Chat.find({ users: id });
+    const chatList = await Chat.find({ users: id }).populate("users");
 
     return chatList;
   };

@@ -91,8 +91,8 @@ class AuthService {
     };
   }
 
-  verifyToken(token: string) {
-    return jwt.verify(token, JWT_SECRET);
+  verifyToken(token: string): ITokenPayload {
+    return jwt.verify(token, JWT_SECRET) as ITokenPayload;
   }
 
   createToken(payload: ITokenPayload) {

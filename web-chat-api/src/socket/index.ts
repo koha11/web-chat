@@ -32,6 +32,8 @@ export const connectSocketIo = (server: Server) => {
 
     messageService.listenChangeMessage(socket, io);
 
+    messageService.listenSendMessage(socket, io);
+
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);
     });
