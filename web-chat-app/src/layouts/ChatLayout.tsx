@@ -16,11 +16,10 @@ const ChatLayout = () => {
 
     socket.on("connect", () => {
       console.log(socket.id + " is on connect ...");
-      console.log(socket.auth);
 
       fetchChatListEvent(socket);
 
-      socket.on("receive_message", (msg) => {
+      socket.on("receive-message", (msg) => {
         console.log(`received "${msg}"`);
       });
     });
