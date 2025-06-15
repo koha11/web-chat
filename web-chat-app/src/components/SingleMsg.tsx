@@ -8,8 +8,10 @@ const SingleMsg = ({
   isSentMsg,
   avatar,
   sendTime,
+  fullname,
 }: {
   isSentMsg: boolean;
+  fullname: string;
   body: string;
   avatar: string;
   isLongGap: boolean;
@@ -30,12 +32,14 @@ const SingleMsg = ({
           </div>
         )}
 
-        {!isSentMsg && (
-          <div
-            className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${avatar})` }}
-          ></div>
-        )}
+        {!isSentMsg &&
+          MyTooltip(
+            <div
+              className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
+              style={{ backgroundImage: `url(${avatar})` }}
+            ></div>,
+            fullname
+          )}
 
         {MyTooltip(
           <span className="py-1 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">

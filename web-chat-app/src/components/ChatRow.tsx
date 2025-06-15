@@ -1,8 +1,35 @@
 import { NavLink } from "react-router-dom";
 import { IChat } from "../interfaces/chat.interface";
 import { IUser } from "../interfaces/user.interface";
+import { IMessage } from "../interfaces/message.interface";
+import { useEffect, useState } from "react";
+import Loading from "./ui/loading";
 
 const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
+  const [lastMsg, setLastMsg] = useState<IMessage>();
+  const [lastUser, setLastUser] = useState<IUser>();
+
+  useEffect(() => {
+    if (chat != undefined) {
+      const myLastMsg = chat.messages[chat.messages.length - 1] as IMessage;
+
+      if (typeof chat.messages == "object" && myLastMsg != null) {
+        setLastMsg(() => myLastMsg ?? undefined);
+      }
+      console.log(myLastMsg);
+
+      // if (myLastMsg == undefined) {
+      //   setLastUser({});
+      // }
+
+      if (typeof chat.users == "object") {
+        setLastUser(chat.users.find((user) => user._id == myLastMsg?.user)!);
+      }
+    }
+  }, [chat]);
+
+  // if (lastMsg == undefined || lastUser == undefined) return <Loading></Loading>;
+
   return (
     <NavLink
       to={`/m/${chat._id}`}
@@ -18,11 +45,14 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
       ></div>
       <div className="flex-auto px-4 flex flex-col items-baseline">
         <div className="font-bold">{chat.chatName}</div>
-        <div className="text-gray-500 text-[0.75rem]">{""} ·2 giờ</div>{" "}
+        <div className="text-gray-500 text-[0.75rem]">
+          {lastMsg && lastMsg.user == userId && "You:"}{" "}
+          {lastMsg && lastMsg.msgBody} {"·2 giờ"}
+        </div>{" "}
       </div>
       <div
         className="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-center"
-        style={{ backgroundImage: `url(${chat.chatAvatar})` }}
+        style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
       ></div>
     </NavLink>
   );

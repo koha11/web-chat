@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
 import { MyTooltip } from "../../components/ui/myTooltip";
-import { displaySendMsgTime } from "../../utils/messageTime.helper";
+import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
 
 const ChatDetails = ({
   chat,
@@ -135,11 +135,12 @@ const ChatDetails = ({
                 isSentMsg={msg.user == userId}
                 isLongGap={true}
                 body={msg.msgBody}
+                fullname={receivers[0].fullname}
                 avatar={
                   (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
                   ""
                 }
-                sendTime={displaySendMsgTime(new Date(msg.createdAt ?? ""))}
+                sendTime={getDisplaySendMsgTime(new Date(msg.createdAt ?? ""))}
               ></SingleMsg>
             </>
           );
@@ -160,7 +161,9 @@ const ChatDetails = ({
           >
             <i className="bx bx-image text-2xl p-2 rounded-full hover:bg-gray-200"></i>
           </label>
+
           {/* <input id="uploaded-image" type="file" className="hidden"></input>   */}
+
           <input
             {...register("msgBody", { required: true })}
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
