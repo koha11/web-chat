@@ -7,7 +7,7 @@ import Register from "./pages/home/Register.tsx";
 import ChatIndex from "./pages/chat/ChatIndex.tsx";
 import ChatDetails from "./pages/chat/ChatDetails.tsx";
 
-import ChatLayout from "./layouts/ChatLayout.tsx";
+import ChatLayout from "./layouts/MainLayout.tsx";
 
 import "./App.css";
 import Contact from "./pages/contact/Contact.tsx";

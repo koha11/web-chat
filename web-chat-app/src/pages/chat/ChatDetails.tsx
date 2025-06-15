@@ -1,17 +1,15 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { getData, postData } from '../../services/api';
-import { useParams } from 'react-router-dom';
-import { SingleMsg } from '../../components/SingleMsg';
-import WebSocketConnection from '../../services/WebSocketConnection';
-import { Socket } from 'socket.io-client';
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { getData, postData } from "../../services/api";
+import { useParams } from "react-router-dom";
+import { SingleMsg } from "../../components/SingleMsg";
+import WebSocketConnection from "../../services/WebSocketConnection";
+import { Socket } from "socket.io-client";
 
-const ChatDetails = () => {
-  const { id } = useParams();
-
+const ChatDetails = ({ chatId }: { chatId: string }) => {
   // const [chatDetails, setChatDetails] = useState<ChatDetailsProps>();
   const [msgList, setMsgList] = useState<[msgObject]>();
   const [isScrollBottom, setIsScrollBottom] = useState(false);
-  const [msgBody, setMsgBody] = useState('');
+  const [msgBody, setMsgBody] = useState("");
 
   const msgsContainerRef = useRef<HTMLDivElement>(null);
   const lastMsgTime = useRef<Date>(null);
@@ -20,83 +18,42 @@ const ChatDetails = () => {
   const UsersRef = useRef<Users>(null);
 
   // Dùng để lấy các tin nhắn sau khi chuyển sang đoạn chat khác
-  useEffect(() => {
-    getData(`/m/get-messages/${id}`).then((data) => {
-      setMsgList(data.msgList);
-      setIsScrollBottom(!isScrollBottom);
-      UsersRef.current = { sender: data.sender, receiver: data.receiver };
-      socketRef.current = WebSocketConnection.getConnection();
-
-      socketRef.current.on('sendMsgFromServer', (msg: msgObject) => {
-        setMsgList((oldMsgs: [msgObject]) => [...oldMsgs, msg]);
-      });
-
-      socketRef.current.on('soIsTyping', (chatID: string) => {
-        console.log(chatID + 'is typing');
-      });
-
-      return () => {
-        socketRef.current?.removeAllListeners('sendMsgFromServer');
-        socketRef.current?.disconnect();
-      };
-    });
-  }, [id]);
 
   useEffect(() => {
     handleScrollToBot();
   }, [isScrollBottom]);
 
-  const handleSendMsg = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = Object.fromEntries(
-      new FormData(event.currentTarget).entries()
-    );
-
-    if (formData.msgBody == '') return;
-
-    postData('/m/send-message/' + id, {
-      user: UsersRef.current?.sender.id,
-      msgBody: formData.msgBody,
-    }).then(({ status, data }) => {
-      if (status == 1) {
-        socketRef.current!.emit('sendMsgFromClient', data, id);
-        setMsgList([...msgList, data]);
-        setMsgBody('');
-        setIsScrollBottom(!isScrollBottom);
-      }
-    });
-  };
+  const handleSendMsg = () => {};
 
   const handleScrollToBot = () => {
     const msgListRef =
-      msgsContainerRef.current?.querySelectorAll('.single-msg');
+      msgsContainerRef.current?.querySelectorAll(".single-msg");
 
     msgListRef?.item(msgListRef.length - 1)?.scrollIntoView();
   };
 
   const handleOnTyping = (e: FormEvent<HTMLInputElement>) => {
     setMsgBody(e.currentTarget.value);
-    socketRef.current?.emit('isTyping', id);
+    socketRef.current?.emit("isTyping", chatId);
   };
 
   return (
     <section
       className="w-[75%] h-full p-4 bg-white rounded-2xl"
-      style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0 0 5px 2px' }}
+      style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="container flex items-center justify-between h-[10%]">
         <div className="flex items-center">
           <div
             className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: 'url(/assets/images/test.jpg)' }}
+            style={{ backgroundImage: "url(/assets/images/test.jpg)" }}
           ></div>
           <div className="ml-4">
             <h1 className="font-bold">{UsersRef.current?.receiver.fullname}</h1>
             <div className="text-gray-500 text-[0.75rem]">
               {UsersRef.current?.receiver.isOnline
-                ? 'Đang hoạt động'
-                : 'Không hoạt động'}
+                ? "Đang hoạt động"
+                : "Không hoạt động"}
             </div>
           </div>
         </div>
@@ -121,28 +78,28 @@ const ChatDetails = () => {
           const isSentMsg = msg.user == UsersRef.current!.sender.id;
           const timeSpan = new Date(msg.time);
 
-          let timeString = '';
+          let timeString = "";
 
           // Hiệu giữa thời gian hiện tại với thời gian của tin nhắn
           const diffTime = new Date().getTime() - timeSpan.getTime();
 
           // Nếu tin nhắn được nhắn trong ngày
           if (timeSpan.getDay() == new Date().getDay())
-            timeString = timeSpan.toLocaleTimeString('vi-VN').slice(0, 5);
+            timeString = timeSpan.toLocaleTimeString("vi-VN").slice(0, 5);
           // Nếu tin nhắn được nhắn trong vòng 7 ngày đổ lại
           else if (diffTime / (1000 * 60 * 60 * 24) <= 7) {
-            timeString = timeSpan.toLocaleTimeString('vi-VN', {
-              weekday: 'short',
+            timeString = timeSpan.toLocaleTimeString("vi-VN", {
+              weekday: "short",
             });
 
             timeString = timeString.slice(0, 5).concat(timeString.slice(8, 13));
 
             // Mặc định (tin nhắn xa hơn 7 ngày)
           } else {
-            timeString = timeSpan.toLocaleTimeString('vi-VN', {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit',
+            timeString = timeSpan.toLocaleTimeString("vi-VN", {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
             });
             timeString = timeString.slice(0, 5).concat(timeString.slice(8));
           }
@@ -167,7 +124,7 @@ const ChatDetails = () => {
             <>
               {hasTimeSpan && (
                 <div
-                  key={'T' + msg.id}
+                  key={"T" + msg.id}
                   className="msg-time text-center text-gray-400 text-[0.75rem]"
                 >
                   {timeString}
@@ -229,14 +186,14 @@ const ChatDetails = () => {
 };
 
 const SendMsgForm = ({ handleSendMsg, senderID, receiverID }: any) => {
-  const [msgBody, setMsgBody] = useState('');
+  const [msgBody, setMsgBody] = useState("");
   return (
     <form
       action=""
       className="relative w-full flex items-center justify-between"
       onSubmit={(e) => {
         handleSendMsg(e);
-        setMsgBody('');
+        setMsgBody("");
       }}
     >
       <label

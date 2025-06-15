@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Loading from "../components/ui/loading";
-import ChatLayout from "../layouts/ChatLayout";
+import MainLayout from "../layouts/MainLayout";
 import PrivateRoute from "./privateRoute";
+import Chat from "../pages/chat/Chat";
 
 const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
@@ -57,25 +58,17 @@ const router = createBrowserRouter([
         ),
       },
       {
-        element: <ChatLayout />,
+        element: <MainLayout />,
         path: "/m",
         children: [
-          {
-            path: "",
-            element: (
-              <Suspense fallback={<Loading></Loading>}>
-                <ChatIndex />
-              </Suspense>
-            ),
-          },
           {
             path: ":id",
             element: (
               <Suspense fallback={<Loading></Loading>}>
-                <ChatDetails />
+                <Chat />
               </Suspense>
             ),
-          },
+          },          
         ],
       },
     ],
