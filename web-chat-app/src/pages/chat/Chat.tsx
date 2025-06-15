@@ -13,6 +13,8 @@ import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
 import { IMessage } from "../../interfaces/message.interface";
 import Loading from "../../components/ui/loading";
+import MY_SOCKET_EVENTS from "../../constants/MY_SOCKET_EVENTS";
+import SocketEvent from "../../enums/SocketEvent.enum";
 
 const Chat = () => {
   const { id } = useParams();
@@ -32,14 +34,15 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
+
       listenReceiveMessage(socket, (msg: IMessage) =>
         setMessages((messages) => [...messages, msg])
       );
     });
 
-    // return () => {
-    //   socket.off("receive_message");
-    // };
+    return () => {
+      Object.values(MY_SOCKET_EVENTS).forEach((event) => socket.off(event));
+    };
   }, []);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ const Chat = () => {
 
   // HANLDERs
   const handleSendMessage = (msg: IMessage) => {
-    socket.emit("send-message", msg);
+    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg);
   };
 
   return (

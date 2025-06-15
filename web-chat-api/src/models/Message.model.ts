@@ -4,12 +4,13 @@ import mongooseDelete, {
   SoftDeleteModel,
 } from "mongoose-delete";
 import { IUser } from "./User.model";
+import MessageStatus from "../enums/MessageStatus.enum";
 
 // Interface for Message document
 export interface IMessage extends Document {
   user: IUser | Types.ObjectId;
   msgBody: string;
-  status: boolean;
+  status: MessageStatus;
   createdAt?: Date;
   updatedAt?: Date;
   deleted?: boolean;
@@ -21,7 +22,7 @@ const MessageSchema = new Schema<IMessage>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     msgBody: { type: String, required: true },
-    status: { type: Boolean, required: true, default: false },
+    status: { type: String, required: true, default: MessageStatus.SENT },
   },
   { timestamps: true }
 );

@@ -1,12 +1,14 @@
 import { Socket } from "socket.io-client";
 import { IChat } from "../interfaces/chat.interface";
 import { IUser } from "../interfaces/user.interface";
+import MY_SOCKET_EVENTS from "../constants/MY_SOCKET_EVENTS";
+import SocketEvent from "../enums/SocketEvent.enum";
 
 export const fetchChatListEvent = (
   socket: Socket,
   setChatList: (chatList: IChat[]) => void
 ) => {
-  socket.on("fetch-chat-list", (chatList: IChat[]) => {
+  socket.on(MY_SOCKET_EVENTS[SocketEvent.fcl], (chatList: IChat[]) => {
     const userId = (socket.auth as { [key: string]: any })["userId"];
 
     setChatList(
