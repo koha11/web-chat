@@ -1,9 +1,14 @@
 const SingleMsg = ({
-  isSentMsg,
   body,
-  avatar = '/assets/images/test.jpg',
   isLongGap,
-}: SingleMsgProps) => {
+  isSentMsg,
+  avatar,
+}: {
+  isSentMsg: boolean;
+  body: string;
+  avatar: string;
+  isLongGap: boolean;
+}) => {
   // Nếu là tin nhắn gửi đi
   if (isSentMsg == true)
     return (
@@ -44,11 +49,4 @@ const SingleMsg = ({
     );
 };
 
-export type SingleMsgProps = {
-  isSentMsg: boolean;
-  body: string;
-  avatar: string;
-  isLongGap: boolean;
-};
-
-export { SingleMsg };
+export default SingleMsg;

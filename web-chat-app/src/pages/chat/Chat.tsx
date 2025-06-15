@@ -11,13 +11,16 @@ import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
+import { IMessage } from "../../interfaces/message.interface";
+import Loading from "../../components/ui/loading";
 
 const Chat = () => {
   const { id } = useParams();
+  const [chatList, setChatList] = useState<IChat[] | undefined>();
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [currChat, setCurrChat] = useState<IChat | undefined>();
 
-  const [chatList, setChatList] = useState<IChat[]>([]);
   const [userId, setUserId] = useState("");
-  // const [chatId, setChatId] = useState<string | undefined>(id);
 
   const socket = WebSocketConnection.getConnection();
 
@@ -30,7 +33,9 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
 
-      listenReceiveMessage(socket);
+      listenReceiveMessage(socket, (msg: IMessage) =>
+        setMessages((messages) => [...messages, msg])
+      );
     });
 
     // return () => {
@@ -38,17 +43,43 @@ const Chat = () => {
     // };
   }, []);
 
+  console.log(messages);
+
+  useEffect(() => {
+    if (chatList != null) {
+      const myCurrChat = chatList!.find((chat) => chat._id == id);
+
+      setCurrChat(myCurrChat);
+
+      if (typeof myCurrChat!.messages == "object")
+        setMessages(myCurrChat!.messages);
+    }
+  }, [id, chatList]);
+
+  if (chatList == null || currChat == null) return <Loading></Loading>;
+
+  // useEffect(() => {
+
+  // }, [])
+
+  // HANLDERs
+  const handleSendMessage = (msg: IMessage) => {
+    socket.emit("send-message", msg);
+  };
+
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList chatList={chatList} userId={userId}></ChatList>
-        {id == null ? (
+        {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
-            chatId={id ?? ""}
-            messages={[]}
+            handleSendMessage={handleSendMessage}
+            messages={messages}
             userId={userId}
+            chat={currChat!}
+            setChat={setCurrChat}
           ></ChatDetails>
         )}
       </div>

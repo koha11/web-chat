@@ -3,13 +3,7 @@ import { IChat } from "../interfaces/chat.interface";
 import { IUser } from "../interfaces/user.interface";
 
 const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
-  const myUsers = chat.users as IUser[];
-
-  chat.chatAvatar =
-    chat.chatAvatar == ""
-      ? myUsers.find((user) => user._id != userId)!.avatar!
-      : chat.chatAvatar;
-
+  console.log(chat);
   return (
     <NavLink
       to={`/m/${chat._id}`}

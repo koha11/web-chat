@@ -4,6 +4,7 @@ import ChatRow from "../../components/ChatRow";
 import { IChat } from "../../interfaces/chat.interface";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import Loading from "../../components/ui/loading";
 
 const ChatList = ({
   chatList,
@@ -12,7 +13,6 @@ const ChatList = ({
   chatList: IChat[];
   userId: string;
 }) => {
-
   const [searchValue, setSearchValue] = useState("");
 
   return (
@@ -68,9 +68,15 @@ const ChatList = ({
         id="chat-box-list"
         className="h-[75%] overflow-y-scroll flex flex-col gap-2"
       >
-        {chatList.map((chat: IChat) => (
-          <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
-        ))}
+        {chatList.length == 0 ? (
+          <div className="flex items-center justify-center">
+            <Loading></Loading>
+          </div>
+        ) : (
+          chatList.map((chat: IChat) => (
+            <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
+          ))
+        )}
       </nav>
     </section>
   );
