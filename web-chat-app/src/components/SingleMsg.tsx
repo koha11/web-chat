@@ -22,7 +22,7 @@ const SingleMsg = ({
   const [isHover, setHover] = useState<boolean>(false);
   return (
     <div
-      className={`flex flex-col gap-2 px-2 mt-4`}
+      className={`flex flex-col gap-2 px-2 mt-4 single-msg`}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >

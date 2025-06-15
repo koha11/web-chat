@@ -21,12 +21,16 @@ const ChatDetails = ({
   setChat,
   handleSendMessage,
   messages,
+  msgsContainerRef,
+  setScrollBottom,
 }: {
   messages: IMessage[];
   userId: string;
   chat: IChat;
   setChat: (chat: IChat) => void;
   handleSendMessage: (msg: IMessage, chatId: string) => void;
+  msgsContainerRef: any;
+  setScrollBottom: () => void;
 }) => {
   // states
   const [receivers, setReceivers] = useState<IUser[]>([]);
@@ -42,25 +46,16 @@ const ChatDetails = ({
   });
 
   // useEffect
-  // useEffect(() => {
-  //   handleScrollToBot();
-  // }, [isScrollBottom]);
 
   useEffect(() => {
     if (typeof chat.users == "object") {
       setReceivers(chat.users.filter((user) => user._id != userId));
       setSender(chat.users.find((user) => user._id == userId));
     }
+    setScrollBottom();
   }, [chat]);
 
   // HANDLERs
-
-  // const handleScrollToBot = () => {
-  //   const msgListRef =
-  //     msgsContainerRef.current?.querySelectorAll(".single-msg");
-
-  //   msgListRef?.item(msgListRef.length - 1)?.scrollIntoView();
-  // };
 
   // const handleOnTyping = (e: FormEvent<HTMLInputElement>) => {
   //   setMsgBody(e.currentTarget.value);
@@ -102,7 +97,10 @@ const ChatDetails = ({
         </div>
       </div>
 
-      <div className="container h-[85%] overflow-y-scroll flex flex-col text-[0.9rem] py-4">
+      <div
+        className="container h-[85%] overflow-y-scroll flex flex-col text-[0.9rem] py-4"
+        ref={msgsContainerRef}
+      >
         {messages?.map((msg) => {
           // Dưới 20 phút thì ko cần hiện thời gian
           // const hasTimeSpan =
@@ -121,28 +119,18 @@ const ChatDetails = ({
           // lastMsgTime.current = timeSpan;
 
           return (
-            <>
-              {/* {hasTimeSpan && (
-                <div
-                  key={"T" + msg.id}
-                  className="msg-time text-center text-gray-400 text-[0.75rem]"
-                >
-                  {timeString}
-                </div>
-              )} */}
-              <SingleMsg
-                key={msg._id}
-                isSentMsg={msg.user == userId}
-                isLongGap={true}
-                body={msg.msgBody}
-                fullname={receivers[0].fullname}
-                avatar={
-                  (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
-                  ""
-                }
-                sendTime={getDisplaySendMsgTime(new Date(msg.createdAt ?? ""))}
-              ></SingleMsg>
-            </>
+            <SingleMsg
+              key={msg._id}
+              isSentMsg={msg.user == userId}
+              isLongGap={true}
+              body={msg.msgBody}
+              fullname={receivers[0].fullname}
+              avatar={
+                (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
+                ""
+              }
+              sendTime={getDisplaySendMsgTime(new Date(msg.createdAt ?? ""))}
+            ></SingleMsg>
           );
         })}
       </div>

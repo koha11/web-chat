@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Link, Outlet, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -21,10 +21,28 @@ const Chat = () => {
   const [chatList, setChatList] = useState<IChat[] | undefined>();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [currChat, setCurrChat] = useState<IChat | undefined>();
+  const [isScrollBottom, setScrollBottom] = useState(false);
 
   const [userId, setUserId] = useState("");
 
   const socket = WebSocketConnection.getConnection();
+
+  // useRef
+  const msgsContainerRef = useRef<HTMLDivElement>(null);
+
+  // HANLDERs
+  const handleSendMessage = (msg: IMessage, chatId: string) => {
+    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg, chatId);
+  };
+
+  const handleScrollToBot = () => {
+    const msgListRef =
+      msgsContainerRef.current?.querySelectorAll(".single-msg");
+
+    msgListRef?.item(msgListRef.length - 1)?.scrollIntoView();
+  };
+
+  // useEffect
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -35,9 +53,9 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
 
-      listenReceiveMessage(socket, (msg: IMessage) =>
-        setMessages((messages) => [...messages, msg])
-      );
+      listenReceiveMessage(socket, (msg: IMessage) => {
+        setMessages((messages) => [...messages, msg]);
+      });
     });
 
     return () => {
@@ -55,17 +73,24 @@ const Chat = () => {
         setMessages(myCurrChat!.messages);
 
       console.log(chatList);
+
+      setScrollBottom(!isScrollBottom);
     }
   }, [id, chatList]);
+
+  useEffect(() => {
+    handleScrollToBot();
+  }, [isScrollBottom]);
+
+  useEffect(() => {
+    setScrollBottom(!isScrollBottom);
+  }, [messages]);
+
+  // Wait data
 
   if (chatList == null) return <Loading></Loading>;
 
   if (id != null && currChat == null) return <Loading></Loading>;
-
-  // HANLDERs
-  const handleSendMessage = (msg: IMessage, chatId: string) => {
-    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg, chatId);
-  };
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -80,6 +105,8 @@ const Chat = () => {
             userId={userId}
             chat={currChat!}
             setChat={setCurrChat}
+            msgsContainerRef={msgsContainerRef}
+            setScrollBottom={() => setScrollBottom(!isScrollBottom)}
           ></ChatDetails>
         )}
       </div>
