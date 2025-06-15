@@ -27,6 +27,7 @@ const ChatDetails = ({
 }) => {
   // states
   const [receivers, setReceivers] = useState<IUser[]>([]);
+  const [sender, setSender] = useState<IUser>();
 
   // useForm
   const { register, handleSubmit, resetField } = useForm<IMessage>({
@@ -43,11 +44,11 @@ const ChatDetails = ({
   // }, [isScrollBottom]);
 
   useEffect(() => {
-    if (typeof chat.users == "object")
+    if (typeof chat.users == "object") {
       setReceivers(chat.users.filter((user) => user._id != userId));
+      setSender(chat.users.find((user) => user._id == userId));
+    }
   }, []);
-
-  console.log(messages);
 
   // HANDLERs
 
@@ -154,10 +155,13 @@ const ChatDetails = ({
               )} */}
               <SingleMsg
                 key={msg._id}
-                isSentMsg={true}
+                isSentMsg={msg.user == userId}
                 isLongGap={true}
                 body={msg.msgBody}
-                avatar={receivers[0].avatar ?? ""}
+                avatar={
+                  (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
+                  ""
+                }
               ></SingleMsg>
             </>
           );
@@ -184,8 +188,6 @@ const ChatDetails = ({
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
             placeholder="Aa"
           ></input>
-          <input name="user" type="hidden"></input>
-          <input name="receiver" type="hidden"></input>
 
           <button className="rounded-full ml-2 cursor-pointer" type="submit">
             <i className="bx bx-send text-2xl p-2 rounded-full hover:bg-gray-200"></i>

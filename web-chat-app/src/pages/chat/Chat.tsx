@@ -32,7 +32,6 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
-
       listenReceiveMessage(socket, (msg: IMessage) =>
         setMessages((messages) => [...messages, msg])
       );
@@ -43,24 +42,22 @@ const Chat = () => {
     // };
   }, []);
 
-  console.log(messages);
-
   useEffect(() => {
-    if (chatList != null) {
+    if (chatList != null && id != undefined) {
       const myCurrChat = chatList!.find((chat) => chat._id == id);
 
       setCurrChat(myCurrChat);
+
+      console.log(chatList);
 
       if (typeof myCurrChat!.messages == "object")
         setMessages(myCurrChat!.messages);
     }
   }, [id, chatList]);
 
-  if (chatList == null || currChat == null) return <Loading></Loading>;
+  if (chatList == null) return <Loading></Loading>;
 
-  // useEffect(() => {
-
-  // }, [])
+  if (id != null && currChat == null) return <Loading></Loading>;
 
   // HANLDERs
   const handleSendMessage = (msg: IMessage) => {
