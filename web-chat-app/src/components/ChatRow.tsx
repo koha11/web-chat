@@ -4,6 +4,8 @@ import { IUser } from "../interfaces/user.interface";
 import { IMessage } from "../interfaces/message.interface";
 import { useEffect, useState } from "react";
 import Loading from "./ui/loading";
+import { getDisplayTimeDiff } from "../utils/messageTime.helper";
+import { Dot } from "lucide-react";
 
 const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
   const [lastMsg, setLastMsg] = useState<IMessage>();
@@ -45,15 +47,18 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
       ></div>
       <div className="flex-auto px-4 flex flex-col items-baseline">
         <div className="font-bold">{chat.chatName}</div>
-        <div className="text-gray-500 text-[0.75rem]">
+        <div className="text-gray-500 text-[0.75rem] flex items-center">
           {lastMsg && lastMsg.user == userId && "You:"}{" "}
-          {lastMsg && lastMsg.msgBody} {"·2 giờ"}
+          {lastMsg && lastMsg.msgBody} {lastMsg && <Dot size={12}></Dot>}
+          {lastMsg && getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
         </div>{" "}
       </div>
-      <div
-        className="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-center"
-        style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
-      ></div>
+      {lastMsg && lastMsg.user != userId && (
+        <div
+          className="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-center"
+          style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
+        ></div>
+      )}
     </NavLink>
   );
 };
