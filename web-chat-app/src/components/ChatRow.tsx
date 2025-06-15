@@ -3,7 +3,6 @@ import { IChat } from "../interfaces/chat.interface";
 import { IUser } from "../interfaces/user.interface";
 
 const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
-  console.log(chat);
   return (
     <NavLink
       to={`/m/${chat._id}`}
