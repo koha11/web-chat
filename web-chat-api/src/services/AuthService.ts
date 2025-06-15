@@ -47,6 +47,7 @@ class AuthService {
       status: 200,
       data: {
         accessToken: token,
+        userId: user.id,
       },
       message: "login success",
     };

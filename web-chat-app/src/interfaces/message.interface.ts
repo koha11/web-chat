@@ -1,6 +1,7 @@
 import { IUser } from "./user.interface";
 
-export interface IMessage extends Document {
+export interface IMessage {
+  _id: string;
   user: string | IUser;
   msgBody: string;
   status: boolean;

@@ -1,7 +1,8 @@
 import { IMessage } from "./message.interface";
 import { IUser } from "./user.interface";
 
-export interface IChat extends Document {
+export interface IChat {
+  _id: string;
   users: IUser[] | string;
   messages: IMessage[] | string;
   nicknames: { [id: string]: string }[];

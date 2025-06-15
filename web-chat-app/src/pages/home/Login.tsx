@@ -18,6 +18,7 @@ const Login = () => {
       onSuccess: (response) => {
         if (response.status == 200 && response.data != undefined) {
           Cookies.set("accessToken", response.data.accessToken);
+          Cookies.set("userId", response.data.userId);
           navigate("/m");
         }
       },

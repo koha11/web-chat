@@ -61,6 +61,7 @@ const router = createBrowserRouter([
         path: "/m",
         children: [
           {
+            path: "",
             element: (
               <Suspense fallback={<Loading></Loading>}>
                 <ChatIndex />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getData } from "../services/api";
-import { ChatRowProps, ChatRow } from "../components/ChatRow";
+import ChatRow from "../components/ChatRow";
 import { Link, Outlet } from "react-router-dom";
 import WebSocketConnection from "./../services/WebSocketConnection";
 import { Modal, Ripple, initTWE } from "tw-elements";
@@ -8,11 +8,14 @@ import { fetchChatListEvent } from "../services/chatService";
 import Cookies from "js-cookie";
 import { Socket } from "socket.io-client";
 import { listenReceiveMessage } from "../services/messageService";
+import { Contact, LogOut, User } from "lucide-react";
+import { IChat } from "../interfaces/chat.interface";
 
 const ChatLayout = () => {
-  const [chatList, setChatList] = useState([]);
+  const [chatList, setChatList] = useState<IChat[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [message, setMessage] = useState("");
+  const [userId, setUserId] = useState("");
 
   const socket = WebSocketConnection.getConnection();
 
@@ -20,7 +23,10 @@ const ChatLayout = () => {
     socket.on("connect", () => {
       console.log(socket.id + " is on connect ...");
 
-      fetchChatListEvent(socket);
+      const userId = (socket.auth as { [key: string]: any })["userId"];
+      setUserId(userId);
+
+      fetchChatListEvent(socket, setChatList);
 
       listenReceiveMessage(socket);
     });
@@ -39,32 +45,32 @@ const ChatLayout = () => {
         >
           <div className="flex justify-between items-center h-[10%] px-2">
             <h1 className="text-2xl font-bold">Đoạn chat</h1>
-            <div className="text-xl">
-              <Link to="/me" className="mr-2">
-                <i className="bx bxs-contact p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
-              </Link>
-              <button
-                onClick={() => {
-                  const myMsg = new Date().toString();
-                  socket.emit("send-message", myMsg);
-                  setMessage(myMsg);
-                }}
+            <div className="text-xl flex items-center gap-2">
+              <Link
+                to="/me"
+                className="p-2 rounded-full bg-gray-200 hover:opacity-50"
               >
-                test
-              </button>
-              <a
-                href="/"
-                className="mr-2"
+                <User></User>
+              </Link>
+              <Link
+                to={"/login"}
                 onClick={() => {
                   const token = Cookies.get("accessToken");
 
-                  if (token) Cookies.remove("accessToken");
+                  if (token) {
+                    Cookies.remove("accessToken");
+                    Cookies.remove("userId");
+                  }
                 }}
+                className="p-2 rounded-full bg-gray-200 hover:opacity-50"
               >
-                <i className="bx bxs-edit p-2 rounded-full bg-gray-200 ho ver:opacity-50"></i>
-              </a>
-              <Link to="/contact" className="mr-2">
-                <i className="bx bxs-contact p-2 rounded-full bg-gray-200 hover:opacity-50"></i>
+                <LogOut></LogOut>
+              </Link>
+              <Link
+                to="/contact"
+                className="p-2 rounded-full bg-gray-200 hover:opacity-50"
+              >
+                <Contact></Contact>
               </Link>
             </div>
           </div>
@@ -81,15 +87,12 @@ const ChatLayout = () => {
             </form>
           </div>
 
-          <nav id="chat-box-list" className="h-[75%] overflow-y-scroll">
-            {chatList.map((chat: ChatRowProps) => (
-              <ChatRow
-                chatName="test"
-                key={chat.id}
-                id={chat.id}
-                user={chat.user}
-                lastMessage={chat.lastMessage}
-              ></ChatRow>
+          <nav
+            id="chat-box-list"
+            className="h-[75%] overflow-y-scroll flex flex-col gap-2"
+          >
+            {chatList.map((chat: IChat) => (
+              <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
             ))}
             <div>{message}</div>
           </nav>

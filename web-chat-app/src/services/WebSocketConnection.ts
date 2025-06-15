@@ -13,6 +13,7 @@ class WebSocketConnection {
     WebSocketConnection.connection = io(this.url, {
       auth: {
         token: Cookies.get("accessToken"),
+        userId: Cookies.get("userId"),
       },
       // autoConnect: false,
     });
