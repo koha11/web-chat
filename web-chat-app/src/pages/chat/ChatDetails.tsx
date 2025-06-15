@@ -4,9 +4,15 @@ import { useParams } from "react-router-dom";
 import { SingleMsg } from "../../components/SingleMsg";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import { Socket } from "socket.io-client";
+import { IMessage } from "../../interfaces/message.interface";
 
-const ChatDetails = ({ chatId }: { chatId: string }) => {
-  // const [chatDetails, setChatDetails] = useState<ChatDetailsProps>();
+const ChatDetails = ({
+  chatId,
+}: {
+  chatId: string;
+  messages: IMessage[];
+  userId: string;
+}) => {
   const [msgList, setMsgList] = useState<[msgObject]>();
   const [isScrollBottom, setIsScrollBottom] = useState(false);
   const [msgBody, setMsgBody] = useState("");

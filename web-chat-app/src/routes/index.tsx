@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Loading from "../components/ui/loading";
 import MainLayout from "../layouts/MainLayout";
 import PrivateRoute from "./privateRoute";
@@ -59,16 +59,23 @@ const router = createBrowserRouter([
       },
       {
         element: <MainLayout />,
-        path: "/m",
         children: [
           {
-            path: ":id",
+            path: "/m",
             element: (
               <Suspense fallback={<Loading></Loading>}>
                 <Chat />
               </Suspense>
             ),
-          },          
+          },
+          {
+            path: "/m/:id",
+            element: (
+              <Suspense fallback={<Loading></Loading>}>
+                <Chat />
+              </Suspense>
+            ),
+          },
         ],
       },
     ],

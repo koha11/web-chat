@@ -10,12 +10,14 @@ import { listenReceiveMessage } from "../../services/messageService";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
+import ChatIndex from "./ChatIndex";
 
 const Chat = () => {
-  const { chatId } = useParams();
+  const { id } = useParams();
 
   const [chatList, setChatList] = useState<IChat[]>([]);
   const [userId, setUserId] = useState("");
+  // const [chatId, setChatId] = useState<string | undefined>(id);
 
   const socket = WebSocketConnection.getConnection();
 
@@ -40,7 +42,15 @@ const Chat = () => {
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList chatList={chatList} userId={userId}></ChatList>
-        <ChatDetails chatId={chatId ?? ""}></ChatDetails>
+        {id == null ? (
+          <ChatIndex></ChatIndex>
+        ) : (
+          <ChatDetails
+            chatId={id ?? ""}
+            messages={[]}
+            userId={userId}
+          ></ChatDetails>
+        )}
       </div>
     </div>
   );
