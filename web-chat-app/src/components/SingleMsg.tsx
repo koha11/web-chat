@@ -1,16 +1,19 @@
 import { MoreVertical, Reply, Share, Share2, SmileIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { MyTooltip } from "./ui/myTooltip";
 
 const SingleMsg = ({
   body,
   isLongGap,
   isSentMsg,
   avatar,
+  sendTime,
 }: {
   isSentMsg: boolean;
   body: string;
   avatar: string;
   isLongGap: boolean;
+  sendTime: string;
 }) => {
   return (
     <div className={`flex flex-col gap-2 px-2 mt-4`}>
@@ -34,9 +37,12 @@ const SingleMsg = ({
           ></div>
         )}
 
-        <span className="py-1 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
-          {body}
-        </span>
+        {MyTooltip(
+          <span className="py-1 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
+            {body}
+          </span>,
+          sendTime
+        )}
 
         {!isSentMsg && (
           <div className="">

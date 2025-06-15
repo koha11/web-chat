@@ -61,7 +61,6 @@ const Chat = () => {
   if (chatList == null) return <Loading></Loading>;
 
   if (id != null && currChat == null) return <Loading></Loading>;
-  
 
   // HANLDERs
   const handleSendMessage = (msg: IMessage, chatId: string) => {

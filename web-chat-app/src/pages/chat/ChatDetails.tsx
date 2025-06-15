@@ -12,6 +12,8 @@ import { MoreHorizontal, Phone, Video } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
+import { MyTooltip } from "../../components/ui/myTooltip";
+import { displaySendMsgTime } from "../../utils/messageTime.helper";
 
 const ChatDetails = ({
   chat,
@@ -102,34 +104,6 @@ const ChatDetails = ({
 
       <div className="container h-[85%] overflow-y-scroll flex flex-col text-[0.9rem] py-4">
         {messages?.map((msg) => {
-          const timeSpan = new Date(msg.createdAt ?? "");
-
-          let timeString = "";
-
-          // Hiệu giữa thời gian hiện tại với thời gian của tin nhắn
-          const diffTime = new Date().getTime() - timeSpan.getTime();
-
-          // Nếu tin nhắn được nhắn trong ngày
-          if (timeSpan.getDay() == new Date().getDay())
-            timeString = timeSpan.toLocaleTimeString("vi-VN").slice(0, 5);
-          // Nếu tin nhắn được nhắn trong vòng 7 ngày đổ lại
-          else if (diffTime / (1000 * 60 * 60 * 24) <= 7) {
-            timeString = timeSpan.toLocaleTimeString("vi-VN", {
-              weekday: "short",
-            });
-
-            timeString = timeString.slice(0, 5).concat(timeString.slice(8, 13));
-
-            // Mặc định (tin nhắn xa hơn 7 ngày)
-          } else {
-            timeString = timeSpan.toLocaleTimeString("vi-VN", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-            });
-            timeString = timeString.slice(0, 5).concat(timeString.slice(8));
-          }
-
           // Dưới 20 phút thì ko cần hiện thời gian
           // const hasTimeSpan =
           //   lastMsgTime.current == null
@@ -165,6 +139,7 @@ const ChatDetails = ({
                   (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
                   ""
                 }
+                sendTime={displaySendMsgTime(new Date(msg.createdAt ?? ""))}
               ></SingleMsg>
             </>
           );
