@@ -93,30 +93,6 @@ const ChatLayout = () => {
             ))}
             <div>{message}</div>
           </nav>
-
-          {/* <nav className="h-[5%] flex">
-            <NavLink
-              to={'/m'}
-              className={({ isActive }) =>
-                isActive
-                  ? 'flex justify-center items-center flex-1 bg-gray-400'
-                  : 'flex justify-center items-center flex-1 hover:bg-gray-200'
-              }
-            >
-              <i className="bx bxs-message-dots text-2xl"></i>
-            </NavLink>
-
-            <NavLink
-              to={'/contact-list'}
-              className={({ isActive }) =>
-                isActive
-                  ? 'flex justify-center items-center flex-1 bg-gray-400'
-                  : 'flex justify-center items-center flex-1 hover:bg-gray-200'
-              }
-            >
-              <i className="bx bxs-contact text-2xl"></i>
-            </NavLink>
-          </nav> */}
         </section>
         <Outlet />
       </div>
