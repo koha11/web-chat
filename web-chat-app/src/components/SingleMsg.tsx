@@ -1,3 +1,6 @@
+import { MoreVertical, Reply, Share, Share2, SmileIcon } from "lucide-react";
+import { Button } from "./ui/button";
+
 const SingleMsg = ({
   body,
   isLongGap,
@@ -9,44 +12,48 @@ const SingleMsg = ({
   avatar: string;
   isLongGap: boolean;
 }) => {
-  // Nếu là tin nhắn gửi đi
-  if (isSentMsg == true)
-    return (
+  return (
+    <div className={`flex flex-col gap-2 px-2 mt-4`}>
       <div
-        className={
-          isLongGap
-            ? 'single-msg sent-msg justify-end flex items-center gap-2 mt-4'
-            : 'single-msg sent-msg justify-end flex items-center gap-2 mt-[0.125rem]'
-        }
+        className={`flex items-center gap-2 ${
+          isSentMsg ? "justify-end" : "justify-baseline"
+        }`}
       >
+        {isSentMsg && (
+          <div className="">
+            <Button variant="link" className="hover:opacity-80 cursor-pointer">
+              <MoreVertical></MoreVertical>
+            </Button>
+          </div>
+        )}
+
+        {!isSentMsg && (
+          <div
+            className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
+            style={{ backgroundImage: `url(${avatar})` }}
+          ></div>
+        )}
+
         <span className="py-1 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
           {body}
         </span>
-        {/* <div
-          className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-          style={{ backgroundImage: `url(${avatar})` }}
-        ></div> */}
+
+        {!isSentMsg && (
+          <div className="">
+            <Button variant="link" className="hover:opacity-80 cursor-pointer">
+              <SmileIcon></SmileIcon>
+            </Button>
+            <Button variant="link" className="hover:opacity-80 cursor-pointer">
+              <Reply></Reply>
+            </Button>
+            <Button variant="link" className="hover:opacity-80 cursor-pointer">
+              <MoreVertical></MoreVertical>
+            </Button>
+          </div>
+        )}
       </div>
-    );
-  // Nếu là tin nhắn nhận đến
-  else
-    return (
-      <div
-        className={
-          isLongGap
-            ? 'single-msg receiver-msg justify-baseline flex items-center gap-2 mt-4'
-            : 'single-msg receiver-msg justify-baseline flex items-center gap-2 mt-[0.125rem]'
-        }
-      >
-        <div
-          className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-          style={{ backgroundImage: `url(${avatar})` }}
-        ></div>
-        <span className="py-1 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
-          {body}
-        </span>
-      </div>
-    );
+    </div>
+  );
 };
 
 export default SingleMsg;
