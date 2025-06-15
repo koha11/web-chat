@@ -51,20 +51,21 @@ const Chat = () => {
 
       setCurrChat(myCurrChat);
 
-      console.log(chatList);
-
       if (typeof myCurrChat!.messages == "object")
         setMessages(myCurrChat!.messages);
+
+      console.log(chatList);
     }
   }, [id, chatList]);
 
   if (chatList == null) return <Loading></Loading>;
 
   if (id != null && currChat == null) return <Loading></Loading>;
+  
 
   // HANLDERs
-  const handleSendMessage = (msg: IMessage) => {
-    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg);
+  const handleSendMessage = (msg: IMessage, chatId: string) => {
+    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg, chatId);
   };
 
   return (

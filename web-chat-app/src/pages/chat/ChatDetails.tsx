@@ -11,6 +11,7 @@ import { isArray } from "../../utils/checkType.helper";
 import { MoreHorizontal, Phone, Video } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
+import Loading from "../../components/ui/loading";
 
 const ChatDetails = ({
   chat,
@@ -23,7 +24,7 @@ const ChatDetails = ({
   userId: string;
   chat: IChat;
   setChat: (chat: IChat) => void;
-  handleSendMessage: (msg: IMessage) => void;
+  handleSendMessage: (msg: IMessage, chatId: string) => void;
 }) => {
   // states
   const [receivers, setReceivers] = useState<IUser[]>([]);
@@ -48,7 +49,7 @@ const ChatDetails = ({
       setReceivers(chat.users.filter((user) => user._id != userId));
       setSender(chat.users.find((user) => user._id == userId));
     }
-  }, []);
+  }, [chat]);
 
   // HANDLERs
 
@@ -63,6 +64,8 @@ const ChatDetails = ({
   //   setMsgBody(e.currentTarget.value);
   //   socketRef.current?.emit("isTyping", chat._id);
   // };
+
+  if (sender == null || receivers.length == 0) return <Loading></Loading>;
 
   return (
     <section
@@ -172,7 +175,7 @@ const ChatDetails = ({
         <form
           className="relative w-full flex items-center justify-between"
           onSubmit={handleSubmit((msg: IMessage) => {
-            handleSendMessage(msg);
+            handleSendMessage(msg, chat._id);
             resetField("msgBody");
           })}
         >
