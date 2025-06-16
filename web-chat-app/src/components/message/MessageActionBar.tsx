@@ -10,6 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useState } from "react";
 import MyConfirmDialog from "../ui/my-confirm-dialog";
+import MyRadioDialog from "../ui/my-radio-dialog";
 
 const MessageActions = ({
   isOpen,
@@ -21,6 +22,7 @@ const MessageActions = ({
   isSentMsg: boolean;
 }) => {
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
+  const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -50,15 +52,18 @@ const MessageActions = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" className="p-2">
           {isSentMsg ? (
-            <DropdownMenuItem className="cursor-pointer font-bold">
-              Restore
+            <DropdownMenuItem
+              className="cursor-pointer font-bold"
+              onClick={() => setRadioDialogOpen(true)}
+            >
+              Unsend
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
               className="cursor-pointer font-bold"
               onClick={() => setConfirmDialogOpen(true)}
             >
-              Delete
+              Remove
             </DropdownMenuItem>
           )}
           <DropdownMenuItem className="cursor-pointer font-bold">
@@ -73,11 +78,31 @@ const MessageActions = ({
         </DropdownMenuContent>
       </DropdownMenu>
       <MyConfirmDialog
-        title="Delete only for you"
+        title="Remove only for you"
         content="This message will be removed from your device, but will still be visible to other members of the chat."
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
       ></MyConfirmDialog>
+      <MyRadioDialog
+        isOpen={isRadioDialogOpen}
+        setOpen={() => setRadioDialogOpen(!isRadioDialogOpen)}
+        title="Who do you want to unsend this message?"
+        onSubmit={() => {}}
+        options={[
+          {
+            value: true,
+            title: "Unsend for everyone",
+            des: `This message will be unsent with everyone in the chat. 
+          Others may have viewed or transferred that message. 
+          Messages that have been unsent may still be reported.`,
+          },
+          {
+            value: false,
+            title: "Unsend for you",
+            des: `This message will be removed from your device, but will still be visible to other members of the chat.`,
+          },
+        ]}
+      ></MyRadioDialog>
     </>
   );
 };

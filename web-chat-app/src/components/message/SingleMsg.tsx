@@ -23,7 +23,9 @@ const SingleMsg = ({
   const [isOpen, setOpen] = useState<boolean>(false);
 
   return (
-    <div className={`flex flex-col gap-2 px-2 single-msg`}>
+    <div
+      className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
+    >
       <div
         className={`flex items-center gap-2 ${
           isSentMsg ? "justify-end" : "justify-baseline"

@@ -28,7 +28,7 @@ const MyConfirmDialog = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription className="py-2">{content}</DialogDescription>
+            <DialogDescription className="py-4">{content}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
