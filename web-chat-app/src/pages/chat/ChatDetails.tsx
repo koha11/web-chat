@@ -12,7 +12,7 @@ import { MoreHorizontal, Phone, Video } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
-import { MyTooltip } from "../../components/ui/myTooltip";
+import { MyTooltip } from "../../components/ui/my-tooltip";
 import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messageGroup.interface";

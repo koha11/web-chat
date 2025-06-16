@@ -1,6 +1,6 @@
 import { MoreVertical, Reply, Share, Share2, SmileIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { MyTooltip } from "../ui/myTooltip";
+import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
 
@@ -20,6 +20,8 @@ const SingleMsg = ({
   sendTime: string;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
+  const [isOpen, setOpen] = useState<boolean>(false);
+
   return (
     <div className={`flex flex-col gap-2 px-2 single-msg`}>
       <div
@@ -33,7 +35,13 @@ const SingleMsg = ({
         {isSentMsg && <div className="w-8 h-8"></div>}
 
         {/* Hien action cho nguoi gui  */}
-        {isSentMsg && isHover && <MessageActions></MessageActions>}
+        {isSentMsg && (isHover || isOpen) && (
+          <MessageActions
+            isSentMsg={isSentMsg}
+            isOpen={isOpen}
+            setOpen={() => setOpen(!isOpen)}
+          ></MessageActions>
+        )}
 
         {/* Hien avatar cho nguoi nhan  */}
         {!isSentMsg &&
@@ -47,7 +55,7 @@ const SingleMsg = ({
           )}
 
         {/* An avatar cho nguoi nhan  */}
-        {msgSenderAvatar == "" && (
+        {!isSentMsg && msgSenderAvatar == "" && (
           <div
             className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
             style={{ backgroundImage: `url(${msgSenderAvatar})` }}
@@ -63,7 +71,13 @@ const SingleMsg = ({
         )}
 
         {/* Hien action cho nguoi nhan  */}
-        {!isSentMsg && isHover && <MessageActions></MessageActions>}
+        {!isSentMsg && (isHover || isOpen) && (
+          <MessageActions
+            isOpen={isOpen}
+            setOpen={() => setOpen(!isOpen)}
+            isSentMsg={isSentMsg}
+          ></MessageActions>
+        )}
       </div>
 
       {/* seen avatar  */}
