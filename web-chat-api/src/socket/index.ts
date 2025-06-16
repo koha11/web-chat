@@ -17,26 +17,25 @@ export const connectSocketIo = (server: Server) => {
     }
 
     const user = authService.verifyToken(token);
-    console.log(user);
 
     socket.data.user = user;
     next();
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
     const user = socket.data.user as ITokenPayload;
 
     console.log("New client connected:", user.username);
 
-    userService.setOnlineStatus(user.id.toString());
+    await userService.setOnlineStatus(user.id.toString());
 
     chatService.fetchChatListEvent(io, socket.data.user.id);
 
     messageService.listenSendMessage(socket, io);
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       console.log("Client disconnected:", user.username);
-      userService.setOfflineStatus(user.id.toString());
+      await userService.setOfflineStatus(user.id.toString());
     });
   });
 };

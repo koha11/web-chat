@@ -69,6 +69,11 @@ const MessageActions = ({
           <DropdownMenuItem className="cursor-pointer font-bold">
             Forward
           </DropdownMenuItem>
+          {isSentMsg && (
+            <DropdownMenuItem className="cursor-pointer font-bold">
+              Edit
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="cursor-pointer font-bold">
             Pin
           </DropdownMenuItem>
@@ -77,6 +82,7 @@ const MessageActions = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
       <MyConfirmDialog
         title="Remove only for you"
         content="This message will be removed from your device, but will still be visible to other members of the chat."

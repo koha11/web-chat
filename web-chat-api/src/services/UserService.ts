@@ -1,16 +1,20 @@
 import User from "../models/User.model";
 
 class UserService {
-  setOnlineStatus(userId: string) {
-    User.findByIdAndUpdate(userId, {
+  async setOnlineStatus(userId: string) {
+    await User.findByIdAndUpdate(userId, {
       isOnline: true,
     });
   }
 
-  setOfflineStatus(userId: string) {
-    User.findByIdAndUpdate(userId, {
+  async setOfflineStatus(userId: string) {
+    await User.findByIdAndUpdate(userId, {
       isOnline: false,
       lastLogined: new Date().toISOString(),
+    });
+
+    User.findById(userId).then((data) => {
+      console.log(data);
     });
   }
 }
