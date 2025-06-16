@@ -50,7 +50,7 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
           {lastMsg && lastMsg.user == userId && "You:"}{" "}
           {lastMsg && lastMsg.msgBody} {lastMsg && <Dot size={12}></Dot>}
           {lastMsg && getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
-        </div>{" "}
+        </div>
       </div>
       {lastMsg && lastMsg.user != userId && (
         <div

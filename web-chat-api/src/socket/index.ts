@@ -33,6 +33,8 @@ export const connectSocketIo = (server: Server) => {
 
     messageService.listenSendMessage(socket, io);
 
+    chatService.listenFetchChatListRequest(socket, io)
+
     socket.on("disconnect", async () => {
       console.log("Client disconnected:", user.username);
       await userService.setOfflineStatus(user.id.toString());

@@ -33,19 +33,19 @@ export const getDisplaySendMsgTime = (sendTime: Date) => {
 export const getDisplayTimeDiff = (sendTime: Date) => {
   const diffTime = new Date().getTime() - sendTime.getTime();
 
-  const minutes = Math.floor(diffTime / (1000 * 60));
+  const minutes = Math.round(diffTime / (1000 * 60));
 
   if (minutes < 60) return minutes + " minutes";
 
-  const hours = Math.floor(diffTime / (1000 * 60 * 60));
+  const hours = Math.round(diffTime / (1000 * 60 * 60));
 
   if (hours < 24) return hours + " hours";
 
-  const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const days = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-  if (days < 7) return hours + " Days";
+  if (days < 7) return hours + " days";
 
-  const weeks = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const weeks = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
   return weeks + " Weeks";
 };
@@ -59,15 +59,15 @@ export const getTimeDiff = (
 
   switch (option) {
     case TimeTypeOption.SECONDS:
-      return Math.floor(diffTime / 1000);
+      return Math.round(diffTime / 1000);
     case TimeTypeOption.MINUTES:
-      return Math.floor(diffTime / (1000 * 60));
+      return Math.round(diffTime / (1000 * 60));
     case TimeTypeOption.HOURS:
-      return Math.floor(diffTime / (1000 * 60 * 60));
+      return Math.round(diffTime / (1000 * 60 * 60));
     case TimeTypeOption.DAYS:
-      return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return Math.round(diffTime / (1000 * 60 * 60 * 24));
     default:
-      return Math.floor(diffTime / 1000);
+      return Math.round(diffTime / 1000);
   }
 };
 
