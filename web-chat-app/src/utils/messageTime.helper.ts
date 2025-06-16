@@ -49,3 +49,34 @@ export const getDisplayTimeDiff = (sendTime: Date) => {
 
   return weeks + " Weeks";
 };
+
+export const getTimeDiff = (
+  firstTime: Date,
+  secondTime: Date,
+  option: TimeTypeOption
+) => {
+  const diffTime = firstTime.getTime() - secondTime.getTime();
+
+  switch (option) {
+    case TimeTypeOption.SECONDS:
+      return Math.floor(diffTime / 1000);
+    case TimeTypeOption.MINUTES:
+      return Math.floor(diffTime / (1000 * 60));
+    case TimeTypeOption.HOURS:
+      return Math.floor(diffTime / (1000 * 60 * 60));
+    case TimeTypeOption.DAYS:
+      return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    default:
+      return Math.floor(diffTime / 1000);
+  }
+};
+
+export enum TimeTypeOption {
+  SECONDS,
+  MINUTES,
+  HOURS,
+  DAYS,
+  WEEKS,
+  MONTHS,
+  YEARS,
+}

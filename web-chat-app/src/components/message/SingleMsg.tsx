@@ -1,6 +1,6 @@
 import { MoreVertical, Reply, Share, Share2, SmileIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { MyTooltip } from "./ui/myTooltip";
+import { Button } from "../ui/button";
+import { MyTooltip } from "../ui/myTooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
 
@@ -8,29 +8,30 @@ const SingleMsg = ({
   body,
   isLongGap,
   isSentMsg,
-  avatar,
+  msgSenderAvatar,
   sendTime,
   fullname,
 }: {
   isSentMsg: boolean;
   fullname: string;
   body: string;
-  avatar: string;
+  msgSenderAvatar: string;
   isLongGap: boolean;
   sendTime: string;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   return (
-    <div
-      className={`flex flex-col gap-2 px-2 mt-4 single-msg`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
+    <div className={`flex flex-col gap-2 px-2 single-msg`}>
       <div
         className={`flex items-center gap-2 ${
           isSentMsg ? "justify-end" : "justify-baseline"
         }`}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
+        {/* The gia de co dinh chieu cao  */}
+        {isSentMsg && <div className="w-8 h-8"></div>}
+
         {/* Hien action cho nguoi gui  */}
         {isSentMsg && isHover && <MessageActions></MessageActions>}
 
@@ -39,7 +40,11 @@ const SingleMsg = ({
           MyTooltip(
             <div
               className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-              style={{ backgroundImage: `url(${avatar})` }}
+              style={
+                msgSenderAvatar != ""
+                  ? { backgroundImage: `url(${msgSenderAvatar})` }
+                  : {}
+              }
             ></div>,
             fullname
           )}
@@ -58,14 +63,14 @@ const SingleMsg = ({
 
       {/* seen avatar  */}
       <div className="flex items-center justify-end">
-        {isSentMsg &&
+        {/* {isSentMsg &&
           MyTooltip(
             <div
               className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
               style={{ backgroundImage: `url(${avatar})` }}
             ></div>,
             fullname
-          )}
+          )} */}
       </div>
     </div>
   );

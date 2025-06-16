@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { getData, postData } from "../../services/api";
 import { Link, useParams } from "react-router-dom";
-import SingleMsg from "../../components/SingleMsg";
+import SingleMsg from "../../components/message/SingleMsg";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import { Socket } from "socket.io-client";
 import { IMessage } from "../../interfaces/message.interface";
@@ -14,6 +14,9 @@ import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
 import { MyTooltip } from "../../components/ui/myTooltip";
 import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
+import { GroupMsg } from "../../components/message/MsgGroup";
+import IMessageGroup from "../../interfaces/messageGroup.interface";
+import { send } from "process";
 
 const ChatDetails = ({
   chat,
@@ -24,7 +27,7 @@ const ChatDetails = ({
   msgsContainerRef,
   setScrollBottom,
 }: {
-  messages: IMessage[];
+  messages: IMessageGroup[];
   userId: string;
   chat: IChat;
   setChat: (chat: IChat) => void;
@@ -102,35 +105,16 @@ const ChatDetails = ({
         ref={msgsContainerRef}
       >
         {messages?.map((msg) => {
-          // Dưới 20 phút thì ko cần hiện thời gian
-          // const hasTimeSpan =
-          //   lastMsgTime.current == null
-          //     ? true
-          //     : (timeSpan.getTime() - lastMsgTime.current?.getTime()) /
-          //         (1000 * 60) >
-          //       20;
-
-          // const isLongGap =
-          //   lastMsgTime.current == null
-          //     ? true
-          //     : (timeSpan.getTime() - lastMsgTime.current?.getTime()) / 1000 >
-          //       60;
-
-          // lastMsgTime.current = timeSpan;
+          console.log(msg);
 
           return (
-            <SingleMsg
-              key={msg._id}
-              isSentMsg={msg.user == userId}
-              isLongGap={true}
-              body={msg.msgBody}
-              fullname={receivers[0].fullname}
-              avatar={
-                (msg.user == userId ? receivers[0].avatar : sender?.avatar) ??
-                ""
-              }
-              sendTime={getDisplaySendMsgTime(new Date(msg.createdAt ?? ""))}
-            ></SingleMsg>
+            <GroupMsg
+              key={msg.timeString}
+              messages={msg.messages}
+              timeString={msg.timeString}
+              receivers={receivers}
+              sender={sender}
+            ></GroupMsg>
           );
         })}
       </div>

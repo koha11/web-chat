@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Link, Outlet, useParams } from "react-router-dom";
-import Cookies from "js-cookie";
-import { Contact, LogOut, User } from "lucide-react";
-import ChatRow from "../../components/ChatRow";
+import { useParams } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import { fetchChatListEvent } from "../../services/chatService";
 import { listenReceiveMessage } from "../../services/messageService";
@@ -15,14 +12,15 @@ import { IMessage } from "../../interfaces/message.interface";
 import Loading from "../../components/ui/loading";
 import MY_SOCKET_EVENTS from "../../constants/MY_SOCKET_EVENTS";
 import SocketEvent from "../../enums/SocketEvent.enum";
+import IMessageGroup from "../../interfaces/messageGroup.interface";
+import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 
 const Chat = () => {
   const { id } = useParams();
   const [chatList, setChatList] = useState<IChat[] | undefined>();
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [messages, setMessages] = useState<IMessageGroup[]>([]);
   const [currChat, setCurrChat] = useState<IChat | undefined>();
   const [isScrollBottom, setScrollBottom] = useState(false);
-
   const [userId, setUserId] = useState("");
 
   const socket = WebSocketConnection.getConnection();
@@ -53,9 +51,13 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
 
-      listenReceiveMessage(socket, (msg: IMessage) => {
-        setMessages((messages) => [...messages, msg]);
-      });
+      listenReceiveMessage(
+        socket,
+        (msgGroup: IMessageGroup) => {
+          setMessages((messages) => [...messages, msgGroup]);
+        },
+        messages[messages.length - 1] ?? undefined
+      );
     });
 
     return () => {
@@ -69,8 +71,34 @@ const Chat = () => {
 
       setCurrChat(myCurrChat);
 
-      if (typeof myCurrChat!.messages == "object")
-        setMessages(myCurrChat!.messages);
+      if (typeof myCurrChat!.messages == "object") {
+
+        // Group cac tin nhan theo thoi gian gui
+        const grouped = myCurrChat!.messages.reduce<IMessageGroup[]>(
+          (acc, msg) => {
+            const time = new Date(msg.createdAt!);
+            const last = acc[acc.length - 1];
+
+            if (
+              last &&
+              getTimeDiff(
+                time,
+                new Date(last.timeString),
+                TimeTypeOption.MINUTES
+              ) < 20
+            ) {
+              last.messages.push(msg);
+            } else {
+              acc.push({ timeString: time.toISOString(), messages: [msg] });
+            }
+
+            return acc;
+          },
+          []
+        );
+
+        setMessages(grouped);
+      }
 
       console.log(chatList);
 

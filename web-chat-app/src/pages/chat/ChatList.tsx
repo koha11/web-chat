@@ -1,10 +1,10 @@
 import { User, LogOut, Contact } from "lucide-react";
 import { Link } from "react-router-dom";
-import ChatRow from "../../components/ChatRow";
 import { IChat } from "../../interfaces/chat.interface";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import Loading from "../../components/ui/loading";
+import ChatRow from "../../components/chat/ChatRow";
 
 const ChatList = ({
   chatList,

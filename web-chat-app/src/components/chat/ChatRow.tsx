@@ -1,11 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { IChat } from "../interfaces/chat.interface";
-import { IUser } from "../interfaces/user.interface";
-import { IMessage } from "../interfaces/message.interface";
 import { useEffect, useState } from "react";
-import Loading from "./ui/loading";
-import { getDisplayTimeDiff } from "../utils/messageTime.helper";
 import { Dot } from "lucide-react";
+import { IChat } from "../../interfaces/chat.interface";
+import { IMessage } from "../../interfaces/message.interface";
+import { IUser } from "../../interfaces/user.interface";
+import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
 
 const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
   const [lastMsg, setLastMsg] = useState<IMessage>();

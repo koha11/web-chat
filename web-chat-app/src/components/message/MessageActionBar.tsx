@@ -1,5 +1,5 @@
 import { SmileIcon, Reply, MoreVertical } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 const MessageActions = () => {
   return (
