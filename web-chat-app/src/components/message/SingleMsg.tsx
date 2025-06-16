@@ -37,17 +37,22 @@ const SingleMsg = ({
 
         {/* Hien avatar cho nguoi nhan  */}
         {!isSentMsg &&
+          msgSenderAvatar != "" &&
           MyTooltip(
             <div
               className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-              style={
-                msgSenderAvatar != ""
-                  ? { backgroundImage: `url(${msgSenderAvatar})` }
-                  : {}
-              }
+              style={{ backgroundImage: `url(${msgSenderAvatar})` }}
             ></div>,
             fullname
           )}
+
+        {/* An avatar cho nguoi nhan  */}
+        {msgSenderAvatar == "" && (
+          <div
+            className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
+            style={{ backgroundImage: `url(${msgSenderAvatar})` }}
+          ></div>
+        )}
 
         {/* noi dung tin nhan  */}
         {MyTooltip(

@@ -27,6 +27,7 @@ const Chat = () => {
 
   // useRef
   const msgsContainerRef = useRef<HTMLDivElement>(null);
+  const msgGroupListRef = useRef<IMessageGroup[]>(null);
 
   // HANLDERs
   const handleSendMessage = (msg: IMessage, chatId: string) => {
@@ -51,13 +52,7 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
 
-      listenReceiveMessage(
-        socket,
-        (msgGroup: IMessageGroup) => {
-          setMessages((messages) => [...messages, msgGroup]);
-        },
-        messages[messages.length - 1] ?? undefined
-      );
+      listenReceiveMessage(socket, setMessages);
     });
 
     return () => {
@@ -72,7 +67,6 @@ const Chat = () => {
       setCurrChat(myCurrChat);
 
       if (typeof myCurrChat!.messages == "object") {
-
         // Group cac tin nhan theo thoi gian gui
         const grouped = myCurrChat!.messages.reduce<IMessageGroup[]>(
           (acc, msg) => {
@@ -96,7 +90,7 @@ const Chat = () => {
           },
           []
         );
-
+        msgGroupListRef.current = grouped;
         setMessages(grouped);
       }
 
