@@ -1,6 +1,10 @@
 import { IMessage } from "../../interfaces/message.interface";
 import { IUser } from "../../interfaces/user.interface";
-import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
+import {
+  getDisplaySendMsgTime,
+  getTimeDiff,
+  TimeTypeOption,
+} from "../../utils/messageTime.helper";
 import SingleMsg from "./SingleMsg";
 
 const GroupMsg = ({
@@ -21,6 +25,13 @@ const GroupMsg = ({
       </div>
       {messages.map((msg, index) => {
         const receiver = receivers.find((receiver) => receiver._id == msg.user);
+        const isLongGap =
+          index > 0 &&
+          getTimeDiff(
+            new Date(msg.createdAt!),
+            new Date(messages[index - 1].createdAt!),
+            TimeTypeOption.MINUTES
+          ) > 4;
 
         let msgSenderAvatar;
 
@@ -37,7 +48,7 @@ const GroupMsg = ({
           <SingleMsg
             key={msg._id}
             isSentMsg={msg.user == sender._id}
-            isLongGap={true}
+            isLongGap={isLongGap}
             body={msg.msgBody}
             fullname={receivers[0].fullname}
             msgSenderAvatar={msgSenderAvatar}

@@ -24,7 +24,7 @@ const SingleMsg = ({
 
   return (
     <div
-      className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
+      className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}
     >
       <div
         className={`flex items-center gap-2 ${
