@@ -12,13 +12,37 @@ class MessageService {
 
       const myMsg = await Message.create(msg);
 
-      await Chat.findByIdAndUpdate(chatId, { $push: { messages: myMsg } });
+      Chat.findByIdAndUpdate(chatId, { $push: { messages: myMsg } });
 
       io.emit("receive-message", myMsg);
 
-      chatService.fetchChatListEvent(io, socket.data.user.id);
+      // chatService.fetchChatListEvent(io, socket.data.user.id);
     });
   }
+
+  listenFetchMessagesRequest(socket: Socket, io: Server) {
+    socket.on("fetch-messages-request", (chatId: string) => {
+      this.fetchMessagesEvent(io, chatId);
+    });
+  }
+
+  fetchMessagesEvent = async (io: Server, chatId: string) => {
+    const data = await this.getMessages(chatId);
+
+    io.emit("fetch-messages", data);
+  };
+
+  getMessages = async (chatId: string) => {
+    const chat = await Chat.findById(chatId).populate("messages");
+    const myMsgList = (chat?.messages as IMessage[]) ?? [];
+
+    myMsgList.sort(
+      (a: IMessage, b: IMessage) =>
+        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    );
+
+    return myMsgList;
+  };
 }
 
 const messageService = new MessageService();

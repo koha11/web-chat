@@ -11,18 +11,18 @@ class ChatService {
     });
   }
 
-  getChatList = async (id: string) => {
-    const chatList = await Chat.find({ users: id })
-      .populate("users")
-      .populate("messages");
-
-    return chatList;
-  };
-
   fetchChatListEvent = async (io: Server, id: string) => {
     const data = await this.getChatList(id);
 
     io.emit("fetch-chat-list", data);
+  };
+
+  getChatList = async (id: string) => {
+    const chatList = await Chat.find({ users: id })
+      .populate("users")
+      .sort({ updatedAt: -1 });
+
+    return chatList;
   };
 }
 

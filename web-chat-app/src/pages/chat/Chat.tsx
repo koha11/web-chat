@@ -3,7 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import { fetchChatListEvent } from "../../services/chatService";
-import { listenReceiveMessage } from "../../services/messageService";
+import {
+  fetchMessagesEvent,
+  listenReceiveMessage,
+} from "../../services/messageService";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
@@ -31,7 +34,7 @@ const Chat = () => {
 
   // HANLDERs
   const handleSendMessage = (msg: IMessage, chatId: string) => {
-    socket.emit(MY_SOCKET_EVENTS[SocketEvent.sm], msg, chatId);
+    socket.emit(SocketEvent.sm, msg, chatId);
   };
 
   const handleScrollToBot = () => {
@@ -51,6 +54,7 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
+      fetchMessagesEvent(socket, setMessages);
 
       listenReceiveMessage(socket, setMessages);
     });
@@ -61,38 +65,14 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
+    socket.emit(SocketEvent.fmr, id);
+  }, [id]);
+
+  useEffect(() => {
     if (chatList != null && id != undefined) {
       const myCurrChat = chatList!.find((chat) => chat._id == id);
 
       setCurrChat(myCurrChat);
-
-      if (typeof myCurrChat!.messages == "object") {
-        // Group cac tin nhan theo thoi gian gui
-        const grouped = myCurrChat!.messages.reduce<IMessageGroup[]>(
-          (acc, msg) => {
-            const time = new Date(msg.createdAt!);
-            const last = acc[acc.length - 1];
-
-            if (
-              last &&
-              getTimeDiff(
-                time,
-                new Date(last.timeString),
-                TimeTypeOption.MINUTES
-              ) < 20
-            ) {
-              last.messages.push(msg);
-            } else {
-              acc.push({ timeString: time.toISOString(), messages: [msg] });
-            }
-
-            return acc;
-          },
-          []
-        );
-        msgGroupListRef.current = grouped;
-        setMessages(grouped);
-      }
 
       console.log(chatList);
 
@@ -101,7 +81,7 @@ const Chat = () => {
   }, [id, chatList]);
 
   useEffect(() => {
-    handleScrollToBot();
+    // handleScrollToBot();
   }, [isScrollBottom]);
 
   useEffect(() => {
@@ -110,7 +90,7 @@ const Chat = () => {
 
   // Wait data
 
-  if (chatList == null) return <Loading></Loading>;
+  // if (chatList == null) return <Loading></Loading>;
 
   if (id != null && currChat == null) return <Loading></Loading>;
 

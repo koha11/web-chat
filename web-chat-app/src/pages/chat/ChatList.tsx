@@ -5,12 +5,13 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import Loading from "../../components/ui/loading";
 import ChatRow from "../../components/chat/ChatRow";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const ChatList = ({
   chatList,
   userId,
 }: {
-  chatList: IChat[];
+  chatList: IChat[] | undefined;
   userId: string;
 }) => {
   const [searchValue, setSearchValue] = useState("");
@@ -68,15 +69,23 @@ const ChatList = ({
         id="chat-box-list"
         className="h-[75%] overflow-y-scroll flex flex-col gap-2"
       >
-        {chatList.length == 0 ? (
-          <div className="flex items-center justify-center">
-            <Loading></Loading>
-          </div>
-        ) : (
-          chatList.map((chat: IChat) => (
-            <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
-          ))
-        )}
+        {chatList == undefined
+          ? [1, 2, 3, 4, 5, 6].map(() => (
+              <div
+                className={
+                  "chat-box flex w-full items-center h-18 p-4 rounded-2xl"
+                }
+              >
+                <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
+                <div className="flex-auto px-4 flex flex-col items-baseline space-y-2">
+                  <Skeleton className="h-4 w-[100px]"></Skeleton>
+                  <Skeleton className="h-4 w-[160px]"></Skeleton>
+                </div>
+              </div>
+            ))
+          : chatList.map((chat: IChat) => (
+              <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
+            ))}
       </nav>
     </section>
   );

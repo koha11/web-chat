@@ -31,9 +31,9 @@ export const connectSocketIo = (server: Server) => {
 
     chatService.fetchChatListEvent(io, socket.data.user.id);
 
-    messageService.listenSendMessage(socket, io);
+    messageService.listenFetchMessagesRequest(socket, io);
 
-    chatService.listenFetchChatListRequest(socket, io)
+    messageService.listenSendMessage(socket, io);
 
     socket.on("disconnect", async () => {
       console.log("Client disconnected:", user.username);

@@ -12,10 +12,6 @@ class UserService {
       isOnline: false,
       lastLogined: new Date().toISOString(),
     });
-
-    User.findById(userId).then((data) => {
-      console.log(data);
-    });
   }
 }
 

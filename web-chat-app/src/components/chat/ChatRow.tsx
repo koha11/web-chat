@@ -17,7 +17,7 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
       if (typeof chat.messages == "object" && myLastMsg != null) {
         setLastMsg(() => myLastMsg ?? undefined);
       }
-      console.log(myLastMsg);
+      // console.log(myLastMsg);
 
       // if (myLastMsg == undefined) {
       //   setLastUser({});

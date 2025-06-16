@@ -6,36 +6,63 @@ import IMessageGroup from "../interfaces/messageGroup.interface";
 import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
 
 export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
-  socket.on(MY_SOCKET_EVENTS[SocketEvent.rm], (msg: IMessage) => {
+  socket.on(SocketEvent.rm, (msg: IMessage) => {
     setMessages((msgGroupList: IMessageGroup[]) => {
       const time = new Date(msg.createdAt ?? "");
-      const lastMsgGroup = msgGroupList[msgGroupList.length - 1] ?? undefined;
+      const firstMsgGroup = msgGroupList[0] ?? undefined;
 
       if (
-        lastMsgGroup &&
+        firstMsgGroup &&
         getTimeDiff(
           time,
-          new Date(lastMsgGroup.timeString),
+          new Date(firstMsgGroup.timeString),
           TimeTypeOption.MINUTES
         ) < 20
       ) {
-        // Clone the messages of the last group
-        const updatedLastGroup = {
-          ...lastMsgGroup,
-          messages: [...lastMsgGroup.messages, msg],
+        // Clone the messages of the first group
+        const updatedFirstGroup = {
+          ...firstMsgGroup,
+          messages: [msg, ...firstMsgGroup.messages],
         };
 
+        console.log([updatedFirstGroup, ...msgGroupList.slice(1)]);
+
         // Clone the whole array, replacing the last item
-        return [...msgGroupList.slice(0, -1), updatedLastGroup];
+        return [updatedFirstGroup, ...msgGroupList.slice(1)];
       } else {
         // Add a new group
         return [
-          ...msgGroupList,
           { timeString: time.toISOString(), messages: [msg] },
+          ...msgGroupList,
         ];
       }
     });
 
     console.log("toi da nhan dc " + msg.msgBody);
+  });
+};
+
+export const fetchMessagesEvent = (socket: Socket, setMessages: Function) => {
+  socket.on(SocketEvent.fm, (messages: IMessage[]) => {
+    // console.log(messages);
+
+    const grouped = messages.reduce<IMessageGroup[]>((acc, msg) => {
+      const time = new Date(msg.createdAt!);
+      const last = acc[acc.length - 1];
+
+      if (
+        last &&
+        getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
+          20
+      ) {
+        last.messages.push(msg);
+      } else {
+        acc.push({ timeString: time.toISOString(), messages: [msg] });
+      }
+
+      return acc;
+    }, []);
+
+    setMessages(grouped);
   });
 };

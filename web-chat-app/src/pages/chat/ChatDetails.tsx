@@ -101,11 +101,11 @@ const ChatDetails = ({
       </div>
 
       <div
-        className="container h-[85%] overflow-y-scroll flex flex-col text-[0.9rem] py-4"
+        className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
         ref={msgsContainerRef}
       >
         {messages?.map((msg) => {
-          console.log(msg);
+          // console.log(msg);
 
           return (
             <GroupMsg
