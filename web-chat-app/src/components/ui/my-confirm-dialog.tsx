@@ -15,17 +15,23 @@ const MyConfirmDialog = ({
   setOpen,
   content,
   title,
+  onSubmit,
 }: {
   title: string;
   content: string;
   isOpen: boolean;
   setOpen: () => void;
+  onSubmit: () => void;
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
-      <form>
-        {/* <DialogTrigger>Open</DialogTrigger> */}
-        <DialogContent>
+      <DialogContent>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription className="py-4">{content}</DialogDescription>
@@ -36,8 +42,8 @@ const MyConfirmDialog = ({
             </DialogClose>
             <Button type="submit">Save changes</Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

@@ -76,7 +76,7 @@ const MyRadioDialog = ({
               </RadioGroup>
             )}
           ></Controller>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <DialogClose asChild>
               <Button variant="outline" className="cursor-pointer">
                 Cancel

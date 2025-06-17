@@ -58,11 +58,6 @@ const ChatDetails = ({
 
   // HANDLERs
 
-  // const handleOnTyping = (e: FormEvent<HTMLInputElement>) => {
-  //   setMsgBody(e.currentTarget.value);
-  //   socketRef.current?.emit("isTyping", chat._id);
-  // };
-
   return (
     <section
       className="w-[75%] h-full p-4 bg-white rounded-2xl"

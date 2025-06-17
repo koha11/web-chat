@@ -21,11 +21,13 @@ const MessageActions = ({
   setOpen,
   isSentMsg,
   msgId,
+  isUnsendMsg,
 }: {
   isOpen: boolean;
   setOpen: () => void;
   isSentMsg: boolean;
   msgId: string;
+  isUnsendMsg: boolean;
 }) => {
   const { id } = useParams();
 
@@ -37,8 +39,6 @@ const MessageActions = ({
   // Handlers
   const handleUnsentMsg = (isUnsendForEveryone: boolean) => {
     socket.emit(SocketEvent.um, msgId, id, isUnsendForEveryone);
-    toast.success("Unsend successful");
-    setRadioDialogOpen(false);
   };
 
   return (
@@ -48,14 +48,18 @@ const MessageActions = ({
       <Button
         size={"sm"}
         variant="link"
-        className="hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full"
+        className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
+          isUnsendMsg && "hidden"
+        }`}
       >
         <SmileIcon></SmileIcon>
       </Button>
       <Button
         size={"sm"}
         variant="link"
-        className="hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full"
+        className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
+          isUnsendMsg && "hidden"
+        }`}
       >
         <Reply></Reply>
       </Button>
@@ -70,33 +74,47 @@ const MessageActions = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" className="p-2">
-          {isSentMsg ? (
-            <DropdownMenuItem
-              className="cursor-pointer font-bold"
-              onClick={() => setRadioDialogOpen(true)}
-            >
-              Unsend
-            </DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem
-              className="cursor-pointer font-bold"
-              onClick={() => setConfirmDialogOpen(true)}
-            >
-              Remove
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem className="cursor-pointer font-bold">
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${
+              isSentMsg && !isUnsendMsg && "hidden"
+            }`}
+            onClick={() => setConfirmDialogOpen(true)}
+          >
+            Remove
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${
+              (!isSentMsg || isUnsendMsg) && "hidden"
+            }`}
+            onClick={() => setRadioDialogOpen(true)}
+          >
+            Unsend
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${isUnsendMsg && "hidden"}`}
+          >
             Forward
           </DropdownMenuItem>
-          {isSentMsg && (
-            <DropdownMenuItem className="cursor-pointer font-bold">
-              Edit
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem className="cursor-pointer font-bold">
+
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${
+              (!isSentMsg || isUnsendMsg) && "hidden"
+            }`}
+          >
+            Edit
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${isUnsendMsg && "hidden"}`}
+          >
             Pin
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer font-bold">
+
+          <DropdownMenuItem
+            className={`cursor-pointer font-bold ${isSentMsg && "hidden"}`}
+          >
             Report
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -107,13 +125,22 @@ const MessageActions = ({
         content="This message will be removed from your device, but will still be visible to other members of the chat."
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
+        onSubmit={() => {
+          handleUnsentMsg(false);
+          toast.success("Unsend successful");
+          setConfirmDialogOpen(false);
+        }}
       ></MyConfirmDialog>
 
       <MyRadioDialog
         isOpen={isRadioDialogOpen}
         setOpen={() => setRadioDialogOpen(!isRadioDialogOpen)}
         title="Who do you want to unsend this message?"
-        onSubmit={handleUnsentMsg}
+        onSubmit={(isUnsendForEveryone: boolean) => {
+          handleUnsentMsg(isUnsendForEveryone);
+          toast.success("Unsend successful");
+          setRadioDialogOpen(false);
+        }}
         options={[
           {
             value: true,

@@ -34,7 +34,7 @@ class MessageService {
       async (msgId: string, chatId: string, isUnsendForEveryone: boolean) => {
         console.log(socket.data.user.username + " call " + SocketEvent.um);
 
-        if (isUnsendForEveryone)
+        if (isUnsendForEveryone == true)
           await Message.findByIdAndUpdate(msgId, {
             status: MessageStatus.UNSEND,
           });
