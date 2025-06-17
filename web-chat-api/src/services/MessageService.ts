@@ -3,6 +3,7 @@ import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
 import Message, { IMessage } from "../models/Message.model";
 import Chat, { IChat } from "../models/Chat.model";
 import chatService from "./ChatService";
+import SocketEvent from "../enums/SocketEvent";
 
 class MessageService {
   listenSendMessage(socket: Socket, io: Server) {
@@ -21,7 +22,8 @@ class MessageService {
   }
 
   listenFetchMessagesRequest(socket: Socket, io: Server) {
-    socket.on("fetch-messages-request", (chatId: string) => {
+    socket.on(SocketEvent.fmr, (chatId: string) => {
+      console.log(socket.data.user.username + " call " + SocketEvent.fmr);
       this.fetchMessagesEvent(io, chatId);
     });
   }
@@ -37,13 +39,12 @@ class MessageService {
         data[chat.id].push(messages[0]);
     }
 
-    io.emit("fetch-last-message", data);
+    io.emit(SocketEvent.flm, data);
   };
 
   fetchMessagesEvent = async (io: Server, chatId: string) => {
     const data = await this.getMessages(chatId);
-
-    io.emit("fetch-messages", data);
+    io.emit(SocketEvent.fm, data, chatId);
   };
 
   getMessages = async (chatId: string) => {

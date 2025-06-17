@@ -94,7 +94,8 @@ const ChatList = ({
                 userId={userId}
                 key={chat._id}
                 lastMsg={
-                  messages[chat._id] == undefined
+                  messages[chat._id] == undefined ||
+                  messages[chat._id].length == 0
                     ? undefined
                     : messages[chat._id][0].messages[0]
                 }

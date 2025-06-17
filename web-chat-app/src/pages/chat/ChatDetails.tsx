@@ -29,7 +29,7 @@ const ChatDetails = ({
 }: {
   messages: IMessageGroup[];
   userId: string;
-  chat: IChat;
+  chat: IChat | undefined;
   setChat: (chat: IChat) => void;
   handleSendMessage: (msg: IMessage, chatId: string) => void;
   msgsContainerRef: any;
@@ -51,11 +51,10 @@ const ChatDetails = ({
   // useEffect
 
   useEffect(() => {
-    if (typeof chat.users == "object") {
+    if (chat && typeof chat.users == "object") {
       setReceivers(chat.users.filter((user) => user._id != userId));
       setSender(chat.users.find((user) => user._id == userId));
     }
-    setScrollBottom();
   }, [chat]);
 
   // HANDLERs
@@ -76,10 +75,10 @@ const ChatDetails = ({
         <div className="flex items-center">
           <div
             className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${chat.chatAvatar})` }}
+            style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
           ></div>
           <div className="ml-4">
-            <h1 className="font-bold">{chat.chatName}</h1>
+            <h1 className="font-bold">{chat?.chatName}</h1>
             <div className="text-gray-500 text-[0.75rem]">
               {receivers.some((receiver) => receiver.isOnline)
                 ? "Đang hoạt động"
@@ -123,8 +122,10 @@ const ChatDetails = ({
         <form
           className="relative w-full flex items-center justify-between"
           onSubmit={handleSubmit((msg: IMessage) => {
-            handleSendMessage(msg, chat._id);
-            resetField("msgBody");
+            if (chat != undefined) {
+              handleSendMessage(msg, chat._id);
+              resetField("msgBody");
+            }
           })}
         >
           <label

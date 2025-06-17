@@ -21,7 +21,11 @@ import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 
 const Chat = () => {
   const { id } = useParams();
-  const [chatList, setChatList] = useState<IChat[] | undefined>();
+
+  const [chatList, setChatList] = useState<
+    { [chatId: string]: IChat } | undefined
+  >();
+
   const [messages, setMessages] = useState<{
     [chatId: string]: IMessageGroup[];
   }>({});
@@ -41,13 +45,6 @@ const Chat = () => {
     socket.emit(SocketEvent.sm, msg, chatId);
   };
 
-  const handleScrollToBot = () => {
-    const msgListRef =
-      msgsContainerRef.current?.querySelectorAll(".single-msg");
-
-    msgListRef?.item(msgListRef.length - 1)?.scrollIntoView();
-  };
-
   // useEffect
 
   useEffect(() => {
@@ -59,8 +56,13 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
       fetchLastMessageEvent(socket, setMessages);
-
-      fetchMessagesEvent(socket, setMessages);
+      fetchMessagesEvent(
+        socket,
+        (chatId: string, messageGroup: IMessageGroup[]) =>
+          setMessages((messages: { [chatId: string]: IMessageGroup[] }) => {
+            return { ...messages, [chatId]: messageGroup };
+          })
+      );
 
       listenReceiveMessage(socket, setMessages);
     });
@@ -71,42 +73,17 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    if (messages[id!] == undefined || messages[id!].length == 1)
-      socket.emit(SocketEvent.fmr, id);
+    if (messages[id!] == undefined) messages[id!] = [];
+
+    if (messages[id!].length <= 1) socket.emit(SocketEvent.fmr, id);
   }, [id]);
-
-  useEffect(() => {
-    if (chatList != null && id != undefined) {
-      const myCurrChat = chatList!.find((chat) => chat._id == id);
-
-      setCurrChat(myCurrChat);
-
-      console.log(chatList);
-
-      setScrollBottom(!isScrollBottom);
-    }
-  }, [id, chatList]);
-
-  useEffect(() => {
-    // handleScrollToBot();
-  }, [isScrollBottom]);
-
-  useEffect(() => {
-    setScrollBottom(!isScrollBottom);
-  }, [messages]);
-
-  // Wait data
-
-  // if (chatList == null) return <Loading></Loading>;
-
-  if (id != null && currChat == null) return <Loading></Loading>;
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList
           messages={messages}
-          chatList={chatList}
+          chatList={Object.values(chatList ?? {})}
           userId={userId}
         ></ChatList>
         {id == undefined ? (
@@ -116,7 +93,7 @@ const Chat = () => {
             handleSendMessage={handleSendMessage}
             messages={messages[id]}
             userId={userId}
-            chat={currChat!}
+            chat={chatList ? chatList[id] : undefined}
             setChat={setCurrChat}
             msgsContainerRef={msgsContainerRef}
             setScrollBottom={() => setScrollBottom(!isScrollBottom)}

@@ -61,10 +61,11 @@ export const fetchLastMessageEvent = (
   });
 };
 
-export const fetchMessagesEvent = (socket: Socket, setMessages: Function) => {
-  socket.on(SocketEvent.fm, (messages: IMessage[]) => {
-    // console.log(messages);
-
+export const fetchMessagesEvent = (
+  socket: Socket,
+  setMessages: (chatId: string, messageGroup: IMessageGroup[]) => void
+) => {
+  socket.on(SocketEvent.fm, (messages: IMessage[], chatId: string) => {
     const grouped = messages.reduce<IMessageGroup[]>((acc, msg) => {
       const time = new Date(msg.createdAt!);
       const last = acc[acc.length - 1];
@@ -82,6 +83,6 @@ export const fetchMessagesEvent = (socket: Socket, setMessages: Function) => {
       return acc;
     }, []);
 
-    setMessages(grouped);
+    setMessages(chatId, grouped);
   });
 };
