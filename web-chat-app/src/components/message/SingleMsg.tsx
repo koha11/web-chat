@@ -3,21 +3,22 @@ import { Button } from "../ui/button";
 import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
+import { IMessage } from "../../interfaces/message.interface";
+import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
+import MessageStatus from "../../enums/MessageStatus.enum";
 
 const SingleMsg = ({
-  body,
   isLongGap,
   isSentMsg,
   msgSenderAvatar,
-  sendTime,
   fullname,
+  msg,
 }: {
   isSentMsg: boolean;
   fullname: string;
-  body: string;
   msgSenderAvatar: string;
   isLongGap: boolean;
-  sendTime: string;
+  msg: IMessage;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -39,6 +40,7 @@ const SingleMsg = ({
         {/* Hien action cho nguoi gui  */}
         {isSentMsg && (isHover || isOpen) && (
           <MessageActions
+            msgId={msg._id}
             isSentMsg={isSentMsg}
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
@@ -64,17 +66,29 @@ const SingleMsg = ({
           ></div>
         )}
 
-        {/* noi dung tin nhan  */}
-        {MyTooltip(
-          <span className="py-2 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
-            {body}
-          </span>,
-          sendTime
+        {/* Hien thi neu nguoi dung da thu hoi tin nhan  */}
+        {msg.status == MessageStatus.UNSEND && (
+          <p>
+            <span className="py-2 px-3 text-xl text-[1rem] text-gray-700 rounded-2xl outline-1">
+              {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message!
+            </span>
+          </p>
         )}
+
+        {/* Noi dung tin nhan duoc hien thi  */}
+        {msg.status != MessageStatus.UNSEND &&
+          msg.status != MessageStatus.REMOVED_ONLY_YOU &&
+          MyTooltip(
+            <span className="py-2 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
+              {msg.msgBody}
+            </span>,
+            getDisplaySendMsgTime(new Date(msg.createdAt!))
+          )}
 
         {/* Hien action cho nguoi nhan  */}
         {!isSentMsg && (isHover || isOpen) && (
           <MessageActions
+            msgId={msg._id}
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
             isSentMsg={isSentMsg}

@@ -1,3 +1,4 @@
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "./button";
 import {
   Dialog,
@@ -18,22 +19,42 @@ const MyRadioDialog = ({
   options,
   title,
   onSubmit,
+  name,
+  initValue,
 }: {
   title: string;
   options: { title: string; des: string; value: any }[];
-  onSubmit: Function;
+  onSubmit: (name: any) => void;
   isOpen: boolean;
   setOpen: () => void;
+  name: string;
+  initValue: any;
 }) => {
+  const { handleSubmit, control } = useForm<{
+    [name]: any;
+  }>({
+    defaultValues: {
+      [name]: initValue,
+    },
+  });
+
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
-      <form>
-        {/* <DialogTrigger>Open</DialogTrigger> */}
-        <DialogContent>
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription className="py-4">
-              <RadioGroup defaultValue="comfortable">
+            <DialogTitle className="mb-4">{title}</DialogTitle>
+          </DialogHeader>
+
+          <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+              >
                 {options.map((option) => (
                   <div className="flex items-start gap-4">
                     <RadioGroupItem
@@ -53,16 +74,20 @@ const MyRadioDialog = ({
                   </div>
                 ))}
               </RadioGroup>
-            </DialogDescription>
-          </DialogHeader>
+            )}
+          ></Controller>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
             </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" className="cursor-pointer">
+              Save changes
+            </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

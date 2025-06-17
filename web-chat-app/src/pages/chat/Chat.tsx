@@ -17,7 +17,6 @@ import Loading from "../../components/ui/loading";
 import MY_SOCKET_EVENTS from "../../constants/MY_SOCKET_EVENTS";
 import SocketEvent from "../../enums/SocketEvent.enum";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
-import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 
 const Chat = () => {
   const { id } = useParams();
@@ -52,7 +51,7 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
-      
+
       fetchLastMessageEvent(socket, setMessages);
 
       fetchMessagesEvent(
@@ -75,10 +74,15 @@ const Chat = () => {
   useEffect(() => {
     if (messages[id!] == undefined) messages[id!] = [];
 
+    // Y tuong la cache lai danh sach msg, nhma co bug
+
     if (messages[id!].length <= 1) {
       setMsgLoading(true);
       socket.emit(SocketEvent.fmr, id);
     }
+
+    // setMsgLoading(true);
+    // socket.emit(SocketEvent.fmr, id);
   }, [id, messages]);
 
   if (userId == undefined || userId == "") return <Loading></Loading>;

@@ -50,12 +50,11 @@ const GroupMsg = ({
           return (
             <SingleMsg
               key={msg._id}
+              msg={msg}
               isSentMsg={msg.user == sender._id}
               isLongGap={isLongGap}
-              body={msg.msgBody}
               fullname={receivers[0].fullname}
               msgSenderAvatar={msgSenderAvatar}
-              sendTime={getDisplaySendMsgTime(new Date(msg.createdAt ?? ""))}
             ></SingleMsg>
           );
         })}

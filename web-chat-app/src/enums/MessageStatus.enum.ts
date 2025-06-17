@@ -3,8 +3,8 @@ enum MessageStatus {
   RECEIVED = "RECEIVED",
   SEEN = "SEEN",
   EDITED = "EDITED",
-  RESTORED = "RESTORED",
-  DELETED_ONLY_YOU = "DELETED_ONLY_YOU",
+  UNSEND = "UNSEND",
+  REMOVED_ONLY_YOU = "REMOVED_ONLY_YOU",
 }
 
 export default MessageStatus;

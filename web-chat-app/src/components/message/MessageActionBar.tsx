@@ -11,18 +11,35 @@ import {
 import { useState } from "react";
 import MyConfirmDialog from "../ui/my-confirm-dialog";
 import MyRadioDialog from "../ui/my-radio-dialog";
+import WebSocketConnection from "../../services/WebSocketConnection";
+import { useParams } from "react-router-dom";
+import SocketEvent from "../../enums/SocketEvent.enum";
+import { toast } from "sonner";
 
 const MessageActions = ({
   isOpen,
   setOpen,
   isSentMsg,
+  msgId,
 }: {
   isOpen: boolean;
   setOpen: () => void;
   isSentMsg: boolean;
+  msgId: string;
 }) => {
+  const { id } = useParams();
+
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
+
+  const socket = WebSocketConnection.getConnection();
+
+  // Handlers
+  const handleUnsentMsg = (isUnsendForEveryone: boolean) => {
+    socket.emit(SocketEvent.um, msgId, id, isUnsendForEveryone);
+    toast.success("Unsend successful");
+    setRadioDialogOpen(false);
+  };
 
   return (
     <>
@@ -89,11 +106,12 @@ const MessageActions = ({
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
       ></MyConfirmDialog>
+
       <MyRadioDialog
         isOpen={isRadioDialogOpen}
         setOpen={() => setRadioDialogOpen(!isRadioDialogOpen)}
         title="Who do you want to unsend this message?"
-        onSubmit={() => {}}
+        onSubmit={handleUnsentMsg}
         options={[
           {
             value: true,
@@ -108,6 +126,8 @@ const MessageActions = ({
             des: `This message will be removed from your device, but will still be visible to other members of the chat.`,
           },
         ]}
+        name={"isUnsendForEveryone"}
+        initValue={true}
       ></MyRadioDialog>
     </>
   );

@@ -1,5 +1,6 @@
 import { DefaultEventsMap, Server, Socket } from "socket.io";
 import Chat from "../models/Chat.model";
+import SocketEvent from "../enums/SocketEvent";
 
 class ChatService {
   listenFetchChatListRequest(
@@ -14,8 +15,8 @@ class ChatService {
   fetchChatListEvent = async (io: Server, id: string) => {
     const data = await this.getChatList(id);
 
-    io.emit("fetch-chat-list", data);
-    
+    io.emit(SocketEvent.fcl, data);
+
     return data
   };
 
