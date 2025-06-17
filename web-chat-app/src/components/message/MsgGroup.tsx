@@ -29,10 +29,10 @@ const GroupMsg = ({
             (receiver) => receiver._id == msg.user
           );
           const isLongGap =
-            index > 0 &&
+            index < messages.length - 1 &&
             getTimeDiff(
               new Date(msg.createdAt!),
-              new Date(messages[index - 1].createdAt!),
+              new Date(messages[index + 1].createdAt!),
               TimeTypeOption.MINUTES
             ) > 4;
 
@@ -40,9 +40,8 @@ const GroupMsg = ({
 
           if (
             receiver &&
-            ((index + 1 < messages.length &&
-              messages[index + 1].user != receiver._id) ||
-              index == messages.length - 1)
+            ((index > 0 && messages[index - 1].user != receiver._id) ||
+              index == 0)
           )
             msgSenderAvatar = receiver.avatar ?? "";
           else msgSenderAvatar = "";
