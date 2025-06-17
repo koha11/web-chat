@@ -25,14 +25,11 @@ const Chat = () => {
   const [chatList, setChatList] = useState<
     { [chatId: string]: IChat } | undefined
   >();
-
   const [messages, setMessages] = useState<{
     [chatId: string]: IMessageGroup[];
   }>({});
-
-  const [currChat, setCurrChat] = useState<IChat | undefined>();
-  const [isScrollBottom, setScrollBottom] = useState(false);
   const [userId, setUserId] = useState("");
+  const [isMsgLoading, setMsgLoading] = useState<boolean>(false);
 
   const socket = WebSocketConnection.getConnection();
 
@@ -61,7 +58,8 @@ const Chat = () => {
         (chatId: string, messageGroup: IMessageGroup[]) =>
           setMessages((messages: { [chatId: string]: IMessageGroup[] }) => {
             return { ...messages, [chatId]: messageGroup };
-          })
+          }),
+        setMsgLoading
       );
 
       listenReceiveMessage(socket, setMessages);
@@ -75,8 +73,13 @@ const Chat = () => {
   useEffect(() => {
     if (messages[id!] == undefined) messages[id!] = [];
 
-    if (messages[id!].length <= 1) socket.emit(SocketEvent.fmr, id);
-  }, [id]);
+    if (messages[id!].length <= 1) {
+      setMsgLoading(true);
+      socket.emit(SocketEvent.fmr, id);
+    }
+  }, [id, messages]);
+
+  if (userId == undefined || userId == "") return <Loading></Loading>;
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -94,9 +97,8 @@ const Chat = () => {
             messages={messages[id]}
             userId={userId}
             chat={chatList ? chatList[id] : undefined}
-            setChat={setCurrChat}
             msgsContainerRef={msgsContainerRef}
-            setScrollBottom={() => setScrollBottom(!isScrollBottom)}
+            isMsgLoading={isMsgLoading}
           ></ChatDetails>
         )}
       </div>

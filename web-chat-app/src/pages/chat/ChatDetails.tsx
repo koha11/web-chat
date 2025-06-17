@@ -17,23 +17,22 @@ import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
 import { send } from "process";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const ChatDetails = ({
   chat,
   userId,
-  setChat,
   handleSendMessage,
   messages,
   msgsContainerRef,
-  setScrollBottom,
+  isMsgLoading,
 }: {
   messages: IMessageGroup[];
   userId: string;
   chat: IChat | undefined;
-  setChat: (chat: IChat) => void;
   handleSendMessage: (msg: IMessage, chatId: string) => void;
   msgsContainerRef: any;
-  setScrollBottom: () => void;
+  isMsgLoading: boolean;
 }) => {
   // states
   const [receivers, setReceivers] = useState<IUser[]>([]);
@@ -64,8 +63,6 @@ const ChatDetails = ({
   //   socketRef.current?.emit("isTyping", chat._id);
   // };
 
-  if (sender == null || receivers.length == 0) return <Loading></Loading>;
-
   return (
     <section
       className="w-[75%] h-full p-4 bg-white rounded-2xl"
@@ -73,18 +70,30 @@ const ChatDetails = ({
     >
       <div className="container flex items-center justify-between h-[10%]">
         <div className="flex items-center">
-          <div
-            className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
-          ></div>
-          <div className="ml-4">
-            <h1 className="font-bold">{chat?.chatName}</h1>
-            <div className="text-gray-500 text-[0.75rem]">
-              {receivers.some((receiver) => receiver.isOnline)
-                ? "Đang hoạt động"
-                : "Không hoạt động"}
+          {chat ? (
+            <div
+              className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
+              style={{ backgroundImage: `url(${chat.chatAvatar})` }}
+            ></div>
+          ) : (
+            <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
+          )}
+
+          {chat ? (
+            <div className="ml-4">
+              <h1 className="font-bold">{chat.chatName}</h1>
+              <div className="text-gray-500 text-[0.75rem]">
+                {receivers.some((receiver) => receiver.isOnline)
+                  ? "Đang hoạt động"
+                  : "Không hoạt động"}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="ml-4 space-y-2">
+              <Skeleton className="h-4 w-[240px]"></Skeleton>
+              <Skeleton className="h-4 w-[120px]"></Skeleton>
+            </div>
+          )}
         </div>
         <div className="text-2xl flex items-center gap-4">
           <Link to={""} className="p-2 rounded-full hover:bg-gray-200">
@@ -103,19 +112,27 @@ const ChatDetails = ({
         className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
         ref={msgsContainerRef}
       >
-        {messages?.map((msg) => {
-          // console.log(msg);
-
-          return (
-            <GroupMsg
-              key={msg.timeString}
-              messages={msg.messages}
-              timeString={msg.timeString}
-              receivers={receivers}
-              sender={sender}
-            ></GroupMsg>
-          );
-        })}
+        {chat && sender && !isMsgLoading ? (
+          messages?.map((msg) => {
+            return (
+              <GroupMsg
+                key={msg.timeString}
+                messages={msg.messages}
+                timeString={msg.timeString}
+                receivers={receivers}
+                sender={sender}
+              ></GroupMsg>
+            );
+          })
+        ) : (
+          // : [1, 2, 3, 4, 5].map(() => (
+          //     <div className="space-y-2 flex flex-col items-end">
+          //       <Skeleton className="h-4 w-[240px]"></Skeleton>
+          //       <Skeleton className="h-4 w-[80px]"></Skeleton>
+          //     </div>
+          //   ))
+          <Loading />
+        )}
       </div>
 
       <div className="container h-[5%]">

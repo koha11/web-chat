@@ -63,7 +63,8 @@ export const fetchLastMessageEvent = (
 
 export const fetchMessagesEvent = (
   socket: Socket,
-  setMessages: (chatId: string, messageGroup: IMessageGroup[]) => void
+  setMessages: (chatId: string, messageGroup: IMessageGroup[]) => void,
+  setMsgLoading: (isLoading: boolean) => void
 ) => {
   socket.on(SocketEvent.fm, (messages: IMessage[], chatId: string) => {
     const grouped = messages.reduce<IMessageGroup[]>((acc, msg) => {
@@ -84,5 +85,6 @@ export const fetchMessagesEvent = (
     }, []);
 
     setMessages(chatId, grouped);
+    setMsgLoading(false);
   });
 };
