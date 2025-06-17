@@ -6,10 +6,10 @@ import IMessageGroup from "../interfaces/messageGroup.interface";
 import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
 
 export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
-  socket.on(SocketEvent.rm, (msg: IMessage) => {
-    setMessages((msgGroupList: IMessageGroup[]) => {
+  socket.on(SocketEvent.rm, (msg: IMessage, chatId: string) => {
+    setMessages((messages: { [chatId: string]: IMessageGroup[] }) => {
       const time = new Date(msg.createdAt ?? "");
-      const firstMsgGroup = msgGroupList[0] ?? undefined;
+      const firstMsgGroup = messages[chatId][0] ?? undefined;
 
       if (
         firstMsgGroup &&
@@ -26,13 +26,19 @@ export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
         };
 
         // Clone the whole array, replacing the last item
-        return [updatedFirstGroup, ...msgGroupList.slice(1)];
+        return {
+          ...messages,
+          [chatId]: [updatedFirstGroup, ...messages[chatId].slice(1)],
+        };
       } else {
         // Add a new group
-        return [
-          { timeString: time.toISOString(), messages: [msg] },
-          ...msgGroupList,
-        ];
+        return {
+          ...messages,
+          [chatId]: [
+            { timeString: time.toISOString(), messages: [msg] },
+            ...messages[chatId],
+          ],
+        };
       }
     });
 

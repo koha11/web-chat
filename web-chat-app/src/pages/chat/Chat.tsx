@@ -52,7 +52,9 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
+      
       fetchLastMessageEvent(socket, setMessages);
+
       fetchMessagesEvent(
         socket,
         (chatId: string, messageGroup: IMessageGroup[]) =>

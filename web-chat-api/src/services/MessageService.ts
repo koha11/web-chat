@@ -15,7 +15,7 @@ class MessageService {
 
       Chat.findByIdAndUpdate(chatId, { $push: { messages: myMsg } });
 
-      io.emit("receive-message", myMsg);
+      io.emit("receive-message", myMsg, chatId);
 
       // chatService.fetchChatListEvent(io, socket.data.user.id);
     });
