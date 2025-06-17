@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import { fetchChatListEvent } from "../../services/chatService";
 import {
+  fetchLastMessageEvent,
   fetchMessagesEvent,
   listenReceiveMessage,
 } from "../../services/messageService";
@@ -21,7 +22,10 @@ import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 const Chat = () => {
   const { id } = useParams();
   const [chatList, setChatList] = useState<IChat[] | undefined>();
-  const [messages, setMessages] = useState<IMessageGroup[]>([]);
+  const [messages, setMessages] = useState<{
+    [chatId: string]: IMessageGroup[];
+  }>({});
+
   const [currChat, setCurrChat] = useState<IChat | undefined>();
   const [isScrollBottom, setScrollBottom] = useState(false);
   const [userId, setUserId] = useState("");
@@ -54,6 +58,8 @@ const Chat = () => {
       setUserId(userId);
 
       fetchChatListEvent(socket, setChatList);
+      fetchLastMessageEvent(socket, setMessages);
+      
       fetchMessagesEvent(socket, setMessages);
 
       listenReceiveMessage(socket, setMessages);
@@ -65,7 +71,8 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit(SocketEvent.fmr, id);
+    if (messages[id!] == undefined || messages[id!].length == 1)
+      socket.emit(SocketEvent.fmr, id);
   }, [id]);
 
   useEffect(() => {
@@ -103,7 +110,7 @@ const Chat = () => {
         ) : (
           <ChatDetails
             handleSendMessage={handleSendMessage}
-            messages={messages}
+            messages={messages[id]}
             userId={userId}
             chat={currChat!}
             setChat={setCurrChat}

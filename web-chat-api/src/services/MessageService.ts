@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
 import Message, { IMessage } from "../models/Message.model";
-import Chat from "../models/Chat.model";
+import Chat, { IChat } from "../models/Chat.model";
 import chatService from "./ChatService";
 
 class MessageService {
@@ -25,6 +25,20 @@ class MessageService {
       this.fetchMessagesEvent(io, chatId);
     });
   }
+
+  fetchLastMessageEvent = async (io: Server, chatList: IChat[]) => {
+    const data = {} as { [chatId: string]: IMessage[] };
+
+    for (let chat of chatList) {
+      const messages = await this.getMessages(chat.id);
+
+      data[chat.id] = [];
+      if (messages != undefined && messages.length > 0)
+        data[chat.id].push(messages[0]);
+    }
+
+    io.emit("fetch-last-message", data);
+  };
 
   fetchMessagesEvent = async (io: Server, chatId: string) => {
     const data = await this.getMessages(chatId);

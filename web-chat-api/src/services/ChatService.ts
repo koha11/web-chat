@@ -15,6 +15,8 @@ class ChatService {
     const data = await this.getChatList(id);
 
     io.emit("fetch-chat-list", data);
+    
+    return data
   };
 
   getChatList = async (id: string) => {

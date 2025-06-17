@@ -4,6 +4,7 @@ enum SocketEvent {
   fcl = "fetch-chat-list",
   fmr = "fetch-messages-request",
   fm = "fetch-messages",
+  flm = "fetch-last-message"
 }
 
 export default SocketEvent;

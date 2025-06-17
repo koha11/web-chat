@@ -25,8 +25,6 @@ export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
           messages: [msg, ...firstMsgGroup.messages],
         };
 
-        console.log([updatedFirstGroup, ...msgGroupList.slice(1)]);
-
         // Clone the whole array, replacing the last item
         return [updatedFirstGroup, ...msgGroupList.slice(1)];
       } else {
@@ -39,6 +37,27 @@ export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
     });
 
     console.log("toi da nhan dc " + msg.msgBody);
+  });
+};
+
+export const fetchLastMessageEvent = (
+  socket: Socket,
+  setMessages: Function
+) => {
+  socket.on(SocketEvent.flm, (messages: { [chatId: string]: [IMessage] }) => {
+    let groupedMessages = {} as { [chatId: string]: IMessageGroup[] };
+
+    Object.keys(messages).forEach((chatId) => {
+      let message = messages[chatId][0];
+      groupedMessages[chatId] = [
+        {
+          timeString: new Date(message.createdAt!).toISOString(),
+          messages: [message],
+        },
+      ];
+    });
+
+    setMessages(groupedMessages);
   });
 };
 

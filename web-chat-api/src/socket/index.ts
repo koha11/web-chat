@@ -29,7 +29,9 @@ export const connectSocketIo = (server: Server) => {
 
     await userService.setOnlineStatus(user.id.toString());
 
-    chatService.fetchChatListEvent(io, socket.data.user.id);
+    const chatList = await chatService.fetchChatListEvent(io, socket.data.user.id);
+
+    await messageService.fetchLastMessageEvent(io, chatList)
 
     messageService.listenFetchMessagesRequest(socket, io);
 
