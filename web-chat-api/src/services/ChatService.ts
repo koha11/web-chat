@@ -3,19 +3,10 @@ import Chat from "../models/Chat.model";
 import SocketEvent from "../enums/SocketEvent";
 
 class ChatService {
-  listenFetchChatListRequest(
-    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
-    io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-  ) {
-    socket.on("request-fetch-chat-list", () => {
-      this.fetchChatListEvent(io, socket.data.user.id);
-    });
-  }
+  fetchChatListEvent = async (io: Server, socketId: string, chatId: string) => {
+    const data = await this.getChatList(chatId);
 
-  fetchChatListEvent = async (io: Server, id: string) => {
-    const data = await this.getChatList(id);
-
-    io.emit(SocketEvent.fcl, data);
+    io.to(socketId).emit(SocketEvent.fcl, data);
 
     return data
   };

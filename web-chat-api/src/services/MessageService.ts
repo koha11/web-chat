@@ -16,15 +16,16 @@ class MessageService {
 
       await Chat.findByIdAndUpdate(chatId, { $push: { messages: myMsg } });
 
-      io.emit(SocketEvent.rm, myMsg, chatId);
-      chatService.fetchChatListEvent(io, socket.data.user.id);
+      io.to(chatId).emit(SocketEvent.rm, myMsg, chatId);
+
+      chatService.fetchChatListEvent(io, socket.id, socket.data.user.id);
     });
   }
 
   listenFetchMessagesRequest = (socket: Socket, io: Server) => {
     socket.on(SocketEvent.fmr, (chatId: string) => {
       console.log(socket.data.user.username + " call " + SocketEvent.fmr);
-      this.fetchMessagesEvent(io, chatId);
+      this.fetchMessagesEvent(io, socket.id, chatId);
     });
   };
 
@@ -43,12 +44,16 @@ class MessageService {
             status: MessageStatus.REMOVED_ONLY_YOU,
           });
 
-        this.fetchMessagesEvent(io, chatId);
+        this.fetchMessagesEvent(io, socket.id, chatId);
       }
     );
   };
 
-  fetchLastMessageEvent = async (io: Server, chatList: IChat[]) => {
+  fetchLastMessageEvent = async (
+    io: Server,
+    socketId: string,
+    chatList: IChat[]
+  ) => {
     const data = {} as { [chatId: string]: IMessage[] };
 
     for (let chat of chatList) {
@@ -59,12 +64,12 @@ class MessageService {
         data[chat.id].push(messages[0]);
     }
 
-    io.emit(SocketEvent.flm, data);
+    io.to(socketId).emit(SocketEvent.flm, data);
   };
 
-  fetchMessagesEvent = async (io: Server, chatId: string) => {
+  fetchMessagesEvent = async (io: Server, socketId: string, chatId: string) => {
     const data = await this.getMessages(chatId);
-    io.emit(SocketEvent.fm, data, chatId);
+    io.to(socketId).emit(SocketEvent.fm, data, chatId);
   };
 
   getMessages = async (chatId: string) => {

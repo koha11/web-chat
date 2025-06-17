@@ -31,10 +31,16 @@ export const connectSocketIo = (server: Server) => {
 
     const chatList = await chatService.fetchChatListEvent(
       io,
+      socket.id,
       socket.data.user.id
     );
 
-    await messageService.fetchLastMessageEvent(io, chatList);
+    await messageService.fetchLastMessageEvent(io, socket.id, chatList);
+
+    // init rooms for user
+    chatList.forEach((chat) => {
+      socket.join(chat.id);
+    });
 
     messageService.listenFetchMessagesRequest(socket, io);
 
