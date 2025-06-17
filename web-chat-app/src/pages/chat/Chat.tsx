@@ -59,7 +59,7 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
       fetchLastMessageEvent(socket, setMessages);
-      
+
       fetchMessagesEvent(socket, setMessages);
 
       listenReceiveMessage(socket, setMessages);
@@ -104,7 +104,11 @@ const Chat = () => {
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
-        <ChatList chatList={chatList} userId={userId}></ChatList>
+        <ChatList
+          messages={messages}
+          chatList={chatList}
+          userId={userId}
+        ></ChatList>
         {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (

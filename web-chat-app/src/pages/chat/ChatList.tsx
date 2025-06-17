@@ -6,13 +6,18 @@ import { useState } from "react";
 import Loading from "../../components/ui/loading";
 import ChatRow from "../../components/chat/ChatRow";
 import { Skeleton } from "../../components/ui/skeleton";
+import IMessageGroup from "../../interfaces/messageGroup.interface";
 
 const ChatList = ({
   chatList,
   userId,
+  messages,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
+  messages: {
+    [chatId: string]: IMessageGroup[];
+  };
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -84,7 +89,16 @@ const ChatList = ({
               </div>
             ))
           : chatList.map((chat: IChat) => (
-              <ChatRow chat={chat} userId={userId} key={chat._id}></ChatRow>
+              <ChatRow
+                chat={chat}
+                userId={userId}
+                key={chat._id}
+                lastMsg={
+                  messages[chat._id] == undefined
+                    ? undefined
+                    : messages[chat._id][0].messages[0]
+                }
+              ></ChatRow>
             ))}
       </nav>
     </section>

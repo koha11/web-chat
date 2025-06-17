@@ -5,18 +5,21 @@ import { IChat } from "../../interfaces/chat.interface";
 import { IMessage } from "../../interfaces/message.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
+import { Skeleton } from "../ui/skeleton";
 
-const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
-  const [lastMsg, setLastMsg] = useState<IMessage>();
+const ChatRow = ({
+  userId,
+  chat,
+  lastMsg,
+}: {
+  userId: string;
+  chat: IChat;
+  lastMsg: IMessage | undefined;
+}) => {
   const [lastUser, setLastUser] = useState<IUser>();
 
   useEffect(() => {
-    if (chat != undefined) {
-      const myLastMsg = chat.messages[chat.messages.length - 1] as IMessage;
-
-      if (typeof chat.messages == "object" && myLastMsg != null) {
-        setLastMsg(() => myLastMsg ?? undefined);
-      }
+    if (chat != undefined && lastMsg != undefined) {
       // console.log(myLastMsg);
 
       // if (myLastMsg == undefined) {
@@ -24,7 +27,7 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
       // }
 
       if (typeof chat.users == "object") {
-        setLastUser(chat.users.find((user) => user._id == myLastMsg?.user)!);
+        setLastUser(chat.users.find((user) => user._id == lastMsg?.user)!);
       }
     }
   }, [chat]);
@@ -44,9 +47,12 @@ const ChatRow = ({ userId, chat }: { userId: string; chat: IChat }) => {
         className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
         style={{ backgroundImage: `url(${chat.chatAvatar})` }}
       ></div>
-      <div className="flex-auto px-4 flex flex-col items-baseline">
+      <div className="flex-auto px-4 flex flex-col items-baseline space-y-2">
         <div className="font-bold">{chat.chatName}</div>
         <div className="text-gray-500 text-[0.75rem] flex items-center">
+          {lastMsg == undefined && (
+            <Skeleton className="w-[180px] h-4"></Skeleton>
+          )}
           {lastMsg && lastMsg.user == userId && "You:"}{" "}
           {lastMsg && lastMsg.msgBody} {lastMsg && <Dot size={12}></Dot>}
           {lastMsg && getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
