@@ -5,7 +5,9 @@ export const MyTooltip = (hover: ReactNode, content: string) => (
   <Tooltip>
     <TooltipTrigger>{hover}</TooltipTrigger>
     <TooltipContent>
-      <p>{content}</p>
+      {content.split("\n").map((myContent) => (
+        <p>{myContent}</p>
+      ))}
     </TooltipContent>
   </Tooltip>
 );

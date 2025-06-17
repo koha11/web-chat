@@ -34,7 +34,7 @@ const SingleMsg = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {/* The gia de co dinh chieu cao  */}
+        {/* The gia cho sender de co dinh chieu cao  */}
         {isSentMsg && <div className="w-8 h-8"></div>}
 
         {/* Hien action cho nguoi gui  */}
@@ -67,19 +67,28 @@ const SingleMsg = ({
         )}
 
         {/* Hien thi neu nguoi dung da thu hoi tin nhan  */}
-        {msg.status == MessageStatus.UNSEND && (
-          <p>
-            <span className="py-2 px-3 text-xl text-[1rem] text-gray-700 rounded-2xl outline-1">
+        {msg.status == MessageStatus.UNSEND &&
+          MyTooltip(
+            <span
+              className={`py-2 px-3 text-xl text-[0.9rem] rounded-2xl text-gray-200 italic ${
+                isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+              }`}
+            >
               {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message!
-            </span>
-          </p>
-        )}
+            </span>,
+            `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
+              Unsend at ${getDisplaySendMsgTime(new Date(msg.updatedAt!))}`
+          )}
 
         {/* Noi dung tin nhan duoc hien thi  */}
         {msg.status != MessageStatus.UNSEND &&
           msg.status != MessageStatus.REMOVED_ONLY_YOU &&
           MyTooltip(
-            <span className="py-2 px-3 text-xl text-[1rem] bg-gray-200 rounded-2xl">
+            <span
+              className={`py-2 px-3 text-xl text-[1rem] rounded-2xl ${
+                isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+            >
               {msg.msgBody}
             </span>,
             getDisplaySendMsgTime(new Date(msg.createdAt!))
