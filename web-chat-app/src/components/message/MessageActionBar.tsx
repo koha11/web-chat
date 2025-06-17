@@ -42,7 +42,9 @@ const MessageActions = ({
   };
 
   return (
-    <>
+    <div
+      className={`flex ${isSentMsg ? "order-1 flex-row-reverse" : "order-3"}`}
+    >
       <Button
         size={"sm"}
         variant="link"
@@ -129,7 +131,7 @@ const MessageActions = ({
         name={"isUnsendForEveryone"}
         initValue={true}
       ></MyRadioDialog>
-    </>
+    </div>
   );
 };
 

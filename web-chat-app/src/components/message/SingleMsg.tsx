@@ -34,36 +34,34 @@ const SingleMsg = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        {/* The gia cho sender de co dinh chieu cao  */}
-        {isSentMsg && <div className="w-8 h-8"></div>}
+        
+        {/* Hien thi avatar neu co  */}
+        {msgSenderAvatar == "" ? (
+          <div
+            className={`w-8 h-8 ${isSentMsg ? "order-1" : "order-1"}`}
+            style={{ backgroundImage: `url(${msgSenderAvatar})` }}
+          ></div>
+        ) : (
+          MyTooltip(
+            <div
+              className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center ${
+                isSentMsg ? "order-1" : "order-1"
+              }`}
+              style={{ backgroundImage: `url(${msgSenderAvatar})` }}
+            ></div>,
+            fullname,
+            isSentMsg ? "order-1" : "order-1"
+          )
+        )}
 
-        {/* Hien action cho nguoi gui  */}
-        {isSentMsg && (isHover || isOpen) && (
+        {/* Hien action  */}
+        {(isHover || isOpen) && (
           <MessageActions
             msgId={msg._id}
             isSentMsg={isSentMsg}
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
           ></MessageActions>
-        )}
-
-        {/* Hien avatar cho nguoi nhan  */}
-        {!isSentMsg &&
-          msgSenderAvatar != "" &&
-          MyTooltip(
-            <div
-              className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-              style={{ backgroundImage: `url(${msgSenderAvatar})` }}
-            ></div>,
-            fullname
-          )}
-
-        {/* An avatar cho nguoi nhan  */}
-        {!isSentMsg && msgSenderAvatar == "" && (
-          <div
-            className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${msgSenderAvatar})` }}
-          ></div>
         )}
 
         {/* Hien thi neu nguoi dung da thu hoi tin nhan  */}
@@ -77,7 +75,8 @@ const SingleMsg = ({
               {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message!
             </span>,
             `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
-              Unsend at ${getDisplaySendMsgTime(new Date(msg.updatedAt!))}`
+              Unsend at ${getDisplaySendMsgTime(new Date(msg.updatedAt!))}`,
+            isSentMsg ? "order-2" : "order-2"
           )}
 
         {/* Noi dung tin nhan duoc hien thi  */}
@@ -85,24 +84,15 @@ const SingleMsg = ({
           msg.status != MessageStatus.REMOVED_ONLY_YOU &&
           MyTooltip(
             <span
-              className={`py-2 px-3 text-xl text-[1rem] rounded-2xl ${
+              className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 ${
                 isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
               }`}
             >
               {msg.msgBody}
             </span>,
-            getDisplaySendMsgTime(new Date(msg.createdAt!))
+            getDisplaySendMsgTime(new Date(msg.createdAt!)),
+            isSentMsg ? "order-2" : "order-2"
           )}
-
-        {/* Hien action cho nguoi nhan  */}
-        {!isSentMsg && (isHover || isOpen) && (
-          <MessageActions
-            msgId={msg._id}
-            isOpen={isOpen}
-            setOpen={() => setOpen(!isOpen)}
-            isSentMsg={isSentMsg}
-          ></MessageActions>
-        )}
       </div>
 
       {/* seen avatar  */}
