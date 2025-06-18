@@ -8,6 +8,7 @@ import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
 import { Skeleton } from "../ui/skeleton";
 import { strimMessageBody } from "../../utils/messageText.helper";
 import { Button } from "../ui/button";
+import MessageStatus from "../../enums/MessageStatus.enum";
 
 const ChatRow = ({
   userId,
@@ -29,7 +30,7 @@ const ChatRow = ({
         setLastUser(chat.users.find((user) => user._id == lastMsg?.user)!);
       }
     }
-  }, [chat]);
+  }, [chat]); 
 
   return (
     <NavLink to={`/m/${chat._id}`} className={`chat-box w-full h-18 relative`}>
@@ -64,17 +65,27 @@ const ChatRow = ({
             </div>
           </div>
         </div>
-        {lastMsg && lastMsg.user != userId && (
-          <div
-            className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
-          ></div>
-        )}
+        {/* Hien thi avatar nhung nguoi da seen tin nhan  */}
+        {lastMsg &&
+          lastMsg.user == userId &&
+          lastMsg.status == MessageStatus.SEEN && (
+            <div
+              className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+              style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
+            ></div>
+          )}
+
+        {/* Hien thi thong bao chua doc tin nhan */}
+        {lastMsg &&
+          lastMsg.user != userId &&
+          !lastMsg.seenList.includes(userId) && (
+            <div className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center bg-blue-600"></div>
+          )}
       </div>
       {isHover && (
         <Button
           variant={"secondary"}
-          className="absolute rounded-full h-8 w-8 right-6 top-[50%] translate-y-[-50%] bg-gray-300 hover:bg-gray-500 shadow-xl cursor-pointer"
+          className="absolute rounded-full h-8 w-8 right-7 top-[50%] translate-y-[-50%] bg-gray-300 hover:bg-gray-500 shadow-xl cursor-pointer"
           onMouseEnter={() => setHover(true)}
           onClick={(e) => {
             e.stopPropagation();

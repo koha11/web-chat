@@ -5,6 +5,7 @@ import Chat, { IChat } from "../models/Chat.model";
 import chatService from "./ChatService";
 import SocketEvent from "../enums/SocketEvent";
 import MessageStatus from "../enums/MessageStatus.enum";
+import { toObjectId } from "../utils/mongoose";
 
 class MessageService {
   listenSendMessage(socket: Socket, io: Server) {
@@ -25,7 +26,7 @@ class MessageService {
   listenFetchMessagesRequest = (socket: Socket, io: Server) => {
     socket.on(SocketEvent.fmr, (chatId: string) => {
       console.log(socket.data.user.username + " call " + SocketEvent.fmr);
-      this.fetchMessagesEvent(io, socket.id, chatId);
+      this.fetchMessagesEvent(io, socket.id, chatId, socket.data.user.id);
     });
   };
 
@@ -44,7 +45,7 @@ class MessageService {
             status: MessageStatus.REMOVED_ONLY_YOU,
           });
 
-        this.fetchMessagesEvent(io, socket.id, chatId);
+        this.fetchMessagesEvent(io, socket.id, chatId, socket.data.user.id);
       }
     );
   };
@@ -67,9 +68,22 @@ class MessageService {
     io.to(socketId).emit(SocketEvent.flm, data);
   };
 
-  fetchMessagesEvent = async (io: Server, socketId: string, chatId: string) => {
-    const data = await this.getMessages(chatId);
-    io.to(socketId).emit(SocketEvent.fm, data, chatId);
+  fetchMessagesEvent = async (
+    io: Server,
+    socketId: string,
+    chatId: string,
+    userId: string
+  ) => {
+    const messages = await this.getMessages(chatId);
+
+    for (let msg of messages) {
+      if (msg.seenList.includes(toObjectId(userId))) break;
+
+      msg.seenList.push(toObjectId(userId));
+      await msg.save();
+    }
+
+    io.to(socketId).emit(SocketEvent.fm, messages, chatId);
   };
 
   getMessages = async (chatId: string) => {

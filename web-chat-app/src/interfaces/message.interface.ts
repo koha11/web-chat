@@ -6,6 +6,7 @@ export interface IMessage {
   user: string | IUser;
   msgBody: string;
   status: MessageStatus;
+  seenList: (string | IUser)[];
 
   createdAt?: Date;
   updatedAt?: Date;

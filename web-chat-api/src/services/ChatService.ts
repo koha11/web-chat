@@ -8,13 +8,15 @@ class ChatService {
 
     io.to(socketId).emit(SocketEvent.fcl, data);
 
-    return data
+    return data;
   };
 
   getChatList = async (id: string) => {
     const chatList = await Chat.find({ users: id })
       .populate("users")
       .sort({ updatedAt: -1 });
+
+    console.log(chatList);
 
     return chatList;
   };
