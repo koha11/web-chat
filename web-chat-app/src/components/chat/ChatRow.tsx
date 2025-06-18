@@ -15,11 +15,13 @@ const ChatRow = ({
   chat,
   lastMsg,
   isActive,
+  setMsgLoading,
 }: {
   userId: string;
   chat: IChat;
   lastMsg: IMessage | undefined;
   isActive: boolean;
+  setMsgLoading: Function;
 }) => {
   const [lastUser, setLastUser] = useState<IUser>();
   const [isHover, setHover] = useState<boolean>(false);
@@ -40,6 +42,14 @@ const ChatRow = ({
         }`}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        onClick={(e) => {
+          if (isActive) {
+            e.preventDefault();
+            return;
+          }
+
+          setMsgLoading(true);
+        }}
       >
         <div
           className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
@@ -48,7 +58,7 @@ const ChatRow = ({
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
-            {lastMsg == undefined && chat.messages.length != 0   && (
+            {lastMsg == undefined && chat.messages.length != 0 && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
             <div className="">

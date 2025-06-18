@@ -13,6 +13,7 @@ const ChatList = ({
   userId,
   messages,
   currChatId,
+  setMsgLoading
 }: {
   chatList: IChat[] | undefined;
   userId: string;
@@ -20,9 +21,10 @@ const ChatList = ({
     [chatId: string]: IMessageGroup[];
   };
   currChatId: string;
+  setMsgLoading: Function
 }) => {
   const [searchValue, setSearchValue] = useState("");
-  
+
   return (
     <section
       className="w-[25%] h-full p-2 bg-white rounded-2xl"
@@ -102,6 +104,7 @@ const ChatList = ({
                     : messages[chat._id][0].messages[0]
                 }
                 isActive={currChatId == chat._id}
+                setMsgLoading={setMsgLoading}
               ></ChatRow>
             ))}
       </nav>

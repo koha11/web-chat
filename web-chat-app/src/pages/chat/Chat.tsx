@@ -86,6 +86,7 @@ const Chat = () => {
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList
+          setMsgLoading={setMsgLoading}
           currChatId={id ?? ""}
           messages={messages}
           chatList={Object.values(chatList ?? {})}
