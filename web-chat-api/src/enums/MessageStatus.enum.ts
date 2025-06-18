@@ -1,6 +1,5 @@
 enum MessageStatus {
   SENT = "SENT",
-  RECEIVED = "RECEIVED",
   SEEN = "SEEN",
   EDITED = "EDITED",
   UNSEND = "UNSEND",

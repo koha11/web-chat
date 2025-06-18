@@ -12,14 +12,16 @@ const GroupMsg = ({
   timeString,
   receivers,
   sender,
+  isFirstGroup,
 }: {
   messages: IMessage[];
   timeString: string;
   sender: IUser;
   receivers: IUser[];
+  isFirstGroup: boolean;
 }) => {
   return (
-    <div className="msg-group py-6">
+    <div className="msg-group py-4">
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
@@ -52,8 +54,9 @@ const GroupMsg = ({
               msg={msg}
               isSentMsg={msg.user == sender._id}
               isLongGap={isLongGap}
-              fullname={receivers[0].fullname}
+              fullname={receiver?.fullname ?? ""}
               msgSenderAvatar={msgSenderAvatar}
+              isFirstMsg={isFirstGroup && index == 0}
             ></SingleMsg>
           );
         })}

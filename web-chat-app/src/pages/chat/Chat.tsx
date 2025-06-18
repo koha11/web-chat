@@ -21,9 +21,8 @@ import IMessageGroup from "../../interfaces/messageGroup.interface";
 const Chat = () => {
   const { id } = useParams();
 
-  const [chatList, setChatList] = useState<
-    { [chatId: string]: IChat } | undefined
-  >();
+  const [chatList, setChatList] = useState<IChat[] | undefined>();
+  const [currentChat, setCurrentChat] = useState<IChat | undefined>();
   const [messages, setMessages] = useState<{
     [chatId: string]: IMessageGroup[];
   }>({});
@@ -81,6 +80,8 @@ const Chat = () => {
       socket.emit(SocketEvent.fmr, id);
     }
 
+    setCurrentChat(chatList?.find((chat) => chat._id == id));
+
     // setMsgLoading(true);
     // socket.emit(SocketEvent.fmr, id);
   }, [id, messages]);
@@ -102,7 +103,7 @@ const Chat = () => {
             handleSendMessage={handleSendMessage}
             messages={messages[id]}
             userId={userId}
-            chat={chatList ? chatList[id] : undefined}
+            chat={currentChat}
             msgsContainerRef={msgsContainerRef}
             isMsgLoading={isMsgLoading}
           ></ChatDetails>

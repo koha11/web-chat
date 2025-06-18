@@ -108,7 +108,7 @@ const ChatDetails = ({
         ref={msgsContainerRef}
       >
         {chat && sender && !isMsgLoading ? (
-          messages?.map((msg) => {
+          messages?.map((msg, index) => {
             return (
               <GroupMsg
                 key={msg.timeString}
@@ -116,6 +116,7 @@ const ChatDetails = ({
                 timeString={msg.timeString}
                 receivers={receivers}
                 sender={sender}
+                isFirstGroup={index == 0}
               ></GroupMsg>
             );
           })

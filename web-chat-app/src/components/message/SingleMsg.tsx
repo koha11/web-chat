@@ -4,7 +4,12 @@ import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
 import { IMessage } from "../../interfaces/message.interface";
-import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
+import {
+  getDisplaySendMsgTime,
+  getDisplayTimeDiff,
+  getTimeDiff,
+  TimeTypeOption,
+} from "../../utils/messageTime.helper";
 import MessageStatus from "../../enums/MessageStatus.enum";
 
 const SingleMsg = ({
@@ -13,12 +18,14 @@ const SingleMsg = ({
   msgSenderAvatar,
   fullname,
   msg,
+  isFirstMsg,
 }: {
   isSentMsg: boolean;
   fullname: string;
   msgSenderAvatar: string;
   isLongGap: boolean;
   msg: IMessage;
+  isFirstMsg: boolean;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -91,7 +98,21 @@ const SingleMsg = ({
             )}
       </div>
 
+
+      {/* Hien thi trang thai cua tin nhan  */}
       <div className="flex items-center justify-end">
+        {isSentMsg && msg.status == MessageStatus.SENT && isFirstMsg && (
+          <span className="text-[0.7rem] mr-1 italic text-gray-600">
+            Sent{" "}
+            {getTimeDiff(
+              new Date(),
+              new Date(msg.createdAt!),
+              TimeTypeOption.MINUTES
+            ) == 0
+              ? ""
+              : getDisplayTimeDiff(new Date(msg.createdAt!)) + " ago"}
+          </span>
+        )}
         {/* {isSentMsg &&
           MyTooltip(
             <div
