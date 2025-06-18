@@ -12,12 +12,14 @@ const ChatList = ({
   chatList,
   userId,
   messages,
+  currChatId,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
   messages: {
     [chatId: string]: IMessageGroup[];
   };
+  currChatId: string;
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -72,7 +74,7 @@ const ChatList = ({
 
       <nav
         id="chat-box-list"
-        className="h-[75%] overflow-y-scroll flex flex-col gap-2"
+        className="h-[75%] overflow-y-scroll flex flex-col gap-6"
       >
         {chatList == undefined
           ? [1, 2, 3, 4, 5, 6].map(() => (
@@ -99,6 +101,7 @@ const ChatList = ({
                     ? undefined
                     : messages[chat._id][0].messages[0]
                 }
+                isActive={currChatId == chat._id}
               ></ChatRow>
             ))}
       </nav>
