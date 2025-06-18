@@ -121,7 +121,6 @@ class MessageService {
       const chat = await Chat.findById(chatId);
 
       for (let receiverId of chat!.users as Types.ObjectId[]) {
-        console.log(receiverId);
 
         const chatList = await chatService.fetchChatListEvent(
           io,

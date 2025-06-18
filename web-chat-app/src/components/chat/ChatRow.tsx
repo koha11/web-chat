@@ -1,6 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Dot, MoreHorizontal } from "lucide-react";
+import {
+  Dot,
+  LucideMailCheck,
+  MailCheck,
+  MailOpen,
+  MailPlusIcon,
+  MessageCircleCode,
+  MoreHorizontal,
+  Pin,
+} from "lucide-react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IMessage } from "../../interfaces/message.interface";
 import { IUser } from "../../interfaces/user.interface";
@@ -9,6 +18,13 @@ import { Skeleton } from "../ui/skeleton";
 import { strimMessageBody } from "../../utils/messageText.helper";
 import { Button } from "../ui/button";
 import MessageStatus from "../../enums/MessageStatus.enum";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const ChatRow = ({
   userId,
@@ -25,6 +41,7 @@ const ChatRow = ({
 }) => {
   const [receivers, setReceivers] = useState<IUser[]>();
   const [isHover, setHover] = useState<boolean>(false);
+  const [isOpen, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (chat != undefined && lastMsg != undefined) {
@@ -101,17 +118,61 @@ const ChatRow = ({
           )}
       </div>
       {isHover && (
-        <Button
-          variant={"secondary"}
-          className="absolute rounded-full h-8 w-8 right-7 top-[50%] translate-y-[-50%] bg-gray-300 hover:bg-gray-500 shadow-xl cursor-pointer"
-          onMouseEnter={() => setHover(true)}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
-        >
-          <MoreHorizontal></MoreHorizontal>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button
+              variant={"secondary"}
+              className="absolute rounded-full h-8 w-8 right-7 top-[50%] translate-y-[-50%] bg-gray-300 hover:bg-gray-500 shadow-xl cursor-pointer"
+              onMouseEnter={() => setHover(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setOpen(true);
+              }}
+            >
+              <MoreHorizontal></MoreHorizontal>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-56 shadow-2xl px-2"
+            align="start"
+            side="top"
+            sideOffset={80}
+            collisionPadding={20}
+          >
+            <DropdownMenuItem className="cursor-pointer">
+              <Pin></Pin> Pin
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              <MessageCircleCode></MessageCircleCode> Mark as unread
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Mute nofication
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              View Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer">
+              Phone Call
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Video Call
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Block
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Restore Chat
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Delete Chat
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Report
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </NavLink>
   );
