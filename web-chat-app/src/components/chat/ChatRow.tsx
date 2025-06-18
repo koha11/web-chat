@@ -30,7 +30,7 @@ const ChatRow = ({
         setLastUser(chat.users.find((user) => user._id == lastMsg?.user)!);
       }
     }
-  }, [chat]); 
+  }, [chat]);
 
   return (
     <NavLink to={`/m/${chat._id}`} className={`chat-box w-full h-18 relative`}>
@@ -48,7 +48,7 @@ const ChatRow = ({
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
-            {lastMsg == undefined && (
+            {lastMsg == undefined && chat.messages.length != 0   && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
             <div className="">

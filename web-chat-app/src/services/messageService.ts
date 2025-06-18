@@ -54,13 +54,15 @@ export const fetchLastMessageEvent = (
     let groupedMessages = {} as { [chatId: string]: IMessageGroup[] };
 
     Object.keys(messages).forEach((chatId) => {
-      let message = messages[chatId][0];
-      groupedMessages[chatId] = [
-        {
-          timeString: new Date(message.createdAt!).toISOString(),
-          messages: [message],
-        },
-      ];
+      if (messages[chatId].length > 0) {
+        let message = messages[chatId][0];
+        groupedMessages[chatId] = [
+          {
+            timeString: new Date(message.createdAt!).toISOString(),
+            messages: [message],
+          },
+        ];
+      } else groupedMessages[chatId] = [];
     });
 
     setMessages(groupedMessages);

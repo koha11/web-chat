@@ -27,7 +27,7 @@ const Chat = () => {
     [chatId: string]: IMessageGroup[];
   }>({});
   const [userId, setUserId] = useState("");
-  const [isMsgLoading, setMsgLoading] = useState<boolean>(false);
+  const [isMsgLoading, setMsgLoading] = useState<boolean>(true);
 
   const socket = WebSocketConnection.getConnection();
 
@@ -73,17 +73,11 @@ const Chat = () => {
   useEffect(() => {
     if (messages[id!] == undefined) messages[id!] = [];
 
-    // Y tuong la cache lai danh sach msg, nhma co bug
-
-    if (messages[id!].length <= 1) {
-      setMsgLoading(true);
+    if (messages[id!].length == 1 && isMsgLoading) {
       socket.emit(SocketEvent.fmr, id);
     }
 
     setCurrentChat(chatList?.find((chat) => chat._id == id));
-
-    // setMsgLoading(true);
-    // socket.emit(SocketEvent.fmr, id);
   }, [id, messages]);
 
   if (userId == undefined || userId == "") return <Loading></Loading>;

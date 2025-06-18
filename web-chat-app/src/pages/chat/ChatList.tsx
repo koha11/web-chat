@@ -22,7 +22,7 @@ const ChatList = ({
   currChatId: string;
 }) => {
   const [searchValue, setSearchValue] = useState("");
-
+  
   return (
     <section
       className="w-[25%] h-full p-2 bg-white rounded-2xl"
