@@ -7,6 +7,7 @@ import {
   fetchLastMessageEvent,
   fetchMessagesEvent,
   listenReceiveMessage,
+  RequestFetchMessages,
 } from "../../services/messageService";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
@@ -22,10 +23,16 @@ const Chat = () => {
   const { id } = useParams();
 
   const [chatList, setChatList] = useState<IChat[] | undefined>();
+  const [lastMsgList, setLastMsgList] = useState<{
+    [chatId: string]: IMessage;
+  }>({});
+
   const [currentChat, setCurrentChat] = useState<IChat | undefined>();
+
   const [messages, setMessages] = useState<{
     [chatId: string]: IMessageGroup[];
   }>({});
+
   const [userId, setUserId] = useState("");
   const [isMsgLoading, setMsgLoading] = useState<boolean>(true);
 
@@ -51,7 +58,7 @@ const Chat = () => {
 
       fetchChatListEvent(socket, setChatList);
 
-      fetchLastMessageEvent(socket, setMessages);
+      fetchLastMessageEvent(socket, setLastMsgList);
 
       fetchMessagesEvent(
         socket,
@@ -73,12 +80,16 @@ const Chat = () => {
   useEffect(() => {
     if (messages[id!] == undefined) messages[id!] = [];
 
-    if (messages[id!].length == 1 && isMsgLoading) {
-      socket.emit(SocketEvent.fmr, id);
+    if ((messages[id!].length <= 1 && isMsgLoading) || isMsgLoading) {
+      RequestFetchMessages(socket, id!);
     }
 
     setCurrentChat(chatList?.find((chat) => chat._id == id));
-  }, [id, messages]);
+
+    return () => {
+      socket.off(SocketEvent.fmr);
+    };
+  }, [id, chatList]);
 
   if (userId == undefined || userId == "") return <Loading></Loading>;
 
@@ -88,7 +99,7 @@ const Chat = () => {
         <ChatList
           setMsgLoading={setMsgLoading}
           currChatId={id ?? ""}
-          messages={messages}
+          lastMsgList={lastMsgList}
           chatList={Object.values(chatList ?? {})}
           userId={userId}
         ></ChatList>

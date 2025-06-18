@@ -57,6 +57,7 @@ const ChatDetails = ({
   }, [chat]);
 
   // HANDLERs
+  
 
   return (
     <section
@@ -107,28 +108,25 @@ const ChatDetails = ({
         className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
         ref={msgsContainerRef}
       >
-        {chat && sender && !isMsgLoading ? (
-          messages?.map((msg, index) => {
-            return (
-              <GroupMsg
-                key={msg.timeString}
-                messages={msg.messages}
-                timeString={msg.timeString}
-                receivers={receivers}
-                sender={sender}
-                isFirstGroup={index == 0}
-              ></GroupMsg>
-            );
-          })
-        ) : (
-          // : [1, 2, 3, 4, 5].map(() => (
-          //     <div className="space-y-2 flex flex-col items-end">
-          //       <Skeleton className="h-4 w-[240px]"></Skeleton>
-          //       <Skeleton className="h-4 w-[80px]"></Skeleton>
-          //     </div>
-          //   ))
-          <Loading />
-        )}
+        {chat && sender && !isMsgLoading
+          ? messages?.map((msg, index) => {
+              return (
+                <GroupMsg
+                  key={msg.timeString}
+                  messages={msg.messages}
+                  timeString={msg.timeString}
+                  receivers={receivers}
+                  sender={sender}
+                  isFirstGroup={index == 0}
+                ></GroupMsg>
+              );
+            })
+          : [1, 2, 3, 4, 5].map(() => (
+              <div className="space-y-2 flex flex-col items-end my-2">
+                <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
+                <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
+              </div>
+            ))}
       </div>
 
       <div className="container h-[5%]">

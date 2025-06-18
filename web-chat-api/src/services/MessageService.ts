@@ -6,31 +6,56 @@ import chatService from "./ChatService";
 import SocketEvent from "../enums/SocketEvent";
 import MessageStatus from "../enums/MessageStatus.enum";
 import { toObjectId } from "../utils/mongoose";
+import { Types } from "mongoose";
+import { IUser } from "../models/User.model";
 
 class MessageService {
-  listenSendMessage(socket: Socket, io: Server) {
+  listenSendMessage(
+    socket: Socket,
+    io: Server,
+    userMap: { [userId: string]: string }
+  ) {
     const user = socket.data.user as ITokenPayload;
     socket.on(SocketEvent.sm, async (msg: IMessage, chatId: string) => {
       console.log(user.username + " have sent " + msg.msgBody);
 
-      const myMsg = await Message.create(msg);
+      const myMsg = (await Message.create(msg)) as IMessage;
+      const chat = await Chat.findById(chatId).populate("users");
 
-      await Chat.findByIdAndUpdate(chatId, { $push: { messages: myMsg } });
+      (chat?.messages as Types.ObjectId[]).push(myMsg.id);
+
+      await chat?.save();
 
       io.to(chatId).emit(SocketEvent.rm, myMsg, chatId);
+      for (let user of chat?.users as IUser[]) {
+        console.log("fetch chat list for", user.username);
+        const chatList = await chatService.fetchChatListEvent(
+          io,
+          userMap,
+          user.id
+        );
 
-      chatService.fetchChatListEvent(io, socket.id, socket.data.user.id);
+        this.fetchLastMessageEvent(io, userMap, user.id, chatList);
+      }
     });
   }
 
-  listenFetchMessagesRequest = (socket: Socket, io: Server) => {
+  listenFetchMessagesRequest = (
+    socket: Socket,
+    io: Server,
+    userMap: { [userId: string]: string }
+  ) => {
     socket.on(SocketEvent.fmr, (chatId: string) => {
       console.log(socket.data.user.username + " call " + SocketEvent.fmr);
-      this.fetchMessagesEvent(io, socket.id, chatId, socket.data.user.id);
+      this.fetchMessagesEvent(io, userMap, chatId, socket.data.user.id);
     });
   };
 
-  listenUnsendMessage = (socket: Socket, io: Server) => {
+  listenUnsendMessage = (
+    socket: Socket,
+    io: Server,
+    userMap: { [userId: string]: string }
+  ) => {
     socket.on(
       SocketEvent.um,
       async (msgId: string, chatId: string, isUnsendForEveryone: boolean) => {
@@ -45,45 +70,75 @@ class MessageService {
             status: MessageStatus.REMOVED_ONLY_YOU,
           });
 
-        this.fetchMessagesEvent(io, socket.id, chatId, socket.data.user.id);
+        this.fetchMessagesEvent(io, userMap, chatId, socket.data.user.id);
       }
     );
   };
 
   fetchLastMessageEvent = async (
     io: Server,
-    socketId: string,
+    userMap: { [userId: string]: string },
+    userId: string,
     chatList: IChat[]
   ) => {
-    const data = {} as { [chatId: string]: IMessage[] };
+    const data = {} as { [chatId: string]: IMessage };
 
     for (let chat of chatList) {
       const messages = await this.getMessages(chat.id);
 
-      data[chat.id] = [];
       if (messages != undefined && messages.length > 0)
-        data[chat.id].push(messages[0]);
+        data[chat.id] = messages[0];
     }
 
-    io.to(socketId).emit(SocketEvent.flm, data);
+    io.to(userMap[userId]).emit(SocketEvent.flm, data);
   };
 
   fetchMessagesEvent = async (
     io: Server,
-    socketId: string,
+    userMap: { [userId: string]: string },
     chatId: string,
     userId: string
   ) => {
     const messages = await this.getMessages(chatId);
+    let isRefetch = false;
 
     for (let msg of messages) {
-      if (msg.seenList.includes(toObjectId(userId))) break;
+      if (
+        msg.seenList.includes(toObjectId(userId)) ||
+        (msg.user as Types.ObjectId).equals(toObjectId(userId))
+      )
+        break;
 
       msg.seenList.push(toObjectId(userId));
+
+      if (msg.status == MessageStatus.SENT) msg.status = MessageStatus.SEEN;
+
+      isRefetch = true;
       await msg.save();
     }
 
-    io.to(socketId).emit(SocketEvent.fm, messages, chatId);
+    if (isRefetch) {
+      const chat = await Chat.findById(chatId);
+
+      for (let receiverId of chat!.users as Types.ObjectId[]) {
+        console.log(receiverId);
+
+        const chatList = await chatService.fetchChatListEvent(
+          io,
+          userMap,
+          receiverId.toString()
+        );
+
+        await messageService.fetchLastMessageEvent(
+          io,
+          userMap,
+          receiverId.toString(),
+          chatList
+        );
+      }
+    }
+
+    io.to(userMap[userId]).emit(SocketEvent.fm, messages, chatId);
   };
 
   getMessages = async (chatId: string) => {

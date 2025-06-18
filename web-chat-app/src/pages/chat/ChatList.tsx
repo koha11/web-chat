@@ -7,21 +7,22 @@ import Loading from "../../components/ui/loading";
 import ChatRow from "../../components/chat/ChatRow";
 import { Skeleton } from "../../components/ui/skeleton";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
+import { IMessage } from "../../interfaces/message.interface";
 
 const ChatList = ({
   chatList,
   userId,
-  messages,
+  lastMsgList,
   currChatId,
-  setMsgLoading
+  setMsgLoading,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
-  messages: {
-    [chatId: string]: IMessageGroup[];
+  lastMsgList: {
+    [chatId: string]: IMessage;
   };
   currChatId: string;
-  setMsgLoading: Function
+  setMsgLoading: Function;
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -98,10 +99,9 @@ const ChatList = ({
                 userId={userId}
                 key={chat._id}
                 lastMsg={
-                  messages[chat._id] == undefined ||
-                  messages[chat._id].length == 0
+                  lastMsgList[chat._id] == undefined
                     ? undefined
-                    : messages[chat._id][0].messages[0]
+                    : lastMsgList[chat._id]
                 }
                 isActive={currChatId == chat._id}
                 setMsgLoading={setMsgLoading}

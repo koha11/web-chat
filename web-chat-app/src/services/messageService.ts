@@ -48,24 +48,10 @@ export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
 
 export const fetchLastMessageEvent = (
   socket: Socket,
-  setMessages: Function
+  setLastMsgList: Function
 ) => {
-  socket.on(SocketEvent.flm, (messages: { [chatId: string]: [IMessage] }) => {
-    let groupedMessages = {} as { [chatId: string]: IMessageGroup[] };
-
-    Object.keys(messages).forEach((chatId) => {
-      if (messages[chatId].length > 0) {
-        let message = messages[chatId][0];
-        groupedMessages[chatId] = [
-          {
-            timeString: new Date(message.createdAt!).toISOString(),
-            messages: [message],
-          },
-        ];
-      } else groupedMessages[chatId] = [];
-    });
-
-    setMessages(groupedMessages);
+  socket.on(SocketEvent.flm, (lastMsgList: { [chatId: string]: IMessage }) => {
+    setLastMsgList(lastMsgList);
   });
 };
 
@@ -95,4 +81,12 @@ export const fetchMessagesEvent = (
     setMessages(chatId, grouped);
     setMsgLoading(false);
   });
+};
+
+export const RequestFetchMessages = (socket: Socket, chatId: string) => {
+  socket.emit(SocketEvent.fmr, chatId);
+};
+
+export const RequestFetchLastMessages = (socket: Socket, chatId: string) => {
+  socket.emit(SocketEvent.flm, chatId);
 };

@@ -23,13 +23,13 @@ const ChatRow = ({
   isActive: boolean;
   setMsgLoading: Function;
 }) => {
-  const [lastUser, setLastUser] = useState<IUser>();
+  const [receivers, setReceivers] = useState<IUser[]>();
   const [isHover, setHover] = useState<boolean>(false);
 
   useEffect(() => {
     if (chat != undefined && lastMsg != undefined) {
       if (typeof chat.users == "object") {
-        setLastUser(chat.users.find((user) => user._id == lastMsg?.user)!);
+        setReceivers(chat.users);
       }
     }
   }, [chat]);
@@ -78,12 +78,20 @@ const ChatRow = ({
         {/* Hien thi avatar nhung nguoi da seen tin nhan  */}
         {lastMsg &&
           lastMsg.user == userId &&
-          lastMsg.status == MessageStatus.SEEN && (
-            <div
-              className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-              style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
-            ></div>
-          )}
+          lastMsg.status == MessageStatus.SEEN &&
+          receivers &&
+          lastMsg.seenList.map((receiverId) => {
+            const receiver = receivers.find(
+              (receiver) => receiver._id == receiverId
+            );
+
+            return (
+              <div
+                className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+                style={{ backgroundImage: `url(${receiver!.avatar})` }}
+              ></div>
+            );
+          })}
 
         {/* Hien thi thong bao chua doc tin nhan */}
         {lastMsg &&

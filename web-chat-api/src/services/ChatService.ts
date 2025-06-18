@@ -3,10 +3,16 @@ import Chat from "../models/Chat.model";
 import SocketEvent from "../enums/SocketEvent";
 
 class ChatService {
-  fetchChatListEvent = async (io: Server, socketId: string, chatId: string) => {
-    const data = await this.getChatList(chatId);
+  // Lay ra toan bo chat cua 1 user
+  fetchChatListEvent = async (
+    io: Server,
+    userMap: { [userId: string]: string },
+    userId: string
+  ) => {
+    const data = await this.getChatList(userId);
 
-    io.to(socketId).emit(SocketEvent.fcl, data);
+    if (userMap[userId] != "")
+      io.to(userMap[userId]).emit(SocketEvent.fcl, data);
 
     return data;
   };
@@ -15,8 +21,6 @@ class ChatService {
     const chatList = await Chat.find({ users: id })
       .populate("users")
       .sort({ updatedAt: -1 });
-
-    console.log(chatList);
 
     return chatList;
   };
