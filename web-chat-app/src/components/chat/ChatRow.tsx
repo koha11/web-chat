@@ -6,6 +6,7 @@ import { IMessage } from "../../interfaces/message.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
 import { Skeleton } from "../ui/skeleton";
+import { strimMessageBody } from "../../utils/messageText.helper";
 
 const ChatRow = ({
   userId,
@@ -20,19 +21,11 @@ const ChatRow = ({
 
   useEffect(() => {
     if (chat != undefined && lastMsg != undefined) {
-      // console.log(myLastMsg);
-
-      // if (myLastMsg == undefined) {
-      //   setLastUser({});
-      // }
-
       if (typeof chat.users == "object") {
         setLastUser(chat.users.find((user) => user._id == lastMsg?.user)!);
       }
     }
   }, [chat]);
-
-  // if (lastMsg == undefined || lastUser == undefined) return <Loading></Loading>;
 
   return (
     <NavLink
@@ -47,20 +40,28 @@ const ChatRow = ({
         className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
         style={{ backgroundImage: `url(${chat.chatAvatar})` }}
       ></div>
-      <div className="flex-auto px-4 flex flex-col items-baseline space-y-2">
+      <div className="flex-auto px-2 flex flex-col items-baseline space-y-2">
         <div className="font-bold">{chat.chatName}</div>
-        <div className="text-gray-500 text-[0.75rem] flex items-center">
+        <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
           {lastMsg == undefined && (
             <Skeleton className="w-[180px] h-4"></Skeleton>
           )}
-          {lastMsg && lastMsg.user == userId && "You:"}{" "}
-          {lastMsg && lastMsg.msgBody} {lastMsg && <Dot size={12}></Dot>}
-          {lastMsg && getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
+          <div className="">
+            {lastMsg && lastMsg.user == userId && "You:"}{" "}
+            {lastMsg &&
+              (lastMsg.msgBody.length > 15
+                ? strimMessageBody(lastMsg.msgBody, 15)
+                : lastMsg.msgBody)}
+          </div>
+          <div className="flex items-center">
+            {lastMsg && <Dot size={12}></Dot>}
+            {lastMsg && getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
+          </div>
         </div>
       </div>
       {lastMsg && lastMsg.user != userId && (
         <div
-          className="w-6 h-6 rounded-full bg-contain bg-no-repeat bg-center"
+          className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
           style={{ backgroundImage: `url(${lastUser && lastUser.avatar})` }}
         ></div>
       )}
