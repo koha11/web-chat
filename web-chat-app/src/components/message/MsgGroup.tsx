@@ -30,6 +30,13 @@ const GroupMsg = ({
           const receiver = receivers.find(
             (receiver) => receiver._id == msg.user
           );
+
+          console.log(msg);
+
+          const seenList = receivers.filter((receiver) =>
+            Object.keys(msg.seenList).includes(receiver._id)
+          );
+
           const isLongGap =
             index < messages.length - 1 &&
             getTimeDiff(
@@ -57,6 +64,7 @@ const GroupMsg = ({
               fullname={receiver?.fullname ?? ""}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
+              seenList={seenList}
             ></SingleMsg>
           );
         })}

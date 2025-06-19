@@ -51,6 +51,8 @@ const ChatRow = ({
     }
   }, [chat]);
 
+  console.log(lastMsg);
+
   return (
     <NavLink to={`/m/${chat._id}`} className={`chat-box w-full h-18 relative`}>
       <div
@@ -97,7 +99,7 @@ const ChatRow = ({
           lastMsg.user == userId &&
           lastMsg.status == MessageStatus.SEEN &&
           receivers &&
-          lastMsg.seenList.map((receiverId) => {
+          Object.keys(lastMsg.seenList).map((receiverId) => {
             const receiver = receivers.find(
               (receiver) => receiver._id == receiverId
             );
@@ -113,7 +115,7 @@ const ChatRow = ({
         {/* Hien thi thong bao chua doc tin nhan */}
         {lastMsg &&
           lastMsg.user != userId &&
-          !lastMsg.seenList.includes(userId) && (
+          !Object.keys(lastMsg.seenList).includes(userId) && (
             <div className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center bg-blue-600"></div>
           )}
       </div>
@@ -121,6 +123,7 @@ const ChatRow = ({
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button
+              asChild
               variant={"secondary"}
               className="absolute rounded-full h-8 w-8 right-7 top-[50%] translate-y-[-50%] bg-gray-300 hover:bg-gray-500 shadow-xl cursor-pointer"
               onMouseEnter={() => setHover(true)}

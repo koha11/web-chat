@@ -11,7 +11,7 @@ export interface IMessage extends Document {
   user: IUser | Types.ObjectId;
   msgBody: string;
   status: MessageStatus;
-  seenList: (IUser | Types.ObjectId)[];
+  seenList: Map<string, string>;
   createdAt?: Date;
   updatedAt?: Date;
   deleted?: boolean;
@@ -24,7 +24,7 @@ const MessageSchema = new Schema<IMessage>(
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     msgBody: { type: String, required: true },
     status: { type: String, required: true, default: MessageStatus.SENT },
-    seenList: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    seenList: { type: Map, of: String, default: {} },
   },
   { timestamps: true }
 );

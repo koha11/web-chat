@@ -11,6 +11,7 @@ import {
   TimeTypeOption,
 } from "../../utils/messageTime.helper";
 import MessageStatus from "../../enums/MessageStatus.enum";
+import { IUser } from "../../interfaces/user.interface";
 
 const SingleMsg = ({
   isLongGap,
@@ -19,6 +20,7 @@ const SingleMsg = ({
   fullname,
   msg,
   isFirstMsg,
+  seenList,
 }: {
   isSentMsg: boolean;
   fullname: string;
@@ -26,6 +28,7 @@ const SingleMsg = ({
   isLongGap: boolean;
   msg: IMessage;
   isFirstMsg: boolean;
+  seenList: IUser[];
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -98,29 +101,34 @@ const SingleMsg = ({
             )}
       </div>
 
-
       {/* Hien thi trang thai cua tin nhan  */}
       <div className="flex items-center justify-end">
-        {isSentMsg && msg.status == MessageStatus.SENT && isFirstMsg && (
-          <span className="text-[0.7rem] mr-1 italic text-gray-600">
-            Sent{" "}
-            {getTimeDiff(
-              new Date(),
-              new Date(msg.createdAt!),
-              TimeTypeOption.MINUTES
-            ) == 0
-              ? ""
-              : getDisplayTimeDiff(new Date(msg.createdAt!)) + " ago"}
-          </span>
-        )}
-        {/* {isSentMsg &&
-          MyTooltip(
-            <div
-              className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-              style={{ backgroundImage: `url(${avatar})` }}
-            ></div>,
-            fullname
-          )} */}
+        {isSentMsg &&
+          isFirstMsg &&
+          ((msg.status == MessageStatus.SENT && (
+            <span className="text-[0.7rem] mr-1 italic text-gray-600">
+              Sent{" "}
+              {getTimeDiff(
+                new Date(),
+                new Date(msg.createdAt!),
+                TimeTypeOption.MINUTES
+              ) == 0
+                ? ""
+                : getDisplayTimeDiff(new Date(msg.createdAt!)) + " ago"}
+            </span>
+          )) ||
+            (msg.status == MessageStatus.SEEN &&
+              seenList.map((user) =>
+                MyTooltip(
+                  <div
+                    className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+                    style={{ backgroundImage: `url(${user.avatar})` }}
+                  ></div>,
+                  user.fullname +
+                    " seen at " +
+                    getDisplaySendMsgTime(new Date(msg.seenList[user._id]))
+                )
+              )))}
       </div>
     </div>
   );

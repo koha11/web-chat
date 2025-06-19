@@ -44,6 +44,7 @@ const ChatDetails = ({
       user: userId,
       msgBody: "",
       status: MessageStatus.SENT,
+      seenList: {},
     },
   });
 
@@ -57,7 +58,6 @@ const ChatDetails = ({
   }, [chat]);
 
   // HANDLERs
-  
 
   return (
     <section
@@ -132,6 +132,7 @@ const ChatDetails = ({
       <div className="container h-[5%]">
         <form
           className="relative w-full flex items-center justify-between"
+          autoComplete="off"
           onSubmit={handleSubmit((msg: IMessage) => {
             if (chat != undefined) {
               handleSendMessage(msg, chat._id);

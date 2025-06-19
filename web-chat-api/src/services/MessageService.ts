@@ -104,16 +104,17 @@ class MessageService {
 
     for (let msg of messages) {
       if (
-        msg.seenList.includes(toObjectId(userId)) ||
+        Object.keys(msg.seenList).includes(userId) ||
         (msg.user as Types.ObjectId).equals(toObjectId(userId))
       )
         break;
 
-      msg.seenList.push(toObjectId(userId));
+      msg.seenList.set(userId, new Date().toISOString());
 
       if (msg.status == MessageStatus.SENT) msg.status = MessageStatus.SEEN;
 
       isRefetch = true;
+
       await msg.save();
     }
 
@@ -121,7 +122,6 @@ class MessageService {
       const chat = await Chat.findById(chatId);
 
       for (let receiverId of chat!.users as Types.ObjectId[]) {
-
         const chatList = await chatService.fetchChatListEvent(
           io,
           userMap,

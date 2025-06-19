@@ -25,7 +25,6 @@ const ChatList = ({
   setMsgLoading: Function;
 }) => {
   const [searchValue, setSearchValue] = useState("");
-
   return (
     <section
       className="w-[25%] h-full p-2 bg-white rounded-2xl"
