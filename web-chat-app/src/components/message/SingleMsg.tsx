@@ -17,32 +17,52 @@ const SingleMsg = ({
   isLongGap,
   isSentMsg,
   msgSenderAvatar,
-  fullname,
   msg,
   isFirstMsg,
   seenList,
   handleReplyMsg,
+  receivers,
 }: {
   isSentMsg: boolean;
-  fullname: string;
   msgSenderAvatar: string;
   isLongGap: boolean;
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: IUser[];
+  receivers: { [userId: string]: IUser };
   handleReplyMsg: (msg: IMessage) => void;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
 
   if (msg.status == MessageStatus.REMOVED_ONLY_YOU) return <></>;
-
+  console.log(msg);
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}
     >
+      {msg.replyForMsg && (
+        <div
+          className={`flex flex-col mt-2 text-[0.8rem] relative ${
+            isSentMsg ? "items-end" : "items-baseline"
+          }`}
+        >
+          <div className={`flex gap-2 mb-7`}>
+            <Reply size={"14"}></Reply> You replied to{" "}
+            {receivers[(msg.replyForMsg as IMessage).user.toString()] !=
+            undefined
+              ? receivers[(msg.replyForMsg as IMessage).user.toString()]
+                  .fullname
+              : "yourself"}
+          </div>
+          <div className="bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute top-5 right-0">
+            {(msg.replyForMsg as IMessage).msgBody}
+          </div>
+        </div>
+      )}
+
       <div
-        className={`flex items-center gap-2 ${
+        className={`flex items-center gap-2 z-10 ${
           isSentMsg ? "justify-end" : "justify-baseline"
         }`}
         onMouseEnter={() => setHover(true)}
@@ -60,7 +80,7 @@ const SingleMsg = ({
               className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
               style={{ backgroundImage: `url(${msgSenderAvatar})` }}
             ></div>,
-            fullname,
+            receivers[msg.user.toString()].fullname,
             "order-1"
           )
         )}
@@ -85,7 +105,10 @@ const SingleMsg = ({
                   isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
                 }`}
               >
-                {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message
+                {isSentMsg
+                  ? "You"
+                  : receivers[msg.user.toString()].fullname.split(" ")[0]}{" "}
+                unsend a message
               </span>,
               `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
               Unsend at ${getDisplaySendMsgTime(new Date(msg.updatedAt!))}`,

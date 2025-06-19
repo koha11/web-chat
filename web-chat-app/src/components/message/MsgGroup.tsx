@@ -13,14 +13,14 @@ const GroupMsg = ({
   receivers,
   sender,
   isFirstGroup,
-  handleReplyMsg
+  handleReplyMsg,
 }: {
   messages: IMessage[];
   timeString: string;
   sender: IUser;
-  receivers: IUser[];
+  receivers: { [userId: string]: IUser };
   isFirstGroup: boolean;
-  handleReplyMsg: (msg: IMessage) => void
+  handleReplyMsg: (msg: IMessage) => void;
 }) => {
   return (
     <div className="msg-group py-4">
@@ -29,11 +29,9 @@ const GroupMsg = ({
       </div>
       <div className="flex flex-col-reverse">
         {messages.map((msg, index) => {
-          const receiver = receivers.find(
-            (receiver) => receiver._id == msg.user
-          );
+          const receiver = receivers[msg.user.toString()];
 
-          const seenList = receivers.filter((receiver) =>
+          const seenList = Object.values(receivers).filter((receiver) =>
             Object.keys(msg.seenList).includes(receiver._id)
           );
 
@@ -61,11 +59,11 @@ const GroupMsg = ({
               msg={msg}
               isSentMsg={msg.user == sender._id}
               isLongGap={isLongGap}
-              fullname={receiver?.fullname ?? ""}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
               seenList={seenList}
               handleReplyMsg={handleReplyMsg}
+              receivers={receivers}
             ></SingleMsg>
           );
         })}

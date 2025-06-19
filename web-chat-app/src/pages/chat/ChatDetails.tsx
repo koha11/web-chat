@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, use, useEffect, useRef, useState } from "react";
 import { getData, postData } from "../../services/api";
 import { Link, useParams } from "react-router-dom";
 import SingleMsg from "../../components/message/SingleMsg";
@@ -41,7 +41,7 @@ const ChatDetails = ({
   isMsgLoading: boolean;
 }) => {
   // states
-  const [receivers, setReceivers] = useState<IUser[]>([]);
+  const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
   const [sender, setSender] = useState<IUser>();
   const [isOpen, setOpen] = useState(false);
 
@@ -60,7 +60,12 @@ const ChatDetails = ({
 
   useEffect(() => {
     if (chat && typeof chat.users == "object") {
-      setReceivers(chat.users.filter((user) => user._id != userId));
+      let myMap = {} as { [userId: string]: IUser };
+      chat.users.forEach((user) => {
+        if (user._id != userId) myMap[user._id] = user;
+      });
+
+      setReceivers(myMap);
       setSender(chat.users.find((user) => user._id == userId));
     }
   }, [chat]);
@@ -91,7 +96,7 @@ const ChatDetails = ({
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
-                {receivers.some((receiver) => receiver.isOnline)
+                {Object.values(receivers).some((receiver) => receiver.isOnline)
                   ? "Đang hoạt động"
                   : "Không hoạt động"}
               </div>
@@ -126,10 +131,8 @@ const ChatDetails = ({
               <div className="py-1 space-y-2">
                 <div className="font-semibold">
                   Replying to{" "}
-                  {receivers.find(
-                    (receiverId) =>
-                      (watch("replyForMsg") as IMessage).user == receiverId
-                  )?.fullname ?? "yourself"}
+                  {receivers[(watch("replyForMsg") as IMessage).user.toString()]
+                    ?.fullname ?? "yourself"}
                 </div>
                 <div className="text-[0.7rem]">
                   {(watch("replyForMsg") as IMessage).msgBody}
@@ -178,6 +181,8 @@ const ChatDetails = ({
             if (chat != undefined) {
               handleSendMessage(msg, chat._id);
               resetField("msgBody");
+              resetField("replyForMsg");
+              setOpen(false);
             }
           })}
         >

@@ -19,7 +19,9 @@ class MessageService {
     socket.on(SocketEvent.sm, async (msg: IMessage, chatId: string) => {
       console.log(user.username + " have sent " + msg.msgBody);
 
-      const myMsg = (await Message.create(msg)) as IMessage;
+      const createdMsg = (await Message.create(msg)) as IMessage;
+      const myMsg = await createdMsg.populate("replyForMsg");
+
       const chat = await Chat.findById(chatId).populate("users");
 
       (chat?.messages as Types.ObjectId[]).push(myMsg.id);
