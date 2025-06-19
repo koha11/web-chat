@@ -15,6 +15,7 @@ import WebSocketConnection from "../../services/WebSocketConnection";
 import { useParams } from "react-router-dom";
 import SocketEvent from "../../enums/SocketEvent.enum";
 import { toast } from "sonner";
+import { IMessage } from "../../interfaces/message.interface";
 
 const MessageActions = ({
   isOpen,
@@ -22,12 +23,14 @@ const MessageActions = ({
   isSentMsg,
   msgId,
   isUnsendMsg,
+  handleReplyMsg
 }: {
   isOpen: boolean;
   setOpen: () => void;
   isSentMsg: boolean;
   msgId: string;
   isUnsendMsg: boolean;
+  handleReplyMsg: () => void;
 }) => {
   const { id } = useParams();
 
@@ -60,6 +63,7 @@ const MessageActions = ({
         className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
           isUnsendMsg && "hidden"
         }`}
+        onClick={handleReplyMsg}
       >
         <Reply></Reply>
       </Button>

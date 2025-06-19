@@ -8,7 +8,7 @@ import { IMessage } from "../../interfaces/message.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { isArray } from "../../utils/checkType.helper";
-import { MoreHorizontal, Phone, Video } from "lucide-react";
+import { MoreHorizontal, Phone, Video, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
@@ -18,6 +18,12 @@ import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
 import { send } from "process";
 import { Skeleton } from "../../components/ui/skeleton";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../../components/ui/collapsible";
+import { Button } from "../../components/ui/button";
 
 const ChatDetails = ({
   chat,
@@ -37,16 +43,18 @@ const ChatDetails = ({
   // states
   const [receivers, setReceivers] = useState<IUser[]>([]);
   const [sender, setSender] = useState<IUser>();
+  const [isOpen, setOpen] = useState(false);
 
   // useForm
-  const { register, handleSubmit, resetField } = useForm<IMessage>({
-    defaultValues: {
-      user: userId,
-      msgBody: "",
-      status: MessageStatus.SENT,
-      seenList: {},
-    },
-  });
+  const { register, handleSubmit, resetField, setValue, watch } =
+    useForm<IMessage>({
+      defaultValues: {
+        user: userId,
+        msgBody: "",
+        status: MessageStatus.SENT,
+        seenList: {},
+      },
+    });
 
   // useEffect
 
@@ -58,6 +66,10 @@ const ChatDetails = ({
   }, [chat]);
 
   // HANDLERs
+  const handleReplyMsg = (msg: IMessage) => {
+    setValue("replyForMsg", msg);
+    setOpen(true);
+  };
 
   return (
     <section
@@ -108,6 +120,35 @@ const ChatDetails = ({
         className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
         ref={msgsContainerRef}
       >
+        {watch("replyForMsg") != undefined && (
+          <Collapsible open={isOpen} onOpenChange={setOpen}>
+            <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2">
+              <div className="py-1 space-y-2">
+                <div className="font-semibold">
+                  Replying to{" "}
+                  {receivers.find(
+                    (receiverId) =>
+                      (watch("replyForMsg") as IMessage).user == receiverId
+                  )?.fullname ?? "yourself"}
+                </div>
+                <div className="text-[0.7rem]">
+                  {(watch("replyForMsg") as IMessage).msgBody}
+                </div>
+              </div>
+              <Button
+                variant={"outline"}
+                className="h-6 w-4 rounded-full cursor-pointer border-0"
+                onClick={() => {
+                  setOpen(false);
+                  resetField("replyForMsg");
+                }}
+              >
+                <X></X>
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
         {chat && sender && !isMsgLoading
           ? messages?.map((msg, index) => {
               return (
@@ -118,6 +159,7 @@ const ChatDetails = ({
                   receivers={receivers}
                   sender={sender}
                   isFirstGroup={index == 0}
+                  handleReplyMsg={handleReplyMsg}
                 ></GroupMsg>
               );
             })
@@ -128,7 +170,6 @@ const ChatDetails = ({
               </div>
             ))}
       </div>
-
       <div className="container h-[5%]">
         <form
           className="relative w-full flex items-center justify-between"

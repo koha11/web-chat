@@ -21,6 +21,7 @@ const SingleMsg = ({
   msg,
   isFirstMsg,
   seenList,
+  handleReplyMsg,
 }: {
   isSentMsg: boolean;
   fullname: string;
@@ -29,6 +30,7 @@ const SingleMsg = ({
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: IUser[];
+  handleReplyMsg: (msg: IMessage) => void;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -71,6 +73,7 @@ const SingleMsg = ({
             isSentMsg={isSentMsg}
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
+            handleReplyMsg={() => handleReplyMsg(msg)}
           ></MessageActions>
         )}
 

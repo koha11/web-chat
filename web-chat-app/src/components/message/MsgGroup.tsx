@@ -13,12 +13,14 @@ const GroupMsg = ({
   receivers,
   sender,
   isFirstGroup,
+  handleReplyMsg
 }: {
   messages: IMessage[];
   timeString: string;
   sender: IUser;
   receivers: IUser[];
   isFirstGroup: boolean;
+  handleReplyMsg: (msg: IMessage) => void
 }) => {
   return (
     <div className="msg-group py-4">
@@ -30,8 +32,6 @@ const GroupMsg = ({
           const receiver = receivers.find(
             (receiver) => receiver._id == msg.user
           );
-
-          console.log(msg);
 
           const seenList = receivers.filter((receiver) =>
             Object.keys(msg.seenList).includes(receiver._id)
@@ -65,6 +65,7 @@ const GroupMsg = ({
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
               seenList={seenList}
+              handleReplyMsg={handleReplyMsg}
             ></SingleMsg>
           );
         })}

@@ -3,10 +3,11 @@ import { IUser } from "./user.interface";
 
 export interface IMessage {
   _id: string;
-  user: string | IUser;
+  user: string | IUser; 
   msgBody: string;
   status: MessageStatus;
   seenList: { [userId: string]: string };
+  replyForMsg?: IMessage | String;
 
   createdAt?: Date;
   updatedAt?: Date;

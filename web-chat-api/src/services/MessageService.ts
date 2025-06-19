@@ -141,7 +141,13 @@ class MessageService {
   };
 
   getMessages = async (chatId: string) => {
-    const chat = await Chat.findById(chatId).populate("messages");
+    const chat = await Chat.findById(chatId).populate({
+      path: "messages",
+      populate: {
+        path: "replyForMsg",
+        model: "Message", // optional if already in schema
+      },
+    });
     const myMsgList = (chat?.messages as IMessage[]) ?? [];
 
     myMsgList.sort(
