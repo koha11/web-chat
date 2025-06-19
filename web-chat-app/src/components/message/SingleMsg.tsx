@@ -36,7 +36,7 @@ const SingleMsg = ({
   const [isOpen, setOpen] = useState<boolean>(false);
 
   if (msg.status == MessageStatus.REMOVED_ONLY_YOU) return <></>;
-  console.log(msg);
+  
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}

@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import SocketEvent from "../../enums/SocketEvent.enum";
 import { toast } from "sonner";
 import { IMessage } from "../../interfaces/message.interface";
+import ForwardMsgDialog from "./ForwardMsgDialog";
 
 const MessageActions = ({
   isOpen,
@@ -23,7 +24,7 @@ const MessageActions = ({
   isSentMsg,
   msgId,
   isUnsendMsg,
-  handleReplyMsg
+  handleReplyMsg,
 }: {
   isOpen: boolean;
   setOpen: () => void;
@@ -36,6 +37,7 @@ const MessageActions = ({
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
+  const [isForwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
 
   const socket = WebSocketConnection.getConnection();
 
@@ -98,6 +100,7 @@ const MessageActions = ({
 
           <DropdownMenuItem
             className={`cursor-pointer font-bold ${isUnsendMsg && "hidden"}`}
+            onClick={() => setForwardDialogOpen(true)}
           >
             Forward
           </DropdownMenuItem>
@@ -162,6 +165,11 @@ const MessageActions = ({
         name={"isUnsendForEveryone"}
         initValue={true}
       ></MyRadioDialog>
+
+      <ForwardMsgDialog
+        isOpen={isForwardDialogOpen}
+        setOpen={setForwardDialogOpen}
+      ></ForwardMsgDialog>
     </div>
   );
 };
