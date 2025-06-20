@@ -8,6 +8,18 @@ import cors from "cors";
 import methodOverride from "method-override";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface";
+import { ApolloServer } from "apollo-server-express";
+import { resolvers, typeDefs } from "./graphql";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: ITokenPayload;
+    }
+  }
+}
+
 const app = Express();
 const server = http.createServer(app);
 
@@ -34,11 +46,16 @@ route(app);
 
 connectSocketIo(server);
 
-connectDB()
+const apollo = new ApolloServer({ typeDefs, resolvers });
+
+Promise.all([connectDB(), apollo.start()])
   .then(() => {
+    apollo.applyMiddleware({ app, path: "/graphql" });
     console.log("MongoDB is connected");
+
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
     });
   })
   .catch((err) => {
