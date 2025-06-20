@@ -3,20 +3,7 @@ import mongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
 } from "mongoose-delete";
-
-// Interface for User document
-export interface IUser extends Document {
-  username: string;
-  fullname: string;
-  avatar?: string;
-  isOnline: boolean;
-  lastLogined?: string;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-  deleted?: boolean;
-  deletedAt?: Date;
-}
+import { IUser } from "../interfaces/user.interface";
 
 // Define schema
 const UserSchema = new Schema<IUser>(
@@ -37,8 +24,6 @@ UserSchema.plugin(mongooseDelete, {
 });
 
 // Export model
-const User: SoftDeleteModel<IUser> = mongoose.model<
-  IUser,
-  SoftDeleteModel<IUser>
->("User", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
+
 export default User;

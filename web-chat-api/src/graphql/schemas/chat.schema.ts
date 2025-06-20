@@ -1,19 +1,25 @@
-import { gql } from 'apollo-server-express';
+import { gql } from "apollo-server-express";
 
 export const chatTypeDefs = gql`
-  type Message {
+  scalar JSONObject
+
+  type Chat {
     id: ID!
-    roomId: ID!
-    sender: String!
-    text: String!
-    createdAt: String!
+    users: [User!]!
+    chatName: String
+    chatAvatar: String
+    nicknames: JSONObject
+    createdAt: String
+    updatedAt: String
+    deleted: Boolean
+    deletedAt: String
   }
 
   extend type Query {
-    messages(roomId: ID!): [Message!]!
+    chats(chatId: ID, first: Int = 10, after: ID): [Chat!]!
   }
 
   extend type Mutation {
-    postMessage(roomId: ID!, sender: String!, text: String!): Message!
+    postChat(roomId: ID!, sender: String!, text: String!): Chat!
   }
 `;

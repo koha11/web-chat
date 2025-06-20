@@ -23,34 +23,35 @@ declare global {
 const app = Express();
 const server = http.createServer(app);
 
-app.use(cors());
-
-// xu li file tinh
-app.use(
-  Express.static(path.join(__dirname.slice(0, __dirname.length - 4), "public"))
-);
-
-app.use(Express.static("node_modules"));
-
-//xu li du lieu tu form (dua vao middleware duoc xay dung san cua express js)
-app.use(Express.urlencoded({ extended: true }));
-app.use(Express.json());
-
-//middleware giup ghi de` cac phthuc khac len pthuc post hoac get cua form
-app.use(methodOverride("_method"));
-
-//middleware giup giai ma cookies
-app.use(cookieParser());
-
-route(app);
-
-connectSocketIo(server);
-
 const apollo = new ApolloServer({ typeDefs, resolvers });
 
 Promise.all([connectDB(), apollo.start()])
   .then(() => {
     apollo.applyMiddleware({ app, path: "/graphql" });
+    app.use(cors());
+
+    // xu li file tinh
+    app.use(
+      Express.static(
+        path.join(__dirname.slice(0, __dirname.length - 4), "public")
+      )
+    );
+
+    app.use(Express.static("node_modules"));
+
+    //xu li du lieu tu form (dua vao middleware duoc xay dung san cua express js)
+    app.use(Express.urlencoded({ extended: true }));
+    app.use(Express.json());
+
+    //middleware giup ghi de` cac phthuc khac len pthuc post hoac get cua form
+    app.use(methodOverride("_method"));
+
+    //middleware giup giai ma cookies
+    app.use(cookieParser());
+
+    route(app);
+
+    connectSocketIo(server);
     console.log("MongoDB is connected");
 
     server.listen(PORT, () => {

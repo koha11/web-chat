@@ -3,22 +3,8 @@ import mongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
 } from "mongoose-delete";
-import { IUser } from "./User.model";
 import MessageStatus from "../enums/MessageStatus.enum";
-
-// Interface for Message document
-export interface IMessage extends Document {
-  user: IUser | Types.ObjectId;
-  msgBody: string;
-  status: MessageStatus;
-  seenList: Map<string, string>;
-  replyForMsg?: IMessage | Types.ObjectId;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-  deleted?: boolean;
-  deletedAt?: Date;
-}
+import { IMessage } from "../interfaces/message.interface";
 
 // Define schema
 const MessageSchema = new Schema<IMessage>(
@@ -33,14 +19,7 @@ const MessageSchema = new Schema<IMessage>(
 );
 
 // Add soft delete plugin
-MessageSchema.plugin(mongooseDelete, {
-  overrideMethods: "all",
-  deletedAt: true,
-});
 
 // Export model
-const Message: SoftDeleteModel<IMessage> = mongoose.model<
-  IMessage,
-  SoftDeleteModel<IMessage>
->("Message", MessageSchema);
+const Message = mongoose.model<IMessage>("Message", MessageSchema);
 export default Message;
