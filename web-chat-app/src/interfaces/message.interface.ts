@@ -2,7 +2,7 @@ import MessageStatus from "../enums/MessageStatus.enum";
 import { IUser } from "./user.interface";
 
 export interface IMessage {
-  _id: string;
+  id: string;
   user: string | IUser; 
   msgBody: string;
   status: MessageStatus;

@@ -51,8 +51,6 @@ const ChatRow = ({
     }
   }, [chat]);
 
-  console.log(lastMsg);
-
   return (
     <NavLink to={`/m/${chat._id}`} className={`chat-box w-full h-18 relative`}>
       <div
@@ -77,7 +75,7 @@ const ChatRow = ({
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
-            {lastMsg == undefined && chat.messages.length != 0 && (
+            {lastMsg == undefined && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
             <div className="">

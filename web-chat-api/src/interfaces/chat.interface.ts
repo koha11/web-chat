@@ -3,9 +3,9 @@ import { IMessage } from "./message.interface";
 import { IUser } from "./user.interface";
 
 // Interface for Chat document
-export interface IChat extends Document {
+export interface IChat {
+  id: Types.ObjectId;
   users: IUser[] | Types.ObjectId[];
-  messages: IMessage[] | Types.ObjectId[];
   nicknames: { [id: string]: string };
   chatName: string;
   chatAvatar: string;

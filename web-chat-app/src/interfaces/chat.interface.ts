@@ -2,7 +2,7 @@ import { IMessage } from "./message.interface";
 import { IUser } from "./user.interface";
 
 export interface IChat {
-  _id: string;
+  id: string;
   users: IUser[] | string;
   messages: IMessage[] | string;
   nicknames: { [id: string]: string }[];

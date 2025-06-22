@@ -10,7 +10,6 @@ import { IChat } from "../interfaces/chat.interface";
 const ChatSchema = new Schema<IChat>(
   {
     users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
     nicknames: { type: Map, of: String },
     chatName: { type: String, default: "" },
     chatAvatar: { type: String, default: "" },

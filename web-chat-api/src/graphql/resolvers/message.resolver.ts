@@ -1,19 +1,15 @@
-import { Types } from "mongoose";
+import { subscribe } from "diagnostics_channel";
 import Message from "../../models/Message.model";
 import { toObjectId } from "../../utils/mongoose";
+import { IResolvers } from "@graphql-tools/utils";
+import { PubSub } from "graphql-subscriptions";
+import messageService from "../../services/MessageService";
+import chatService from "../../services/ChatService";
 
-export const messageResolvers = {
+export const messageResolvers: IResolvers = {
   Query: {
-    messages: async (
-      _p: any,
-      { msgId, after, first }: { msgId?: string; first: number; after: string }
-    ) => {
-      const filter = {} as any;
-
-      if (after) {
-        // decode cursor into ObjectId timestamp or full id
-        filter._id = { $lt: toObjectId(after) };
-      }
+    messages: async (_p: any, { chatId, msgId, after, first }) => {
+      const filter = { chat: chatId } as any;
 
       const docs = await Message.find(filter)
         .populate("replyForMsg")
@@ -37,6 +33,56 @@ export const messageResolvers = {
         },
       };
     },
+
+    lastMessages: async (_p: any, { userId }) => {
+      const chatIds = (
+        await chatService.getChatList({ userId: userId })
+      ).edges.map((edge) => edge.node.id.toString());
+
+      const result = await messageService.getLastMessage(chatIds);
+
+      return result;
+    },
   },
-  Mutation: {},
+
+  Mutation: {
+    postMessage: async (
+      _p,
+      { chatId, msgBody, user, replyForMsg },
+      { pubsub }: { pubsub: PubSub }
+    ) => {
+      const createdMsg = await Message.create({
+        chat: chatId,
+        msgBody,
+        user,
+        replyForMsg,
+      });
+
+      const message = createdMsg.populate("replyForMsg");
+
+      pubsub.publish("RECEIVE_MESSAGE_SUB", {
+        receiveMessage: message,
+        chatId,
+      });
+
+      return message;
+    },
+  },
+
+  Subscription: {
+    initLastMessage: {
+      subscribe: (_p, { userId }, { pubsub }: { pubsub: PubSub }) => {
+        console.log("[server] Subscribing to user:", userId);
+
+        return pubsub.asyncIterableIterator(`INIT_LAST_MESSAGE`);
+      },
+    },
+    receiveMessage: {
+      subscribe: (_p, { userId }, { pubsub }: { pubsub: PubSub }) => {
+        console.log("[server] Subscribing to user:", userId);
+
+        return pubsub.asyncIterableIterator(`RECEIVE_MESSAGE_SUB`);
+      },
+    },
+  },
 };

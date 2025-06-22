@@ -6,8 +6,11 @@ import { fetchChatListEvent } from "../../services/chatService";
 import {
   fetchLastMessageEvent,
   fetchMessagesEvent,
+  GET_MESSAGES,
   listenReceiveMessage,
+  INIT_LAST_MESSAGE_SUB,
   RequestFetchMessages,
+  RECEIVE_MESSAGE_SUB,
 } from "../../services/messageService";
 import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
@@ -18,92 +21,71 @@ import Loading from "../../components/ui/loading";
 import MY_SOCKET_EVENTS from "../../constants/MY_SOCKET_EVENTS";
 import SocketEvent from "../../enums/SocketEvent.enum";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
+import { useGetChats } from "../../hooks/chat.hook";
+import Cookies from "js-cookie";
+import { useGetLastMessages, useGetMessages } from "../../hooks/message.hook";
+import { useSubscription } from "@apollo/client";
+import { client } from "../../apollo";
+import IModelConnection from "../../interfaces/modelConnection.interface";
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
 const Chat = () => {
   const { id } = useParams();
+  const userId = "684d9cf16cda6f875d523d82";
 
-  const [chatList, setChatList] = useState<IChat[] | undefined>();
-  const [lastMsgList, setLastMsgList] = useState<{
-    [chatId: string]: IMessage;
+  const { data: chats, loading: isChatsLoading } = useGetChats(userId ?? "");
+
+  // const { data: lastMessges, loading: isLMLoading } =
+  //   useGetLastMessages(userId);
+
+  const [messageMap, setMessageMap] = useState<{
+    [chatId: string]: IModelConnection<IMessage> | undefined | null;
   }>({});
 
-  const [currentChat, setCurrentChat] = useState<IChat | undefined>();
-
-  const [messages, setMessages] = useState<{
-    [chatId: string]: IMessageGroup[];
-  }>({});
-
-  const [userId, setUserId] = useState("");
-  const [isMsgLoading, setMsgLoading] = useState<boolean>(true);
-
-  const socket = WebSocketConnection.getConnection();
-
-  // useRef
-  const msgsContainerRef = useRef<HTMLDivElement>(null);
-  const msgGroupListRef = useRef<IMessageGroup[]>(null);
-
-  // HANLDERs
-  const handleSendMessage = (msg: IMessage, chatId: string) => {
-    socket.emit(SocketEvent.sm, msg, chatId);
-  };
-
-  // useEffect
+  const { data: messages, loading, subscribeToMore } = useGetMessages(id);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log(socket.id + " is on connect ...");
+    if (messages) {
+      const unsubscribe = subscribeToMore({
+        document: RECEIVE_MESSAGE_SUB,
+        variables: { chatId: id },
+        updateQuery: (prev, { subscriptionData }) => {
+          console.log(subscriptionData);
+          // if (!subscriptionData.data) return prev;
+          // const newFeedItem = subscriptionData.data.commentAdded;
 
-      const userId = (socket.auth as { [key: string]: any })["userId"];
-      setUserId(userId);
+          // return Object.assign({}, prev, {
+          //   post: {
+          //     comments: [newFeedItem, ...prev.post.comments],
+          //   },
+          // });
+        },
+      });
 
-      fetchChatListEvent(socket, setChatList);
-
-      fetchLastMessageEvent(socket, setLastMsgList);
-
-      fetchMessagesEvent(
-        socket,
-        (chatId: string, messageGroup: IMessageGroup[]) =>
-          setMessages((messages: { [chatId: string]: IMessageGroup[] }) => {
-            return { ...messages, [chatId]: messageGroup };
-          }),
-        setMsgLoading
-      );
-
-      listenReceiveMessage(socket, setMessages);
-    });
-
-    return () => {
-      Object.values(MY_SOCKET_EVENTS).forEach((event) => socket.off(event));
-    };
-  }, []);
-
-  useEffect(() => {
-    if (messages[id!] == undefined) messages[id!] = [];
-
-    if ((messages[id!].length <= 1 && isMsgLoading) || isMsgLoading) {
-      RequestFetchMessages(socket, id!);
+      return () => {
+        unsubscribe();
+      };
     }
+  }, [messages, subscribeToMore, id]);
 
-    setCurrentChat(chatList?.find((chat) => chat._id == id));
+  console.log(chats);
 
-    return () => {
-      socket.off(SocketEvent.fmr);
-    };
-  }, [id, chatList]);
+  if (isChatsLoading || loading) return <Loading></Loading>;
 
-  if (userId == undefined || userId == "") return <Loading></Loading>;
+  loadErrorMessages();
+  loadDevMessages();
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList
-          setMsgLoading={setMsgLoading}
+          setMsgLoading={() => {}}
           currChatId={id ?? ""}
-          lastMsgList={lastMsgList}
-          chatList={Object.values(chatList ?? {})}
-          userId={userId}
+          lastMsgList={{}}
+          chatList={chats.edges.map((edge: any) => edge.node)}
+          userId={userId!}
         ></ChatList>
-        {id == undefined ? (
+        {/* {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
@@ -114,7 +96,7 @@ const Chat = () => {
             msgsContainerRef={msgsContainerRef}
             isMsgLoading={isMsgLoading}
           ></ChatDetails>
-        )}
+        )} */}
       </div>
     </div>
   );

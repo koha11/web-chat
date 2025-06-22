@@ -1,13 +1,16 @@
 import { Server, Socket } from "socket.io";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
-import Message, { IMessage } from "../models/Message.model";
-import Chat, { IChat } from "../models/Chat.model";
 import chatService from "./ChatService";
 import SocketEvent from "../enums/SocketEvent";
 import MessageStatus from "../enums/MessageStatus.enum";
 import { toObjectId } from "../utils/mongoose";
 import { Types } from "mongoose";
-import { IUser } from "../models/User.model";
+import { IChat } from "../interfaces/chat.interface";
+import { IMessage } from "../interfaces/message.interface";
+import { IUser } from "../interfaces/user.interface";
+import Chat from "../models/Chat.model";
+import Message from "../models/Message.model";
+import IModelConnection from "../interfaces/modelConnection.interface";
 
 class MessageService {
   listenSendMessage(
@@ -19,7 +22,7 @@ class MessageService {
     socket.on(SocketEvent.sm, async (msg: IMessage, chatId: string) => {
       console.log(user.username + " have sent " + msg.msgBody);
 
-      const createdMsg = (await Message.create(msg)) as IMessage;
+      const createdMsg = await Message.create(msg);
       const myMsg = await createdMsg.populate("replyForMsg");
 
       const chat = await Chat.findById(chatId).populate("users");
@@ -31,6 +34,7 @@ class MessageService {
       io.to(chatId).emit(SocketEvent.rm, myMsg, chatId);
       for (let user of chat?.users as IUser[]) {
         console.log("fetch chat list for", user.username);
+
         const chatList = await chatService.fetchChatListEvent(
           io,
           userMap,
@@ -142,22 +146,75 @@ class MessageService {
     io.to(userMap[userId]).emit(SocketEvent.fm, messages, chatId);
   };
 
-  getMessages = async (chatId: string) => {
-    const chat = await Chat.findById(chatId).populate({
-      path: "messages",
-      populate: {
-        path: "replyForMsg",
-        model: "Message", // optional if already in schema
+  // getMessages = async (chatId: string) => {
+  //   const chat = await Chat.findById(chatId).populate({
+  //     path: "messages",
+  //     populate: {
+  //       path: "replyForMsg",
+  //       model: "Message", // optional if already in schema
+  //     },
+  //   });
+
+  //   const myMsgList = (chat?.messages as IMessage[]) ?? [];
+
+  //   myMsgList.sort(
+  //     (a: IMessage, b: IMessage) =>
+  //       new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+  //   );
+
+  //   return myMsgList;
+  // };
+
+  getMessages = async ({
+    chatId,
+    first = 10,
+    after,
+  }: {
+    chatId: string;
+    sort?: any;
+    first?: number;
+    after?: string;
+  }): Promise<IModelConnection<IMessage>> => {
+    const filter = { chat: chatId } as any;
+
+    if (after) {
+      // decode cursor into ObjectId timestamp or full id
+      filter._id = { $lt: toObjectId(after) };
+    }
+
+    const docs = await Message.find(filter)
+      .populate("replyForMsg")
+      .sort({ _id: -1 })
+      .limit(first + 1);
+
+    const hasNextPage = docs.length > first;
+    const sliced = hasNextPage ? docs.slice(0, first) : docs;
+
+    const edges = sliced.map((doc) => ({
+      cursor: doc._id.toString(),
+      node: doc,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        startCursor: edges.length ? edges[0].cursor : null,
+        hasNextPage,
+        endCursor: edges.length ? edges[edges.length - 1].cursor : null,
       },
-    });
-    const myMsgList = (chat?.messages as IMessage[]) ?? [];
+    };
+  };
 
-    myMsgList.sort(
-      (a: IMessage, b: IMessage) =>
-        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-    );
+  getLastMessage = async (chatIds: string[]) => {
+    let result = [] as IModelConnection<IMessage>[];
 
-    return myMsgList;
+    for (let chatId of chatIds) {
+      const msg = await this.getMessages({ chatId: chatId, first: 1 });
+
+      result.push(msg);
+    }
+
+    return result;
   };
 }
 

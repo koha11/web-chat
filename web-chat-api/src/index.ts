@@ -10,7 +10,12 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface";
 import { ApolloServer } from "apollo-server-express";
-import { resolvers, typeDefs } from "./graphql";
+import { graphqlSchema, resolvers, typeDefs } from "./graphql";
+import { PubSub } from "graphql-subscriptions";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/use/ws";
+import SocketEvent from "./enums/SocketEvent";
+import { IMessage } from "./interfaces/message.interface";
 
 declare global {
   namespace Express {
@@ -23,7 +28,13 @@ declare global {
 const app = Express();
 const server = http.createServer(app);
 
-const apollo = new ApolloServer({ typeDefs, resolvers });
+const pubsub = new PubSub();
+
+const apollo = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: () => ({ pubsub }),
+});
 
 Promise.all([connectDB(), apollo.start()])
   .then(() => {
@@ -52,6 +63,14 @@ Promise.all([connectDB(), apollo.start()])
     route(app);
 
     connectSocketIo(server);
+
+    const wsServer = new WebSocketServer({
+      server: server,
+      path: "/subscriptions",
+    });
+
+    useServer({ schema: graphqlSchema, context: () => ({ pubsub }) }, wsServer);
+
     console.log("MongoDB is connected");
 
     server.listen(PORT, () => {

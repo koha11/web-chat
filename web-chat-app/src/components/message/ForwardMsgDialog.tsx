@@ -11,7 +11,7 @@ const ForwardMsgDialog = ({
   setOpen: (isOpen: boolean) => void;
 }) => {
   return (
-    <Dialog open={true}>
+    <Dialog open={isOpen}>
       <DialogContent>
         <DialogHeader className="border-b-2">
           <DialogTitle className="text-center text-2xl mb-2">

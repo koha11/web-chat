@@ -4,6 +4,7 @@ import MY_SOCKET_EVENTS from "../constants/MY_SOCKET_EVENTS";
 import SocketEvent from "../enums/SocketEvent.enum";
 import IMessageGroup from "../interfaces/messageGroup.interface";
 import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
+import { gql, TypedDocumentNode } from "@apollo/client";
 
 export const listenReceiveMessage = (socket: Socket, setMessages: Function) => {
   socket.on(SocketEvent.rm, (msg: IMessage, chatId: string) => {
@@ -90,3 +91,107 @@ export const RequestFetchMessages = (socket: Socket, chatId: string) => {
 export const RequestFetchLastMessages = (socket: Socket, chatId: string) => {
   socket.emit(SocketEvent.flm, chatId);
 };
+
+export const GET_MESSAGES = gql`
+  query ($chatId: ID!, $first: Int, $after: ID) {
+    messages(chatId: $chatId, first: $first, after: $after) {
+      edges {
+        node {
+          id
+          user
+          msgBody
+          status
+          seenList
+          createdAt
+          replyForMsg {
+            id
+            user
+            msgBody
+            status
+            seenList
+            createdAt
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+export const GET_LAST_MESSAGES = gql`
+  query GetLastMessages($userId: ID!) {
+    lastMessages(userId: $userId) {
+      edges {
+        node {
+          id
+          user
+          chat
+          msgBody
+          status
+          seenList
+          createdAt
+          replyForMsg {
+            id
+            user
+            msgBody
+            status
+            seenList
+            createdAt
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+export const INIT_LAST_MESSAGE_SUB: TypedDocumentNode<any, any> = gql`
+  subscription InitLastMessage {
+    initLastMessage(userId: "684d9cf16cda6f875d523d81") {
+      edges {
+        cursor
+        node {
+          id
+          user
+          chat
+          msgBody
+          status
+          seenList
+          createdAt
+          updatedAt
+          deleted
+          deletedAt
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
+export const RECEIVE_MESSAGE_SUB = gql`
+  subscription ReceiveMessage($chatId: ID!) {
+    receiveMessage(chatId: $chatId) {
+      id
+      user
+      msgBody
+      status
+      seenList
+      createdAt
+      updatedAt
+    }
+  }
+`;

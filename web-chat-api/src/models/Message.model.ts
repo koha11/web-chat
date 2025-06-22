@@ -10,6 +10,7 @@ import { IMessage } from "../interfaces/message.interface";
 const MessageSchema = new Schema<IMessage>(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    chat: { type: Schema.Types.ObjectId, ref: "Chat" },
     msgBody: { type: String, required: true },
     status: { type: String, required: true, default: MessageStatus.SENT },
     seenList: { type: Map, of: String, default: {} },
