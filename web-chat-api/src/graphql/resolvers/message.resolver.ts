@@ -9,29 +9,9 @@ import chatService from "../../services/ChatService";
 export const messageResolvers: IResolvers = {
   Query: {
     messages: async (_p: any, { chatId, msgId, after, first }) => {
-      const filter = { chat: chatId } as any;
+      const result = await messageService.getMessages({ chatId, first: first ?? 5 });
 
-      const docs = await Message.find(filter)
-        .populate("replyForMsg")
-        .sort({ _id: -1 })
-        .limit(first + 1);
-
-      const hasNextPage = docs.length > first;
-      const sliced = hasNextPage ? docs.slice(0, first) : docs;
-
-      const edges = sliced.map((doc) => ({
-        cursor: doc._id.toString(),
-        node: doc,
-      }));
-
-      return {
-        edges,
-        pageInfo: {
-          startCursor: edges[0].cursor,
-          hasNextPage,
-          endCursor: edges.length ? edges[edges.length - 1].cursor : null,
-        },
-      };
+      return result;
     },
 
     lastMessages: async (_p: any, { userId }) => {
@@ -72,15 +52,11 @@ export const messageResolvers: IResolvers = {
   Subscription: {
     initLastMessage: {
       subscribe: (_p, { userId }, { pubsub }: { pubsub: PubSub }) => {
-        console.log("[server] Subscribing to user:", userId);
-
         return pubsub.asyncIterableIterator(`INIT_LAST_MESSAGE`);
       },
     },
     receiveMessage: {
-      subscribe: (_p, { userId }, { pubsub }: { pubsub: PubSub }) => {
-        console.log("[server] Subscribing to user:", userId);
-
+      subscribe: (_p, { chatId }, { pubsub }: { pubsub: PubSub }) => {
         return pubsub.asyncIterableIterator(`RECEIVE_MESSAGE_SUB`);
       },
     },

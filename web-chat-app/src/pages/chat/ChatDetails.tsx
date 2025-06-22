@@ -2,7 +2,6 @@ import { FormEvent, use, useEffect, useRef, useState } from "react";
 import { getData, postData } from "../../services/api";
 import { Link, useParams } from "react-router-dom";
 import SingleMsg from "../../components/message/SingleMsg";
-import WebSocketConnection from "../../services/WebSocketConnection";
 import { Socket } from "socket.io-client";
 import { IMessage } from "../../interfaces/message.interface";
 import { IChat } from "../../interfaces/chat.interface";
@@ -13,7 +12,11 @@ import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import Loading from "../../components/ui/loading";
 import { MyTooltip } from "../../components/ui/my-tooltip";
-import { getDisplaySendMsgTime } from "../../utils/messageTime.helper";
+import {
+  getDisplaySendMsgTime,
+  getTimeDiff,
+  TimeTypeOption,
+} from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
 import { send } from "process";
@@ -24,26 +27,32 @@ import {
   CollapsibleTrigger,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
+import { useGetMessages } from "../../hooks/message.hook";
+import { RECEIVE_MESSAGE_SUB } from "../../services/messageService";
+import { PageInfo } from "../../interfaces/modelConnection.interface";
 
 const ChatDetails = ({
   chat,
+  chatId,
   userId,
-  handleSendMessage,
-  messages,
-  msgsContainerRef,
-  isMsgLoading,
 }: {
-  messages: IMessageGroup[];
   userId: string;
   chat: IChat | undefined;
-  handleSendMessage: (msg: IMessage, chatId: string) => void;
-  msgsContainerRef: any;
-  isMsgLoading: boolean;
+  chatId: string;
 }) => {
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
   const [sender, setSender] = useState<IUser>();
+  const [pageInfo, setPageInfo] = useState<PageInfo>();
+  const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isOpen, setOpen] = useState(false);
+
+  const {
+    data: messagesConnection,
+    loading: isMsgLoading,
+    subscribeToMore,
+    refetch,
+  } = useGetMessages({ chatId, after: pageInfo?.endCursor, first: 10 });
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -56,19 +65,79 @@ const ChatDetails = ({
       },
     });
 
+  useEffect(() => {
+    if (messagesConnection) {
+      setPageInfo(messagesConnection.pageInfo);
+
+      const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
+        (acc, edge) => {
+          const msg = edge.node;
+          const time = new Date(parseInt(msg.createdAt!.toString()));
+          const last = acc[acc.length - 1];
+
+          if (
+            last &&
+            getTimeDiff(
+              new Date(last.timeString),
+              time,
+              TimeTypeOption.MINUTES
+            ) < 20
+          ) {
+            last.messages.push(msg);
+          } else {
+            acc.push({ timeString: time.toISOString(), messages: [msg] });
+          }
+
+          return acc;
+        },
+        []
+      );
+
+      setMessages(grouped);
+
+      const unsubscribe = subscribeToMore({
+        document: RECEIVE_MESSAGE_SUB,
+        variables: { chatId: chatId },
+        updateQuery: (prev, { subscriptionData }) => {
+          console.log(subscriptionData);
+
+          if (!subscriptionData.data) return prev;
+
+          const newMsg = subscriptionData.data.receiveMessage;
+          console.log(newMsg);
+          console.log(prev);
+          // return Object.assign({}, prev, {
+
+          // });
+        },
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [messagesConnection, subscribeToMore]);
+
+  useEffect(() => {
+    refetch();
+  }, [chatId]);
+
   // useEffect
 
   useEffect(() => {
     if (chat && typeof chat.users == "object") {
       let myMap = {} as { [userId: string]: IUser };
       chat.users.forEach((user) => {
-        if (user._id != userId) myMap[user._id] = user;
+        if (user.id != userId) myMap[user.id] = user;
       });
 
       setReceivers(myMap);
-      setSender(chat.users.find((user) => user._id == userId));
+      setSender(chat.users.find((user) => user.id == userId));
     }
   }, [chat]);
+
+  console.log(receivers);
+  console.log(sender);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
@@ -121,10 +190,7 @@ const ChatDetails = ({
         </div>
       </div>
 
-      <div
-        className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
-        ref={msgsContainerRef}
-      >
+      <div className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4">
         {watch("replyForMsg") != undefined && (
           <Collapsible open={isOpen} onOpenChange={setOpen}>
             <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2">
@@ -152,8 +218,8 @@ const ChatDetails = ({
           </Collapsible>
         )}
 
-        {chat && sender && !isMsgLoading
-          ? messages?.map((msg, index) => {
+        {chat && sender && messages
+          ? messages.map((msg, index) => {
               return (
                 <GroupMsg
                   key={msg.timeString}
@@ -179,7 +245,7 @@ const ChatDetails = ({
           autoComplete="off"
           onSubmit={handleSubmit((msg: IMessage) => {
             if (chat != undefined) {
-              handleSendMessage(msg, chat._id);
+              // handleSendMessage(msg, chat._id);
               resetField("msgBody");
               resetField("replyForMsg");
               setOpen(false);
