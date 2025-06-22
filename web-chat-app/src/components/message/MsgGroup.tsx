@@ -32,7 +32,7 @@ const GroupMsg = ({
           const receiver = receivers[msg.user.toString()];
 
           const seenList = Object.values(receivers).filter((receiver) =>
-            Object.keys(msg.seenList).includes(receiver._id)
+            Object.keys(msg.seenList).includes(receiver.id)
           );
 
           const isLongGap =
@@ -47,7 +47,7 @@ const GroupMsg = ({
 
           if (
             receiver &&
-            ((index > 0 && messages[index - 1].user != receiver._id) ||
+            ((index > 0 && messages[index - 1].user != receiver.id) ||
               index == 0)
           )
             msgSenderAvatar = receiver.avatar ?? "";
@@ -55,9 +55,9 @@ const GroupMsg = ({
 
           return (
             <SingleMsg
-              key={msg._id}
+              key={msg.id}
               msg={msg}
-              isSentMsg={msg.user == sender._id}
+              isSentMsg={msg.user == sender.id}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}

@@ -6,27 +6,6 @@ import IModelConnection from "../interfaces/modelConnection.interface";
 import { toObjectId } from "../utils/mongoose";
 
 class ChatService {
-  // Lay ra toan bo chat cua 1 user
-  fetchChatListEvent = async (
-    io: Server,
-    userMap: { [userId: string]: string },
-    userId: string
-  ) => {
-    const data = await this.getChatList(userId);
-
-    if (userMap[userId] != "")
-      io.to(userMap[userId]).emit(SocketEvent.fcl, data);
-
-    return data;
-  };
-
-  // getChatList = async (id: string) => {
-  //   const chatList = await Chat.find({ users: id })
-  //     .populate("users")
-  //     .sort({ updatedAt: -1 });
-
-  //   return chatList;
-  // };
 
   getChatList = async ({
     userId,
