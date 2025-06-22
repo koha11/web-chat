@@ -12,7 +12,6 @@ import {
   RequestFetchMessages,
   RECEIVE_MESSAGE_SUB,
 } from "../../services/messageService";
-import WebSocketConnection from "../../services/WebSocketConnection";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
@@ -33,44 +32,14 @@ const Chat = () => {
   const { id } = useParams();
   const userId = "684d9cf16cda6f875d523d82";
 
-  const { data: chats, loading: isChatsLoading } = useGetChats(userId ?? "");
+  const { data: chats, loading: isChatsLoading } = useGetChats(userId);
 
   // const { data: lastMessges, loading: isLMLoading } =
   //   useGetLastMessages(userId);
 
-  const [messageMap, setMessageMap] = useState<{
-    [chatId: string]: IModelConnection<IMessage> | undefined | null;
-  }>({});
-
-  const { data: messages, loading, subscribeToMore } = useGetMessages(id);
-
-  useEffect(() => {
-    if (messages) {
-      const unsubscribe = subscribeToMore({
-        document: RECEIVE_MESSAGE_SUB,
-        variables: { chatId: id },
-        updateQuery: (prev, { subscriptionData }) => {
-          console.log(subscriptionData);
-          // if (!subscriptionData.data) return prev;
-          // const newFeedItem = subscriptionData.data.commentAdded;
-
-          // return Object.assign({}, prev, {
-          //   post: {
-          //     comments: [newFeedItem, ...prev.post.comments],
-          //   },
-          // });
-        },
-      });
-
-      return () => {
-        unsubscribe();
-      };
-    }
-  }, [messages, subscribeToMore, id]);
-
   console.log(chats);
 
-  if (isChatsLoading || loading) return <Loading></Loading>;
+  if (isChatsLoading) return <Loading></Loading>;
 
   loadErrorMessages();
   loadDevMessages();
@@ -85,18 +54,15 @@ const Chat = () => {
           chatList={chats.edges.map((edge: any) => edge.node)}
           userId={userId!}
         ></ChatList>
-        {/* {id == undefined ? (
+        {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
-            handleSendMessage={handleSendMessage}
-            messages={messages[id]}
             userId={userId}
-            chat={currentChat}
-            msgsContainerRef={msgsContainerRef}
-            isMsgLoading={isMsgLoading}
+            chat={chats.edges.find((edge) => edge.node.id == id)?.node}
+            chatId={id}
           ></ChatDetails>
-        )} */}
+        )}
       </div>
     </div>
   );

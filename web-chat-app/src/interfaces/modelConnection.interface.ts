@@ -1,15 +1,15 @@
 export default interface IModelConnection<M> {
   edges: Edge<M>[];
-  pageInfo: PageInfo
+  pageInfo: PageInfo;
 }
 
-type PageInfo = {
+export type PageInfo = {
   startCursor: string;
   endCursor: string;
   hasNextPage: Boolean;
 };
 
-type Edge<M> = {
+export type Edge<M> = {
   node: M;
   cursor: string;
-}
+};

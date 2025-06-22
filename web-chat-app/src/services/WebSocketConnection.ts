@@ -25,4 +25,4 @@ class WebSocketConnection {
   }
 }
 
-export default WebSocketConnection;
+export default null;

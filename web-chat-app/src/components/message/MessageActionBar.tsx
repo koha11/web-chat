@@ -39,11 +39,9 @@ const MessageActions = ({
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
   const [isForwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
 
-  const socket = WebSocketConnection.getConnection();
-
   // Handlers
   const handleUnsentMsg = (isUnsendForEveryone: boolean) => {
-    socket.emit(SocketEvent.um, msgId, id, isUnsendForEveryone);
+    // socket.emit(SocketEvent.um, msgId, id, isUnsendForEveryone);
   };
 
   return (
