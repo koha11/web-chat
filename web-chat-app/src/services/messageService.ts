@@ -129,6 +129,37 @@ export const GET_LAST_MESSAGES = gql`
   }
 `;
 
+export const POST_MESSAGE = gql`
+  mutation PostMessage(
+    $chatId: ID!
+    $msgBody: String!
+    $user: ID!
+    $replyForMsg: String
+  ) {
+    postMessage(
+      chatId: $chatId
+      msgBody: $msgBody
+      user: $user
+      replyForMsg: $replyForMsg
+    ) {
+      id
+      user
+      msgBody
+      status
+      replyForMsg {
+        id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+      }
+      seenList
+      createdAt
+    }
+  }
+`;
+
 export const INIT_LAST_MESSAGE_SUB: TypedDocumentNode<any, any> = gql`
   subscription InitLastMessage {
     initLastMessage(userId: "684d9cf16cda6f875d523d81") {
@@ -159,13 +190,16 @@ export const INIT_LAST_MESSAGE_SUB: TypedDocumentNode<any, any> = gql`
 export const RECEIVE_MESSAGE_SUB = gql`
   subscription ReceiveMessage($chatId: ID!) {
     receiveMessage(chatId: $chatId) {
-      id
-      user
-      msgBody
-      status
-      seenList
-      createdAt
-      updatedAt
+      cursor
+      node {
+        id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+        updatedAt
+      }
     }
   }
 `;

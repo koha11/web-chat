@@ -38,10 +38,13 @@ export const messageResolvers: IResolvers = {
         replyForMsg,
       });
 
-      const message = createdMsg.populate("replyForMsg");
+      const message = await createdMsg.populate("replyForMsg");
 
       pubsub.publish("RECEIVE_MESSAGE_SUB", {
-        receiveMessage: message,
+        receiveMessage: {
+          node: message,
+          cursor: message.id,
+        },
         chatId,
       });
 

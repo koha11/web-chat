@@ -37,8 +37,6 @@ const Chat = () => {
   const { data: lastMessges, loading: isLastMsgLoading } =
     useGetLastMessages(userId);
 
-  // if (isChatsLoading || isLastMsgLoading) return <Loading></Loading>;
-
   loadErrorMessages();
   loadDevMessages();
 

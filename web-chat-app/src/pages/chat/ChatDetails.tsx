@@ -27,7 +27,7 @@ import {
   CollapsibleTrigger,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
-import { useGetMessages } from "../../hooks/message.hook";
+import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
 import { RECEIVE_MESSAGE_SUB } from "../../services/messageService";
 import { PageInfo } from "../../interfaces/modelConnection.interface";
 
@@ -54,6 +54,9 @@ const ChatDetails = ({
     refetch,
   } = useGetMessages({ chatId, after: pageInfo?.endCursor, first: 10 });
 
+  const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
+    usePostMessage();
+
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
     useForm<IMessage>({
@@ -62,8 +65,11 @@ const ChatDetails = ({
         msgBody: "",
         status: MessageStatus.SENT,
         seenList: {},
+        replyForMsg: undefined,
       },
     });
+
+  // useEffect
 
   useEffect(() => {
     if (messagesConnection) {
@@ -99,15 +105,19 @@ const ChatDetails = ({
         document: RECEIVE_MESSAGE_SUB,
         variables: { chatId: chatId },
         updateQuery: (prev, { subscriptionData }) => {
-          console.log(subscriptionData);
-
           if (!subscriptionData.data) return prev;
 
           const newMsg = subscriptionData.data.receiveMessage;
-          console.log(newMsg);
-          console.log(prev);
-          // return Object.assign({}, prev, {
 
+          // return Object.assign({}, prev, {
+          //   ...prev,
+          //   messages: {
+          //     pageInfo: {
+          //       ...prev.messages.pageInfo,
+          //       startCursor: newMsg.cursor,
+          //     },
+          //     edges: [newMsg, ...prev.messages.edges],
+          //   },
           // });
         },
       });
@@ -118,13 +128,9 @@ const ChatDetails = ({
     }
   }, [messagesConnection, subscribeToMore]);
 
-  console.log(messages);
-
   useEffect(() => {
     refetch();
   }, [chatId]);
-
-  // useEffect
 
   useEffect(() => {
     if (chat && typeof chat.users == "object") {
@@ -138,11 +144,41 @@ const ChatDetails = ({
     }
   }, [chat]);
 
+  useEffect(() => {
+    if (!isAddedMsgLoading && messages && messages?.length > 0) {
+      const last = messages[messages?.length - 1];
+      const time = new Date(addedMsg.postMessage.createdAt);
+
+      if (
+        last &&
+        getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
+          20
+      ) {
+        setMessages([
+          { ...last, messages: [addedMsg.postMessage, ...last.messages] },
+          ...messages.slice(1),
+        ]);
+      } else {
+        setMessages([
+          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
+          ...messages,
+        ]);
+      }
+    }
+  }, [isAddedMsgLoading]);
+
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
     setValue("replyForMsg", msg);
     setOpen(true);
   };
+
+  const handleSendMessage = (msg: IMessage, chatId: string) => {
+    postMessage({ variables: { ...msg, chatId } });
+  };
+
+  console.log(messages);
+  console.log(isAddedMsgLoading);
 
   return (
     <section
@@ -244,7 +280,7 @@ const ChatDetails = ({
           autoComplete="off"
           onSubmit={handleSubmit((msg: IMessage) => {
             if (chat != undefined) {
-              // handleSendMessage(msg, chat._id);
+              handleSendMessage(msg, chat.id);
               resetField("msgBody");
               resetField("replyForMsg");
               setOpen(false);

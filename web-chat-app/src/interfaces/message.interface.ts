@@ -3,7 +3,8 @@ import { IUser } from "./user.interface";
 
 export interface IMessage {
   id: string;
-  user: string | IUser; 
+  user: string | IUser;
+  chat: string;
   msgBody: string;
   status: MessageStatus;
   seenList: { [userId: string]: string };

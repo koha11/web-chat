@@ -1,5 +1,14 @@
-import { OperationVariables, QueryResult, useQuery } from "@apollo/client";
-import { GET_LAST_MESSAGES, GET_MESSAGES } from "../services/messageService";
+import {
+  OperationVariables,
+  QueryResult,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
+import {
+  GET_LAST_MESSAGES,
+  GET_MESSAGES,
+  POST_MESSAGE,
+} from "../services/messageService";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import { IMessage } from "../interfaces/message.interface";
@@ -39,4 +48,8 @@ export const useGetLastMessages = (
     refetch: myQuery.refetch,
     subscribeToMore: myQuery.subscribeToMore,
   };
+};
+
+export const usePostMessage = () => {
+  return useMutation(POST_MESSAGE, { variables: {} });
 };
