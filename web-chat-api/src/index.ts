@@ -16,6 +16,7 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
 import SocketEvent from "./enums/SocketEvent";
 import { IMessage } from "./interfaces/message.interface";
+import authService from "./services/AuthService";
 
 declare global {
   namespace Express {
@@ -33,9 +34,20 @@ const pubsub = new PubSub();
 const apollo = new ApolloServer({
   typeDefs,
   resolvers,
-  context: () => ({ pubsub }),
-});
+  context: async ({ req }) => {
+    const auth = req.headers.authorization;
 
+    let user = null;
+
+    if (auth?.startsWith("Bearer ")) {
+      const token = auth.slice(7);
+      user = authService.verifyToken(token);
+      if (!user) throw new Error("Missing auth token");
+    }
+
+    return { pubsub, user };
+  },
+});
 Promise.all([connectDB(), apollo.start()])
   .then(() => {
     apollo.applyMiddleware({ app, path: "/graphql" });
@@ -62,20 +74,44 @@ Promise.all([connectDB(), apollo.start()])
 
     route(app);
 
-    connectSocketIo(server);
+    // connectSocketIo(server);
 
     const wsServer = new WebSocketServer({
       server: server,
       path: "/subscriptions",
     });
 
-    useServer({ schema: graphqlSchema, context: () => ({ pubsub }) }, wsServer);
+    useServer(
+      {
+        schema: graphqlSchema,
+        context: async (ctx, msg, args) => {
+          const auth = ctx.connectionParams?.authToken as string;
+
+          let user = null;
+
+          if (auth?.startsWith("Bearer ")) {
+            const token = auth.slice(7);
+            user = authService.verifyToken(token);
+            if (!user) throw new Error("Missing auth token");
+          }
+
+          return { pubsub, user };
+        },
+        onConnect: (ctx) => {
+          if (!ctx.connectionParams?.authToken) {
+            throw new Error("Missing auth token");
+          }
+        },
+      },
+      wsServer
+    );
 
     console.log("MongoDB is connected");
 
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
+      console.log(`GraphQL WS endpoint: ws://localhost:${PORT}/subscriptions`);
     });
   })
   .catch((err) => {

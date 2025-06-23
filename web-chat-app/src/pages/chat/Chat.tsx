@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { useParams } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
-import { fetchChatListEvent } from "../../services/chatService";
 import {
   fetchLastMessageEvent,
   fetchMessagesEvent,

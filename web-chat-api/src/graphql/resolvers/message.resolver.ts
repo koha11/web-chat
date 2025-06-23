@@ -14,9 +14,9 @@ export const messageResolvers: IResolvers = {
       return result;
     },
 
-    lastMessages: async (_p: any, { userId }) => {
+    lastMessages: async (_p: any, {}, { user }) => {
       const chatIds = (
-        await chatService.getChatList({ userId: userId })
+        await chatService.getChatList({ userId: user.id })
       ).edges.map((edge) => edge.node.id.toString());
 
       const result = await messageService.getLastMessage(chatIds);

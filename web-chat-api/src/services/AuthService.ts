@@ -3,10 +3,11 @@ import { ILoginRequest } from "../interfaces/auth/loginRequest.interface";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
 import { IMyResponse } from "../interfaces/myResponse.interface";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/User.model";
+import User, {  } from "../models/User.model";
 import bcrypt from "bcryptjs";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface";
 import Account, { IAccount } from "../models/Account.model";
+import { IUser } from "../interfaces/user.interface";
 
 class AuthService {
   async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
@@ -81,7 +82,7 @@ class AuthService {
     } as IAccount);
 
     const user = await User.create({
-      _id: account._id,
+      id: account._id,
       username: account.username,
       fullname: registerRequest.fullname,
     } as IUser);

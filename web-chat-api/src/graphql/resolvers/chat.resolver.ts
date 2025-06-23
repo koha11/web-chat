@@ -4,14 +4,15 @@ import { toObjectId } from "../../utils/mongoose";
 import { IResolvers } from "@graphql-tools/utils";
 import Message from "../../models/Message.model";
 import messageService from "../../services/MessageService";
+import IMyContext from "../../interfaces/myContext.interface";
 export const chatResolvers: IResolvers = {
   Query: {
     chats: async (
       _p: any,
-      { userId, chatId, first, after },
-      { pubsub }: { pubsub: PubSub }
+      { chatId, first, after },
+      { pubsub, user }: IMyContext
     ) => {
-      const filter = { users: userId } as { _id: any; users: any };
+      const filter = { users: user.id } as { _id: any; users: any };
 
       if (after) {
         filter._id = { $lt: toObjectId(after) };

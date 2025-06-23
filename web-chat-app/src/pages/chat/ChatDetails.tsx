@@ -54,8 +54,7 @@ const ChatDetails = ({
     refetch,
   } = useGetMessages({ chatId, after: pageInfo?.endCursor, first: 10 });
 
-  const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
-    usePostMessage();
+  const [postMessage] = usePostMessage();
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -109,16 +108,16 @@ const ChatDetails = ({
 
           const newMsg = subscriptionData.data.receiveMessage;
 
-          // return Object.assign({}, prev, {
-          //   ...prev,
-          //   messages: {
-          //     pageInfo: {
-          //       ...prev.messages.pageInfo,
-          //       startCursor: newMsg.cursor,
-          //     },
-          //     edges: [newMsg, ...prev.messages.edges],
-          //   },
-          // });
+          return Object.assign({}, prev, {
+            ...prev,
+            messages: {
+              pageInfo: {
+                ...prev.messages.pageInfo,
+                startCursor: newMsg.cursor,
+              },
+              edges: [newMsg, ...prev.messages.edges],
+            },
+          });
         },
       });
 
@@ -144,29 +143,6 @@ const ChatDetails = ({
     }
   }, [chat]);
 
-  useEffect(() => {
-    if (!isAddedMsgLoading && messages && messages?.length > 0) {
-      const last = messages[messages?.length - 1];
-      const time = new Date(addedMsg.postMessage.createdAt);
-
-      if (
-        last &&
-        getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
-          20
-      ) {
-        setMessages([
-          { ...last, messages: [addedMsg.postMessage, ...last.messages] },
-          ...messages.slice(1),
-        ]);
-      } else {
-        setMessages([
-          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
-          ...messages,
-        ]);
-      }
-    }
-  }, [isAddedMsgLoading]);
-
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
     setValue("replyForMsg", msg);
@@ -176,9 +152,6 @@ const ChatDetails = ({
   const handleSendMessage = (msg: IMessage, chatId: string) => {
     postMessage({ variables: { ...msg, chatId } });
   };
-
-  console.log(messages);
-  console.log(isAddedMsgLoading);
 
   return (
     <section
