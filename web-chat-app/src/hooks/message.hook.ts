@@ -28,8 +28,15 @@ export const useGetMessages = ({
   };
 };
 
-export const useGetLastMessages = (userId: string) => {
+export const useGetLastMessages = (
+  userId: string
+): IMyQueryResult<{ [chatId: string]: IMessage }> => {
   const myQuery = useQuery(GET_LAST_MESSAGES, { variables: { userId } });
 
-  return { data: myQuery.data };
+  return {
+    data: myQuery.data ? myQuery.data.lastMessages : undefined,
+    loading: myQuery.loading,
+    refetch: myQuery.refetch,
+    subscribeToMore: myQuery.subscribeToMore,
+  };
 };

@@ -18,6 +18,7 @@ export const typeDefs = mergeTypeDefs([
     hasNextPage: Boolean!
   }`,
   `scalar JSONObject`,
+  `scalar Date`,
   chatTypeDefs,
   messageTypeDefs,
   userTypeDefs,

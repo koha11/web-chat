@@ -125,33 +125,7 @@ export const GET_MESSAGES = gql`
 
 export const GET_LAST_MESSAGES = gql`
   query GetLastMessages($userId: ID!) {
-    lastMessages(userId: $userId) {
-      edges {
-        node {
-          id
-          user
-          chat
-          msgBody
-          status
-          seenList
-          createdAt
-          replyForMsg {
-            id
-            user
-            msgBody
-            status
-            seenList
-            createdAt
-          }
-        }
-        cursor
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
+    lastMessages(userId: $userId)
   }
 `;
 

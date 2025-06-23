@@ -72,7 +72,7 @@ const ChatDetails = ({
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
         (acc, edge) => {
           const msg = edge.node;
-          const time = new Date(parseInt(msg.createdAt!.toString()));
+          const time = new Date(msg.createdAt!);
           const last = acc[acc.length - 1];
 
           if (
@@ -118,6 +118,8 @@ const ChatDetails = ({
     }
   }, [messagesConnection, subscribeToMore]);
 
+  console.log(messages);
+
   useEffect(() => {
     refetch();
   }, [chatId]);
@@ -135,9 +137,6 @@ const ChatDetails = ({
       setSender(chat.users.find((user) => user.id == userId));
     }
   }, [chat]);
-
-  console.log(receivers);
-  console.log(sender);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {

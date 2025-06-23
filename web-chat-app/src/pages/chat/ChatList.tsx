@@ -12,20 +12,22 @@ import { IMessage } from "../../interfaces/message.interface";
 const ChatList = ({
   chatList,
   userId,
-  lastMsgList,
+  lastMsgMap,
   currChatId,
-  setMsgLoading,
+  isChatsLoading,
+  isLastMsgLoading,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
-  lastMsgList: {
+  lastMsgMap: {
     [chatId: string]: IMessage;
   };
   currChatId: string;
-  setMsgLoading: Function;
+  isChatsLoading: boolean;
+  isLastMsgLoading: boolean;
 }) => {
   const [searchValue, setSearchValue] = useState("");
-  
+
   return (
     <section
       className="w-[25%] h-full p-2 bg-white rounded-2xl"
@@ -79,7 +81,7 @@ const ChatList = ({
         id="chat-box-list"
         className="h-[75%] overflow-y-scroll flex flex-col gap-6"
       >
-        {chatList == undefined
+        {isChatsLoading
           ? [1, 2, 3, 4, 5, 6].map(() => (
               <div
                 className={
@@ -93,18 +95,14 @@ const ChatList = ({
                 </div>
               </div>
             ))
-          : chatList.map((chat: IChat) => (
+          : chatList!.map((chat: IChat) => (
               <ChatRow
                 chat={chat}
                 userId={userId}
-                key={chat._id}
-                lastMsg={
-                  lastMsgList[chat._id] == undefined
-                    ? undefined
-                    : lastMsgList[chat._id]
-                }
-                isActive={currChatId == chat._id}
-                setMsgLoading={setMsgLoading}
+                key={chat.id}
+                lastMsg={lastMsgMap && lastMsgMap[chat.id]}
+                isLastMsgLoading={isLastMsgLoading}
+                isActive={currChatId == chat.id}
               ></ChatRow>
             ))}
       </nav>

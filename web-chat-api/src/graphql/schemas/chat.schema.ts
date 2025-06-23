@@ -7,10 +7,10 @@ export const chatTypeDefs = gql`
     chatName: String
     chatAvatar: String
     nicknames: JSONObject
-    createdAt: String
-    updatedAt: String
+    createdAt: Date
+    updatedAt: Date
     deleted: Boolean
-    deletedAt: String
+    deletedAt: Date
   }
 
   type ChatEdge {

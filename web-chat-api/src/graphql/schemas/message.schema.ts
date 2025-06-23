@@ -20,10 +20,10 @@ export const messageTypeDefs = gql`
     replyForMsg: Message
     seenList: JSONObject
 
-    createdAt: String
-    updatedAt: String
+    createdAt: Date
+    updatedAt: Date
     deleted: Boolean
-    deletedAt: String
+    deletedAt: Date
   }
 
   extend type Query {
@@ -34,7 +34,7 @@ export const messageTypeDefs = gql`
       after: ID
     ): MessageConnection!
 
-    lastMessages(userId: ID!): [MessageConnection]!
+    lastMessages(userId: ID!): JSONObject
   }
 
   extend type Mutation {

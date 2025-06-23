@@ -34,12 +34,10 @@ const Chat = () => {
 
   const { data: chats, loading: isChatsLoading } = useGetChats(userId);
 
-  // const { data: lastMessges, loading: isLMLoading } =
-  //   useGetLastMessages(userId);
+  const { data: lastMessges, loading: isLastMsgLoading } =
+    useGetLastMessages(userId);
 
-  console.log(chats);
-
-  if (isChatsLoading) return <Loading></Loading>;
+  // if (isChatsLoading || isLastMsgLoading) return <Loading></Loading>;
 
   loadErrorMessages();
   loadDevMessages();
@@ -48,10 +46,11 @@ const Chat = () => {
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
         <ChatList
-          setMsgLoading={() => {}}
           currChatId={id ?? ""}
-          lastMsgList={{}}
-          chatList={chats.edges.map((edge: any) => edge.node)}
+          lastMsgMap={lastMessges ?? {}}
+          chatList={chats && chats.edges.map((edge: any) => edge.node)}
+          isChatsLoading={isChatsLoading}
+          isLastMsgLoading={isLastMsgLoading}
           userId={userId!}
         ></ChatList>
         {id == undefined ? (
@@ -59,7 +58,7 @@ const Chat = () => {
         ) : (
           <ChatDetails
             userId={userId}
-            chat={chats.edges.find((edge) => edge.node.id == id)?.node}
+            chat={chats && chats.edges.find((edge) => edge.node.id == id)?.node}
             chatId={id}
           ></ChatDetails>
         )}

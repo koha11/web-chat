@@ -31,28 +31,31 @@ const ChatRow = ({
   chat,
   lastMsg,
   isActive,
-  setMsgLoading,
+  isLastMsgLoading,
 }: {
   userId: string;
   chat: IChat;
   lastMsg: IMessage | undefined;
   isActive: boolean;
-  setMsgLoading: Function;
+  isLastMsgLoading: boolean;
 }) => {
-  const [receivers, setReceivers] = useState<IUser[]>();
+  const [users, setUsers] = useState<IUser[]>();
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
 
+  console.log(users);
+
   useEffect(() => {
-    if (chat != undefined && lastMsg != undefined) {
+    if (chat != undefined && !isLastMsgLoading) {
+      console.log(chat);
       if (typeof chat.users == "object") {
-        setReceivers(chat.users);
+        setUsers(chat.users);
       }
     }
   }, [chat]);
 
   return (
-    <NavLink to={`/m/${chat._id}`} className={`chat-box w-full h-18 relative`}>
+    <NavLink to={`/m/${chat.id}`} className={`chat-box w-full h-18 relative`}>
       <div
         className={`flex items-center px-2 py-4 rounded-2xl ${
           isActive ? "bg-gray-400 cursor-default" : "hover:bg-gray-200"
@@ -65,7 +68,7 @@ const ChatRow = ({
             return;
           }
 
-          setMsgLoading(true);
+          // setMsgLoading(true);
         }}
       >
         <div
@@ -75,7 +78,7 @@ const ChatRow = ({
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
-            {lastMsg == undefined && (
+            {isLastMsgLoading && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
             <div className="">
@@ -92,14 +95,15 @@ const ChatRow = ({
             </div>
           </div>
         </div>
+
         {/* Hien thi avatar nhung nguoi da seen tin nhan  */}
         {lastMsg &&
           lastMsg.user == userId &&
           lastMsg.status == MessageStatus.SEEN &&
-          receivers &&
+          users &&
           Object.keys(lastMsg.seenList).map((receiverId) => {
-            const receiver = receivers.find(
-              (receiver) => receiver._id == receiverId
+            const receiver = users.find(
+              (receiver) => receiver.id == receiverId
             );
 
             return (

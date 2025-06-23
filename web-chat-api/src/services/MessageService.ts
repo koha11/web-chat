@@ -35,8 +35,6 @@ class MessageService {
       .sort({ _id: -1 })
       .limit(first + 1);
 
-    console.log(docs);
-
     const hasNextPage = docs.length > first;
     const sliced = hasNextPage ? docs.slice(0, first) : docs;
 
@@ -56,12 +54,13 @@ class MessageService {
   };
 
   getLastMessage = async (chatIds: string[]) => {
-    let result = [] as IModelConnection<IMessage>[];
+    let result = {} as { [chatId: string]: IMessage | {} };
 
     for (let chatId of chatIds) {
-      const msg = await this.getMessages({ chatId: chatId, first: 1 });
+      const msgList = (await this.getMessages({ chatId: chatId, first: 1 }))
+        .edges;
 
-      result.push(msg);
+      if (msgList.length != 0) result[chatId] = msgList[0].node;
     }
 
     return result;

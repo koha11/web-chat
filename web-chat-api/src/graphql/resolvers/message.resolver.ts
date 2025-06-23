@@ -9,7 +9,7 @@ import chatService from "../../services/ChatService";
 export const messageResolvers: IResolvers = {
   Query: {
     messages: async (_p: any, { chatId, msgId, after, first }) => {
-      const result = await messageService.getMessages({ chatId, first: first ?? 5 });
+      const result = await messageService.getMessages({ chatId, first });
 
       return result;
     },
