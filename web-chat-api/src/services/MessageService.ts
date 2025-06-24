@@ -84,13 +84,10 @@ class MessageService {
 
     if (lastSeenMsgId) myFilter._id = { $gt: lastSeenMsgId };
 
-    console.log(myFilter);
-
     const res = await Message.updateMany(myFilter, {
       $set: { [`seenList.${userId}`]: new Date().toISOString() },
     });
 
-    console.log(res);
   };
 }
 

@@ -17,6 +17,8 @@ import { useServer } from "graphql-ws/use/ws";
 import SocketEvent from "./enums/SocketEvent";
 import { IMessage } from "./interfaces/message.interface";
 import authService from "./services/AuthService";
+import { Edge } from "./interfaces/modelConnection.interface";
+import { PubsubEvents } from "./interfaces/pubsubEvents";
 
 declare global {
   namespace Express {
@@ -29,7 +31,7 @@ declare global {
 const app = Express();
 const server = http.createServer(app);
 
-const pubsub = new PubSub();
+const pubsub = new PubSub<PubsubEvents>();
 
 const apollo = new ApolloServer({
   typeDefs,

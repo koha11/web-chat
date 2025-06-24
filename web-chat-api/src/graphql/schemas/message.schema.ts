@@ -47,7 +47,6 @@ export const messageTypeDefs = gql`
   }
 
   extend type Subscription {
-    initLastMessage(userId: ID!): [MessageConnection!]
-    receiveMessage(chatId: ID!): MessageEdge!
+    messageAdded(chatId: ID!): MessageEdge!
   }
 `;

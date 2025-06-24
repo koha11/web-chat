@@ -3,13 +3,13 @@ export default interface IModelConnection<M> {
   pageInfo: PageInfo;
 }
 
-type PageInfo = {
+export type PageInfo = {
   startCursor: string | null;
   endCursor: string | null;
   hasNextPage: Boolean;
 };
 
-type Edge<M> = {
+export type Edge<M> = {
   node: M;
   cursor: string;
 };

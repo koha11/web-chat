@@ -8,6 +8,7 @@ import IMyContext from "../../interfaces/myContext.interface";
 import chatService from "../../services/ChatService";
 import { subscribe } from "diagnostics_channel";
 import { Types } from "mongoose";
+import SocketEvent from "../../enums/SocketEvent";
 export const chatResolvers: IResolvers = {
   Query: {
     chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
@@ -31,7 +32,7 @@ export const chatResolvers: IResolvers = {
       },
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
-          pubsub.asyncIterableIterator(`CHAT_CHANGED_SUB`),
+          pubsub.asyncIterableIterator(SocketEvent.chatChanged),
         async (payload, variables, { user }: IMyContext) => {
           const chat = await Chat.findById(payload.chatId);
 

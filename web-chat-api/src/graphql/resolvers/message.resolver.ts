@@ -8,6 +8,8 @@ import chatService from "../../services/ChatService";
 import Chat from "../../models/Chat.model";
 import IMyContext from "../../interfaces/myContext.interface";
 import { Types } from "mongoose";
+import SocketEvent from "../../enums/SocketEvent";
+import { PubsubEvents } from "../../interfaces/pubsubEvents";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -69,15 +71,15 @@ export const messageResolvers: IResolvers = {
 
       await Chat.findByIdAndUpdate(message.chat, { updatedAt: new Date() });
 
-      pubsub.publish("RECEIVE_MESSAGE_SUB", {
-        receiveMessage: {
+      pubsub.publish(SocketEvent.messageAdded, {
+        messageAdded: {
           node: message,
           cursor: message.id,
         },
         chatId,
-      });
+      } as PubsubEvents[SocketEvent.messageAdded]);
 
-      pubsub.publish("CHAT_CHANGED_SUB", {
+      pubsub.publish(SocketEvent.chatChanged, {
         chatId,
       });
 
@@ -86,15 +88,10 @@ export const messageResolvers: IResolvers = {
   },
 
   Subscription: {
-    initLastMessage: {
-      subscribe: (_p, { userId }, { pubsub }: { pubsub: PubSub }) => {
-        return pubsub.asyncIterableIterator(`INIT_LAST_MESSAGE`);
-      },
-    },
-    receiveMessage: {
+    messageAdded: {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
-          pubsub.asyncIterableIterator(`RECEIVE_MESSAGE_SUB`),
+          pubsub.asyncIterableIterator(SocketEvent.messageAdded),
         async (payload, variables, { user }: IMyContext) => {
           const chat = await Chat.findById(payload.chatId);
 
@@ -102,7 +99,7 @@ export const messageResolvers: IResolvers = {
             toObjectId(user.id.toString())
           );
 
-          const isNotSender = !payload.receiveMessage.node.user.equals(user.id);
+          const isNotSender = !payload.messageAdded.node.user.equals(user.id);
 
           return isNotSender && isUserInThisChat;
         }

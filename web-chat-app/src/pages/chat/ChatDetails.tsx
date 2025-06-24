@@ -1,34 +1,22 @@
-import { FormEvent, use, useEffect, useRef, useState } from "react";
-import { getData, postData } from "../../services/api";
-import { Link, useParams } from "react-router-dom";
-import SingleMsg from "../../components/message/SingleMsg";
-import { Socket } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { IMessage } from "../../interfaces/message.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
-import { isArray } from "../../utils/checkType.helper";
 import { MoreHorizontal, Phone, Video, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
-import Loading from "../../components/ui/loading";
-import { MyTooltip } from "../../components/ui/my-tooltip";
-import {
-  getDisplaySendMsgTime,
-  getTimeDiff,
-  TimeTypeOption,
-} from "../../utils/messageTime.helper";
+import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messageGroup.interface";
-import { send } from "process";
 import { Skeleton } from "../../components/ui/skeleton";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
 import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
-import { RECEIVE_MESSAGE_SUB } from "../../services/messageService";
+import { MESSAGE_ADDED_SUB } from "../../services/messageService";
 import { PageInfo } from "../../interfaces/modelConnection.interface";
 
 const ChatDetails = ({
@@ -47,7 +35,6 @@ const ChatDetails = ({
 
   const {
     data: messagesConnection,
-    loading: isMsgLoading,
     subscribeToMore,
     refetch,
   } = useGetMessages({
@@ -104,12 +91,12 @@ const ChatDetails = ({
       setMessages(grouped);
 
       const unsubscribe = subscribeToMore({
-        document: RECEIVE_MESSAGE_SUB,
+        document: MESSAGE_ADDED_SUB,
         variables: { chatId: chat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
-          const newMsg = subscriptionData.data.receiveMessage;
+          const newMsg = subscriptionData.data.messageAdded;
 
           return Object.assign({}, prev, {
             ...prev,
