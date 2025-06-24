@@ -36,7 +36,7 @@ const SingleMsg = ({
   const [isOpen, setOpen] = useState<boolean>(false);
 
   if (msg.status == MessageStatus.REMOVED_ONLY_YOU) return <></>;
-  
+
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}
@@ -89,7 +89,7 @@ const SingleMsg = ({
         {(isHover || isOpen) && (
           <MessageActions
             isUnsendMsg={msg.status == MessageStatus.UNSEND}
-            msgId={msg._id}
+            msgId={msg.id}
             isSentMsg={isSentMsg}
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
@@ -152,7 +152,7 @@ const SingleMsg = ({
                   ></div>,
                   user.fullname +
                     " seen at " +
-                    getDisplaySendMsgTime(new Date(msg.seenList[user._id]))
+                    getDisplaySendMsgTime(new Date(msg.seenList[user.id]))
                 )
               )))}
       </div>

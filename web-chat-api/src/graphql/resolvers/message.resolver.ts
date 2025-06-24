@@ -17,16 +17,24 @@ export const messageResolvers: IResolvers = {
       { user }: IMyContext
     ) => {
       const result = await messageService.getMessages({ chatId, first });
+      const chat = await Chat.findById(chatId);
+
+      const isNotEmpty = result.edges.length > 0;
+
+      const isNotSeenBefore =
+        isNotEmpty &&
+        chat?.lastMsgSeen?.get(user.id.toString()) !=
+          result.edges[0].node.id.toString();
+
+      if (isNotSeenBefore)
+        await Chat.findByIdAndUpdate(chatId, {
+          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
+        });
 
       await messageService.updateSeenList({
         chatId,
         userId: user.id.toString(),
       });
-
-      if (result.edges.length > 0)
-        await Chat.findByIdAndUpdate(chatId, {
-          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
-        });
 
       return result;
     },

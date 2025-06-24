@@ -43,7 +43,7 @@ const Chat = () => {
     data: lastMessges,
     loading: isLastMsgLoading,
     refetch,
-  } = useGetLastMessages(userId);
+  } = useGetLastMessages(userId, chats == undefined);
 
   loadErrorMessages();
   loadDevMessages();

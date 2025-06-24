@@ -38,9 +38,13 @@ export const useGetMessages = ({
 };
 
 export const useGetLastMessages = (
-  userId: string
+  userId: string,
+  isFetch: boolean
 ): IMyQueryResult<{ [chatId: string]: IMessage }> => {
-  const myQuery = useQuery(GET_LAST_MESSAGES, { variables: { userId } });
+  const myQuery = useQuery(GET_LAST_MESSAGES, {
+    variables: { userId },
+    skip: isFetch,
+  });
 
   return {
     data: myQuery.data ? myQuery.data.lastMessages : undefined,

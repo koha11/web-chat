@@ -37,7 +37,7 @@ export const useGetChats = (
         )?.fullname;
 
         const defaultGroupChatName = users.reduce<String>((acc, user) => {
-          if (user.id == userId) return "";
+          if (user.id == userId) return acc;
 
           return acc == ""
             ? acc + user.fullname.split(" ")[0]

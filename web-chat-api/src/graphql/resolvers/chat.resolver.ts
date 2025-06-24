@@ -27,8 +27,6 @@ export const chatResolvers: IResolvers = {
           userId: user.id.toString(),
         });
 
-        console.log(result);
-
         return result;
       },
       subscribe: withFilter(
