@@ -53,7 +53,7 @@ const ChatDetails = ({
   } = useGetMessages({
     chatId: chat?.id ?? "",
     after: pageInfo?.endCursor,
-    first: 10,
+    first: 30,
   });
 
   const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
@@ -147,7 +147,7 @@ const ChatDetails = ({
 
   useEffect(() => {
     if (!isAddedMsgLoading && messages) {
-      const last = messages[messages?.length - 1];
+      const last = messages[0];
       const time = new Date(addedMsg.postMessage.createdAt);
 
       if (!last) {

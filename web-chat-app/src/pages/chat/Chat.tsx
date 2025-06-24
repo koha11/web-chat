@@ -27,19 +27,46 @@ import { client } from "../../apollo";
 import IModelConnection from "../../interfaces/modelConnection.interface";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { ITokenPayload } from "../../interfaces/auth/tokenPayload.interface";
+import { CHAT_CHANGED_SUB } from "../../services/chatService";
 
 const Chat = () => {
   const { id } = useParams();
   const userId = Cookies.get("userId") ?? "";
 
-  const { data: chats, loading: isChatsLoading } = useGetChats(userId);
+  const {
+    data: chats,
+    loading: isChatsLoading,
+    subscribeToMore,
+  } = useGetChats(userId);
 
-  const { data: lastMessges, loading: isLastMsgLoading } =
-    useGetLastMessages(userId);
+  const {
+    data: lastMessges,
+    loading: isLastMsgLoading,
+    refetch,
+  } = useGetLastMessages(userId);
 
   loadErrorMessages();
   loadDevMessages();
-  console.log(chats);
+
+  useEffect(() => {
+    if (chats) {
+      const unsubscribe = subscribeToMore({
+        document: CHAT_CHANGED_SUB,
+        variables: { userId },
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData) return prev;
+
+          return subscriptionData.data;
+        },
+      });
+
+      refetch();
+
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [chats]);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">

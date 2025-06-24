@@ -36,6 +36,31 @@ export const GET_CHATS = gql`
 
 // export const POST_CHAT = gql``;
 
-// export const CHAT_SUB = gql`
-//   subscription ()
-// `;
+export const CHAT_CHANGED_SUB = gql`
+  subscription ChatChanged($userId: ID!) {
+    chats(userId: $userId) {
+      edges {
+        node {
+          id
+          chatName
+          chatAvatar
+          nicknames
+          updatedAt
+          users {
+            id
+            fullname
+            avatar
+            isOnline
+            lastLogined
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;

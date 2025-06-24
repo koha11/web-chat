@@ -46,7 +46,7 @@ export const messageResolvers: IResolvers = {
     postMessage: async (
       _p,
       { chatId, msgBody, user, replyForMsg },
-      { pubsub }
+      { pubsub }: IMyContext
     ) => {
       const createdMsg = await Message.create({
         chat: chatId,
@@ -64,6 +64,10 @@ export const messageResolvers: IResolvers = {
           node: message,
           cursor: message.id,
         },
+        chatId,
+      });
+
+      pubsub.publish("CHAT_CHANGED_SUB", {
         chatId,
       });
 
