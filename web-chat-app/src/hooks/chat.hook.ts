@@ -10,6 +10,7 @@ import IModelConnection, {
 } from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import { IUser } from "../interfaces/user.interface";
+import { use } from "react";
 
 export const useGetChats = (
   userId: string
@@ -25,20 +26,35 @@ export const useGetChats = (
     data = {
       edges: queryData.edges.map((edge: Edge<IChat>) => {
         const chat = edge.node;
+        const users = chat.users as IUser[];
+        const isGroupChat = chat.users.length > 2;
+
+        const defaultChatAvatar =
+          users.find((user) => user.id != userId)?.avatar ?? "";
+
+        const defaultChatName = users.find(
+          (user) => user.id != userId
+        )?.fullname;
+
+        const defaultGroupChatName = users.reduce<String>((acc, user) => {
+          if (user.id == userId) return "";
+
+          return acc == ""
+            ? acc + user.fullname.split(" ")[0]
+            : acc + ", " + user.fullname.split(" ")[0];
+        }, "");
 
         return {
           ...edge,
           node: {
             ...chat,
             chatAvatar:
-              chat.chatAvatar == ""
-                ? (chat.users as IUser[]).find((user) => user.id != userId)
-                    ?.avatar ?? ""
-                : chat.chatAvatar,
+              chat.chatAvatar == "" ? defaultChatAvatar : chat.chatAvatar,
             chatName:
               chat.chatName == ""
-                ? (chat.users as IUser[]).find((user) => user.id != userId)
-                    ?.fullname ?? ""
+                ? isGroupChat
+                  ? defaultGroupChatName
+                  : defaultChatName
                 : chat.chatName,
           },
         };
