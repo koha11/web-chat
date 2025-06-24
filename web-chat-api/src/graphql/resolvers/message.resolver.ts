@@ -26,15 +26,17 @@ export const messageResolvers: IResolvers = {
         chat?.lastMsgSeen?.get(user.id.toString()) !=
           result.edges[0].node.id.toString();
 
-      if (isNotSeenBefore)
-        await Chat.findByIdAndUpdate(chatId, {
-          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
-        });
-
       await messageService.updateSeenList({
         chatId,
         userId: user.id.toString(),
+        lastSeenMsgId: chat!.lastMsgSeen?.get(user.id.toString()) ?? "",
       });
+
+      if (isNotSeenBefore) {
+        await Chat.findByIdAndUpdate(chatId, {
+          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
+        });
+      }
 
       return result;
     },

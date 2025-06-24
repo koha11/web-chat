@@ -71,24 +71,26 @@ class MessageService {
   updateSeenList = async ({
     chatId,
     userId,
+    lastSeenMsgId,
   }: {
     chatId: string;
     userId: string;
+    lastSeenMsgId: string;
   }) => {
-    const chat = await Chat.findById(chatId);
-
     let myFilter = {
       chat: chatId,
       user: { $ne: userId },
     } as any;
 
-    const lastSeenMsgId = chat!.lastMsgSeen?.get(userId);
-
     if (lastSeenMsgId) myFilter._id = { $gt: lastSeenMsgId };
 
-    await Message.updateMany(myFilter, {
+    console.log(myFilter);
+
+    const res = await Message.updateMany(myFilter, {
       $set: { [`seenList.${userId}`]: new Date().toISOString() },
     });
+
+    console.log(res);
   };
 }
 
