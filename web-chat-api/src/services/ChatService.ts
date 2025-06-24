@@ -6,7 +6,6 @@ import IModelConnection from "../interfaces/modelConnection.interface";
 import { toObjectId } from "../utils/mongoose";
 
 class ChatService {
-
   getChatList = async ({
     userId,
     first = 10,
@@ -18,7 +17,6 @@ class ChatService {
     after?: string;
   }): Promise<IModelConnection<IChat>> => {
     const filter = { users: userId } as any;
-
 
     if (after) {
       filter._id = { $lt: toObjectId(after) };

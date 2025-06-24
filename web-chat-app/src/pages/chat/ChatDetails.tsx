@@ -111,6 +111,7 @@ const ChatDetails = ({
           return Object.assign({}, prev, {
             ...prev,
             messages: {
+              ...prev.messages,
               pageInfo: {
                 ...prev.messages.pageInfo,
                 startCursor: newMsg.cursor,

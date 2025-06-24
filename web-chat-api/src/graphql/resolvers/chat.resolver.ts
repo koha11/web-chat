@@ -5,40 +5,15 @@ import { IResolvers } from "@graphql-tools/utils";
 import Message from "../../models/Message.model";
 import messageService from "../../services/MessageService";
 import IMyContext from "../../interfaces/myContext.interface";
+import chatService from "../../services/ChatService";
 export const chatResolvers: IResolvers = {
   Query: {
-    chats: async (
-      _p: any,
-      { chatId, first, after },
-      { pubsub, user }: IMyContext
-    ) => {
-      const filter = { users: user.id } as { _id: any; users: any };
+    chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
+      const result = await chatService.getChatList({
+        userId: user.id.toString(),
+      });
 
-      if (after) {
-        filter._id = { $lt: toObjectId(after) };
-      }
-
-      const docs = await Chat.find(filter)
-        .populate("users")
-        .sort({ updatedAt: -1 })
-        .limit(first + 1);
-
-      const hasNextPage = docs.length > first;
-      const sliced = hasNextPage ? docs.slice(0, first) : docs;
-
-      const edges = sliced.map((doc) => ({
-        cursor: doc._id.toString(),
-        node: doc,
-      }));
-
-      return {
-        edges,
-        pageInfo: {
-          startCursor: edges[0].cursor,
-          hasNextPage,
-          endCursor: edges.length ? edges[edges.length - 1].cursor : null,
-        },
-      };
+      return result;
     },
   },
   Mutation: {},

@@ -26,10 +26,11 @@ import { useSubscription } from "@apollo/client";
 import { client } from "../../apollo";
 import IModelConnection from "../../interfaces/modelConnection.interface";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import { ITokenPayload } from "../../interfaces/auth/tokenPayload.interface";
 
 const Chat = () => {
   const { id } = useParams();
-  const userId = "684d9cf16cda6f875d523d82";
+  const userId = Cookies.get("userId") ?? "";
 
   const { data: chats, loading: isChatsLoading } = useGetChats(userId);
 
@@ -38,7 +39,8 @@ const Chat = () => {
 
   loadErrorMessages();
   loadDevMessages();
-
+  console.log(chats);
+  
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">

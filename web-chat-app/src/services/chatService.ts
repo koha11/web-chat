@@ -14,6 +14,7 @@ export const GET_CHATS = gql`
           chatName
           chatAvatar
           nicknames
+          updatedAt
           users {
             id
             fullname

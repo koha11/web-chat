@@ -43,11 +43,8 @@ const ChatRow = ({
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
 
-  console.log(users);
-
   useEffect(() => {
     if (chat != undefined && !isLastMsgLoading) {
-      console.log(chat);
       if (typeof chat.users == "object") {
         setUsers(chat.users);
       }

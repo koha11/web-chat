@@ -85,15 +85,15 @@ Promise.all([connectDB(), apollo.start()])
       {
         schema: graphqlSchema,
         context: async (ctx, msg, args) => {
-          const auth = ctx.connectionParams?.authToken as string;
+          const token = ctx.connectionParams?.authToken as string;
 
           let user = null;
 
-          if (auth?.startsWith("Bearer ")) {
-            const token = auth.slice(7);
-            user = authService.verifyToken(token);
-            if (!user) throw new Error("Missing auth token");
-          }
+          if (!token) throw new Error("no token provided");
+
+          user = authService.verifyToken(token);
+
+          if (!user) throw new Error("Missing auth token");
 
           return { pubsub, user };
         },
