@@ -22,9 +22,11 @@ import { PageInfo } from "../../interfaces/modelConnection.interface";
 const ChatDetails = ({
   chat,
   userId,
+  chatId,
 }: {
   userId: string;
   chat: IChat | undefined;
+  chatId: string;
 }) => {
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
@@ -119,9 +121,11 @@ const ChatDetails = ({
   }, [messagesConnection, subscribeToMore]);
 
   useEffect(() => {
-    if (chat && typeof chat.users == "object") {
-      refetch();
+    refetch();
+  }, [chatId]);
 
+  useEffect(() => {
+    if (chat && typeof chat.users == "object") {
       let myMap = {} as { [userId: string]: IUser };
       chat.users.forEach((user) => {
         if (user.id != userId) myMap[user.id] = user;
@@ -169,7 +173,14 @@ const ChatDetails = ({
   };
 
   const handleSendMessage = (msg: IMessage, chatId: string) => {
-    postMessage({ variables: { ...msg, chatId } });
+    postMessage({
+      variables: {
+        msgBody: msg.msgBody,
+        user: msg.user,
+        chatId,
+        replyForMsg: (msg.replyForMsg as IMessage).id,
+      },
+    });
   };
 
   return (

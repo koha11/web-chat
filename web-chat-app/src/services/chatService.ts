@@ -1,8 +1,3 @@
-import { Socket } from "socket.io-client";
-import { IChat } from "../interfaces/chat.interface";
-import { IUser } from "../interfaces/user.interface";
-import MY_SOCKET_EVENTS from "../constants/MY_SOCKET_EVENTS";
-import SocketEvent from "../enums/SocketEvent.enum";
 import { gql } from "@apollo/client";
 
 export const GET_CHATS = gql`

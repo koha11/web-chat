@@ -66,6 +66,7 @@ const Chat = () => {
           <ChatDetails
             userId={userId}
             chat={chats && chats.edges.find((edge) => edge.node.id == id)?.node}
+            chatId={id}
           ></ChatDetails>
         )}
       </div>

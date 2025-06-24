@@ -1,10 +1,4 @@
-import { Socket } from "socket.io-client";
-import { IMessage } from "../interfaces/message.interface";
-import MY_SOCKET_EVENTS from "../constants/MY_SOCKET_EVENTS";
-import SocketEvent from "../enums/SocketEvent.enum";
-import IMessageGroup from "../interfaces/messageGroup.interface";
-import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 export const GET_MESSAGES = gql`
   query ($chatId: ID!, $first: Int, $after: ID) {
