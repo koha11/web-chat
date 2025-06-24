@@ -84,10 +84,15 @@ class MessageService {
 
     if (lastSeenMsgId) myFilter._id = { $gt: lastSeenMsgId };
 
-    const res = await Message.updateMany(myFilter, {
-      $set: { [`seenList.${userId}`]: new Date().toISOString() },
-    });
+    const messages = await Message.find(myFilter);
 
+    for (let msg of messages) {
+      msg.seenList.set(userId, new Date().toISOString());
+
+      if (msg.status == MessageStatus.SENT) msg.status = MessageStatus.SEEN;
+
+      await msg.save();
+    }
   };
 }
 

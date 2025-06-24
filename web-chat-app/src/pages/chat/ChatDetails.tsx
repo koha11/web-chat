@@ -178,7 +178,9 @@ const ChatDetails = ({
         msgBody: msg.msgBody,
         user: msg.user,
         chatId,
-        replyForMsg: (msg.replyForMsg as IMessage).id,
+        replyForMsg: msg.replyForMsg
+          ? (msg.replyForMsg as IMessage).id
+          : undefined,
       },
     });
   };
