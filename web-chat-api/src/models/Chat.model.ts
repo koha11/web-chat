@@ -13,6 +13,7 @@ const ChatSchema = new Schema<IChat>(
     nicknames: { type: Map, of: String },
     chatName: { type: String, default: "" },
     chatAvatar: { type: String, default: "" },
+    lastMsgSeen: { type: Map, of: String },
   },
   { timestamps: true }
 );

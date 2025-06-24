@@ -9,6 +9,7 @@ export interface IChat {
   nicknames: { [id: string]: string };
   chatName: string;
   chatAvatar: string;
+  lastMsgSeen: Map<string, string>;
 
   createdAt?: Date;
   updatedAt?: Date;

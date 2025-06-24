@@ -33,12 +33,10 @@ import { PageInfo } from "../../interfaces/modelConnection.interface";
 
 const ChatDetails = ({
   chat,
-  chatId,
   userId,
 }: {
   userId: string;
   chat: IChat | undefined;
-  chatId: string;
 }) => {
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
@@ -52,9 +50,14 @@ const ChatDetails = ({
     loading: isMsgLoading,
     subscribeToMore,
     refetch,
-  } = useGetMessages({ chatId, after: pageInfo?.endCursor, first: 10 });
+  } = useGetMessages({
+    chatId: chat?.id ?? "",
+    after: pageInfo?.endCursor,
+    first: 10,
+  });
 
-  const [postMessage] = usePostMessage();
+  const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
+    usePostMessage();
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -102,7 +105,7 @@ const ChatDetails = ({
 
       const unsubscribe = subscribeToMore({
         document: RECEIVE_MESSAGE_SUB,
-        variables: { chatId: chatId },
+        variables: { chatId: chat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -129,11 +132,9 @@ const ChatDetails = ({
   }, [messagesConnection, subscribeToMore]);
 
   useEffect(() => {
-    refetch();
-  }, [chatId]);
-
-  useEffect(() => {
     if (chat && typeof chat.users == "object") {
+      refetch();
+
       let myMap = {} as { [userId: string]: IUser };
       chat.users.forEach((user) => {
         if (user.id != userId) myMap[user.id] = user;
@@ -143,6 +144,36 @@ const ChatDetails = ({
       setSender(chat.users.find((user) => user.id == userId));
     }
   }, [chat]);
+
+  useEffect(() => {
+    if (!isAddedMsgLoading && messages) {
+      const last = messages[messages?.length - 1];
+      const time = new Date(addedMsg.postMessage.createdAt);
+
+      if (!last) {
+        setMessages([
+          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
+        ]);
+
+        return;
+      }
+
+      if (
+        getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
+        20
+      ) {
+        setMessages([
+          { ...last, messages: [addedMsg.postMessage, ...last.messages] },
+          ...messages.slice(1),
+        ]);
+      } else {
+        setMessages([
+          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
+          ...messages,
+        ]);
+      }
+    }
+  }, [isAddedMsgLoading]);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {

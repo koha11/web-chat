@@ -40,7 +40,7 @@ const Chat = () => {
   loadErrorMessages();
   loadDevMessages();
   console.log(chats);
-  
+
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
@@ -58,7 +58,6 @@ const Chat = () => {
           <ChatDetails
             userId={userId}
             chat={chats && chats.edges.find((edge) => edge.node.id == id)?.node}
-            chatId={id}
           ></ChatDetails>
         )}
       </div>

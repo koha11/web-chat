@@ -11,8 +11,22 @@ import { Types } from "mongoose";
 
 export const messageResolvers: IResolvers = {
   Query: {
-    messages: async (_p: any, { chatId, msgId, after, first }) => {
+    messages: async (
+      _p: any,
+      { chatId, msgId, after, first },
+      { user }: IMyContext
+    ) => {
       const result = await messageService.getMessages({ chatId, first });
+
+      await messageService.updateSeenList({
+        chatId,
+        userId: user.id.toString(),
+      });
+
+      if (result.edges.length > 0)
+        await Chat.findByIdAndUpdate(chatId, {
+          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
+        });
 
       return result;
     },

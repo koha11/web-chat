@@ -43,12 +43,14 @@ class MessageService {
       node: doc,
     }));
 
+    const isNotEmpty = edges.length > 0;
+
     return {
       edges,
       pageInfo: {
-        startCursor: edges.length ? edges[0].cursor : null,
+        startCursor: isNotEmpty ? edges[0].cursor : null,
         hasNextPage,
-        endCursor: edges.length ? edges[edges.length - 1].cursor : null,
+        endCursor: isNotEmpty ? edges[edges.length - 1].cursor : null,
       },
     };
   };
@@ -64,6 +66,29 @@ class MessageService {
     }
 
     return result;
+  };
+
+  updateSeenList = async ({
+    chatId,
+    userId,
+  }: {
+    chatId: string;
+    userId: string;
+  }) => {
+    const chat = await Chat.findById(chatId);
+
+    let myFilter = {
+      chat: chatId,
+      user: { $ne: userId },
+    } as any;
+
+    const lastSeenMsgId = chat!.lastMsgSeen?.get(userId);
+
+    if (lastSeenMsgId) myFilter._id = { $gt: lastSeenMsgId };
+
+    await Message.updateMany(myFilter, {
+      $set: { [`seenList.${userId}`]: new Date().toISOString() },
+    });
   };
 }
 
