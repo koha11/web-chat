@@ -51,6 +51,28 @@ export const POST_MESSAGE = gql`
       replyForMsg: $replyForMsg
     ) {
       id
+      chat
+      user
+      msgBody
+      status
+      replyForMsg {
+        id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+      }
+      seenList
+      createdAt
+    }
+  }
+`;
+
+export const CHANGE_MESSAGE_STATUS = gql`
+  mutation ChangeMessageStatus($chatId: ID!, $msgId: ID!, $status: String!) {
+    changeMessageStatus(chatId: $chatId, msgId: $msgId, status: $status) {
+      id
       user
       msgBody
       status
@@ -74,6 +96,24 @@ export const MESSAGE_ADDED_SUB = gql`
       cursor
       node {
         id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const MESSAGE_STATUS_CHANGED_SUB = gql`
+  subscription MessageStatusChanged($chatId: ID!) {
+    messageStatusChanged(chatId: $chatId) {
+      cursor
+      node {
+        id
+        chat
         user
         msgBody
         status

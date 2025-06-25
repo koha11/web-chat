@@ -1,14 +1,6 @@
-import { Server, Socket } from "socket.io";
-import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
-import chatService from "./ChatService";
-import SocketEvent from "../enums/SocketEvent";
 import MessageStatus from "../enums/MessageStatus.enum";
 import { toObjectId } from "../utils/mongoose";
-import { Types } from "mongoose";
-import { IChat } from "../interfaces/chat.interface";
 import { IMessage } from "../interfaces/message.interface";
-import { IUser } from "../interfaces/user.interface";
-import Chat from "../models/Chat.model";
 import Message from "../models/Message.model";
 import IModelConnection from "../interfaces/modelConnection.interface";
 

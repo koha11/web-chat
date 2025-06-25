@@ -22,6 +22,7 @@ const SingleMsg = ({
   seenList,
   handleReplyMsg,
   receivers,
+  changeMessageStatus
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
@@ -31,6 +32,7 @@ const SingleMsg = ({
   seenList: IUser[];
   receivers: { [userId: string]: IUser };
   handleReplyMsg: (msg: IMessage) => void;
+  changeMessageStatus: Function
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -94,6 +96,7 @@ const SingleMsg = ({
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
             handleReplyMsg={() => handleReplyMsg(msg)}
+            changeMessageStatus={changeMessageStatus}
           ></MessageActions>
         )}
 

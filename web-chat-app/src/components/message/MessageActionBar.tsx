@@ -17,6 +17,7 @@ import SocketEvent from "../../enums/SocketEvent.enum";
 import { toast } from "sonner";
 import { IMessage } from "../../interfaces/message.interface";
 import ForwardMsgDialog from "./ForwardMsgDialog";
+import MessageStatus from "../../enums/MessageStatus.enum";
 
 const MessageActions = ({
   isOpen,
@@ -25,6 +26,7 @@ const MessageActions = ({
   msgId,
   isUnsendMsg,
   handleReplyMsg,
+  changeMessageStatus,
 }: {
   isOpen: boolean;
   setOpen: () => void;
@@ -32,6 +34,7 @@ const MessageActions = ({
   msgId: string;
   isUnsendMsg: boolean;
   handleReplyMsg: () => void;
+  changeMessageStatus: Function;
 }) => {
   const { id } = useParams();
 
@@ -41,7 +44,11 @@ const MessageActions = ({
 
   // Handlers
   const handleUnsentMsg = (isUnsendForEveryone: boolean) => {
-    // socket.emit(SocketEvent.um, msgId, id, isUnsendForEveryone);
+    const status = isUnsendForEveryone
+      ? MessageStatus.UNSEND
+      : MessageStatus.REMOVED_ONLY_YOU;
+
+    changeMessageStatus(id, msgId, status);
   };
 
   return (

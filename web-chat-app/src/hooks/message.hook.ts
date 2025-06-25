@@ -5,6 +5,7 @@ import {
   useQuery,
 } from "@apollo/client";
 import {
+  CHANGE_MESSAGE_STATUS,
   GET_LAST_MESSAGES,
   GET_MESSAGES,
   POST_MESSAGE,
@@ -14,6 +15,7 @@ import IModelConnection from "../interfaces/modelConnection.interface";
 import { IMessage } from "../interfaces/message.interface";
 import IMessageGroup from "../interfaces/messageGroup.interface";
 import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
+import { IChat } from "../interfaces/chat.interface";
 
 export const useGetMessages = ({
   chatId,
@@ -55,5 +57,40 @@ export const useGetLastMessages = (
 };
 
 export const usePostMessage = () => {
-  return useMutation(POST_MESSAGE, { variables: {} });
+  return useMutation(POST_MESSAGE, {
+    update(cache, { data }) {
+      const addedMsg = data.postMessage;
+
+      const existing = cache.readQuery({
+        query: GET_MESSAGES,
+        variables: { chatId: addedMsg.chat, first: 30 },
+      }) as { messages: IModelConnection<IMessage> };
+
+      cache.writeQuery({
+        query: GET_MESSAGES,
+        variables: { chatId: addedMsg.chat, first: 30 },
+        data: {
+          messages: {
+            ...existing.messages,
+            edges: [
+              {
+                __typename: "MessageEdge",
+                cursor: addedMsg.id,
+                node: addedMsg,
+              },
+              ...existing.messages.edges,
+            ],
+            pageInfo: {
+              ...existing.messages.pageInfo,
+              startCursor: addedMsg.id,
+            },
+          } as IModelConnection<IMessage>,
+        },
+      });
+    },
+  });
+};
+
+export const useChangeMessageStatus = () => {
+  return useMutation(CHANGE_MESSAGE_STATUS);
 };

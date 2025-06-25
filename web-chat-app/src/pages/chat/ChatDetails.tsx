@@ -15,7 +15,11 @@ import {
   CollapsibleContent,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
-import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
+import {
+  useChangeMessageStatus,
+  useGetMessages,
+  usePostMessage,
+} from "../../hooks/message.hook";
 import { MESSAGE_ADDED_SUB } from "../../services/messageService";
 import { PageInfo } from "../../interfaces/modelConnection.interface";
 
@@ -37,16 +41,21 @@ const ChatDetails = ({
 
   const {
     data: messagesConnection,
+    loading: isMsgLoading,
     subscribeToMore,
     refetch,
   } = useGetMessages({
-    chatId: chat?.id ?? "",
-    after: pageInfo?.endCursor,
+    chatId: chatId,
     first: 30,
   });
 
   const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
     usePostMessage();
+
+  const [
+    changeMessageStatus,
+    { data: changedMsg, loading: isChangedMsgLoading },
+  ] = useChangeMessageStatus();
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -65,6 +74,8 @@ const ChatDetails = ({
   useEffect(() => {
     if (messagesConnection) {
       setPageInfo(messagesConnection.pageInfo);
+
+      console.log(messagesConnection);
 
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
         (acc, edge) => {
@@ -98,6 +109,8 @@ const ChatDetails = ({
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
+          console.log(subscriptionData);
+
           const newMsg = subscriptionData.data.messageAdded;
 
           return Object.assign({}, prev, {
@@ -121,10 +134,6 @@ const ChatDetails = ({
   }, [messagesConnection, subscribeToMore]);
 
   useEffect(() => {
-    refetch();
-  }, [chatId]);
-
-  useEffect(() => {
     if (chat && typeof chat.users == "object") {
       let myMap = {} as { [userId: string]: IUser };
       chat.users.forEach((user) => {
@@ -137,34 +146,44 @@ const ChatDetails = ({
   }, [chat]);
 
   useEffect(() => {
-    if (!isAddedMsgLoading && messages) {
-      const last = messages[0];
-      const time = new Date(addedMsg.postMessage.createdAt);
+    console.log("refetch messages");
+    refetch();
+  }, [chatId]);
 
-      if (!last) {
-        setMessages([
-          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
-        ]);
+  // useEffect(() => {
+  //   if (!isAddedMsgLoading && messages) {
+  //     const last = messages[0];
+  //     const time = new Date(addedMsg.postMessage.createdAt);
 
-        return;
-      }
+  //     if (!last) {
+  //       setMessages([
+  //         { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
+  //       ]);
 
-      if (
-        getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
-        20
-      ) {
-        setMessages([
-          { ...last, messages: [addedMsg.postMessage, ...last.messages] },
-          ...messages.slice(1),
-        ]);
-      } else {
-        setMessages([
-          { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
-          ...messages,
-        ]);
-      }
+  //       return;
+  //     }
+
+  //     if (
+  //       getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
+  //       20
+  //     ) {
+  //       setMessages([
+  //         { ...last, messages: [addedMsg.postMessage, ...last.messages] },
+  //         ...messages.slice(1),
+  //       ]);
+  //     } else {
+  //       setMessages([
+  //         { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
+  //         ...messages,
+  //       ]);
+  //     }
+  //   }
+  // }, [isAddedMsgLoading]);
+
+  useEffect(() => {
+    if (!isChangedMsgLoading && messages) {
     }
-  }, [isAddedMsgLoading]);
+  }, [isChangedMsgLoading]);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
@@ -192,7 +211,7 @@ const ChatDetails = ({
     >
       <div className="container flex items-center justify-between h-[10%]">
         <div className="flex items-center">
-          {chat ? (
+          {chat && !isMsgLoading ? (
             <div
               className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
               style={{ backgroundImage: `url(${chat.chatAvatar})` }}
@@ -201,7 +220,7 @@ const ChatDetails = ({
             <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
           )}
 
-          {chat ? (
+          {chat && !isMsgLoading ? (
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
@@ -269,6 +288,15 @@ const ChatDetails = ({
                   sender={sender}
                   isFirstGroup={index == 0}
                   handleReplyMsg={handleReplyMsg}
+                  changeMessageStatus={(
+                    chatId: string,
+                    msgId: string,
+                    status: MessageStatus
+                  ) => {
+                    changeMessageStatus({
+                      variables: { chatId, msgId, status },
+                    });
+                  }}
                 ></GroupMsg>
               );
             })

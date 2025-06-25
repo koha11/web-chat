@@ -44,9 +44,12 @@ export const messageTypeDefs = gql`
       user: ID!
       replyForMsg: String
     ): Message!
+
+    changeMessageStatus(chatId: ID!, msgId: ID!, status: String!): Message!
   }
 
   extend type Subscription {
     messageAdded(chatId: ID!): MessageEdge!
+    messageStatusChanged(chatId: ID!): MessageEdge!
   }
 `;

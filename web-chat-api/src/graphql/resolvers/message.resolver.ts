@@ -10,6 +10,7 @@ import IMyContext from "../../interfaces/myContext.interface";
 import { Types } from "mongoose";
 import SocketEvent from "../../enums/SocketEvent";
 import { PubsubEvents } from "../../interfaces/pubsubEvents";
+import { resolve } from "path";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -85,6 +86,32 @@ export const messageResolvers: IResolvers = {
 
       return message;
     },
+    changeMessageStatus: async (
+      _p,
+      { chatId, msgId, status },
+      { pubsub }: IMyContext
+    ) => {
+      const msg = await Message.findById(msgId).populate("replyForMsg");
+
+      msg!.status = status;
+
+      msg?.save();
+
+      await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
+
+      pubsub.publish(SocketEvent.messageStatusChanged, {
+        messageChanged: {
+          cursor: msg?.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageStatusChanged]);
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatId,
+      });
+
+      return msg;
+    },
   },
 
   Subscription: {
@@ -100,6 +127,23 @@ export const messageResolvers: IResolvers = {
           );
 
           const isNotSender = !payload.messageAdded.node.user.equals(user.id);
+
+          return isNotSender && isUserInThisChat;
+        }
+      ),
+    },
+    messageStatusChanged: {
+      subscribe: withFilter(
+        (_p, { chatId }, { pubsub }) =>
+          pubsub.asyncIterableIterator(SocketEvent.messageStatusChanged),
+        async (payload, { chatId }, { user }: IMyContext) => {
+          const chat = await Chat.findById(chatId);
+
+          const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
+            toObjectId(user.id.toString())
+          );
+
+          const isNotSender = !payload.messageChanged.node.user.equals(user.id);
 
           return isNotSender && isUserInThisChat;
         }
