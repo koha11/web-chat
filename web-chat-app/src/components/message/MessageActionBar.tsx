@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { IMessage } from "../../interfaces/message.interface";
 import ForwardMsgDialog from "./ForwardMsgDialog";
 import MessageStatus from "../../enums/MessageStatus.enum";
-import { useUnsendMessage } from "../../hooks/message.hook";
+import { useRemoveMessage, useUnsendMessage } from "../../hooks/message.hook";
 
 const MessageActions = ({
   isOpen,
@@ -38,18 +38,23 @@ const MessageActions = ({
   const { id } = useParams();
 
   const [unsendMessage] = useUnsendMessage();
+  const [removeMessage] = useRemoveMessage();
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
   const [isForwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
 
   // Handlers
-  const handleUnsentOrRemoveMsg = (isUnsent: boolean) => {
-    if (isUnsent) {
+  const handleUnsentOrRemoveMsg = ({ isUnsend }: { isUnsend: boolean }) => {
+    if (isUnsend) {
       unsendMessage({ variables: { chatId: id, msgId } });
       toast.success("Unsend successful");
-      setRadioDialogOpen(false);
+    } else {
+      removeMessage({ variables: { chatId: id, msgId } });
+      toast.success("Remove successful");
     }
+
+    setRadioDialogOpen(false);
   };
 
   return (
@@ -139,6 +144,7 @@ const MessageActions = ({
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
         onSubmit={() => {
+          removeMessage({ variables: { chatId: id, msgId } });
           toast.success("Unsend successful");
           setConfirmDialogOpen(false);
         }}
@@ -163,7 +169,7 @@ const MessageActions = ({
             des: `This message will be removed from your device, but will still be visible to other members of the chat.`,
           },
         ]}
-        name={"isUnsendForEveryone"}
+        name={"isUnsend"}
         initValue={true}
       ></MyRadioDialog>
 

@@ -19,6 +19,7 @@ const SingleMsg = ({
   msgSenderAvatar,
   msg,
   isFirstMsg,
+  isHidden,
   seenList,
   handleReplyMsg,
   receivers,
@@ -26,6 +27,7 @@ const SingleMsg = ({
   isSentMsg: boolean;
   msgSenderAvatar: string;
   isLongGap: boolean;
+  isHidden: boolean;
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: IUser[];
@@ -35,7 +37,7 @@ const SingleMsg = ({
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
 
-  if (msg.status == MessageStatus.REMOVED_ONLY_YOU) return <></>;
+  if (isHidden) return <></>;
 
   return (
     <div

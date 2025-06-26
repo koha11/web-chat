@@ -58,6 +58,7 @@ const GroupMsg = ({
               key={msg.id}
               msg={msg}
               isSentMsg={msg.user == sender.id}
+              isHidden={msg.isHiddenFor?.includes(sender.id) ?? false}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}

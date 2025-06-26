@@ -1,8 +1,9 @@
-import { ObjectId, Types } from "mongoose";
+import { isObjectIdOrHexString, ObjectId, Types } from "mongoose";
 
-export const toObjectId = (id: string): Types.ObjectId => {
+export const toObjectId = (id: string | Types.ObjectId): Types.ObjectId => {
   try {
-    return new Types.ObjectId(id);
+    if (isObjectIdOrHexString(id)) return id as Types.ObjectId;
+    else return new Types.ObjectId(id);
   } catch (e) {
     throw e;
   }

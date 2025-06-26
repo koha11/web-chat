@@ -8,6 +8,7 @@ import {
   GET_LAST_MESSAGES,
   GET_MESSAGES,
   POST_MESSAGE,
+  REMOVE_MESSAGE,
   UNSEND_MESSAGE,
 } from "../services/messageService";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
@@ -93,4 +94,8 @@ export const usePostMessage = () => {
 
 export const useUnsendMessage = () => {
   return useMutation(UNSEND_MESSAGE);
+};
+
+export const useRemoveMessage = () => {
+  return useMutation(REMOVE_MESSAGE);
 };

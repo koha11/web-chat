@@ -49,6 +49,8 @@ export const messageTypeDefs = gql`
     ): Message!
 
     unsendMessage(chatId: ID!, msgId: ID!): Message!
+
+    removeMessage(chatId: ID!, msgId: ID!): Message!
   }
 
   extend type Subscription {

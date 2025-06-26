@@ -97,7 +97,7 @@ const ChatDetails = ({
 
       const unsubscribe = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
-        variables: { chatId: chat?.id },
+        variables: { chatId: chatId },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -242,7 +242,7 @@ const ChatDetails = ({
                   receivers={receivers}
                   sender={sender}
                   isFirstGroup={index == 0}
-                  handleReplyMsg={handleReplyMsg}                  
+                  handleReplyMsg={handleReplyMsg}
                 ></GroupMsg>
               );
             })

@@ -114,6 +114,32 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
+    removeMessage: async (
+      _p,
+      { chatId, msgId, status },
+      { pubsub, user }: IMyContext
+    ) => {
+      const msg = await Message.findById(msgId).populate("replyForMsg");
+
+      msg!.isHiddenFor?.push(toObjectId(user.id));
+
+      msg?.save();
+
+      await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
+
+      pubsub.publish(SocketEvent.messageChanged, {
+        messageChanged: {
+          cursor: msg?.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageChanged]);
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatId,
+      });
+
+      return msg;
+    },
   },
 
   Subscription: {

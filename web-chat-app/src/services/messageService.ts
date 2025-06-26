@@ -100,6 +100,30 @@ export const UNSEND_MESSAGE = gql`
   }
 `;
 
+export const REMOVE_MESSAGE = gql`
+  mutation RemoveMessage($chatId: ID!, $msgId: ID!) {
+    removeMessage(chatId: $chatId, msgId: $msgId) {
+      id
+      user
+      msgBody
+      status
+      replyForMsg {
+        id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+      }
+      seenList
+      createdAt
+      isHiddenFor
+      unsentAt
+      editedAt
+    }
+  }
+`;
+
 export const MESSAGE_ADDED_SUB = gql`
   subscription MessageAdded($chatId: ID!) {
     messageAdded(chatId: $chatId) {
