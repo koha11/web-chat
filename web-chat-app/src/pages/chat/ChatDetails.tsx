@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { IMessage } from "../../interfaces/message.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
-import { MoreHorizontal, Phone, Video, X } from "lucide-react";
+import { Loader, MoreHorizontal, Phone, Video, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
@@ -35,9 +35,9 @@ const ChatDetails = ({
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
   const [sender, setSender] = useState<IUser>();
-  const [pageInfo, setPageInfo] = useState<PageInfo>();
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isOpen, setOpen] = useState(false);
+  const [isFetchMore, setFetchMore] = useState<boolean>(false);
 
   const {
     data: messagesConnection,
@@ -65,12 +65,12 @@ const ChatDetails = ({
       },
     });
 
+  const msgsContainerRef = useRef<HTMLDivElement>(null);
+
   // useEffect
 
   useEffect(() => {
     if (messagesConnection) {
-      setPageInfo(messagesConnection.pageInfo);
-
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
         (acc, edge) => {
           const msg = edge.node;
@@ -96,6 +96,7 @@ const ChatDetails = ({
       );
 
       setMessages(grouped);
+      setFetchMore(false);
 
       const unsubscribe = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
@@ -162,10 +163,12 @@ const ChatDetails = ({
   };
 
   const handleLoadMoreMessages = () => {
-    if (pageInfo?.hasNextPage)
+    if (messagesConnection?.pageInfo.hasNextPage) {
+      setFetchMore(true);
+
       fetchMore({
         variables: {
-          after: pageInfo?.endCursor,
+          after: messagesConnection?.pageInfo.endCursor,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -186,6 +189,7 @@ const ChatDetails = ({
           };
         },
       });
+    }
   };
 
   return (
@@ -233,7 +237,22 @@ const ChatDetails = ({
         </div>
       </div>
 
-      <div className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4">
+      <div
+        className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
+        ref={msgsContainerRef}
+        onScroll={() => {
+          const el = msgsContainerRef.current;
+          if (!el) return;
+
+          const isBottom =
+            el.scrollHeight + el.scrollTop <= el.clientHeight + 1;
+
+          if (isBottom && !isFetchMore) {
+            console.log("Scrolled to bottom!");
+            handleLoadMoreMessages();
+          }
+        }}
+      >
         {watch("replyForMsg") != undefined && (
           <Collapsible open={isOpen} onOpenChange={setOpen}>
             <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2">
@@ -281,6 +300,12 @@ const ChatDetails = ({
                 <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
               </div>
             ))}
+
+        {isFetchMore && (
+          <div className="flex justify-center items-center py-6">
+            <div className="loader"></div>
+          </div>
+        )}
       </div>
       <div className="container h-[5%]">
         <form
