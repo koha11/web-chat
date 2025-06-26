@@ -43,7 +43,6 @@ const ChatDetails = ({
     data: messagesConnection,
     loading: isMsgLoading,
     subscribeToMore,
-    refetch,
     fetchMore,
   } = useGetMessages({
     chatId: chatId,
@@ -51,7 +50,7 @@ const ChatDetails = ({
     after: undefined,
   });
 
-  const [postMessage] = usePostMessage();
+  const [postMessage] = usePostMessage({ chatId, first: 20 });
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =

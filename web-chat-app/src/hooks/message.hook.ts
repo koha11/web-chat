@@ -59,37 +59,51 @@ export const useGetLastMessages = (
   };
 };
 
-export const usePostMessage = () => {
+export const usePostMessage = ({
+  chatId,
+  first,
+}: {
+  first: number;
+  chatId: string;
+}) => {
   return useMutation(POST_MESSAGE, {
     update(cache, { data }) {
       const addedMsg = data.postMessage;
 
-      const existing = cache.readQuery({
-        query: GET_MESSAGES,
-        variables: { chatId: addedMsg.chat, first: 10 },
-      }) as { messages: IModelConnection<IMessage> };
+      console.log(cache);
 
-      cache.writeQuery({
+      const existing = cache.readQuery<{
+        messages: IModelConnection<IMessage>;
+      }>({
         query: GET_MESSAGES,
-        variables: { chatId: addedMsg.chat, first: 10 },
-        data: {
-          messages: {
-            ...existing.messages,
-            edges: [
-              {
-                __typename: "MessageEdge",
-                cursor: addedMsg.id,
-                node: addedMsg,
-              },
-              ...existing.messages.edges,
-            ],
-            pageInfo: {
-              ...existing.messages.pageInfo,
-              startCursor: addedMsg.id,
-            },
-          } as IModelConnection<IMessage>,
-        },
+        variables: { chatId, first },
       });
+
+      console.log(existing);
+
+      if (existing) {
+        cache.writeQuery({
+          query: GET_MESSAGES,
+          variables: { chatId, first },
+          data: {
+            messages: {
+              ...existing.messages,
+              edges: [
+                {
+                  __typename: "MessageEdge",
+                  cursor: addedMsg.id,
+                  node: addedMsg,
+                },
+                ...existing.messages.edges,
+              ],
+              pageInfo: {
+                ...existing.messages.pageInfo,
+                startCursor: addedMsg.id,
+              },
+            } as IModelConnection<IMessage>,
+          },
+        });
+      }
     },
   });
 };
