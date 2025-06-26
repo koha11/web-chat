@@ -44,9 +44,11 @@ const ChatDetails = ({
     loading: isMsgLoading,
     subscribeToMore,
     refetch,
+    fetchMore,
   } = useGetMessages({
     chatId: chatId,
-    first: 30,
+    first: 10,
+    after: undefined,
   });
 
   const [postMessage] = usePostMessage();
@@ -159,6 +161,33 @@ const ChatDetails = ({
     });
   };
 
+  const handleLoadMoreMessages = () => {
+    if (pageInfo?.hasNextPage)
+      fetchMore({
+        variables: {
+          after: pageInfo?.endCursor,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+
+          const newData = fetchMoreResult.messages;
+          const previousData = prev.messages;
+
+          return {
+            ...prev,
+            messages: {
+              ...newData,
+              pageInfo: {
+                ...newData.pageInfo,
+                startCursor: previousData.pageInfo.startCursor,
+              },
+              edges: previousData.edges.concat(newData.edges),
+            },
+          };
+        },
+      });
+  };
+
   return (
     <section
       className="w-[75%] h-full p-4 bg-white rounded-2xl"
@@ -192,9 +221,9 @@ const ChatDetails = ({
           )}
         </div>
         <div className="text-2xl flex items-center gap-4">
-          <Link to={""} className="p-2 rounded-full hover:bg-gray-200">
+          <Button className="p-2 rounded-full hover:bg-gray-200">
             <Phone></Phone>
-          </Link>
+          </Button>
           <Link to={""} className="p-2 rounded-full hover:bg-gray-200">
             <Video></Video>
           </Link>

@@ -4,8 +4,8 @@ export default interface IModelConnection<M> {
 }
 
 export type PageInfo = {
-  startCursor: string;
-  endCursor: string;
+  startCursor?: string;
+  endCursor?: string;
   hasNextPage: Boolean;
 };
 

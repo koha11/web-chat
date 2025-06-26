@@ -20,7 +20,7 @@ export const messageResolvers: IResolvers = {
       { chatId, msgId, after, first },
       { user }: IMyContext
     ) => {
-      const result = await messageService.getMessages({ chatId, first });
+      const result = await messageService.getMessages({ chatId, first, after });
       const chat = await Chat.findById(chatId);
 
       const isNotEmpty = result.edges.length > 0;

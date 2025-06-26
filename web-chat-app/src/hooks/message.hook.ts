@@ -37,6 +37,7 @@ export const useGetMessages = ({
     loading: myQuery.loading,
     subscribeToMore: myQuery.subscribeToMore,
     refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
   };
 };
 
@@ -54,6 +55,7 @@ export const useGetLastMessages = (
     loading: myQuery.loading,
     refetch: myQuery.refetch,
     subscribeToMore: myQuery.subscribeToMore,
+    fetchMore: myQuery.refetch,
   };
 };
 
@@ -64,12 +66,12 @@ export const usePostMessage = () => {
 
       const existing = cache.readQuery({
         query: GET_MESSAGES,
-        variables: { chatId: addedMsg.chat, first: 30 },
+        variables: { chatId: addedMsg.chat, first: 10 },
       }) as { messages: IModelConnection<IMessage> };
 
       cache.writeQuery({
         query: GET_MESSAGES,
-        variables: { chatId: addedMsg.chat, first: 30 },
+        variables: { chatId: addedMsg.chat, first: 10 },
         data: {
           messages: {
             ...existing.messages,
