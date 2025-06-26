@@ -47,7 +47,7 @@ const ChatDetails = ({
     fetchMore,
   } = useGetMessages({
     chatId: chatId,
-    first: 10,
+    first: 20,
     after: undefined,
   });
 
@@ -137,11 +137,6 @@ const ChatDetails = ({
       setSender(chat.users.find((user) => user.id == userId));
     }
   }, [chat]);
-
-  useEffect(() => {
-    console.log("refetch messages");
-    refetch();
-  }, [chatId]);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
