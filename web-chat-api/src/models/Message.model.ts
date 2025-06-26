@@ -15,6 +15,9 @@ const MessageSchema = new Schema<IMessage>(
     status: { type: String, required: true, default: MessageStatus.SENT },
     seenList: { type: Map, of: String, default: {} },
     replyForMsg: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
+    isHiddenFor: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    editedAt: { type: Date },
+    unsentAt: { type: Date },
   },
   { timestamps: true }
 );

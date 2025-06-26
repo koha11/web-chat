@@ -16,7 +16,7 @@ import {
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
 import {
-  useChangeMessageStatus,
+  useUnsendMessage,
   useGetMessages,
   usePostMessage,
 } from "../../hooks/message.hook";
@@ -49,13 +49,7 @@ const ChatDetails = ({
     first: 30,
   });
 
-  const [postMessage, { data: addedMsg, loading: isAddedMsgLoading }] =
-    usePostMessage();
-
-  const [
-    changeMessageStatus,
-    { data: changedMsg, loading: isChangedMsgLoading },
-  ] = useChangeMessageStatus();
+  const [postMessage] = usePostMessage();
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -74,8 +68,6 @@ const ChatDetails = ({
   useEffect(() => {
     if (messagesConnection) {
       setPageInfo(messagesConnection.pageInfo);
-
-      console.log(messagesConnection);
 
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
         (acc, edge) => {
@@ -108,8 +100,6 @@ const ChatDetails = ({
         variables: { chatId: chat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
-
-          console.log(subscriptionData);
 
           const newMsg = subscriptionData.data.messageAdded;
 
@@ -149,41 +139,6 @@ const ChatDetails = ({
     console.log("refetch messages");
     refetch();
   }, [chatId]);
-
-  // useEffect(() => {
-  //   if (!isAddedMsgLoading && messages) {
-  //     const last = messages[0];
-  //     const time = new Date(addedMsg.postMessage.createdAt);
-
-  //     if (!last) {
-  //       setMessages([
-  //         { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
-  //       ]);
-
-  //       return;
-  //     }
-
-  //     if (
-  //       getTimeDiff(new Date(last.timeString), time, TimeTypeOption.MINUTES) <
-  //       20
-  //     ) {
-  //       setMessages([
-  //         { ...last, messages: [addedMsg.postMessage, ...last.messages] },
-  //         ...messages.slice(1),
-  //       ]);
-  //     } else {
-  //       setMessages([
-  //         { timeString: time.toISOString(), messages: [addedMsg.postMessage] },
-  //         ...messages,
-  //       ]);
-  //     }
-  //   }
-  // }, [isAddedMsgLoading]);
-
-  useEffect(() => {
-    if (!isChangedMsgLoading && messages) {
-    }
-  }, [isChangedMsgLoading]);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
@@ -287,16 +242,7 @@ const ChatDetails = ({
                   receivers={receivers}
                   sender={sender}
                   isFirstGroup={index == 0}
-                  handleReplyMsg={handleReplyMsg}
-                  changeMessageStatus={(
-                    chatId: string,
-                    msgId: string,
-                    status: MessageStatus
-                  ) => {
-                    changeMessageStatus({
-                      variables: { chatId, msgId, status },
-                    });
-                  }}
+                  handleReplyMsg={handleReplyMsg}                  
                 ></GroupMsg>
               );
             })

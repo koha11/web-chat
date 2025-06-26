@@ -11,6 +11,10 @@ export const GET_MESSAGES = gql`
           status
           seenList
           createdAt
+          updatedAt
+          isHiddenFor
+          unsentAt
+          editedAt
           replyForMsg {
             id
             user
@@ -65,13 +69,16 @@ export const POST_MESSAGE = gql`
       }
       seenList
       createdAt
+      isHiddenFor
+      unsentAt
+      editedAt
     }
   }
 `;
 
-export const CHANGE_MESSAGE_STATUS = gql`
-  mutation ChangeMessageStatus($chatId: ID!, $msgId: ID!, $status: String!) {
-    changeMessageStatus(chatId: $chatId, msgId: $msgId, status: $status) {
+export const UNSEND_MESSAGE = gql`
+  mutation UnsendMessage($chatId: ID!, $msgId: ID!) {
+    unsendMessage(chatId: $chatId, msgId: $msgId) {
       id
       user
       msgBody
@@ -86,6 +93,9 @@ export const CHANGE_MESSAGE_STATUS = gql`
       }
       seenList
       createdAt
+      isHiddenFor
+      unsentAt
+      editedAt
     }
   }
 `;
@@ -101,15 +111,14 @@ export const MESSAGE_ADDED_SUB = gql`
         status
         seenList
         createdAt
-        updatedAt
       }
     }
   }
 `;
 
-export const MESSAGE_STATUS_CHANGED_SUB = gql`
-  subscription MessageStatusChanged($chatId: ID!) {
-    messageStatusChanged(chatId: $chatId) {
+export const MESSAGE_CHANGED_SUB = gql`
+  subscription MessageChanged($chatId: ID!) {
+    messageChanged(chatId: $chatId) {
       cursor
       node {
         id
@@ -120,6 +129,9 @@ export const MESSAGE_STATUS_CHANGED_SUB = gql`
         seenList
         createdAt
         updatedAt
+        isHiddenFor
+        unsentAt
+        editedAt
       }
     }
   }

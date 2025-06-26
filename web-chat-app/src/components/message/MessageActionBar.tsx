@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { IMessage } from "../../interfaces/message.interface";
 import ForwardMsgDialog from "./ForwardMsgDialog";
 import MessageStatus from "../../enums/MessageStatus.enum";
+import { useUnsendMessage } from "../../hooks/message.hook";
 
 const MessageActions = ({
   isOpen,
@@ -26,7 +27,6 @@ const MessageActions = ({
   msgId,
   isUnsendMsg,
   handleReplyMsg,
-  changeMessageStatus,
 }: {
   isOpen: boolean;
   setOpen: () => void;
@@ -34,21 +34,22 @@ const MessageActions = ({
   msgId: string;
   isUnsendMsg: boolean;
   handleReplyMsg: () => void;
-  changeMessageStatus: Function;
 }) => {
   const { id } = useParams();
+
+  const [unsendMessage] = useUnsendMessage();
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
   const [isForwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
 
   // Handlers
-  const handleUnsentMsg = (isUnsendForEveryone: boolean) => {
-    const status = isUnsendForEveryone
-      ? MessageStatus.UNSEND
-      : MessageStatus.REMOVED_ONLY_YOU;
-
-    changeMessageStatus(id, msgId, status);
+  const handleUnsentOrRemoveMsg = (isUnsent: boolean) => {
+    if (isUnsent) {
+      unsendMessage({ variables: { chatId: id, msgId } });
+      toast.success("Unsend successful");
+      setRadioDialogOpen(false);
+    }
   };
 
   return (
@@ -138,7 +139,6 @@ const MessageActions = ({
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
         onSubmit={() => {
-          handleUnsentMsg(false);
           toast.success("Unsend successful");
           setConfirmDialogOpen(false);
         }}
@@ -148,11 +148,7 @@ const MessageActions = ({
         isOpen={isRadioDialogOpen}
         setOpen={() => setRadioDialogOpen(!isRadioDialogOpen)}
         title="Who do you want to unsend this message?"
-        onSubmit={(isUnsendForEveryone: boolean) => {
-          handleUnsentMsg(isUnsendForEveryone);
-          toast.success("Unsend successful");
-          setRadioDialogOpen(false);
-        }}
+        onSubmit={handleUnsentOrRemoveMsg}
         options={[
           {
             value: true,

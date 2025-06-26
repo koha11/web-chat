@@ -19,6 +19,9 @@ export const messageTypeDefs = gql`
     status: String!
     replyForMsg: Message
     seenList: JSONObject
+    isHiddenFor: [String]
+    unsentAt: Date
+    editedAt: Date
 
     createdAt: Date
     updatedAt: Date
@@ -45,11 +48,11 @@ export const messageTypeDefs = gql`
       replyForMsg: String
     ): Message!
 
-    changeMessageStatus(chatId: ID!, msgId: ID!, status: String!): Message!
+    unsendMessage(chatId: ID!, msgId: ID!): Message!
   }
 
   extend type Subscription {
     messageAdded(chatId: ID!): MessageEdge!
-    messageStatusChanged(chatId: ID!): MessageEdge!
+    messageChanged(chatId: ID!): MessageEdge!
   }
 `;

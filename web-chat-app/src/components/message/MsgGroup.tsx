@@ -14,7 +14,6 @@ const GroupMsg = ({
   sender,
   isFirstGroup,
   handleReplyMsg,
-  changeMessageStatus
 }: {
   messages: IMessage[];
   timeString: string;
@@ -22,7 +21,6 @@ const GroupMsg = ({
   receivers: { [userId: string]: IUser };
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
-  changeMessageStatus: Function
 }) => {
   return (
     <div className="msg-group py-4">
@@ -66,7 +64,6 @@ const GroupMsg = ({
               seenList={seenList}
               handleReplyMsg={handleReplyMsg}
               receivers={receivers}
-              changeMessageStatus={changeMessageStatus}
             ></SingleMsg>
           );
         })}

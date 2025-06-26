@@ -11,6 +11,7 @@ import { Types } from "mongoose";
 import SocketEvent from "../../enums/SocketEvent";
 import { PubsubEvents } from "../../interfaces/pubsubEvents";
 import { resolve } from "path";
+import MessageStatus from "../../enums/MessageStatus.enum";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -86,25 +87,26 @@ export const messageResolvers: IResolvers = {
 
       return message;
     },
-    changeMessageStatus: async (
+    unsendMessage: async (
       _p,
       { chatId, msgId, status },
       { pubsub }: IMyContext
     ) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
-      msg!.status = status;
+      msg!.status = MessageStatus.UNSEND;
+      msg!.unsentAt = new Date();
 
       msg?.save();
 
       await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
 
-      pubsub.publish(SocketEvent.messageStatusChanged, {
+      pubsub.publish(SocketEvent.messageChanged, {
         messageChanged: {
           cursor: msg?.id,
           node: msg,
         },
-      } as PubsubEvents[SocketEvent.messageStatusChanged]);
+      } as PubsubEvents[SocketEvent.messageChanged]);
 
       pubsub.publish(SocketEvent.chatChanged, {
         chatId,
@@ -132,10 +134,10 @@ export const messageResolvers: IResolvers = {
         }
       ),
     },
-    messageStatusChanged: {
+    messageChanged: {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
-          pubsub.asyncIterableIterator(SocketEvent.messageStatusChanged),
+          pubsub.asyncIterableIterator(SocketEvent.messageChanged),
         async (payload, { chatId }, { user }: IMyContext) => {
           const chat = await Chat.findById(chatId);
 

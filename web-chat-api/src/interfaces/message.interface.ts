@@ -12,6 +12,9 @@ export interface IMessage {
   status: MessageStatus;
   seenList: Map<string, string>;
   replyForMsg?: IMessage | Types.ObjectId;
+  isHiddenFor?: Types.ObjectId[];
+  unsentAt?: Date
+  editedAt?: Date
 
   createdAt?: Date;
   updatedAt?: Date;

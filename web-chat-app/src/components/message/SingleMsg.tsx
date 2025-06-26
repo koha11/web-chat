@@ -22,7 +22,6 @@ const SingleMsg = ({
   seenList,
   handleReplyMsg,
   receivers,
-  changeMessageStatus
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
@@ -32,7 +31,6 @@ const SingleMsg = ({
   seenList: IUser[];
   receivers: { [userId: string]: IUser };
   handleReplyMsg: (msg: IMessage) => void;
-  changeMessageStatus: Function
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -43,6 +41,7 @@ const SingleMsg = ({
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}
     >
+      {/* Hien thi noi dung tin nhan duoc phan hoi  */}
       {msg.replyForMsg && (
         <div
           className={`flex flex-col mt-2 text-[0.8rem] relative ${
@@ -96,7 +95,6 @@ const SingleMsg = ({
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
             handleReplyMsg={() => handleReplyMsg(msg)}
-            changeMessageStatus={changeMessageStatus}
           ></MessageActions>
         )}
 
@@ -114,7 +112,7 @@ const SingleMsg = ({
                 unsend a message
               </span>,
               `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
-              Unsend at ${getDisplaySendMsgTime(new Date(msg.updatedAt!))}`,
+              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
               "order-2"
             )
           : MyTooltip(

@@ -5,10 +5,10 @@ import {
   useQuery,
 } from "@apollo/client";
 import {
-  CHANGE_MESSAGE_STATUS,
   GET_LAST_MESSAGES,
   GET_MESSAGES,
   POST_MESSAGE,
+  UNSEND_MESSAGE,
 } from "../services/messageService";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
@@ -91,6 +91,6 @@ export const usePostMessage = () => {
   });
 };
 
-export const useChangeMessageStatus = () => {
-  return useMutation(CHANGE_MESSAGE_STATUS);
+export const useUnsendMessage = () => {
+  return useMutation(UNSEND_MESSAGE);
 };
