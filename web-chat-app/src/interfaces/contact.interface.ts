@@ -5,6 +5,7 @@ export default interface IContact {
   id: string;
   users: IUser[];
   relationship: ContactRelationship;
+  chatId?: string;
 
   createdAt?: Date;
   updatedAt?: Date;

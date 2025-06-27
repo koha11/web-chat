@@ -4,6 +4,7 @@ export const contactTypeDefs = gql`
   type Contact {
     id: ID!
     users: [User!]!
+    chatId: String
     relationship: String!
 
     createdAt: Date

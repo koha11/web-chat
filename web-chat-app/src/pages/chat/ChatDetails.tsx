@@ -138,15 +138,26 @@ const ChatDetails = ({
     setOpen(true);
   };
 
-  const handleSendMessage = (msg: IMessage, chatId: string) => {
+  const handleSendMessage = ({
+    chatId,
+    msgBody,
+    user,
+    replyForMsg,
+    isForwarded
+  }: {
+    msgBody: string;
+    user: string;
+    chatId: string;
+    replyForMsg?: string;
+    isForwarded?: boolean
+  }) => {
     postMessage({
       variables: {
-        msgBody: msg.msgBody,
-        user: msg.user,
         chatId,
-        replyForMsg: msg.replyForMsg
-          ? (msg.replyForMsg as IMessage).id
-          : undefined,
+        msgBody,
+        user,
+        replyForMsg,
+        isForwarded
       },
     });
   };
@@ -302,7 +313,14 @@ const ChatDetails = ({
           autoComplete="off"
           onSubmit={handleSubmit((msg: IMessage) => {
             if (chat != undefined) {
-              handleSendMessage(msg, chat.id);
+              handleSendMessage({
+                msgBody: msg.msgBody,
+                user: msg.user.toString(),
+                chatId,
+                replyForMsg: msg.replyForMsg
+                  ? (msg.replyForMsg as IMessage).id
+                  : undefined,
+              });
               resetField("msgBody");
               resetField("replyForMsg");
               setOpen(false);

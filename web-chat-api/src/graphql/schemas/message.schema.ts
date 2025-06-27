@@ -22,6 +22,7 @@ export const messageTypeDefs = gql`
     isHiddenFor: [String]
     unsentAt: Date
     editedAt: Date
+    isForwarded: Boolean
 
     createdAt: Date
     updatedAt: Date
@@ -46,6 +47,7 @@ export const messageTypeDefs = gql`
       msgBody: String!
       user: ID!
       replyForMsg: String
+      isForwarded: Boolean
     ): Message!
 
     unsendMessage(chatId: ID!, msgId: ID!): Message!

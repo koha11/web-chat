@@ -18,6 +18,7 @@ const MessageSchema = new Schema<IMessage>(
     isHiddenFor: [{ type: Schema.Types.ObjectId, ref: "User" }],
     editedAt: { type: Date },
     unsentAt: { type: Date },
+    isForwarded: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

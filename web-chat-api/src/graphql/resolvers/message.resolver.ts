@@ -59,7 +59,7 @@ export const messageResolvers: IResolvers = {
   Mutation: {
     postMessage: async (
       _p,
-      { chatId, msgBody, user, replyForMsg },
+      { chatId, msgBody, user, replyForMsg, isForwarded },
       { pubsub }: IMyContext
     ) => {
       const createdMsg = await Message.create({
@@ -67,6 +67,7 @@ export const messageResolvers: IResolvers = {
         msgBody,
         user,
         replyForMsg,
+        isForwarded,
       });
 
       const message = await createdMsg.populate("replyForMsg");

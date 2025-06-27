@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import ForwardMsgDialog from "./ForwardMsgDialog";
 import { useRemoveMessage, useUnsendMessage } from "../../hooks/message.hook";
 
-
 const MessageActions = ({
   isOpen,
   setOpen,
@@ -22,6 +21,7 @@ const MessageActions = ({
   msgId,
   isUnsendMsg,
   handleReplyMsg,
+  handleSendMsg,
 }: {
   isOpen: boolean;
   setOpen: () => void;
@@ -29,6 +29,7 @@ const MessageActions = ({
   msgId: string;
   isUnsendMsg: boolean;
   handleReplyMsg: () => void;
+  handleSendMsg: (chatId: string) => void;
 }) => {
   const { id } = useParams();
 
@@ -171,6 +172,10 @@ const MessageActions = ({
       <ForwardMsgDialog
         isOpen={isForwardDialogOpen}
         setOpen={setForwardDialogOpen}
+        handleSendMsg={(chatId: string) => {
+          handleSendMsg(chatId);
+          setForwardDialogOpen(false);
+        }}
       ></ForwardMsgDialog>
     </div>
   );

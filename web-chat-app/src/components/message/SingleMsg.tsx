@@ -1,9 +1,7 @@
-import { MoreVertical, Reply, Share, Share2, SmileIcon } from "lucide-react";
-import { Button } from "../ui/button";
+import { Reply } from "lucide-react";
 import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
-import { IMessage } from "../../interfaces/message.interface";
 import {
   getDisplaySendMsgTime,
   getDisplayTimeDiff,
@@ -12,12 +10,15 @@ import {
 } from "../../utils/messageTime.helper";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import { IUser } from "../../interfaces/user.interface";
+import { IMessage } from "../../interfaces/messages/message.interface";
+import { usePostMessage } from "../../hooks/message.hook";
 
 const SingleMsg = ({
   isLongGap,
   isSentMsg,
   msgSenderAvatar,
   msg,
+  senderId,
   isFirstMsg,
   isHidden,
   seenList,
@@ -28,6 +29,7 @@ const SingleMsg = ({
   msgSenderAvatar: string;
   isLongGap: boolean;
   isHidden: boolean;
+  senderId: string;
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: IUser[];
@@ -36,6 +38,8 @@ const SingleMsg = ({
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
+
+  const [postMessage] = usePostMessage({});
 
   if (isHidden) return <></>;
 
@@ -60,6 +64,21 @@ const SingleMsg = ({
           </div>
           <div className="bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute top-5 right-0">
             {(msg.replyForMsg as IMessage).msgBody}
+          </div>
+        </div>
+      )}
+
+      {/* Hien thi dau hieu tin nhan nay duoc chuyen tiep  */}
+      {msg.isForwarded && (
+        <div
+          className={`flex flex-col mt-2 text-[0.8rem] relative ${
+            isSentMsg ? "items-end" : "items-baseline"
+          }`}
+        >
+          <div className={`flex gap-2 mb-1`}>
+            <Reply size={"14"}></Reply>
+            {!isSentMsg ? receivers[msg.user.toString()].fullname : "You"}{" "}
+            forwarded a message
           </div>
         </div>
       )}
@@ -97,6 +116,16 @@ const SingleMsg = ({
             isOpen={isOpen}
             setOpen={() => setOpen(!isOpen)}
             handleReplyMsg={() => handleReplyMsg(msg)}
+            handleSendMsg={(chatId: string) => {
+              postMessage({
+                variables: {
+                  user: senderId,
+                  msgBody: msg.msgBody,
+                  isForwarded: true,
+                  chatId,
+                },
+              });
+            }}
           ></MessageActions>
         )}
 

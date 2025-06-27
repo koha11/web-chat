@@ -19,8 +19,6 @@ export const contactResolvers: IResolvers = {
         first,
       });
 
-      console.log(result);
-
       return result;
     },
   },

@@ -11,15 +11,18 @@ import { useGetContacts } from "../../hooks/contact.hook";
 const ForwardMsgDialog = ({
   isOpen,
   setOpen,
+  handleSendMsg,
 }: {
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
+  handleSendMsg: (chatId: string) => void;
 }) => {
   const userId = Cookies.get("userId") ?? "";
 
   const { data: chatConnection, loading: isChatLoading } = useGetChats({
     userId,
   });
+
   const { data: contactConnection, loading: isContactLoading } = useGetContacts(
     { userId }
   );
@@ -59,6 +62,10 @@ const ForwardMsgDialog = ({
                   <Button
                     className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
                     variant={"outline"}
+                    onClick={() => {
+                      const chatId = edge.node.id;
+                      if (chatId) handleSendMsg(chatId);
+                    }}
                   >
                     Send
                   </Button>
@@ -91,6 +98,10 @@ const ForwardMsgDialog = ({
                     <Button
                       className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
                       variant={"outline"}
+                      onClick={() => {
+                        const chatId = edge.node.chatId;
+                        if (chatId) handleSendMsg(chatId);
+                      }}
                     >
                       Send
                     </Button>

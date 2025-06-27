@@ -1,7 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-} from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_LAST_MESSAGES,
   GET_MESSAGES,
@@ -61,10 +58,10 @@ export const useGetLastMessages = ({
 
 export const usePostMessage = ({
   chatId,
-  first,
+  first = 20,
 }: {
-  first: number;
-  chatId: string;
+  first?: number;
+  chatId?: string;
 }) => {
   return useMutation(POST_MESSAGE, {
     update(cache, { data }) {
@@ -74,7 +71,7 @@ export const usePostMessage = ({
         messages: IModelConnection<IMessage>;
       }>({
         query: GET_MESSAGES,
-        variables: { chatId, first },
+        variables: { chatId: chatId ?? addedMsg.chat, first },
       });
 
       if (existing) {

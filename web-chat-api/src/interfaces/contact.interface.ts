@@ -5,6 +5,7 @@ import { IUser } from "./user.interface";
 export default interface IContact {
   id: Types.ObjectId;
   users: Types.ObjectId[] | IUser[];
+  chatId: Types.ObjectId;
   relationship: ContactRelationship;
 
   createdAt?: Date;

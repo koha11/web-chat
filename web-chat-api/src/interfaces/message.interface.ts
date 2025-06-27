@@ -15,6 +15,7 @@ export interface IMessage {
   isHiddenFor?: Types.ObjectId[];
   unsentAt?: Date
   editedAt?: Date
+  isForwarded?: Boolean
 
   createdAt?: Date;
   updatedAt?: Date;

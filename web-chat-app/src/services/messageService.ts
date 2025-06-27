@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_MESSAGES = gql`
-  query ($chatId: ID!, $first: Int, $after: ID) {
+  query GetMessages($chatId: ID!, $first: Int, $after: ID) {
     messages(chatId: $chatId, first: $first, after: $after) {
       edges {
         node {
@@ -15,6 +15,7 @@ export const GET_MESSAGES = gql`
           isHiddenFor
           unsentAt
           editedAt
+          isForwarded
           replyForMsg {
             id
             user
@@ -47,12 +48,14 @@ export const POST_MESSAGE = gql`
     $msgBody: String!
     $user: ID!
     $replyForMsg: String
+    $isForwarded: Boolean
   ) {
     postMessage(
       chatId: $chatId
       msgBody: $msgBody
       user: $user
       replyForMsg: $replyForMsg
+      isForwarded: $isForwarded
     ) {
       id
       chat

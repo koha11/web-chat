@@ -1,4 +1,4 @@
-import { IMessage } from "./message.interface";
+import { IMessage } from "./messages/message.interface";
 import { IUser } from "./user.interface";
 
 export interface IChat {

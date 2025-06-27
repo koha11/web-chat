@@ -1,4 +1,4 @@
-import { IMessage } from "../../interfaces/message.interface";
+import { IMessage } from "../../interfaces/messages/message.interface";
 import { IUser } from "../../interfaces/user.interface";
 import {
   getDisplaySendMsgTime,
@@ -59,12 +59,13 @@ const GroupMsg = ({
               msg={msg}
               isSentMsg={msg.user == sender.id}
               isHidden={msg.isHiddenFor?.includes(sender.id) ?? false}
+              senderId={sender.id}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
               seenList={seenList}
-              handleReplyMsg={handleReplyMsg}
               receivers={receivers}
+              handleReplyMsg={handleReplyMsg}
             ></SingleMsg>
           );
         })}
