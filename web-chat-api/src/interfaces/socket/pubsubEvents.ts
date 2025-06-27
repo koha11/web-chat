@@ -1,6 +1,6 @@
-import SocketEvent from "../enums/SocketEvent";
-import { IMessage } from "./message.interface";
-import { Edge } from "./modelConnection.interface";
+import SocketEvent from "../../enums/SocketEvent.enum";
+import { IMessage } from "../message.interface";
+import { Edge } from "../modelConnection.interface";
 
 export type PubsubEvents = {
   [SocketEvent.messageAdded]: { messageAdded: Edge<IMessage>; chatId: string };

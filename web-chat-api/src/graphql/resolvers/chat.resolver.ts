@@ -4,16 +4,18 @@ import { toObjectId } from "../../utils/mongoose";
 import { IResolvers } from "@graphql-tools/utils";
 import Message from "../../models/Message.model";
 import messageService from "../../services/MessageService";
-import IMyContext from "../../interfaces/myContext.interface";
+import IMyContext from "../../interfaces/socket/myContext.interface";
 import chatService from "../../services/ChatService";
 import { subscribe } from "diagnostics_channel";
 import { Types } from "mongoose";
-import SocketEvent from "../../enums/SocketEvent";
+import SocketEvent from "../../enums/SocketEvent.enum";
 export const chatResolvers: IResolvers = {
   Query: {
     chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
       const result = await chatService.getChatList({
         userId: user.id.toString(),
+        after,
+        first,
       });
 
       return result;

@@ -1,12 +1,10 @@
-import { DefaultEventsMap, Server, Socket } from "socket.io";
-import Chat from "../models/Chat.model";
-import SocketEvent from "../enums/SocketEvent.enum";
-import { IChat } from "../interfaces/chat.interface";
+import IContact from "../interfaces/contact.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
+import Contact from "../models/Contact.model";
 import { toObjectId } from "../utils/mongoose";
 
-class ChatService {
-  getChatList = async ({
+class ContactService {
+  getContacts = async ({
     userId,
     first = 10,
     after,
@@ -15,16 +13,16 @@ class ChatService {
     sort?: any;
     first?: number;
     after?: string;
-  }): Promise<IModelConnection<IChat>> => {
+  }): Promise<IModelConnection<IContact>> => {
     const filter = { users: userId } as any;
 
     if (after) {
       filter._id = { $lt: toObjectId(after) };
     }
 
-    const docs = await Chat.find(filter)
+    const docs = await Contact.find(filter)
       .populate("users")
-      .sort({ updatedAt: -1 })
+      .sort({ createdAt: -1 })
       .limit(first + 1);
 
     const hasNextPage = docs.length > first;
@@ -46,6 +44,6 @@ class ChatService {
   };
 }
 
-const chatService = new ChatService();
+const contactService = new ContactService();
 
-export default chatService;
+export default contactService;

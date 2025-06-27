@@ -20,7 +20,7 @@ export const chatTypeDefs = gql`
   }
 
   type ChatConnection {
-    edges: [ChatEdge!]!
+    edges: [ChatEdge]!
     pageInfo: PageInfo!
   }
 

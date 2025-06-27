@@ -18,13 +18,13 @@ const Chat = () => {
     data: chats,
     loading: isChatsLoading,
     subscribeToMore,
-  } = useGetChats(userId);
+  } = useGetChats({ userId });
 
   const {
     data: lastMessges,
     loading: isLastMsgLoading,
     refetch,
-  } = useGetLastMessages(userId, chats == undefined);
+  } = useGetLastMessages({ userId, isFetch: chats == undefined });
 
   loadErrorMessages();
   loadDevMessages();

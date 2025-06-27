@@ -3,11 +3,9 @@ import { Link } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import Loading from "../../components/ui/loading";
 import ChatRow from "../../components/chat/ChatRow";
 import { Skeleton } from "../../components/ui/skeleton";
-import IMessageGroup from "../../interfaces/messageGroup.interface";
-import { IMessage } from "../../interfaces/message.interface";
+import { IMessage } from "../../interfaces/messages/message.interface";
 
 const ChatList = ({
   chatList,

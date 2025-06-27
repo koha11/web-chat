@@ -14,7 +14,7 @@ import { graphqlSchema, resolvers, typeDefs } from "./graphql";
 import { PubSub } from "graphql-subscriptions";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
-import SocketEvent from "./enums/SocketEvent";
+import SocketEvent from "./enums/SocketEvent.enum";
 import { IMessage } from "./interfaces/message.interface";
 import authService from "./services/AuthService";
 import { Edge } from "./interfaces/modelConnection.interface";

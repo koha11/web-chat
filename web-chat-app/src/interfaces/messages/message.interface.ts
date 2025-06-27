@@ -1,5 +1,6 @@
-import MessageStatus from "../enums/MessageStatus.enum";
-import { IUser } from "./user.interface";
+import MessageStatus from "../../enums/MessageStatus.enum";
+import { IUser } from "../user.interface";
+
 
 export interface IMessage {
   id: string;

@@ -1,6 +1,4 @@
 import {
-  OperationVariables,
-  QueryResult,
   useMutation,
   useQuery,
 } from "@apollo/client";
@@ -13,10 +11,7 @@ import {
 } from "../services/messageService";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
-import { IMessage } from "../interfaces/message.interface";
-import IMessageGroup from "../interfaces/messageGroup.interface";
-import { getTimeDiff, TimeTypeOption } from "../utils/messageTime.helper";
-import { IChat } from "../interfaces/chat.interface";
+import { IMessage } from "../interfaces/messages/message.interface";
 
 export const useGetMessages = ({
   chatId,
@@ -41,10 +36,15 @@ export const useGetMessages = ({
   };
 };
 
-export const useGetLastMessages = (
-  userId: string,
-  isFetch: boolean
-): IMyQueryResult<{ [chatId: string]: IMessage }> => {
+export const useGetLastMessages = ({
+  userId,
+  isFetch,
+}: {
+  userId: string;
+  isFetch: boolean;
+  after?: string;
+  first?: number;
+}): IMyQueryResult<{ [chatId: string]: IMessage }> => {
   const myQuery = useQuery(GET_LAST_MESSAGES, {
     variables: { userId },
     skip: isFetch,
@@ -70,16 +70,12 @@ export const usePostMessage = ({
     update(cache, { data }) {
       const addedMsg = data.postMessage;
 
-      console.log(cache);
-
       const existing = cache.readQuery<{
         messages: IModelConnection<IMessage>;
       }>({
         query: GET_MESSAGES,
         variables: { chatId, first },
       });
-
-      console.log(existing);
 
       if (existing) {
         cache.writeQuery({

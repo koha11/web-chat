@@ -2,6 +2,11 @@ import { Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
+import Cookies from "js-cookie";
+
+import { useGetChats } from "../../hooks/chat.hook";
+import Loading from "../ui/loading";
+import { useGetContacts } from "../../hooks/contact.hook";
 
 const ForwardMsgDialog = ({
   isOpen,
@@ -10,8 +15,19 @@ const ForwardMsgDialog = ({
   isOpen: boolean;
   setOpen: (isOpen: boolean) => void;
 }) => {
+  const userId = Cookies.get("userId") ?? "";
+
+  const { data: chatConnection, loading: isChatLoading } = useGetChats({
+    userId,
+  });
+  const { data: contactConnection, loading: isContactLoading } = useGetContacts(
+    { userId }
+  );
+
+  if (isChatLoading || isContactLoading) return <Loading></Loading>;
+
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader className="border-b-2">
           <DialogTitle className="text-center text-2xl mb-2">
@@ -29,23 +45,25 @@ const ForwardMsgDialog = ({
           <div>
             <span className="font-bold">Recent</span>
             <div className="py-2">
-              <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
-                <div className="flex gap-4 items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
-                    style={{
-                      backgroundImage: `url(/assets/images/demo_user_avatar_1.JPG)`,
-                    }}
-                  ></div>
-                  <span className="font-bold">Koha Tran</span>
+              {chatConnection?.edges.map((edge) => (
+                <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
+                  <div className="flex gap-4 items-center">
+                    <div
+                      className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
+                      style={{
+                        backgroundImage: `url(${edge.node.chatAvatar})`,
+                      }}
+                    ></div>
+                    <span className="font-bold">{edge.node.chatName}</span>
+                  </div>
+                  <Button
+                    className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
+                    variant={"outline"}
+                  >
+                    Send
+                  </Button>
                 </div>
-                <Button
-                  className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
-                  variant={"outline"}
-                >
-                  Send
-                </Button>
-              </div>
+              ))}
             </div>
           </div>
           <div>
@@ -54,7 +72,32 @@ const ForwardMsgDialog = ({
           </div>
           <div className="h-[1000px]">
             <span className="font-bold">Contacts</span>
-            <div></div>
+            <div className="py-2">
+              {contactConnection?.edges.map((edge) => {
+                const contact = edge.node.users.filter(
+                  (user) => user.id != userId
+                )[0];
+                return (
+                  <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
+                    <div className="flex gap-4 items-center">
+                      <div
+                        className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
+                        style={{
+                          backgroundImage: `url(${contact.avatar})`,
+                        }}
+                      ></div>
+                      <span className="font-bold">{contact.fullname}</span>
+                    </div>
+                    <Button
+                      className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
+                      variant={"outline"}
+                    >
+                      Send
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </DialogContent>

@@ -7,6 +7,8 @@ import { messageResolvers } from "./resolvers/message.resolver";
 import { messageTypeDefs } from "./schemas/message.schema";
 import { userTypeDefs } from "./schemas/user.schema";
 import { userResolvers } from "./resolvers/user.resolver";
+import { contactTypeDefs } from "./schemas/contact.schema";
+import { contactResolvers } from "./resolvers/contact.resolver";
 
 export const typeDefs = mergeTypeDefs([
   `type Query`,
@@ -22,12 +24,14 @@ export const typeDefs = mergeTypeDefs([
   chatTypeDefs,
   messageTypeDefs,
   userTypeDefs,
+  contactTypeDefs,
 ]);
 
 export const resolvers = mergeResolvers([
   chatResolvers,
   messageResolvers,
   userResolvers,
+  contactResolvers,
 ]);
 
 export const graphqlSchema = makeExecutableSchema({

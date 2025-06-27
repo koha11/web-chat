@@ -1,0 +1,23 @@
+import mongoose, { Schema } from "mongoose";
+import IContact from "../interfaces/contact.interface";
+
+// Define schema
+const ContactSchema = new Schema<IContact>(
+  {
+    users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    ],
+    relationship: { type: Schema.Types.String, required: true },
+  },
+  { timestamps: true }
+);
+
+// Add soft delete plugin
+
+// Export model
+const Contact = mongoose.model<IContact>("Contact", ContactSchema);
+export default Contact;

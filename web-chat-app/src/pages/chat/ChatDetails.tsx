@@ -1,27 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { IMessage } from "../../interfaces/message.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
-import { Loader, MoreHorizontal, Phone, Video, X } from "lucide-react";
+import { MoreHorizontal, Phone, Video, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
-import IMessageGroup from "../../interfaces/messageGroup.interface";
+import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
 import {
   Collapsible,
   CollapsibleContent,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
-import {
-  useUnsendMessage,
-  useGetMessages,
-  usePostMessage,
-} from "../../hooks/message.hook";
+import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
 import { MESSAGE_ADDED_SUB } from "../../services/messageService";
-import { PageInfo } from "../../interfaces/modelConnection.interface";
+import { IMessage } from "../../interfaces/messages/message.interface";
 
 const ChatDetails = ({
   chat,

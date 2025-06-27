@@ -6,10 +6,10 @@ import { PubSub, withFilter } from "graphql-subscriptions";
 import messageService from "../../services/MessageService";
 import chatService from "../../services/ChatService";
 import Chat from "../../models/Chat.model";
-import IMyContext from "../../interfaces/myContext.interface";
+import IMyContext from "../../interfaces/socket/myContext.interface";
 import { Types } from "mongoose";
-import SocketEvent from "../../enums/SocketEvent";
-import { PubsubEvents } from "../../interfaces/pubsubEvents";
+import SocketEvent from "../../enums/SocketEvent.enum";
+import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
 import { resolve } from "path";
 import MessageStatus from "../../enums/MessageStatus.enum";
 

@@ -1,6 +1,4 @@
 import {
-  OperationVariables,
-  SubscribeToMoreFunction,
   useQuery,
 } from "@apollo/client";
 import { GET_CHATS } from "../services/chatService";
@@ -10,12 +8,17 @@ import IModelConnection, {
 } from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import { IUser } from "../interfaces/user.interface";
-import { use } from "react";
 
-export const useGetChats = (
-  userId: string
-): IMyQueryResult<IModelConnection<IChat>> => {
-  const myQuery = useQuery(GET_CHATS, { variables: { userId } });
+export const useGetChats = ({
+  userId,
+  after,
+  first = 10,
+}: {
+  userId: string;
+  after?: string;
+  first?: number;
+}): IMyQueryResult<IModelConnection<IChat>> => {
+  const myQuery = useQuery(GET_CHATS, { variables: { userId, after, first } });
 
   if (myQuery.error) throw myQuery.error;
 
@@ -68,5 +71,6 @@ export const useGetChats = (
     loading: myQuery.loading,
     subscribeToMore: myQuery.subscribeToMore,
     refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
   };
 };
