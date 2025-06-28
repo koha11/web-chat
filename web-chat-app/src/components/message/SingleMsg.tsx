@@ -20,7 +20,6 @@ const SingleMsg = ({
   msg,
   senderId,
   isFirstMsg,
-  isHidden,
   seenList,
   handleReplyMsg,
   receivers,
@@ -28,7 +27,6 @@ const SingleMsg = ({
   isSentMsg: boolean;
   msgSenderAvatar: string;
   isLongGap: boolean;
-  isHidden: boolean;
   senderId: string;
   msg: IMessage;
   isFirstMsg: boolean;
@@ -40,8 +38,6 @@ const SingleMsg = ({
   const [isOpen, setOpen] = useState<boolean>(false);
 
   const [postMessage] = usePostMessage({});
-
-  if (isHidden) return <></>;
 
   return (
     <div

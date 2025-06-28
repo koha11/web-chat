@@ -47,12 +47,10 @@ class MessageService {
     };
   };
 
-  getLastMessage = async (chatIds: string[]) => {
+  getLastMessage = async (chatIds: string[], userId: string) => {
     let result = {} as { [chatId: string]: IMessage | {} };
 
     for (let chatId of chatIds) {
-      console.log(chatId);
-
       let msgList;
       let msg;
 
@@ -64,15 +62,11 @@ class MessageService {
             after: msg ? msg?.id.toString() : undefined,
           })
         ).edges;
-        msg = msgList.length ? msgList[0].node : undefined;
+        if (msgList.length == 0) break;
 
-        console.log(msg);
-      } while (
-        msgList.length != 0 &&
-        msg?.status == MessageStatus.REMOVED_ONLY_YOU
-      );
+        msg = msgList[0].node;
 
-      console.log(msg);
+      } while (msg.isHiddenFor?.includes(toObjectId(userId)));
 
       if (msgList.length != 0) result[chatId] = msg!;
     }

@@ -22,6 +22,11 @@ const GroupMsg = ({
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
 }) => {
+  const isGroupMsgHidden =
+    messages.filter((msg) => !msg.isHiddenFor?.includes(sender.id)).length == 0;
+
+  if (isGroupMsgHidden) return <></>;
+
   return (
     <div className="msg-group py-4">
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
@@ -53,12 +58,13 @@ const GroupMsg = ({
             msgSenderAvatar = receiver.avatar ?? "";
           else msgSenderAvatar = "";
 
+          if (msg.isHiddenFor?.includes(sender.id)) return <></>;
+
           return (
             <SingleMsg
               key={msg.id}
               msg={msg}
               isSentMsg={msg.user == sender.id}
-              isHidden={msg.isHiddenFor?.includes(sender.id) ?? false}
               senderId={sender.id}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}

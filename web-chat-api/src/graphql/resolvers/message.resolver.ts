@@ -46,12 +46,15 @@ export const messageResolvers: IResolvers = {
       return result;
     },
 
-    lastMessages: async (_p: any, {}, { user }) => {
+    lastMessages: async (_p: any, {}, { user }: IMyContext) => {
       const chatIds = (
-        await chatService.getChatList({ userId: user.id })
+        await chatService.getChatList({ userId: user.id.toString() })
       ).edges.map((edge) => edge.node.id.toString());
 
-      const result = await messageService.getLastMessage(chatIds);
+      const result = await messageService.getLastMessage(
+        chatIds,
+        user.id.toString()
+      );
 
       return result;
     },
@@ -89,7 +92,11 @@ export const messageResolvers: IResolvers = {
 
       return message;
     },
-    unsendMessage: async (_p, { chatId, msgId }, { pubsub }: IMyContext) => {
+    unsendMessage: async (
+      _p,
+      { chatId, msgId },
+      { pubsub, user }: IMyContext
+    ) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
       if (msg) {
@@ -98,7 +105,10 @@ export const messageResolvers: IResolvers = {
 
         msg.save();
 
-        const lastMsgMap = await messageService.getLastMessage([chatId]);
+        const lastMsgMap = await messageService.getLastMessage(
+          [chatId],
+          user.id.toString()
+        );
 
         if ((lastMsgMap[chatId] as IMessage).id == msgId)
           await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
@@ -129,17 +139,14 @@ export const messageResolvers: IResolvers = {
 
         msg.save();
 
-        const lastMsgMap = await messageService.getLastMessage([chatId]);
+        const lastMsgMap = await messageService.getLastMessage(
+          [chatId],
+          user.id.toString()
+        );
 
-        if ((lastMsgMap[chatId] as IMessage).id == msgId) {
-          const nextLastMsg = (
-            await messageService.getMessages({ chatId, first: 1, after: msgId })
-          ).edges[0].node;
-
-          await Chat.findByIdAndUpdate(chatId, {
-            updatedAt: nextLastMsg.updatedAt,
-          });
-        }
+        await Chat.findByIdAndUpdate(chatId, {
+          updatedAt: (lastMsgMap[chatId] as IMessage).updatedAt,
+        });
 
         pubsub.publish(SocketEvent.messageChanged, {
           messageChanged: {

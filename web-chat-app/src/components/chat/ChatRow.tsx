@@ -100,8 +100,7 @@ const ChatRow = ({
 
             <div className="flex items-center">
               {lastMsg && <Dot size={12}></Dot>}
-              {lastMsg &&
-                getDisplayTimeDiff(new Date(lastMsg?.createdAt ?? ""))}
+              {lastMsg && getDisplayTimeDiff(new Date(lastMsg.updatedAt ?? ""))}
             </div>
           </div>
         </div>

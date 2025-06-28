@@ -43,9 +43,9 @@ export const getDisplayTimeDiff = (sendTime: Date) => {
 
   const days = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-  if (days < 7) return hours + " days";
+  if (days < 7) return days + " days";
 
-  const weeks = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  const weeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
 
   return weeks + " Weeks";
 };
