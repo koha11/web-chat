@@ -51,10 +51,30 @@ class MessageService {
     let result = {} as { [chatId: string]: IMessage | {} };
 
     for (let chatId of chatIds) {
-      const msgList = (await this.getMessages({ chatId: chatId, first: 1 }))
-        .edges;
+      console.log(chatId);
 
-      if (msgList.length != 0) result[chatId] = msgList[0].node;
+      let msgList;
+      let msg;
+
+      do {
+        msgList = (
+          await this.getMessages({
+            chatId: chatId,
+            first: 1,
+            after: msg ? msg?.id.toString() : undefined,
+          })
+        ).edges;
+        msg = msgList.length ? msgList[0].node : undefined;
+
+        console.log(msg);
+      } while (
+        msgList.length != 0 &&
+        msg?.status == MessageStatus.REMOVED_ONLY_YOU
+      );
+
+      console.log(msg);
+
+      if (msgList.length != 0) result[chatId] = msg!;
     }
 
     return result;

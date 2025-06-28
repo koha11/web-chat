@@ -11,7 +11,6 @@ import {
   Pin,
 } from "lucide-react";
 import { IChat } from "../../interfaces/chat.interface";
-import { IMessage } from "../../interfaces/message.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
 import { Skeleton } from "../ui/skeleton";
@@ -25,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { IMessage } from "../../interfaces/messages/message.interface";
 
 const ChatRow = ({
   userId,
@@ -78,13 +78,26 @@ const ChatRow = ({
             {isLastMsgLoading && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
-            <div className="">
-              {lastMsg && lastMsg.user == userId && "You:"}{" "}
-              {lastMsg &&
-                (lastMsg.msgBody.length > 15
-                  ? strimMessageBody(lastMsg.msgBody, 15)
-                  : lastMsg.msgBody)}
-            </div>
+
+            {lastMsg &&
+              (lastMsg.status == MessageStatus.UNSEND ? (
+                <div className="">
+                  {lastMsg.user == userId
+                    ? "You"
+                    : (chat.users as IUser[])
+                        .find((user) => user.id == lastMsg.user)
+                        ?.fullname.split(" ")[0]}
+                  {" deleted a message"}
+                </div>
+              ) : (
+                <div className="">
+                  {lastMsg.user == userId && "You:"}{" "}
+                  {lastMsg.msgBody.length > 15
+                    ? strimMessageBody(lastMsg.msgBody, 15)
+                    : lastMsg.msgBody}
+                </div>
+              ))}
+
             <div className="flex items-center">
               {lastMsg && <Dot size={12}></Dot>}
               {lastMsg &&

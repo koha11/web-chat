@@ -83,6 +83,7 @@ const SingleMsg = ({
         </div>
       )}
 
+      {/* Phan chinh  */}
       <div
         className={`flex items-center gap-2 z-10 ${
           isSentMsg ? "justify-end" : "justify-baseline"
@@ -133,9 +134,9 @@ const SingleMsg = ({
         {msg.status == MessageStatus.UNSEND
           ? MyTooltip(
               <span
-                className={`py-2 px-3 text-xl text-[0.9rem] rounded-2xl text-gray-200 italic ${
+                className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
                   isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                }`}
+                } ${msg.isForwarded ? "" : ""}`}
               >
                 {isSentMsg
                   ? "You"
@@ -159,7 +160,7 @@ const SingleMsg = ({
             )}
       </div>
 
-      {/* Hien thi trang thai cua tin nhan  */}
+      {/* Hien thi trang thai cua tin nhan */}
       <div className="flex items-center justify-end">
         {isSentMsg &&
           isFirstMsg &&

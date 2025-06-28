@@ -12,6 +12,7 @@ import SocketEvent from "../../enums/SocketEvent.enum";
 import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
 import { resolve } from "path";
 import MessageStatus from "../../enums/MessageStatus.enum";
+import { IMessage } from "../../interfaces/message.interface";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -88,56 +89,69 @@ export const messageResolvers: IResolvers = {
 
       return message;
     },
-    unsendMessage: async (
-      _p,
-      { chatId, msgId, status },
-      { pubsub }: IMyContext
-    ) => {
+    unsendMessage: async (_p, { chatId, msgId }, { pubsub }: IMyContext) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
-      msg!.status = MessageStatus.UNSEND;
-      msg!.unsentAt = new Date();
+      if (msg) {
+        msg.status = MessageStatus.UNSEND;
+        msg.unsentAt = new Date();
 
-      msg?.save();
+        msg.save();
 
-      await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
+        const lastMsgMap = await messageService.getLastMessage([chatId]);
 
-      pubsub.publish(SocketEvent.messageChanged, {
-        messageChanged: {
-          cursor: msg?.id,
-          node: msg,
-        },
-      } as PubsubEvents[SocketEvent.messageChanged]);
+        if ((lastMsgMap[chatId] as IMessage).id == msgId)
+          await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
 
-      pubsub.publish(SocketEvent.chatChanged, {
-        chatId,
-      });
+        pubsub.publish(SocketEvent.messageChanged, {
+          messageChanged: {
+            cursor: msg.id,
+            node: msg,
+          },
+        } as PubsubEvents[SocketEvent.messageChanged]);
+
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatId,
+        });
+      }
 
       return msg;
     },
     removeMessage: async (
       _p,
-      { chatId, msgId, status },
+      { chatId, msgId },
       { pubsub, user }: IMyContext
     ) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
-      msg!.isHiddenFor?.push(toObjectId(user.id));
+      if (msg) {
+        msg.isHiddenFor?.push(toObjectId(user.id));
 
-      msg?.save();
+        msg.save();
 
-      await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
+        const lastMsgMap = await messageService.getLastMessage([chatId]);
 
-      pubsub.publish(SocketEvent.messageChanged, {
-        messageChanged: {
-          cursor: msg?.id,
-          node: msg,
-        },
-      } as PubsubEvents[SocketEvent.messageChanged]);
+        if ((lastMsgMap[chatId] as IMessage).id == msgId) {
+          const nextLastMsg = (
+            await messageService.getMessages({ chatId, first: 1, after: msgId })
+          ).edges[0].node;
 
-      pubsub.publish(SocketEvent.chatChanged, {
-        chatId,
-      });
+          await Chat.findByIdAndUpdate(chatId, {
+            updatedAt: nextLastMsg.updatedAt,
+          });
+        }
+
+        pubsub.publish(SocketEvent.messageChanged, {
+          messageChanged: {
+            cursor: msg.id,
+            node: msg,
+          },
+        } as PubsubEvents[SocketEvent.messageChanged]);
+
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatId,
+        });
+      }
 
       return msg;
     },
