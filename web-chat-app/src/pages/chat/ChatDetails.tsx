@@ -45,7 +45,7 @@ const ChatDetails = ({
     after: undefined,
   });
 
-  const [postMessage] = usePostMessage({ chatId, first: 20 });
+  const [postMessage] = usePostMessage({ first: 20 });
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -143,13 +143,13 @@ const ChatDetails = ({
     msgBody,
     user,
     replyForMsg,
-    isForwarded
+    isForwarded,
   }: {
     msgBody: string;
     user: string;
     chatId: string;
     replyForMsg?: string;
-    isForwarded?: boolean
+    isForwarded?: boolean;
   }) => {
     postMessage({
       variables: {
@@ -157,7 +157,7 @@ const ChatDetails = ({
         msgBody,
         user,
         replyForMsg,
-        isForwarded
+        isForwarded,
       },
     });
   };
@@ -294,8 +294,11 @@ const ChatDetails = ({
                 ></GroupMsg>
               );
             })
-          : [1, 2, 3, 4, 5].map(() => (
-              <div className="space-y-2 flex flex-col items-end my-2">
+          : [1, 2, 3, 4, 5].map((index) => (
+              <div
+                key={index}
+                className="space-y-2 flex flex-col items-end my-2"
+              >
                 <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
                 <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
               </div>

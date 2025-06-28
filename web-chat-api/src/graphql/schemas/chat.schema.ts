@@ -29,7 +29,7 @@ export const chatTypeDefs = gql`
   }
 
   extend type Mutation {
-    postChat(roomId: ID!, sender: String!, text: String!): Chat!
+    postChat(users: [ID!]!): Chat!
   }
 
   extend type Subscription {

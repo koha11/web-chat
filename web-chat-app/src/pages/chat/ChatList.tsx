@@ -80,8 +80,9 @@ const ChatList = ({
         className="h-[75%] overflow-y-scroll flex flex-col gap-6"
       >
         {isChatsLoading
-          ? [1, 2, 3, 4, 5, 6].map(() => (
+          ? [1, 2, 3, 4, 5, 6].map((index) => (
               <div
+                key={index}
                 className={
                   "chat-box flex w-full items-center h-18 p-4 rounded-2xl"
                 }

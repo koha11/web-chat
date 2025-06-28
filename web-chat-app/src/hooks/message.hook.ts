@@ -56,13 +56,7 @@ export const useGetLastMessages = ({
   };
 };
 
-export const usePostMessage = ({
-  chatId,
-  first = 20,
-}: {
-  first?: number;
-  chatId?: string;
-}) => {
+export const usePostMessage = ({ first = 20 }: { first?: number }) => {
   return useMutation(POST_MESSAGE, {
     update(cache, { data }) {
       const addedMsg = data.postMessage;
@@ -71,13 +65,13 @@ export const usePostMessage = ({
         messages: IModelConnection<IMessage>;
       }>({
         query: GET_MESSAGES,
-        variables: { chatId: chatId ?? addedMsg.chat, first },
+        variables: { chatId: addedMsg.chat, first },
       });
 
       if (existing) {
         cache.writeQuery({
           query: GET_MESSAGES,
-          variables: { chatId, first },
+          variables: { chatId: addedMsg.chat, first },
           data: {
             messages: {
               ...existing.messages,

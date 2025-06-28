@@ -4,9 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import Cookies from "js-cookie";
 
-import { useGetChats } from "../../hooks/chat.hook";
+import { useGetChats, usePostChat } from "../../hooks/chat.hook";
 import Loading from "../ui/loading";
 import { useGetContacts } from "../../hooks/contact.hook";
+import { useEffect } from "react";
 
 const ForwardMsgDialog = ({
   isOpen,
@@ -26,6 +27,12 @@ const ForwardMsgDialog = ({
   const { data: contactConnection, loading: isContactLoading } = useGetContacts(
     { userId }
   );
+
+  const [postChat, { data: createdChat }] = usePostChat();
+
+  useEffect(() => {
+    if (createdChat) handleSendMsg(createdChat.postChat.id);
+  }, [createdChat]);
 
   if (isChatLoading || isContactLoading) return <Loading></Loading>;
 
@@ -63,8 +70,7 @@ const ForwardMsgDialog = ({
                     className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
                     variant={"outline"}
                     onClick={() => {
-                      const chatId = edge.node.id;
-                      if (chatId) handleSendMsg(chatId);
+                      handleSendMsg(edge.node.id);
                     }}
                   >
                     Send
@@ -100,7 +106,13 @@ const ForwardMsgDialog = ({
                       variant={"outline"}
                       onClick={() => {
                         const chatId = edge.node.chatId;
-                        if (chatId) handleSendMsg(chatId);
+                        if (!chatId) {
+                          postChat({
+                            variables: {
+                              users: edge.node.users.map((user) => user.id),
+                            },
+                          });
+                        } else handleSendMsg(chatId);
                       }}
                     >
                       Send

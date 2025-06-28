@@ -11,7 +11,6 @@ export const GET_MESSAGES = gql`
           status
           seenList
           createdAt
-          updatedAt
           isHiddenFor
           unsentAt
           editedAt
@@ -75,6 +74,7 @@ export const POST_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      isForwarded
     }
   }
 `;
@@ -99,6 +99,7 @@ export const UNSEND_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      isForwarded
     }
   }
 `;
@@ -123,6 +124,7 @@ export const REMOVE_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      isForwarded
     }
   }
 `;
@@ -136,8 +138,20 @@ export const MESSAGE_ADDED_SUB = gql`
         user
         msgBody
         status
+        replyForMsg {
+          id
+          user
+          msgBody
+          status
+          seenList
+          createdAt
+        }
         seenList
         createdAt
+        isHiddenFor
+        unsentAt
+        editedAt
+        isForwarded
       }
     }
   }
@@ -149,16 +163,23 @@ export const MESSAGE_CHANGED_SUB = gql`
       cursor
       node {
         id
-        chat
         user
         msgBody
         status
+        replyForMsg {
+          id
+          user
+          msgBody
+          status
+          seenList
+          createdAt
+        }
         seenList
         createdAt
-        updatedAt
         isHiddenFor
         unsentAt
         editedAt
+        isForwarded
       }
     }
   }

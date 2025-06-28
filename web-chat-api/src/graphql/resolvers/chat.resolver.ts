@@ -21,7 +21,17 @@ export const chatResolvers: IResolvers = {
       return result;
     },
   },
-  Mutation: {},
+  Mutation: {
+    postChat: async (
+      _p: any,
+      { users },
+      { user }: IMyContext
+    ) => {
+      const result = await chatService.createChat(users)
+
+      return result;
+    },
+  },
   Subscription: {
     chats: {
       resolve: async (payload, args, { user }: IMyContext, info) => {

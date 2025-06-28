@@ -4,6 +4,8 @@ import SocketEvent from "../enums/SocketEvent.enum";
 import { IChat } from "../interfaces/chat.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import { toObjectId } from "../utils/mongoose";
+import User from "../models/User.model";
+import Contact from "../models/Contact.model";
 
 class ChatService {
   getChatList = async ({
@@ -43,6 +45,23 @@ class ChatService {
         endCursor: edges.length ? edges[edges.length - 1].cursor : null,
       },
     };
+  };
+
+  createChat = async (users: string[]) => {
+    const nicknames = new Map<string, string>();
+
+    for (let userId of users) {
+      const user = await User.findById(userId);
+
+      if (user) nicknames.set(userId, user.fullname);
+    }
+
+    const chat = await Chat.create({ users, nicknames });
+
+    if (users.length == 2)
+      Contact.findOneAndUpdate({ users }, { chatId: chat.id });
+
+    return chat;
   };
 }
 

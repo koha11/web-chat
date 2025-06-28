@@ -29,7 +29,13 @@ export const GET_CHATS = gql`
   }
 `;
 
-// export const POST_CHAT = gql``;
+export const POST_CHAT = gql`
+  mutation PostChat($users: [ID!]!) {
+    postChat(users: $users) {
+      id
+    }
+  }
+`;
 
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {

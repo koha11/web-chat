@@ -1,7 +1,5 @@
-import {
-  useQuery,
-} from "@apollo/client";
-import { GET_CHATS } from "../services/chatService";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_CHATS, POST_CHAT } from "../services/chatService";
 import { IChat } from "../interfaces/chat.interface";
 import IModelConnection, {
   Edge,
@@ -73,4 +71,8 @@ export const useGetChats = ({
     refetch: myQuery.refetch,
     fetchMore: myQuery.fetchMore,
   };
+};
+
+export const usePostChat = () => {
+  return useMutation(POST_CHAT);
 };
