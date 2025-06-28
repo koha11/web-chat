@@ -137,16 +137,27 @@ export const messageResolvers: IResolvers = {
       if (msg) {
         msg.isHiddenFor?.push(toObjectId(user.id));
 
-        msg.save();
+        await msg.save();
 
         const lastMsgMap = await messageService.getLastMessage(
           [chatId],
           user.id.toString()
         );
 
-        await Chat.findByIdAndUpdate(chatId, {
-          updatedAt: (lastMsgMap[chatId] as IMessage).updatedAt,
-        });
+        const lastMsg = lastMsgMap[chatId] as IMessage;
+
+        await Chat.findByIdAndUpdate(
+          chatId,
+          {
+            $set: {
+              updatedAt:
+                lastMsg.status == MessageStatus.UNSEND
+                  ? lastMsg.unsentAt
+                  : lastMsg.createdAt,
+            },
+          },
+          { timestamps: false }
+        );
 
         pubsub.publish(SocketEvent.messageChanged, {
           messageChanged: {
