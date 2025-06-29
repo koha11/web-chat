@@ -39,20 +39,15 @@ export const messageResolvers: IResolvers = {
       });
 
       if (isNotSeenBefore) {
-        await Chat.findByIdAndUpdate(
-          chatId,
-          {
-            $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
-          },
-          { timestamps: false }
-        );
+        chat?.lastMsgSeen.set(user.id.toString(), result.edges[0].cursor);
+        await chat?.save();
       }
 
-      // if (isUpdateSeenList) {
-      //   pubsub.publish(SocketEvent.chatChanged, {
-      //     chatId,
-      //   } as PubsubEvents[SocketEvent.chatChanged]);
-      // }
+      if (isUpdateSeenList) {
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatChanged: chat,
+        } as PubsubEvents[SocketEvent.chatChanged]);
+      }
 
       return result;
     },
@@ -195,16 +190,39 @@ export const messageResolvers: IResolvers = {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.messageAdded),
-        async (payload, { chatId }, { user }: IMyContext) => {
-          const chat = await Chat.findById(payload.chatId);
+        async (
+          { messageAdded, chatId }: PubsubEvents[SocketEvent.messageAdded],
+          { chatId: subChatId },
+          { user, pubsub }: IMyContext
+        ) => {
+          const chat = await Chat.findById(chatId);
 
           const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
             toObjectId(user.id.toString())
           );
 
-          const isNotSender = !payload.messageAdded.node.user.equals(user.id);
+          const isNotSender = !(
+            messageAdded.node.user as Types.ObjectId
+          ).equals(user.id);
 
-          const isCorrectChat = payload.chatId == chatId;
+          const isCorrectChat = chatId == subChatId;
+
+          if (isUserInThisChat && isCorrectChat) {
+            // update seenList cho tung msg
+            await messageService.updateSeenList({
+              chatId,
+              userId: user.id.toString(),
+              lastSeenMsgId: chat!.lastMsgSeen?.get(user.id.toString()) ?? "",
+            });
+
+            chat?.lastMsgSeen.set(user.id.toString(), messageAdded.cursor);
+
+            await chat?.save();
+
+            pubsub.publish(SocketEvent.chatChanged, {
+              chatChanged: chat,
+            });
+          }
 
           return isNotSender && isUserInThisChat && isCorrectChat;
         }

@@ -31,14 +31,6 @@ export const chatResolvers: IResolvers = {
   },
   Subscription: {
     chatChanged: {
-      // resolve: async (payload, args, { user }: IMyContext, info) => {
-      //   // Manipulate and return the new value
-      //   const result = await chatService.getChatList({
-      //     userId: user.id.toString(),
-      //   });
-
-      //   return result;
-      // },
       subscribe: withFilter(
         (_p, { userId }, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.chatChanged),

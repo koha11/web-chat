@@ -51,14 +51,20 @@ const SingleMsg = ({
           }`}
         >
           <div className={`flex gap-2 mb-7`}>
-            <Reply size={"14"}></Reply> You replied to{" "}
+            <Reply size={"14"}></Reply>{" "}
+            {isSentMsg ? "You" : receivers[msg.user.toString()].fullname}{" "}
+            replied to{" "}
             {receivers[(msg.replyForMsg as IMessage).user.toString()] !=
             undefined
               ? receivers[(msg.replyForMsg as IMessage).user.toString()]
                   .fullname
               : "yourself"}
           </div>
-          <div className="bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute top-5 right-0">
+          <div
+            className={`bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute ${
+              isSentMsg ? "top-5 right-0" : "top-5 left-10"
+            }`}
+          >
             {(msg.replyForMsg as IMessage).msgBody}
           </div>
         </div>
