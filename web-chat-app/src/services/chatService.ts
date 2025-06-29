@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_CHATS = gql`
-  query ($userId: ID!) {
+  query GetChats($userId: ID!) {
     chats(userId: $userId) {
       edges {
         node {
@@ -10,6 +10,7 @@ export const GET_CHATS = gql`
           chatAvatar
           nicknames
           updatedAt
+          lastMsgSeen
           users {
             id
             fullname
@@ -39,28 +40,19 @@ export const POST_CHAT = gql`
 
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {
-    chats(userId: $userId) {
-      edges {
-        node {
-          id
-          chatName
-          chatAvatar
-          nicknames
-          updatedAt
-          users {
-            id
-            fullname
-            avatar
-            isOnline
-            lastLogined
-          }
-        }
-        cursor
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
+    chatChanged(userId: $userId) {
+      id
+      chatName
+      chatAvatar
+      nicknames
+      updatedAt
+      lastMsgSeen
+      users {
+        id
+        fullname
+        avatar
+        isOnline
+        lastLogined
       }
     }
   }

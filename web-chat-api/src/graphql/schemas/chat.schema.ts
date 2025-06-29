@@ -7,6 +7,7 @@ export const chatTypeDefs = gql`
     chatName: String
     chatAvatar: String
     nicknames: JSONObject
+    lastMsgSeen: JSONObject
 
     createdAt: Date
     updatedAt: Date
@@ -33,6 +34,6 @@ export const chatTypeDefs = gql`
   }
 
   extend type Subscription {
-    chats(userId: ID!): ChatConnection!
+    chatChanged(userId: ID!): Chat!
   }
 `;

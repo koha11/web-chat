@@ -19,7 +19,7 @@ export const messageResolvers: IResolvers = {
     messages: async (
       _p: any,
       { chatId, msgId, after, first },
-      { user }: IMyContext
+      { user, pubsub }: IMyContext
     ) => {
       const result = await messageService.getMessages({ chatId, first, after });
       const chat = await Chat.findById(chatId);
@@ -31,17 +31,28 @@ export const messageResolvers: IResolvers = {
         chat?.lastMsgSeen?.get(user.id.toString()) !=
           result.edges[0].node.id.toString();
 
-      await messageService.updateSeenList({
+      // update seenList cho tung msg
+      const isUpdateSeenList = await messageService.updateSeenList({
         chatId,
         userId: user.id.toString(),
         lastSeenMsgId: chat!.lastMsgSeen?.get(user.id.toString()) ?? "",
       });
 
       if (isNotSeenBefore) {
-        await Chat.findByIdAndUpdate(chatId, {
-          $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
-        });
+        await Chat.findByIdAndUpdate(
+          chatId,
+          {
+            $set: { [`lastMsgSeen.${user.id}`]: result.edges[0].cursor },
+          },
+          { timestamps: false }
+        );
       }
+
+      // if (isUpdateSeenList) {
+      //   pubsub.publish(SocketEvent.chatChanged, {
+      //     chatId,
+      //   } as PubsubEvents[SocketEvent.chatChanged]);
+      // }
 
       return result;
     },
@@ -76,7 +87,11 @@ export const messageResolvers: IResolvers = {
 
       const message = await createdMsg.populate("replyForMsg");
 
-      await Chat.findByIdAndUpdate(message.chat, { updatedAt: new Date() });
+      const chatChanged = await Chat.findByIdAndUpdate(
+        message.chat,
+        { updatedAt: new Date() },
+        { new: true }
+      ).populate("users");
 
       pubsub.publish(SocketEvent.messageAdded, {
         messageAdded: {
@@ -87,8 +102,8 @@ export const messageResolvers: IResolvers = {
       } as PubsubEvents[SocketEvent.messageAdded]);
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatId,
-      });
+        chatChanged,
+      } as PubsubEvents[SocketEvent.chatChanged]);
 
       return message;
     },
@@ -120,9 +135,9 @@ export const messageResolvers: IResolvers = {
           },
         } as PubsubEvents[SocketEvent.messageChanged]);
 
-        pubsub.publish(SocketEvent.chatChanged, {
-          chatId,
-        });
+        // pubsub.publish(SocketEvent.chatChanged, {
+        //   chatId,
+        // });
       }
 
       return msg;
@@ -159,16 +174,16 @@ export const messageResolvers: IResolvers = {
           { timestamps: false }
         );
 
-        pubsub.publish(SocketEvent.messageChanged, {
-          messageChanged: {
-            cursor: msg.id,
-            node: msg,
-          },
-        } as PubsubEvents[SocketEvent.messageChanged]);
+        // pubsub.publish(SocketEvent.messageChanged, {
+        //   messageChanged: {
+        //     cursor: msg.id,
+        //     node: msg,
+        //   },
+        // } as PubsubEvents[SocketEvent.messageChanged]);
 
-        pubsub.publish(SocketEvent.chatChanged, {
-          chatId,
-        });
+        // pubsub.publish(SocketEvent.chatChanged, {
+        //   chatId,
+        // });
       }
 
       return msg;
@@ -180,7 +195,7 @@ export const messageResolvers: IResolvers = {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.messageAdded),
-        async (payload, variables, { user }: IMyContext) => {
+        async (payload, { chatId }, { user }: IMyContext) => {
           const chat = await Chat.findById(payload.chatId);
 
           const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
@@ -189,7 +204,9 @@ export const messageResolvers: IResolvers = {
 
           const isNotSender = !payload.messageAdded.node.user.equals(user.id);
 
-          return isNotSender && isUserInThisChat;
+          const isCorrectChat = payload.chatId == chatId;
+
+          return isNotSender && isUserInThisChat && isCorrectChat;
         }
       ),
     },

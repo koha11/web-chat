@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
@@ -8,46 +8,26 @@ import { useGetChats } from "../../hooks/chat.hook";
 import Cookies from "js-cookie";
 import { useGetLastMessages } from "../../hooks/message.hook";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import { CHAT_CHANGED_SUB } from "../../services/chatService";
+import { CHAT_CHANGED_SUB, GET_CHATS } from "../../services/chatService";
+import { useApolloClient } from "@apollo/client";
+import { Edge } from "../../interfaces/modelConnection.interface";
+import { IChat } from "../../interfaces/chat.interface";
+import { GET_MESSAGES } from "../../services/messageService";
 
 const Chat = () => {
   const { id } = useParams();
   const userId = Cookies.get("userId") ?? "";
 
   const {
-    data: chats,
-    loading: isChatsLoading,
+    chats,
+    isChatsLoading,
     subscribeToMore,
-  } = useGetChats({ userId });
-
-  const {
-    data: lastMessges,
-    loading: isLastMsgLoading,
+    lastMessges,
+    isLastMsgLoading,
     refetch,
-  } = useGetLastMessages({ userId, isFetch: chats == undefined });
-
-  loadErrorMessages();
-  loadDevMessages();
-
-  useEffect(() => {
-    if (chats) {
-      const unsubscribe = subscribeToMore({
-        document: CHAT_CHANGED_SUB,
-        variables: { userId },
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData) return prev;
-
-          return subscriptionData.data;
-        },
-      });
-
-      refetch();
-
-      return () => {
-        unsubscribe();
-      };
-    }
-  }, [chats]);
+    updatedChatMap,
+    setUpdatedChatMap,
+  } = useOutletContext<any>();
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -65,8 +45,12 @@ const Chat = () => {
         ) : (
           <ChatDetails
             userId={userId}
-            chat={chats && chats.edges.find((edge) => edge.node.id == id)?.node}
+            chat={
+              chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
+            }
             chatId={id}
+            hasUpdated={updatedChatMap[id] ?? true}
+            setUpdatedChatMap={setUpdatedChatMap}
           ></ChatDetails>
         )}
       </div>

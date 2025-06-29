@@ -9,6 +9,7 @@ import chatService from "../../services/ChatService";
 import { subscribe } from "diagnostics_channel";
 import { Types } from "mongoose";
 import SocketEvent from "../../enums/SocketEvent.enum";
+import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
 export const chatResolvers: IResolvers = {
   Query: {
     chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
@@ -22,35 +23,33 @@ export const chatResolvers: IResolvers = {
     },
   },
   Mutation: {
-    postChat: async (
-      _p: any,
-      { users },
-      { user }: IMyContext
-    ) => {
-      const result = await chatService.createChat(users)
+    postChat: async (_p: any, { users }, { user }: IMyContext) => {
+      const result = await chatService.createChat(users);
 
       return result;
     },
   },
   Subscription: {
-    chats: {
-      resolve: async (payload, args, { user }: IMyContext, info) => {
-        // Manipulate and return the new value
-        const result = await chatService.getChatList({
-          userId: user.id.toString(),
-        });
+    chatChanged: {
+      // resolve: async (payload, args, { user }: IMyContext, info) => {
+      //   // Manipulate and return the new value
+      //   const result = await chatService.getChatList({
+      //     userId: user.id.toString(),
+      //   });
 
-        return result;
-      },
+      //   return result;
+      // },
       subscribe: withFilter(
-        (_p, { chatId }, { pubsub }) =>
+        (_p, { userId }, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.chatChanged),
-        async (payload, variables, { user }: IMyContext) => {
-          const chat = await Chat.findById(payload.chatId);
-
-          const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
-            toObjectId(user.id.toString())
-          );
+        async (
+          { chatChanged }: PubsubEvents[SocketEvent.chatChanged],
+          variables,
+          { user }: IMyContext
+        ) => {
+          const isUserInThisChat = chatChanged?.users
+            .map((user) => user.id)
+            .includes(toObjectId(user.id.toString()));
 
           return isUserInThisChat;
         }

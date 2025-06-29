@@ -17,15 +17,20 @@ import { Button } from "../../components/ui/button";
 import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
 import { MESSAGE_ADDED_SUB } from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
+import { useApolloClient } from "@apollo/client";
 
 const ChatDetails = ({
   chat,
   userId,
   chatId,
+  hasUpdated,
+  setUpdatedChatMap,
 }: {
   userId: string;
   chat: IChat | undefined;
   chatId: string;
+  hasUpdated: boolean;
+  setUpdatedChatMap: Function;
 }) => {
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
@@ -37,6 +42,7 @@ const ChatDetails = ({
   const {
     data: messagesConnection,
     loading: isMsgLoading,
+    refetch: refetchMessages,
     subscribeToMore,
     fetchMore,
   } = useGetMessages({
@@ -44,6 +50,8 @@ const ChatDetails = ({
     first: 20,
     after: undefined,
   });
+
+  const client = useApolloClient();
 
   const [postMessage] = usePostMessage({ first: 20 });
 
@@ -131,6 +139,15 @@ const ChatDetails = ({
       setSender(chat.users.find((user) => user.id == userId));
     }
   }, [chat]);
+
+  useEffect(() => {
+    if (hasUpdated) {
+      refetchMessages();
+      setUpdatedChatMap((old: any) => {
+        return { ...old, [chatId]: true };
+      });
+    }
+  }, [chatId]);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {

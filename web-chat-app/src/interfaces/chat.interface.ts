@@ -8,6 +8,7 @@ export interface IChat {
   nicknames: { [id: string]: string }[];
   chatName: string;
   chatAvatar: string;
+  lastMsgSeen?: { [userId: string]: [msgId: string] }; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon
 
   createdAt?: Date;
   updatedAt?: Date;

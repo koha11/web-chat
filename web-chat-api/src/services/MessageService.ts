@@ -65,7 +65,6 @@ class MessageService {
         if (msgList.length == 0) break;
 
         msg = msgList[0].node;
-
       } while (msg.isHiddenFor?.includes(toObjectId(userId)));
 
       if (msgList.length != 0) result[chatId] = msg!;
@@ -99,6 +98,8 @@ class MessageService {
 
       await msg.save();
     }
+
+    return messages.length != 0;
   };
 }
 
