@@ -120,9 +120,6 @@ export const messageResolvers: IResolvers = {
           user.id.toString()
         );
 
-        if ((lastMsgMap[chatId] as IMessage).id == msgId)
-          await Chat.findByIdAndUpdate(chatId, { updatedAt: new Date() });
-
         pubsub.publish(SocketEvent.messageChanged, {
           messageChanged: {
             cursor: msg.id,
@@ -130,9 +127,19 @@ export const messageResolvers: IResolvers = {
           },
         } as PubsubEvents[SocketEvent.messageChanged]);
 
-        // pubsub.publish(SocketEvent.chatChanged, {
-        //   chatId,
-        // });
+        console.log((lastMsgMap[chatId] as IMessage).id == msgId);
+
+        if ((lastMsgMap[chatId] as IMessage).id == msgId) {
+          const chatChanged = await Chat.findByIdAndUpdate(
+            chatId,
+            { updatedAt: new Date() },
+            { new: true }
+          ).populate("users");
+
+          pubsub.publish(SocketEvent.chatChanged, {
+            chatChanged,
+          } as PubsubEvents[SocketEvent.chatChanged]);
+        }
       }
 
       return msg;

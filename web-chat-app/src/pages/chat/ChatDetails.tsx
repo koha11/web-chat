@@ -15,9 +15,15 @@ import {
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
 import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
-import { MESSAGE_ADDED_SUB } from "../../services/messageService";
+import {
+  MESSAGE_ADDED_SUB,
+  MESSAGE_CHANGED_SUB,
+} from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { useApolloClient } from "@apollo/client";
+import IModelConnection, {
+  Edge,
+} from "../../interfaces/modelConnection.interface";
 
 const ChatDetails = ({
   chat,
@@ -100,7 +106,31 @@ const ChatDetails = ({
       setMessages(grouped);
       setFetchMore(false);
 
-      const unsubscribe = subscribeToMore({
+      const unsubscribeMsgAdded = subscribeToMore({
+        document: MESSAGE_CHANGED_SUB,
+        variables: { chatId: chatId },
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+
+          const messageChanged = subscriptionData.data
+            .messageChanged as Edge<IMessage>;
+          const prevMessages = prev.messages as IModelConnection<IMessage>;
+
+          return {
+            ...prev,
+            messages: {
+              ...prevMessages,
+              edges: prevMessages.edges.map((edge) => {
+                if (edge.cursor == messageChanged.cursor) return messageChanged;
+
+                return edge;
+              }),
+            },
+          };
+        },
+      });
+
+      const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
         variables: { chatId: chatId },
         updateQuery: (prev, { subscriptionData }) => {
@@ -123,7 +153,8 @@ const ChatDetails = ({
       });
 
       return () => {
-        unsubscribe();
+        unsubscribeMsgAdded();
+        unsubscribeMsgChanged();
       };
     }
   }, [messagesConnection, subscribeToMore]);
