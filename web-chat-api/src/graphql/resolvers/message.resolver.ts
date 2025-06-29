@@ -22,7 +22,7 @@ export const messageResolvers: IResolvers = {
       { user, pubsub }: IMyContext
     ) => {
       const result = await messageService.getMessages({ chatId, first, after });
-      const chat = await Chat.findById(chatId);
+      const chat = await Chat.findById(chatId).populate("users");
 
       const isNotEmpty = result.edges.length > 0;
 
@@ -126,8 +126,6 @@ export const messageResolvers: IResolvers = {
             node: msg,
           },
         } as PubsubEvents[SocketEvent.messageChanged]);
-
-        console.log((lastMsgMap[chatId] as IMessage).id == msgId);
 
         if ((lastMsgMap[chatId] as IMessage).id == msgId) {
           const chatChanged = await Chat.findByIdAndUpdate(
