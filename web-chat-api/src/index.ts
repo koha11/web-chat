@@ -18,7 +18,8 @@ import SocketEvent from "./enums/SocketEvent.enum";
 import { IMessage } from "./interfaces/message.interface";
 import authService from "./services/AuthService";
 import { Edge } from "./interfaces/modelConnection.interface";
-import { PubsubEvents } from "./interfaces/pubsubEvents";
+import { PubsubEvents } from "./interfaces/socket/pubsubEvents";
+import userService from "./services/UserService";
 
 declare global {
   namespace Express {
@@ -99,10 +100,29 @@ Promise.all([connectDB(), apollo.start()])
 
           return { pubsub, user };
         },
-        onConnect: (ctx) => {
+        onConnect: async (ctx) => {
           if (!ctx.connectionParams?.authToken) {
             throw new Error("Missing auth token");
           }
+
+          const token = ctx.connectionParams?.authToken as string;
+          const user = authService.verifyToken(token);
+
+          await userService.setOnlineStatus(user.id.toString());
+
+          console.log(user.username + " is online");
+        },
+        onDisconnect: async (ctx) => {
+          if (!ctx.connectionParams?.authToken) {
+            throw new Error("Missing auth token");
+          }
+
+          const token = ctx.connectionParams?.authToken as string;
+          const user = authService.verifyToken(token);
+
+          await userService.setOfflineStatus(user.id.toString());
+
+          console.log(user.username + " is offline");
         },
       },
       wsServer

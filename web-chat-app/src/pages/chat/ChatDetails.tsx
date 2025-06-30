@@ -5,7 +5,11 @@ import { IUser } from "../../interfaces/user.interface";
 import { MoreHorizontal, Phone, Video, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
-import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
+import {
+  getDisplayTimeDiff,
+  getTimeDiff,
+  TimeTypeOption,
+} from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -248,10 +252,17 @@ const ChatDetails = ({
       <div className="container flex items-center justify-between h-[10%]">
         <div className="flex items-center">
           {chat && !isMsgLoading ? (
-            <div
-              className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
-              style={{ backgroundImage: `url(${chat.chatAvatar})` }}
-            ></div>
+            <div className="relative">
+              <div
+                className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
+                style={{ backgroundImage: `url(${chat.chatAvatar})` }}
+              ></div>
+              {Object.values(receivers).some(
+                (receiver) => receiver.isOnline
+              ) && (
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+              )}
+            </div>
           ) : (
             <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
           )}
@@ -260,9 +271,18 @@ const ChatDetails = ({
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
-                {Object.values(receivers).some((receiver) => receiver.isOnline)
-                  ? "Đang hoạt động"
-                  : "Không hoạt động"}
+                {receivers &&
+                Object.values(receivers).some((receiver) => receiver.isOnline)
+                  ? "Online"
+                  : `Online ${getDisplayTimeDiff(
+                      new Date(
+                        Object.values(receivers).sort(
+                          (a, b) =>
+                            new Date(b.lastLogined ?? "").getTime() -
+                            new Date(a.lastLogined ?? "").getTime()
+                        )[0].lastLogined ?? ""
+                      )
+                    )} ago`}
               </div>
             </div>
           ) : (

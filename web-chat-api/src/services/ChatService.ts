@@ -59,7 +59,7 @@ class ChatService {
     const chat = await Chat.create({ users, nicknames });
 
     if (users.length == 2)
-      Contact.findOneAndUpdate({ users }, { chatId: chat.id });
+      await Contact.findOneAndUpdate({ users }, { chatId: chat.id });
 
     return chat;
   };
