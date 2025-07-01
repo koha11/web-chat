@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useOutletContext, useParams } from "react-router-dom";
 import ChatDetails from "./ChatDetails";
@@ -30,6 +30,8 @@ const Chat = () => {
     setUpdatedChatMap,
   } = useOutletContext<any>();
 
+  const [chatInfoOpen, setChatInfoOpen] = useState(false);
+
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
@@ -52,6 +54,7 @@ const Chat = () => {
             chatId={id}
             hasUpdated={updatedChatMap[id] ?? true}
             setUpdatedChatMap={setUpdatedChatMap}
+            setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
           ></ChatDetails>
         )}
         <ChatInfo
@@ -59,6 +62,7 @@ const Chat = () => {
             chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
           }
           userId={userId}
+          open={chatInfoOpen}
         ></ChatInfo>
       </div>
     </div>

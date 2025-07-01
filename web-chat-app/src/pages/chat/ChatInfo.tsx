@@ -14,7 +14,15 @@ import CollapsibleChatMembers from "../../components/chat/CollapsibleChatMembers
 import CollapsibleChatMedia from "../../components/chat/CollapsibleChatMedia";
 import CollapsibleChatPrivacy from "../../components/chat/CollapsibleChatPrivacy";
 
-const ChatInfo = ({ chat, userId }: { chat: IChat; userId: string }) => {
+const ChatInfo = ({
+  chat,
+  userId,
+  open,
+}: {
+  chat: IChat;
+  userId: string;
+  open: boolean;
+}) => {
   if (!chat) return <></>;
 
   const receivers = (chat.users as IUser[]).filter((user) => user.id != userId);
@@ -23,6 +31,7 @@ const ChatInfo = ({ chat, userId }: { chat: IChat; userId: string }) => {
     <section
       className="flex-2 h-full p-2 bg-white rounded-2xl flex flex-col items-center gap-2 overflow-y-scroll"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
+      hidden={!open}
     >
       <div className="relative">
         <div

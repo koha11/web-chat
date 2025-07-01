@@ -36,12 +36,14 @@ const ChatDetails = ({
   chatId,
   hasUpdated,
   setUpdatedChatMap,
+  setChatInfoOpen,
 }: {
   userId: string;
   chat: IChat | undefined;
   chatId: string;
   hasUpdated: boolean;
   setUpdatedChatMap: Function;
+  setChatInfoOpen: Function;
 }) => {
   // states
   const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
@@ -269,7 +271,7 @@ const ChatDetails = ({
           {chat && !isMsgLoading ? (
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
-              <div className="text-gray-500 text-[0.75rem]">
+              {/* <div className="text-gray-500 text-[0.75rem]">
                 {receivers &&
                 Object.values(receivers).some((receiver) => receiver.isOnline)
                   ? "Online"
@@ -282,7 +284,7 @@ const ChatDetails = ({
                         )[0].lastLogined ?? ""
                       )
                     )} ago`}
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="ml-4 space-y-2">
@@ -291,16 +293,22 @@ const ChatDetails = ({
             </div>
           )}
         </div>
-        <div className="text-2xl flex items-center gap-4">
-          <Button className="p-2 rounded-full hover:bg-gray-200">
+        <div className="text-2xl flex items-center gap-4 ">
+          <Button className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer">
             <Phone></Phone>
           </Button>
-          <Link to={""} className="p-2 rounded-full hover:bg-gray-200">
+          <Link
+            to={""}
+            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+          >
             <Video></Video>
           </Link>
-          <Link to={""} className="p-2 rounded-full hover:bg-gray-200">
+          <Button
+            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+            onClick={() => setChatInfoOpen()}
+          >
             <MoreHorizontal></MoreHorizontal>
-          </Link>
+          </Button>
         </div>
       </div>
 
