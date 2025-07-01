@@ -28,12 +28,12 @@ const ChatList = ({
 
   return (
     <section
-      className="w-[25%] h-full p-2 bg-white rounded-2xl"
+      className="flex-2 h-full p-2 bg-white rounded-2xl"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="flex justify-between items-center h-[10%] px-2">
-        <h1 className="text-2xl font-bold">Đoạn chat</h1>
-        <div className="text-xl flex items-center gap-2">
+        <h1 className="text-xl font-bold">Đoạn chat</h1>
+        <div className="flex items-center gap-2">
           <Link
             to="/me"
             className="p-2 rounded-full bg-gray-200 hover:opacity-50"

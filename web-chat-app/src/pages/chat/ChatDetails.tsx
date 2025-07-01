@@ -28,6 +28,7 @@ import { useApolloClient } from "@apollo/client";
 import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
+import { client } from "../../apollo";
 
 const ChatDetails = ({
   chat,
@@ -60,8 +61,6 @@ const ChatDetails = ({
     first: 20,
     after: undefined,
   });
-
-  const client = useApolloClient();
 
   const [postMessage] = usePostMessage({ first: 20 });
 
@@ -246,7 +245,7 @@ const ChatDetails = ({
 
   return (
     <section
-      className="w-[75%] h-full p-4 bg-white rounded-2xl"
+      className="flex-5 h-full p-4 bg-white rounded-2xl"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="container flex items-center justify-between h-[10%]">
@@ -411,6 +410,12 @@ const ChatDetails = ({
             {...register("msgBody", { required: true })}
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
             placeholder="Aa"
+            onFocus={() => {
+              console.log("user is typing");
+            }}
+            onBlur={() => {
+              console.log("user is stop typing");
+            }}
           ></input>
 
           <button className="rounded-full ml-2 cursor-pointer" type="submit">

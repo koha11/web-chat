@@ -13,6 +13,7 @@ import { useApolloClient } from "@apollo/client";
 import { Edge } from "../../interfaces/modelConnection.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { GET_MESSAGES } from "../../services/messageService";
+import ChatInfo from "./ChatInfo";
 
 const Chat = () => {
   const { id } = useParams();
@@ -53,6 +54,12 @@ const Chat = () => {
             setUpdatedChatMap={setUpdatedChatMap}
           ></ChatDetails>
         )}
+        <ChatInfo
+          chat={
+            chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
+          }
+          userId={userId}
+        ></ChatInfo>
       </div>
     </div>
   );
