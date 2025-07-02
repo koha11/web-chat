@@ -18,13 +18,18 @@ import {
   CollapsibleContent,
 } from "../../components/ui/collapsible";
 import { Button } from "../../components/ui/button";
-import { useGetMessages, usePostMessage } from "../../hooks/message.hook";
+import {
+  useGetMessages,
+  usePostMessage,
+  useTypeMessage,
+} from "../../hooks/message.hook";
 import {
   MESSAGE_ADDED_SUB,
   MESSAGE_CHANGED_SUB,
+  MESSAGE_TYPING_SUB,
 } from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
 import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
@@ -51,6 +56,7 @@ const ChatDetails = ({
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isOpen, setOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
+  const [typingUsers, setTypingUsers] = useState<IUser[]>();
 
   const {
     data: messagesConnection,
@@ -65,6 +71,8 @@ const ChatDetails = ({
   });
 
   const [postMessage] = usePostMessage({ first: 20 });
+
+  const [typeMessage] = useTypeMessage();
 
   // useForm
   const { register, handleSubmit, resetField, setValue, watch } =
@@ -157,9 +165,32 @@ const ChatDetails = ({
         },
       });
 
+      const unsubscribeMsgTyping = subscribeToMore({
+        document: MESSAGE_TYPING_SUB,
+        variables: { chatId: chatId },
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+
+          const messageTyping = subscriptionData.data.messageTyping as {
+            typingUser: IUser;
+            isTyping: boolean;
+          };
+
+          setTypingUsers((old) => {
+            if (messageTyping.isTyping)
+              return [...(old ?? []), messageTyping.typingUser];
+
+            return old?.filter((old) => old.id != messageTyping.typingUser.id);
+          });
+
+          return prev;
+        },
+      });
+
       return () => {
         unsubscribeMsgAdded();
         unsubscribeMsgChanged();
+        unsubscribeMsgTyping();
       };
     }
   }, [messagesConnection, subscribeToMore]);
@@ -245,6 +276,8 @@ const ChatDetails = ({
     }
   };
 
+  console.log(typingUsers);
+
   return (
     <section
       className="flex-5 h-full p-4 bg-white rounded-2xl"
@@ -328,6 +361,22 @@ const ChatDetails = ({
           }
         }}
       >
+        {typingUsers && typingUsers?.length > 0 && (
+          <div className="flex justify-baseline items-center px-2 py-2 gap-2">
+            <div
+              className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
+              style={{ backgroundImage: `url(${typingUsers[0].avatar})` }}
+            ></div>
+            <span
+              className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2
+               bg-gray-200
+              `}
+            >
+              ...
+            </span>
+          </div>
+        )}
+
         {watch("replyForMsg") != undefined && (
           <Collapsible open={isOpen} onOpenChange={setOpen}>
             <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2">
@@ -420,9 +469,11 @@ const ChatDetails = ({
             placeholder="Aa"
             onFocus={() => {
               console.log("user is typing");
+              typeMessage({ variables: { chatId, isTyping: true } });
             }}
             onBlur={() => {
               console.log("user is stop typing");
+              typeMessage({ variables: { chatId, isTyping: false } });
             }}
           ></input>
 

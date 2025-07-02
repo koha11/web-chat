@@ -30,6 +30,11 @@ export const messageTypeDefs = gql`
     deletedAt: Date
   }
 
+  type TypingMessage {
+    isTyping: Boolean!
+    typingUser: User!
+  }
+
   extend type Query {
     messages(
       chatId: ID!
@@ -53,10 +58,13 @@ export const messageTypeDefs = gql`
     unsendMessage(chatId: ID!, msgId: ID!): Message!
 
     removeMessage(chatId: ID!, msgId: ID!): Message!
+
+    typeMessage(chatId: ID!, isTyping: Boolean!): Message
   }
 
   extend type Subscription {
     messageAdded(chatId: ID!): MessageEdge!
     messageChanged(chatId: ID!): MessageEdge!
+    messageTyping(chatId: ID!): TypingMessage
   }
 `;

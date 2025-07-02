@@ -13,6 +13,7 @@ import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
 import { resolve } from "path";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import { IMessage } from "../../interfaces/message.interface";
+import User from "../../models/User.model";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -188,6 +189,18 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
+    typeMessage: async (
+      _p,
+      { chatId, isTyping },
+      { pubsub, user }: IMyContext
+    ) => {
+      const myUser = await User.findById(user.id);
+
+      pubsub.publish(SocketEvent.messageTyping, {
+        messageTyping: { typingUser: myUser, isTyping },
+        chatId,
+      } as PubsubEvents[SocketEvent.messageTyping]);
+    },
   },
 
   Subscription: {
@@ -247,6 +260,33 @@ export const messageResolvers: IResolvers = {
           const isNotSender = !payload.messageChanged.node.user.equals(user.id);
 
           return isNotSender && isUserInThisChat;
+        }
+      ),
+    },
+    messageTyping: {
+      subscribe: withFilter(
+        (_p, { chatId }, { pubsub }) => {
+          return pubsub.asyncIterableIterator(SocketEvent.messageTyping);
+        },
+        async (
+          { chatId, messageTyping }: PubsubEvents[SocketEvent.messageTyping],
+          { chatId: subChatId },
+          { user }: IMyContext
+        ) => {
+          const chat = await Chat.findById(chatId);
+
+          const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
+            toObjectId(user.id.toString())
+          );
+
+          console.log(user.username);
+
+          const isNotSender =
+            messageTyping.typingUser.id != toObjectId(user.id);
+
+          const isCorrectChat = chatId == subChatId;
+
+          return isNotSender && isUserInThisChat && isCorrectChat;
         }
       ),
     },

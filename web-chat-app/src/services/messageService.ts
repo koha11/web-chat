@@ -129,6 +129,14 @@ export const REMOVE_MESSAGE = gql`
   }
 `;
 
+export const TYPE_MESSAGE = gql`
+  mutation TypeMessage($chatId: ID!, $isTyping: Boolean!) {
+    typeMessage(chatId: $chatId, isTyping: $isTyping) {
+      id
+    }
+  }
+`;
+
 export const MESSAGE_ADDED_SUB = gql`
   subscription MessageAdded($chatId: ID!) {
     messageAdded(chatId: $chatId) {
@@ -181,6 +189,18 @@ export const MESSAGE_CHANGED_SUB = gql`
         editedAt
         isForwarded
       }
+    }
+  }
+`;
+
+export const MESSAGE_TYPING_SUB = gql`
+  subscription MessageTyping($chatId: ID!) {
+    messageTyping(chatId: $chatId) {
+      typingUser {
+        fullname
+        avatar
+      }
+      isTyping
     }
   }
 `;
