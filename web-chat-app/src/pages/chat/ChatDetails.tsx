@@ -34,6 +34,7 @@ import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
 import { client } from "../../apollo";
+import { TypingIndicator } from "../../components/ui/typing-indicator";
 
 const ChatDetails = ({
   chat,
@@ -362,18 +363,12 @@ const ChatDetails = ({
         }}
       >
         {typingUsers && typingUsers?.length > 0 && (
-          <div className="flex justify-baseline items-center px-2 py-2 gap-2">
+          <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div
               className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
               style={{ backgroundImage: `url(${typingUsers[0].avatar})` }}
             ></div>
-            <span
-              className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2
-               bg-gray-200
-              `}
-            >
-              ...
-            </span>
+            <TypingIndicator dotColor="bg-gray-400"></TypingIndicator>
           </div>
         )}
 

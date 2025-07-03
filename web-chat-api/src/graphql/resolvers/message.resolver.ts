@@ -279,8 +279,6 @@ export const messageResolvers: IResolvers = {
             toObjectId(user.id.toString())
           );
 
-          console.log(user.username);
-
           const isNotSender =
             messageTyping.typingUser.id != toObjectId(user.id);
 
