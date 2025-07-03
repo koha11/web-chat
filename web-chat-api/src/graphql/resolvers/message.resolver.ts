@@ -1,19 +1,21 @@
-import { subscribe } from "diagnostics_channel";
-import Message from "../../models/Message.model";
-import { toObjectId } from "../../utils/mongoose";
-import { IResolvers } from "@graphql-tools/utils";
-import { PubSub, withFilter } from "graphql-subscriptions";
-import messageService from "../../services/MessageService";
-import chatService from "../../services/ChatService";
-import Chat from "../../models/Chat.model";
-import IMyContext from "../../interfaces/socket/myContext.interface";
+import Chat from "@/models/Chat.model.ts";
+import { withFilter } from "graphql-subscriptions";
+import {} from "graphql-type-json";
 import { Types } from "mongoose";
-import SocketEvent from "../../enums/SocketEvent.enum";
-import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
-import { resolve } from "path";
-import MessageStatus from "../../enums/MessageStatus.enum";
-import { IMessage } from "../../interfaces/message.interface";
-import User from "../../models/User.model";
+import MessageStatus from "../../enums/MessageStatus.enum.ts";
+import SocketEvent from "../../enums/SocketEvent.enum.ts";
+import { gemini_promp_process } from "../../gemini/index.ts";
+import { IMessage } from "../../interfaces/message.interface.ts";
+import IMyContext from "../../interfaces/socket/myContext.interface.ts";
+import { PubsubEvents } from "../../interfaces/socket/pubsubEvents.ts";
+import Message from "../../models/Message.model.ts";
+import User from "../../models/User.model.ts";
+import chatService from "../../services/ChatService.ts";
+import messageService from "../../services/MessageService.ts";
+import { toObjectId } from "../../utils/mongoose.ts";
+import { IResolvers } from "@graphql-tools/utils";
+import { Edge } from "@/interfaces/modelConnection.interface.ts";
+import { IChat } from "@/interfaces/chat.interface.ts";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -56,7 +58,7 @@ export const messageResolvers: IResolvers = {
     lastMessages: async (_p: any, {}, { user }: IMyContext) => {
       const chatIds = (
         await chatService.getChatList({ userId: user.id.toString() })
-      ).edges.map((edge) => edge.node.id.toString());
+      ).edges.map((edge: Edge<IChat>) => edge.node.id.toString());
 
       const result = await messageService.getLastMessage(
         chatIds,
@@ -88,6 +90,34 @@ export const messageResolvers: IResolvers = {
         { updatedAt: new Date() },
         { new: true }
       ).populate("users");
+
+      if (message.chat.toString() == "68663b38b432e39dd6f68902") {
+        setTimeout(async () => {
+          const chatBotMessageBody = await gemini_promp_process(
+            message.msgBody
+          );
+
+          const chatBotMessage = await Message.create({
+            chat: chatId,
+            user: "68663ad4b432e39dd6f68900",
+            msgBody: chatBotMessageBody,
+          });
+
+          pubsub.publish(SocketEvent.messageAdded, {
+            messageAdded: {
+              node: chatBotMessage,
+              cursor: chatBotMessage.id,
+            },
+            chatId,
+          } as PubsubEvents[SocketEvent.messageAdded]);
+
+          pubsub.publish(SocketEvent.chatChanged, {
+            chatChanged,
+          } as PubsubEvents[SocketEvent.chatChanged]);
+        }, 1000);
+
+        return message;
+      }
 
       pubsub.publish(SocketEvent.messageAdded, {
         messageAdded: {
@@ -200,6 +230,11 @@ export const messageResolvers: IResolvers = {
         messageTyping: { typingUser: myUser, isTyping },
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
+    },
+    askAI: async (_p, { promp }, { pubsub, user }: IMyContext) => {
+      const res = await gemini_promp_process(promp);
+
+      return res;
     },
   },
 

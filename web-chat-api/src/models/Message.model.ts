@@ -1,10 +1,6 @@
-import mongoose, { Document, Schema, Types } from "mongoose";
-import mongooseDelete, {
-  SoftDeleteDocument,
-  SoftDeleteModel,
-} from "mongoose-delete";
-import MessageStatus from "../enums/MessageStatus.enum";
-import { IMessage } from "../interfaces/message.interface";
+import MessageStatus from "@/enums/MessageStatus.enum.ts";
+import { IMessage } from "@/interfaces/message.interface.ts";
+import mongoose, { Schema } from "mongoose";
 
 // Define schema
 const MessageSchema = new Schema<IMessage>(

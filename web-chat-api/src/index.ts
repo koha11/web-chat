@@ -1,25 +1,22 @@
 import Express from "express";
 import http from "http";
-import { PORT } from "./config/env";
-import { connectSocketIo } from "./socket";
-import { connectDB } from "./db";
-import { route } from "./routes";
+
 import cors from "cors";
 import methodOverride from "method-override";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface";
 import { ApolloServer } from "apollo-server-express";
-import { graphqlSchema, resolvers, typeDefs } from "./graphql";
 import { PubSub } from "graphql-subscriptions";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
-import SocketEvent from "./enums/SocketEvent.enum";
-import { IMessage } from "./interfaces/message.interface";
-import authService from "./services/AuthService";
-import { Edge } from "./interfaces/modelConnection.interface";
-import { PubsubEvents } from "./interfaces/socket/pubsubEvents";
-import userService from "./services/UserService";
+import { typeDefs, resolvers, graphqlSchema } from "./graphql/index.js";
+import { PORT } from "./config/env.js";
+import { connectDB } from "./db/index.js";
+import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface.js";
+import { PubsubEvents } from "./interfaces/socket/pubsubEvents.js";
+import { route } from "./routes/index.js";
+import authService from "./services/AuthService.js";
+import userService from "./services/UserService.js";
 
 declare global {
   namespace Express {
@@ -57,11 +54,11 @@ Promise.all([connectDB(), apollo.start()])
     app.use(cors());
 
     // xu li file tinh
-    app.use(
-      Express.static(
-        path.join(__dirname.slice(0, __dirname.length - 4), "public")
-      )
-    );
+    // app.use(
+    //   Express.static(
+    //     path.join(__dirname.slice(0, __dirname.length - 4), "public")
+    //   )
+    // );
 
     app.use(Express.static("node_modules"));
 

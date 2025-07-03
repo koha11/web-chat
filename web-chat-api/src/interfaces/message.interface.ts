@@ -1,7 +1,8 @@
+import MessageStatus from "@/enums/MessageStatus.enum.ts";
 import { Types } from "mongoose";
-import MessageStatus from "../enums/MessageStatus.enum";
-import { IUser } from "./user.interface";
-import { IChat } from "./chat.interface";
+import { IChat } from "./chat.interface.ts";
+import { IUser } from "./user.interface.ts";
+
 
 // Interface for Message document
 export interface IMessage {

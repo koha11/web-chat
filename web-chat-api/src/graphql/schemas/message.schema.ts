@@ -60,6 +60,8 @@ export const messageTypeDefs = gql`
     removeMessage(chatId: ID!, msgId: ID!): Message!
 
     typeMessage(chatId: ID!, isTyping: Boolean!): Message
+
+    askAI(promp: String!): JSONObject!
   }
 
   extend type Subscription {

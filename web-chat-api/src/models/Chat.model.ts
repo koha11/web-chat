@@ -1,10 +1,9 @@
+import { IChat } from "@/interfaces/chat.interface.js";
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import mongooseDelete, {
   SoftDeleteDocument,
   SoftDeleteModel,
 } from "mongoose-delete";
-
-import { IChat } from "../interfaces/chat.interface";
 
 // Schema definition
 const ChatSchema = new Schema<IChat>(

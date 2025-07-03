@@ -6,3 +6,4 @@ const ENV = process.env;
 export const MONGO_URI = `mongodb://${ENV.DB_HOST}:${ENV.DB_PORT}/${ENV.DB_NAME}`;
 export const PORT = process.env.PORT || "3000";
 export const JWT_SECRET = process.env.JWT_SECRET || "Toi-muon-co-bo";
+export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;

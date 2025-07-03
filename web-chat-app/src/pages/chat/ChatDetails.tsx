@@ -277,7 +277,9 @@ const ChatDetails = ({
     }
   };
 
-  console.log(typingUsers);
+  console.log(chat);
+  console.log(sender);
+  console.log(messages);
 
   return (
     <section
