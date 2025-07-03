@@ -150,15 +150,15 @@ const SingleMsg = ({
               "order-2"
             )
           : MyTooltip(
-              <span
-                className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 ${
+              <div
+                className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify whitespace-pre-wrap ${
                   isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
                 }`}
               >
                 {msg.msgBody}
-              </span>,
+              </div>,
               getDisplaySendMsgTime(new Date(msg.createdAt!)),
-              "order-2"
+              "order-2 text-center max-w-[80%]"
             )}
       </div>
 

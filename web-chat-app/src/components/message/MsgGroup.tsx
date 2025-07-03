@@ -32,7 +32,7 @@ const GroupMsg = ({
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
-      <div className="flex flex-col-reverse">
+      <div className="flex flex-col-reverse gap-4">
         {messages.map((msg, index) => {
           const receiver = receivers[msg.user.toString()];
 
