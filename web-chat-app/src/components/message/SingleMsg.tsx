@@ -12,6 +12,7 @@ import MessageStatus from "../../enums/MessageStatus.enum";
 import { IUser } from "../../interfaces/user.interface";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { usePostMessage } from "../../hooks/message.hook";
+import Markdown from "react-markdown";
 
 const SingleMsg = ({
   isLongGap,
@@ -155,7 +156,7 @@ const SingleMsg = ({
                   isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
                 }`}
               >
-                {msg.msgBody}
+                <Markdown>{msg.msgBody}</Markdown>
               </div>,
               getDisplaySendMsgTime(new Date(msg.createdAt!)),
               "order-2 text-center max-w-[80%]"

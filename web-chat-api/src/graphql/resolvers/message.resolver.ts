@@ -92,6 +92,16 @@ export const messageResolvers: IResolvers = {
       ).populate("users");
 
       if (message.chat.toString() == "68663b38b432e39dd6f68902") {
+        const gemini = await User.findById("68663ad4b432e39dd6f68900");
+
+        pubsub.publish(SocketEvent.messageTyping, {
+          chatId: message.chat.toString(),
+          messageTyping: {
+            isTyping: true,
+            typingUser: gemini,
+          },
+        } as PubsubEvents[SocketEvent.messageTyping]);
+
         setTimeout(async () => {
           const chatBotMessageBody = await gemini_promp_process(
             message.msgBody
@@ -114,7 +124,15 @@ export const messageResolvers: IResolvers = {
           pubsub.publish(SocketEvent.chatChanged, {
             chatChanged,
           } as PubsubEvents[SocketEvent.chatChanged]);
-        }, 1000);
+
+          pubsub.publish(SocketEvent.messageTyping, {
+            chatId,
+            messageTyping: {
+              isTyping: false,
+              typingUser: gemini,
+            },
+          } as PubsubEvents[SocketEvent.messageTyping]);
+        }, 500);
 
         return message;
       }

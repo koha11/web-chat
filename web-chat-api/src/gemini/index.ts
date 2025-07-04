@@ -6,17 +6,13 @@ import {
   mcpToTool,
   Type,
   GenerateContentConfig,
+  Content,
 } from "@google/genai";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 export const gemini_promp_process = async (promp: string) => {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-  // Define the grounding tool
-  const groundingTool = {
-    googleSearch: {},
-  };
 
   // Define the function declaration for the model
   const weatherFunctionDeclaration = {
@@ -32,6 +28,15 @@ export const gemini_promp_process = async (promp: string) => {
       },
       required: ["location"],
     },
+  };
+
+  // Define the grounding tool
+  const groundingTool = {
+    googleSearch: {},
+  };
+
+  const functionDeclarationTool = {
+    functionDeclarations: [weatherFunctionDeclaration],
   };
 
   const contents = [
@@ -50,7 +55,7 @@ export const gemini_promp_process = async (promp: string) => {
   // };
 
   const config = {
-    tools: [groundingTool],
+    tools: [functionDeclarationTool],
     systemInstruction: "You are a cute Chat bot. Your name is Meo Meo.",
   } as GenerateContentConfig;
 
@@ -66,63 +71,64 @@ export const gemini_promp_process = async (promp: string) => {
     user: "684d9cf16cda6f875d523d82",
   });
 
-  console.log(msgs);
+  const histories = msgs.map((msg) => {
+    return {
+      role: "user",
+      parts: [{ text: msg.msgBody }],
+    };
+  }) as Content[];
 
-  const response = ai.chats.create({
+  const chat = ai.chats.create({
     model: "gemini-2.5-flash",
     config: config,
-    history: msgs.map((msg) => {
-      return {
-        role: "user",
-        parts: [{ text: msg.msgBody }],
-      };
-    }),
+    history: histories,
   });
 
-  const res = await response.sendMessage({ message: promp });
-
-  return res.text;
+  const response = await chat.sendMessage({ message: promp });
 
   // Check for function calls in the response
 
-  // if (response.functionCalls && response.functionCalls.length > 0) {
-  //   const functionCall = response.functionCalls[0]; // Assuming one function call
-  //   console.log(`Function to call: ${functionCall.name}`);
-  //   console.log(`Arguments: ${JSON.stringify(functionCall.args)}`);
-  //   // In a real app, you would call your actual function here:
-  //   let result;
+  if (response.functionCalls && response.functionCalls.length > 0) {
+    const functionCall = response.functionCalls[0]; // Assuming one function call
+    console.log(`Function to call: ${functionCall.name}`);
+    console.log(`Arguments: ${JSON.stringify(functionCall.args)}`);
+    // In a real app, you would call your actual function here:
+    let result;
 
-  //   if (functionCall.name === "get_current_temperature") {
-  //     result = "36 deg";
-  //     console.log(`Function execution result: ${JSON.stringify(result)}`);
-  //   }
-  //   // Create a function response part
-  //   const function_response_part = {
-  //     name: functionCall.name,
-  //     response: { result },
-  //   };
+    if (functionCall.name === "get_current_temperature") {
+      result = "36 deg";
+      console.log(`Function execution result: ${JSON.stringify(result)}`);
+    }
+    // Create a function response part
+    const function_response_part = {
+      name: functionCall.name,
+      response: { result },
+    };
 
-  //   // Append function call and   result of the function execution to contents
-  //   contents.push(response.candidates![0].content);
-  //   contents.push({
-  //     role: "user",
-  //     parts: [{ functionResponse: function_response_part }],
-  //   });
+    // Append function call and   result of the function execution to contents
+    if (response.candidates && response.candidates[0].content)
+      histories.push(response.candidates[0].content);
 
-  //   // Get the final response from the model
-  //   const final_response = await ai.models.generateContent({
-  //     model: "gemini-2.5-flash",
-  //     contents: contents,
-  //     config: config,
-  //   });
+    histories.push({
+      role: "user",
+      parts: [{ functionResponse: function_response_part }],
+    });
 
-  //   return final_response.text;
-  // } else {
-  //   console.log("No function call found in the response.");
-  //   console.log(response.text);
-  // }
+    const chat = ai.chats.create({
+      model: "gemini-2.5-flash",
+      config: config,
+      history: histories,
+    });
 
-  // return response.text;
+    const final_response = await chat.sendMessage({ message: promp });
+
+    return final_response.text;
+  } else {
+    console.log("No function call found in the response.");
+    console.log(response.text);
+  }
+
+  return response.text;
 };
 
 // Using MCP (TESTING)
