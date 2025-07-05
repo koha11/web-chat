@@ -7,76 +7,52 @@ import {
   Type,
   GenerateContentConfig,
   Content,
+  FunctionResponse,
 } from "@google/genai";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import {
+  getCurrentWeather,
+  weatherFunctionDeclaration,
+} from "./tools/weather.tools.ts";
 
 export const gemini_promp_process = async (promp: string) => {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-  // Define the function declaration for the model
-  const weatherFunctionDeclaration = {
-    name: "get_current_temperature",
-    description: "Gets the current temperature for a given location.",
-    parameters: {
-      type: Type.OBJECT,
-      properties: {
-        location: {
-          type: Type.STRING,
-          description: "The city name, e.g. San Francisco",
-        },
-      },
-      required: ["location"],
-    },
-  };
-
-  // Define the grounding tool
-  const groundingTool = {
-    googleSearch: {},
-  };
 
   const functionDeclarationTool = {
     functionDeclarations: [weatherFunctionDeclaration],
   };
 
-  const contents = [
-    {
-      role: "user",
-      parts: [{ text: promp }],
-    },
-  ] as any;
-
-  // const config = {
-  //   tools: [
-  //     {
-  //       functionDeclarations: [weatherFunctionDeclaration],
-  //     },
-  //   ],
-  // };
-
-  const config = {
+  // Cấu hình cho mô hình
+  const config: GenerateContentConfig = {
     tools: [functionDeclarationTool],
+    // Buộc mô hình gọi 'any' hàm, thay vì trò chuyện.
+    // toolConfig: {
+    //   functionCallingConfig: {
+    //     mode: FunctionCallingConfigMode.ANY,
+    //   },
+    // },
     systemInstruction: "You are a cute Chat bot. Your name is Meo Meo.",
-  } as GenerateContentConfig;
+    // thinkingConfig: { thinkingBudget: 0 },
+  };
 
-  // Send request with function declarations
-  // const response = await ai.models.generateContent({
-  //   model: "gemini-2.5-flash",
-  //   contents: contents,
-  //   config: config,
-  // });
-
+  // Lấy lịch sử tin nhắn từ cơ sở dữ liệu
   const msgs = await Message.find({
-    chat: "68663b38b432e39dd6f68902",
-    user: "684d9cf16cda6f875d523d82",
+    chat: "68663b38b432e39dd6f68902", // Thay bằng ID chat thực tế
+    user: "684d9cf16cda6f875d523d82", // Thay bằng ID user thực tế
   });
 
-  const histories = msgs.map((msg) => {
-    return {
-      role: "user",
-      parts: [{ text: msg.msgBody }],
-    };
-  }) as Content[];
+  // Chuyển đổi lịch sử tin nhắn thành định dạng Content
+  // Lưu ý: `sendMessage` sẽ tự động thêm prompt hiện tại vào lịch sử của chat object.
+  // Do đó, `histories` này chỉ cần chứa các tin nhắn trước đó.
+
+  // const parts = msgs.map((msg) => {
+  //   return { text: msg.msgBody };
+  // });
+
+  const histories: Content[] = msgs.map((msg) => {
+    return { role: "user", parts: [{ text: msg.msgBody }] };
+  });
 
   const chat = ai.chats.create({
     model: "gemini-2.5-flash",
@@ -86,46 +62,46 @@ export const gemini_promp_process = async (promp: string) => {
 
   const response = await chat.sendMessage({ message: promp });
 
-  // Check for function calls in the response
-
-  if (response.functionCalls && response.functionCalls.length > 0) {
-    const functionCall = response.functionCalls[0]; // Assuming one function call
-    console.log(`Function to call: ${functionCall.name}`);
-    console.log(`Arguments: ${JSON.stringify(functionCall.args)}`);
-    // In a real app, you would call your actual function here:
-    let result;
-
-    if (functionCall.name === "get_current_temperature") {
-      result = "36 deg";
-      console.log(`Function execution result: ${JSON.stringify(result)}`);
-    }
-    // Create a function response part
-    const function_response_part = {
-      name: functionCall.name,
-      response: { result },
-    };
-
-    // Append function call and   result of the function execution to contents
-    if (response.candidates && response.candidates[0].content)
+  if (response.functionCalls) {
+    if (response.candidates && response.candidates[0].content) {
       histories.push(response.candidates[0].content);
+      console.log(response.candidates[0].content.parts);
+    }
 
-    histories.push({
-      role: "user",
-      parts: [{ functionResponse: function_response_part }],
-    });
+    for (let fn of response.functionCalls) {
+      let fnResult: any;
 
-    const chat = ai.chats.create({
+      if (fn.name == "get_current_weather") {
+        const location = fn.args!.location as string;
+
+        fnResult = await getCurrentWeather(location);
+      }
+
+      histories.push({
+        role: "model",
+        parts: [
+          {
+            functionResponse: {
+              name: fn.name,
+              response: { output: fnResult },
+            },
+          },
+        ],
+      });
+    }
+
+    const finalChat = ai.chats.create({
       model: "gemini-2.5-flash",
       config: config,
       history: histories,
     });
 
-    const final_response = await chat.sendMessage({ message: promp });
+    const finalResponse = await finalChat.sendMessage({
+      message: promp,
+      config: { thinkingConfig: { thinkingBudget: 0 } },
+    });
 
-    return final_response.text;
-  } else {
-    console.log("No function call found in the response.");
-    console.log(response.text);
+    return finalResponse.text;
   }
 
   return response.text;
