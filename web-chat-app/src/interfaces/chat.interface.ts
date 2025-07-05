@@ -5,7 +5,7 @@ export interface IChat {
   id: string;
   users: IUser[] | string;
   messages: IMessage[] | string;
-  nicknames: { [id: string]: string }[];
+  nicknames: { [id: string]: string };
   chatName: string;
   chatAvatar: string;
   lastMsgSeen?: { [userId: string]: [msgId: string] }; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon

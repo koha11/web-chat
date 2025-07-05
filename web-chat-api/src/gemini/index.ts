@@ -27,11 +27,11 @@ export const gemini_promp_process = async (promp: string) => {
   const config: GenerateContentConfig = {
     tools: [functionDeclarationTool],
     // Buộc mô hình gọi 'any' hàm, thay vì trò chuyện.
-    // toolConfig: {
-    //   functionCallingConfig: {
-    //     mode: FunctionCallingConfigMode.ANY,
-    //   },
-    // },
+    toolConfig: {
+      functionCallingConfig: {
+        mode: FunctionCallingConfigMode.AUTO,
+      },
+    },
     systemInstruction: "You are a cute Chat bot. Your name is Meo Meo.",
     // thinkingConfig: { thinkingBudget: 0 },
   };
@@ -39,7 +39,6 @@ export const gemini_promp_process = async (promp: string) => {
   // Lấy lịch sử tin nhắn từ cơ sở dữ liệu
   const msgs = await Message.find({
     chat: "68663b38b432e39dd6f68902", // Thay bằng ID chat thực tế
-    user: "684d9cf16cda6f875d523d82", // Thay bằng ID user thực tế
   });
 
   // Chuyển đổi lịch sử tin nhắn thành định dạng Content
@@ -51,7 +50,10 @@ export const gemini_promp_process = async (promp: string) => {
   // });
 
   const histories: Content[] = msgs.map((msg) => {
-    return { role: "user", parts: [{ text: msg.msgBody }] };
+    if (msg.user.toString() == "684d9cf16cda6f875d523d82")
+      return { role: "user", parts: [{ text: msg.msgBody }] };
+
+    return { role: "model", parts: [{ text: msg.msgBody }] };
   });
 
   const chat = ai.chats.create({

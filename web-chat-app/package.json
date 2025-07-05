@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@100mslive/react-sdk": "^0.10.35",
     "@apollo/client": "^3.13.8",
     "@google/genai": "^1.8.0",
     "@hookform/resolvers": "^5.1.1",

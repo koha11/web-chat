@@ -68,7 +68,7 @@ const ChatInfo = ({
       </div>
 
       <CollapsibleChatInfo></CollapsibleChatInfo>
-      <CollapsibleChatConfig></CollapsibleChatConfig>
+      <CollapsibleChatConfig chat={chat}></CollapsibleChatConfig>
       <CollapsibleChatMembers></CollapsibleChatMembers>
       <CollapsibleChatMedia></CollapsibleChatMedia>
       <CollapsibleChatPrivacy></CollapsibleChatPrivacy>

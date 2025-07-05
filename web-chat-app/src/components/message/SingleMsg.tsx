@@ -152,7 +152,7 @@ const SingleMsg = ({
             )
           : MyTooltip(
               <div
-                className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify whitespace-pre-wrap ${
+                className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify   ${
                   isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
                 }`}
               >

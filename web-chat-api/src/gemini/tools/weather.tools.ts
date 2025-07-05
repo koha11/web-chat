@@ -5,7 +5,7 @@ import { Type } from "@google/genai";
 export const weatherFunctionDeclaration = {
   name: "get_current_weather",
   description: "Gets the current weather for a given location.",
-  parameters: {
+  parameters: { 
     type: Type.OBJECT,
     properties: {
       location: {

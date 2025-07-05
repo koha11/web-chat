@@ -92,8 +92,8 @@ const ChatRow = ({
               ) : (
                 <div className="">
                   {lastMsg.user == userId && "You:"}{" "}
-                  {lastMsg.msgBody.length > 15
-                    ? strimMessageBody(lastMsg.msgBody, 15)
+                  {lastMsg.msgBody.length > 12
+                    ? strimMessageBody(lastMsg.msgBody, 12)
                     : lastMsg.msgBody}
                 </div>
               ))}

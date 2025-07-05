@@ -12,7 +12,7 @@ const MyCollapsible = ({
   data,
 }: {
   title: string;
-  data: { content: ReactNode; onClick: Function }[];
+  data: { content: ReactNode; onClick: Function; dialog?: ReactNode }[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   return (
@@ -24,12 +24,15 @@ const MyCollapsible = ({
       <CollapsibleContent>
         {data.map((row) => {
           return (
-            <Button
-              className="hover:bg-gray-200 flex items-center justify-baseline gap-4 w-full rounded-md cursor-pointer px-2 py-1 font-bold bg-white text-black outline-0 shadow-none"
-              onClick={() => row.onClick()}
-            >
-              {row.content}
-            </Button>
+            <>
+              <Button
+                className="hover:bg-gray-200 flex items-center justify-baseline gap-4 w-full rounded-md cursor-pointer px-2 py-1 font-bold bg-white text-black outline-0 shadow-none"
+                onClick={() => row.onClick()}
+              >
+                {row.content}
+              </Button>
+              {row.dialog ?? ""}
+            </>
           );
         })}
       </CollapsibleContent>
