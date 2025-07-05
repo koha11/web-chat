@@ -38,6 +38,34 @@ export const POST_CHAT = gql`
   }
 `;
 
+export const CHANGE_NICKNAME = gql`
+  mutation ChangeNickname(
+    $chatId: ID!
+    $changedUserId: ID!
+    $nickname: String!
+  ) {
+    changeNickname(
+      chatId: $chatId
+      changedUserId: $changedUserId
+      nickname: $nickname
+    ) {
+      id
+      chatName
+      chatAvatar
+      nicknames
+      updatedAt
+      lastMsgSeen
+      users {
+        id
+        fullname
+        avatar
+        isOnline
+        lastLogined
+      }
+    }
+  }
+`;
+
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {
     chatChanged(userId: $userId) {

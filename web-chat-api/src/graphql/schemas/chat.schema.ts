@@ -31,6 +31,7 @@ export const chatTypeDefs = gql`
 
   extend type Mutation {
     postChat(users: [ID!]!): Chat!
+    changeNickname(chatId: ID!, changedUserId: ID!, nickname: String!): Chat!
   }
 
   extend type Subscription {

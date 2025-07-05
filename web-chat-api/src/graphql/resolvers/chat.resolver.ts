@@ -1,15 +1,12 @@
+import SocketEvent from "@/enums/SocketEvent.enum.ts";
+import IMyContext from "@/interfaces/socket/myContext.interface.ts";
+import { PubsubEvents } from "@/interfaces/socket/pubsubEvents.ts";
+import chatService from "@/services/ChatService.ts";
+import { toObjectId } from "@/utils/mongoose.ts";
 import { PubSub, withFilter } from "graphql-subscriptions";
-import Chat from "../../models/Chat.model";
-import { toObjectId } from "../../utils/mongoose";
 import { IResolvers } from "@graphql-tools/utils";
-import Message from "../../models/Message.model";
-import messageService from "../../services/MessageService";
-import IMyContext from "../../interfaces/socket/myContext.interface";
-import chatService from "../../services/ChatService";
-import { subscribe } from "diagnostics_channel";
-import { Types } from "mongoose";
-import SocketEvent from "../../enums/SocketEvent.enum";
-import { PubsubEvents } from "../../interfaces/socket/pubsubEvents";
+import Chat from "@/models/Chat.model.ts";
+
 export const chatResolvers: IResolvers = {
   Query: {
     chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
@@ -27,6 +24,23 @@ export const chatResolvers: IResolvers = {
       const result = await chatService.createChat(users);
 
       return result;
+    },
+    changeNickname: async (
+      _p: any,
+      { chatId, changedUserId, nickname },
+      { user, pubsub }: IMyContext
+    ) => {
+      const chat = await Chat.findById(chatId).populate("users");
+
+      chat?.nicknames.set(changedUserId, nickname);
+
+      chat?.save();
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      return chat;
     },
   },
   Subscription: {

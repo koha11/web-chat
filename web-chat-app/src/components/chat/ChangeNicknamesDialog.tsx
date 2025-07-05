@@ -1,10 +1,14 @@
-import { Check, Edit, Search } from "lucide-react";
+import { Check, Edit, Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import Cookies from "js-cookie";
 
-import { useGetChats, usePostChat } from "../../hooks/chat.hook";
+import {
+  useChangeNickname,
+  useGetChats,
+  usePostChat,
+} from "../../hooks/chat.hook";
 import Loading from "../ui/loading";
 import { useGetContacts } from "../../hooks/contact.hook";
 import { useEffect, useState } from "react";
@@ -21,9 +25,23 @@ const ChangeNicknamesDialog = ({
   chat: IChat;
 }) => {
   const [isEditNickname, setEditNickname] = useState("");
+  const [changedNickname, setChangedNickname] = useState("");
+
+  const [changeNickname] = useChangeNickname();
+
+  const reset = () => {
+    setChangedNickname("");
+    setEditNickname("");
+  };
 
   return (
-    <Dialog open={true} onOpenChange={setOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setOpen(open);
+        reset();
+      }}
+    >
       <DialogContent>
         <DialogHeader className="border-b-2">
           <DialogTitle className="text-center text-2xl mb-2">
@@ -40,7 +58,10 @@ const ChangeNicknamesDialog = ({
               <div
                 key={user.id}
                 className="flex justify-between items-center cursor-pointer rounded-md"
-                onClick={() => setEditNickname(user.id)}
+                onClick={() => {
+                  setEditNickname(user.id);
+                  setChangedNickname(nickname);
+                }}
               >
                 <div className="flex items-center gap-4 w-full">
                   <div
@@ -52,9 +73,9 @@ const ChangeNicknamesDialog = ({
                       <Input
                         className="w-full"
                         placeholder={!hasNickname ? user.fullname : ""}
-                        value={hasNickname ? nickname : ""}
-                        onBlur={() => setEditNickname("")}
+                        value={changedNickname}
                         autoFocus={true}
+                        onChange={(e) => setChangedNickname(e.target.value)}
                       ></Input>
                     </div>
                   ) : (
@@ -66,7 +87,33 @@ const ChangeNicknamesDialog = ({
                     </div>
                   )}
                 </div>
-                <Button className="rounded-full bg-white text-black hover:bg-gray-300 cursor-pointer">
+                {isEdit && (
+                  <Button
+                    className="rounded-full bg-white text-black hover:bg-gray-300 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      reset();
+                    }}
+                  >
+                    <X></X>
+                  </Button>
+                )}
+                <Button
+                  className="rounded-full bg-white text-black hover:bg-gray-300 cursor-pointer"
+                  onClick={(e) => {
+                    if (isEdit && changedNickname != "") {
+                      e.stopPropagation();
+                      changeNickname({
+                        variables: {
+                          chatId: chat.id,
+                          changedUserId: user.id,
+                          nickname: changedNickname,
+                        },
+                      });
+                      reset();
+                    }
+                  }}
+                >
                   {isEdit ? <Check></Check> : <Edit></Edit>}
                 </Button>
               </div>

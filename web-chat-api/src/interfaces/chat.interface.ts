@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
-import { IMessage } from "./message.interface";
-import { IUser } from "./user.interface";
+import { IUser } from "./user.interface.ts";
+
 
 // Interface for Chat document
 export interface IChat {
   id: Types.ObjectId;
   users: IUser[] | Types.ObjectId[];
-  nicknames: { [id: string]: string };
+  nicknames: Map<String, String>;
   chatName: string;
   chatAvatar: string;
   lastMsgSeen: Map<string, string>; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon

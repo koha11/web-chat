@@ -355,7 +355,6 @@ const ChatDetails = ({
             el.scrollHeight + el.scrollTop <= el.clientHeight + 1;
 
           if (isBottom && !isFetchMore) {
-            console.log("Scrolled to bottom!");
             handleLoadMoreMessages();
           }
         }}
@@ -461,11 +460,9 @@ const ChatDetails = ({
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
             placeholder="Aa"
             onFocus={() => {
-              console.log("user is typing");
               typeMessage({ variables: { chatId, isTyping: true } });
             }}
             onBlur={() => {
-              console.log("user is stop typing");
               typeMessage({ variables: { chatId, isTyping: false } });
             }}
           ></input>
