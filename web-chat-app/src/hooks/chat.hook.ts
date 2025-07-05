@@ -33,16 +33,15 @@ export const useGetChats = ({
         const defaultChatAvatar =
           users.find((user) => user.id != userId)?.avatar ?? "";
 
-        const defaultChatName = users.find(
-          (user) => user.id != userId
-        )?.fullname;
+        const defaultChatName =
+          chat.nicknames[users.find((user) => user.id != userId)!.id];
 
         const defaultGroupChatName = users.reduce<String>((acc, user) => {
           if (user.id == userId) return acc;
 
           return acc == ""
-            ? acc + user.fullname.split(" ")[0]
-            : acc + ", " + user.fullname.split(" ")[0];
+            ? acc + chat.nicknames[user.id].split(" ")[0]
+            : acc + ", " + chat.nicknames[user.id].split(" ")[0];
         }, "");
 
         return {
