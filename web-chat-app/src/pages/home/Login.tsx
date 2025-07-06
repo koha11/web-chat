@@ -1,9 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { postData } from "../../services/api";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
-import { useMutation } from "@tanstack/react-query";
 import { useLogin } from "../../hooks/auth.hook";
 
 const Login = () => {
@@ -11,12 +9,16 @@ const Login = () => {
 
   const { register, handleSubmit } = useForm<ILoginRequest>();
 
-  const { mutate, isPending } = useLogin();
+  const [login] = useLogin();
 
   const handleLogin = (data: ILoginRequest) => {
-    mutate(data, {
-      onSuccess: (response) => {
-        if (response.status == 200 && response.data != undefined) {
+    login({
+      variables: {
+        ...data,
+      },
+      onCompleted({ login: response }, clientOptions) {
+        console.log(response);
+        if (response.isValid && response.data != undefined) {
           Cookies.set("accessToken", response.data.accessToken);
           Cookies.set("userId", response.data.userId);
           navigate("/m");

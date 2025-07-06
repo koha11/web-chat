@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import httpRequest from "../config/axios/axios.config";
 import { ILoginRequest } from "../interfaces/auth/loginRequest.interface";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface";
@@ -18,3 +19,13 @@ export const register = async (
 
   return data;
 };
+
+export const LOGIN = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      isValid
+      data
+      message
+    }
+  }
+`;

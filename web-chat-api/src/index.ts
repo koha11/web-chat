@@ -41,8 +41,12 @@ const apollo = new ApolloServer({
 
     if (auth?.startsWith("Bearer ")) {
       const token = auth.slice(7);
+      if (token == "undefined") return;
       user = authService.verifyToken(token);
-      if (!user) throw new Error("Missing auth token");
+      if (!user) {
+        return;
+        throw new Error("Missing auth token");
+      }
     }
 
     return { pubsub, user };
@@ -89,7 +93,10 @@ Promise.all([connectDB(), apollo.start()])
 
           let user = null;
 
-          if (!token) throw new Error("no token provided");
+          if (!token) {
+            return;
+            throw new Error("no token provided");
+          }
 
           user = authService.verifyToken(token);
 
@@ -99,6 +106,7 @@ Promise.all([connectDB(), apollo.start()])
         },
         onConnect: async (ctx) => {
           if (!ctx.connectionParams?.authToken) {
+            return;
             throw new Error("Missing auth token");
           }
 

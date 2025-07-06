@@ -1,13 +1,13 @@
-import { JWT_SECRET } from "../config/env";
-import { ILoginRequest } from "../interfaces/auth/loginRequest.interface";
-import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface";
-import { IMyResponse } from "../interfaces/myResponse.interface";
-import jwt from "jsonwebtoken";
-import User, {  } from "../models/User.model";
+import { JWT_SECRET } from "@/config/env.ts";
+import { ILoginRequest } from "@/interfaces/auth/loginRequest.interface.ts";
+import { IRegisterRequest } from "@/interfaces/auth/registerRequest.interface.ts";
+import { ITokenPayload } from "@/interfaces/auth/tokenPayload.interface.ts";
+import { IMyResponse } from "@/interfaces/myResponse.interface.ts";
+import { IUser } from "@/interfaces/user.interface.ts";
+import Account, { IAccount } from "@/models/Account.model.ts";
+import User from "@/models/User.model.ts";
 import bcrypt from "bcryptjs";
-import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface";
-import Account, { IAccount } from "../models/Account.model";
-import { IUser } from "../interfaces/user.interface";
+import jwt from "jsonwebtoken";
 
 class AuthService {
   async login(loginRequest: ILoginRequest): Promise<IMyResponse> {

@@ -1,4 +1,4 @@
-import User from "../../models/User.model";
+import User from "@/models/User.model.ts";
 
 export const userResolvers = {
   Query: {
