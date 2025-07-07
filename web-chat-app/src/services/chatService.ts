@@ -17,6 +17,7 @@ export const GET_CHATS = gql`
             avatar
             isOnline
             lastLogined
+            userType
           }
         }
         cursor
@@ -61,6 +62,7 @@ export const CHANGE_NICKNAME = gql`
         avatar
         isOnline
         lastLogined
+        userType
       }
     }
   }
@@ -81,6 +83,7 @@ export const CHAT_CHANGED_SUB = gql`
         avatar
         isOnline
         lastLogined
+        userType
       }
     }
   }

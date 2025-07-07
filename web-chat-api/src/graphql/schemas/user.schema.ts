@@ -8,6 +8,7 @@ export const userTypeDefs = gql`
     avatar: String
     isOnline: Boolean
     lastLogined: String
+    userType: String
 
     createdAt: String
     updatedAt: String

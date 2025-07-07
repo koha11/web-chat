@@ -1,3 +1,5 @@
+import UserType from "../enums/UserType.enum";
+
 export interface IUser {
   id: string;
   username: string;
@@ -5,6 +7,7 @@ export interface IUser {
   avatar?: string;
   isOnline: boolean;
   lastLogined?: string;
+  userType: UserType;
 
   deleted?: boolean;
   deletedAt?: Date;

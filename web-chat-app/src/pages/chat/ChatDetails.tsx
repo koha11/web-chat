@@ -33,6 +33,7 @@ import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
 import { TypingIndicator } from "../../components/ui/typing-indicator";
+import UserType from "../../enums/UserType.enum";
 
 const ChatDetails = ({
   chat,
@@ -275,6 +276,8 @@ const ChatDetails = ({
     }
   };
 
+  console.log(receivers);
+
   return (
     <section
       className="flex-5 h-full p-4 bg-white rounded-2xl"
@@ -289,7 +292,8 @@ const ChatDetails = ({
                 style={{ backgroundImage: `url(${chat.chatAvatar})` }}
               ></div>
               {Object.values(receivers).some(
-                (receiver) => receiver.isOnline
+                (receiver) =>
+                  receiver.isOnline || receiver.userType == UserType.CHATBOT
               ) && (
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
               )}
@@ -303,7 +307,10 @@ const ChatDetails = ({
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
                 {receivers &&
-                Object.values(receivers).some((receiver) => receiver.isOnline)
+                Object.values(receivers).some(
+                  (receiver) =>
+                    receiver.isOnline || receiver.userType == UserType.CHATBOT
+                )
                   ? "Online"
                   : `Online ${getDisplayTimeDiff(
                       new Date(
