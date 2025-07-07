@@ -3,20 +3,19 @@ import Message from "@/models/Message.model.ts";
 import {
   GoogleGenAI,
   FunctionCallingConfigMode,
-  mcpToTool,
-  Type,
   GenerateContentConfig,
   Content,
-  FunctionResponse,
 } from "@google/genai";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
   getCurrentWeather,
   weatherFunctionDeclaration,
 } from "./tools/weather.tools.ts";
 
-export const gemini_promp_process = async (promp: string) => {
+export const gemini_promp_process = async (
+  promp: string,
+  chatId: string,
+  userId: string
+) => {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
   const functionDeclarationTool = {
@@ -38,19 +37,11 @@ export const gemini_promp_process = async (promp: string) => {
 
   // Lấy lịch sử tin nhắn từ cơ sở dữ liệu
   const msgs = await Message.find({
-    chat: "68663b38b432e39dd6f68902", // Thay bằng ID chat thực tế
+    chat: chatId, // Thay bằng ID chat thực tế
   });
 
-  // Chuyển đổi lịch sử tin nhắn thành định dạng Content
-  // Lưu ý: `sendMessage` sẽ tự động thêm prompt hiện tại vào lịch sử của chat object.
-  // Do đó, `histories` này chỉ cần chứa các tin nhắn trước đó.
-
-  // const parts = msgs.map((msg) => {
-  //   return { text: msg.msgBody };
-  // });
-
   const histories: Content[] = msgs.map((msg) => {
-    if (msg.user.toString() == "684d9cf16cda6f875d523d82")
+    if (msg.user.toString() == userId)
       return { role: "user", parts: [{ text: msg.msgBody }] };
 
     return { role: "model", parts: [{ text: msg.msgBody }] };

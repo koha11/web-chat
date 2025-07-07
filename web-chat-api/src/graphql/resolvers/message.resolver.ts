@@ -16,6 +16,8 @@ import { toObjectId } from "../../utils/mongoose.ts";
 import { IResolvers } from "@graphql-tools/utils";
 import { Edge } from "@/interfaces/modelConnection.interface.ts";
 import { IChat } from "@/interfaces/chat.interface.ts";
+import UserType from "@/enums/UserType.enum.ts";
+import { IUser } from "@/interfaces/user.interface.ts";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -91,25 +93,25 @@ export const messageResolvers: IResolvers = {
         { new: true }
       ).populate("users");
 
-      if (message.chat.toString() == "68663b38b432e39dd6f68902") {
-        const gemini = await User.findById("68663ad4b432e39dd6f68900");
+      const users = chatChanged?.users as IUser[];
 
+      const chatbot = users.find((user) => user.userType == UserType.CHATBOT);
+
+      if (chatbot) {
         pubsub.publish(SocketEvent.messageTyping, {
-          chatId: message.chat.toString(),
+          chatId,
           messageTyping: {
             isTyping: true,
-            typingUser: gemini,
+            typingUser: chatbot,
           },
         } as PubsubEvents[SocketEvent.messageTyping]);
 
         setTimeout(async () => {
-          const chatBotMessageBody = await gemini_promp_process(
-            message.msgBody
-          );
+          const chatBotMessageBody = await gemini_promp_process(msgBody, chatId, user);
 
           const chatBotMessage = await Message.create({
             chat: chatId,
-            user: "68663ad4b432e39dd6f68900",
+            user: chatbot.id,
             msgBody: chatBotMessageBody,
           });
 
@@ -129,7 +131,7 @@ export const messageResolvers: IResolvers = {
             chatId,
             messageTyping: {
               isTyping: false,
-              typingUser: gemini,
+              typingUser: chatbot,
             },
           } as PubsubEvents[SocketEvent.messageTyping]);
         }, 500);
@@ -248,11 +250,6 @@ export const messageResolvers: IResolvers = {
         messageTyping: { typingUser: myUser, isTyping },
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
-    },
-    askAI: async (_p, { promp }, { pubsub, user }: IMyContext) => {
-      const res = await gemini_promp_process(promp);
-
-      return res;
     },
   },
 

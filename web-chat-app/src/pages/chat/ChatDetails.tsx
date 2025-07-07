@@ -307,20 +307,20 @@ const ChatDetails = ({
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
                 {receivers &&
-                Object.values(receivers).some(
-                  (receiver) =>
-                    receiver.isOnline || receiver.userType == UserType.CHATBOT
-                )
-                  ? "Online"
-                  : `Online ${getDisplayTimeDiff(
-                      new Date(
-                        Object.values(receivers).sort(
-                          (a, b) =>
-                            new Date(b.lastLogined ?? "").getTime() -
-                            new Date(a.lastLogined ?? "").getTime()
-                        )[0].lastLogined ?? ""
-                      )
-                    )} ago`}
+                  (Object.values(receivers).some(
+                    (receiver) =>
+                      receiver.isOnline || receiver.userType == UserType.CHATBOT
+                  )
+                    ? "Online"
+                    : `Online ${getDisplayTimeDiff(
+                        new Date(
+                          Object.values(receivers).sort(
+                            (a, b) =>
+                              new Date(b.lastLogined ?? "").getTime() -
+                              new Date(a.lastLogined ?? "").getTime()
+                          )[0].lastLogined ?? ""
+                        )
+                      )} ago`)}
               </div>
             </div>
           ) : (
