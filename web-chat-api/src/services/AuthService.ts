@@ -8,87 +8,99 @@ import Account, { IAccount } from "@/models/Account.model.ts";
 import User from "@/models/User.model.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import userService from "./UserService.ts";
 
 class AuthService {
-  async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
-    const account = await Account.findOne({ username: loginRequest.username });
+  // async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
+  //   const account = await Account.findOne({ username: loginRequest.username });
 
-    if (!account)
-      return {
-        status: 401,
-        message: "Username is wrong",
-      };
+  //   if (!account)
+  //     return {
+  //       status: 401,
+  //       message: "Username is wrong",
+  //     };
 
-    var passwordIsValid = bcrypt.compareSync(
-      loginRequest.password,
-      account.password
-    );
+  //   var passwordisValid = bcrypt.compareSync(
+  //     loginRequest.password,
+  //     account.password
+  //   );
 
-    if (!passwordIsValid)
-      return {
-        status: 401,
-        message: "Password is wrong",
-      };
+  //   if (!passwordisValid)
+  //     return {
+  //       status: 401,
+  //       message: "Password is wrong",
+  //     };
 
-    const user = await User.findOne({ username: loginRequest.username });
+  //   const user = await User.findOne({ username: loginRequest.username });
 
-    if (!user)
-      return {
-        status: 400,
-        message: "sai id roi",
-      };
+  //   if (!user)
+  //     return {
+  //       status: 400,
+  //       message: "sai id roi",
+  //     };
 
-    const token = this.createToken({
-      expiresIn: "24h",
-      id: user.id,
-      username: user.username,
-    });
+  //   const token = this.createToken({
+  //     expiresIn: "24h",
+  //     id: user.id,
+  //     username: user.username,
+  //   });
 
-    return {
-      status: 200,
-      data: {
-        accessToken: token,
-        userId: user.id,
-      },
-      message: "login success",
-    };
-  }
+  //   return {
+  //     status: 200,
+  //     data: {
+  //       accessToken: token,
+  //       userId: user.id,
+  //     },
+  //     message: "login success",
+  //   };
+  // }
 
-  async register(registerRequest: IRegisterRequest): Promise<IMyResponse> {
+  async register({
+    email,
+    fullname,
+    password,
+    username,
+  }: IRegisterRequest): Promise<IMyResponse> {
     const isUsernameExists = await Account.findOne({
-      username: registerRequest.username,
+      username,
     });
 
     if (isUsernameExists)
       return {
-        status: 409,
+        isValid: false,
         message: "Username is already exists",
       };
 
     const isEmailExists = await Account.findOne({
-      email: registerRequest.email,
+      email,
     });
 
     if (isEmailExists)
       return {
-        status: 409,
+        isValid: false,
         message: "Email is already exists",
       };
 
     const account = await Account.create({
-      username: registerRequest.username,
-      password: bcrypt.hashSync(registerRequest.password),
-      email: registerRequest.email,
+      username,
+      password: bcrypt.hashSync(password),
+      email,
     } as IAccount);
 
-    const user = await User.create({
-      id: account._id,
-      username: account.username,
-      fullname: registerRequest.fullname,
-    } as IUser);
+    await userService.createNewUser({ username, fullname, _id: account.id });
+
+    const token = this.createToken({
+      expiresIn: "24h",
+      id: account.id,
+      username,
+    });
 
     return {
-      status: 200,
+      isValid: true,
+      data: {
+        accessToken: token,
+        userId: account.id,
+      },
       message: "register success",
     };
   }

@@ -10,8 +10,6 @@ import MyApolloProvider from "../layouts/MyApolloProvider";
 const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
 const Register = lazy(() => import("../pages/home/Register"));
-const ChatIndex = lazy(() => import("../pages/chat/ChatIndex"));
-const ChatDetails = lazy(() => import("../pages/chat/ChatDetails"));
 const Contact = lazy(() => import("../pages/contact/Contact"));
 const Me = lazy(() => import("../pages/contact/Contact"));
 

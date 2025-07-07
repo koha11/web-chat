@@ -1,5 +1,5 @@
 export interface IMyResponse {
-  status: number;
+  isValid: boolean;
   data?: object;
   message?: string;
 }

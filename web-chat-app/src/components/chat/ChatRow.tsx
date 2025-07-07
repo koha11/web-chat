@@ -126,6 +126,7 @@ const ChatRow = ({
               <div
                 className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: `url(${receiver!.avatar})` }}
+                key={receiver?.id}
               ></div>
             );
           })}

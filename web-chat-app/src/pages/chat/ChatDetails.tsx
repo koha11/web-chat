@@ -29,11 +29,9 @@ import {
   MESSAGE_TYPING_SUB,
 } from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
-import { useApolloClient, useSubscription } from "@apollo/client";
 import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
-import { client } from "../../apollo";
 import { TypingIndicator } from "../../components/ui/typing-indicator";
 
 const ChatDetails = ({
@@ -303,7 +301,7 @@ const ChatDetails = ({
           {chat && !isMsgLoading ? (
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
-              {/* <div className="text-gray-500 text-[0.75rem]">
+              <div className="text-gray-500 text-[0.75rem]">
                 {receivers &&
                 Object.values(receivers).some((receiver) => receiver.isOnline)
                   ? "Online"
@@ -316,7 +314,7 @@ const ChatDetails = ({
                         )[0].lastLogined ?? ""
                       )
                     )} ago`}
-              </div> */}
+              </div>
             </div>
           ) : (
             <div className="ml-4 space-y-2">

@@ -16,7 +16,7 @@ export const authResolvers: IResolvers = {
           message: "Username is wrong",
         };
 
-      var passwordIsValid = bcrypt.compareSync(password, account.password);
+      let passwordIsValid = bcrypt.compareSync(password, account.password);
 
       if (!passwordIsValid)
         return {
@@ -46,6 +46,11 @@ export const authResolvers: IResolvers = {
         },
         message: "login success",
       };
+    },
+    register: async (_p, registerRequest, {}) => {
+      const data = await authService.register(registerRequest);
+
+      return data;
     },
   },
 };

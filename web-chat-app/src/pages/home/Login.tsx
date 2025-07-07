@@ -17,7 +17,6 @@ const Login = () => {
         ...data,
       },
       onCompleted({ login: response }, clientOptions) {
-        console.log(response);
         if (response.isValid && response.data != undefined) {
           Cookies.set("accessToken", response.data.accessToken);
           Cookies.set("userId", response.data.userId);

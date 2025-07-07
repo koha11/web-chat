@@ -25,10 +25,10 @@ const GroupMsg = ({
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(sender.id)).length == 0;
 
-  if (isGroupMsgHidden) return <></>;
+  if (isGroupMsgHidden) return;
 
   return (
-    <div className="msg-group py-4">
+    <div className="msg-group py-4" key={timeString}>
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
@@ -57,8 +57,6 @@ const GroupMsg = ({
           )
             msgSenderAvatar = receiver.avatar ?? "";
           else msgSenderAvatar = "";
-
-          if (msg.isHiddenFor?.includes(sender.id)) return <></>;
 
           return (
             <SingleMsg

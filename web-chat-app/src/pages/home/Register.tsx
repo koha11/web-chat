@@ -1,8 +1,8 @@
 import { Link, redirect, useNavigate } from "react-router-dom";
-import { postData } from "../../services/api";
 import { useForm } from "react-hook-form";
 import { IRegisterRequest } from "../../interfaces/auth/registerRequest.interface";
 import { useRegister } from "../../hooks/auth.hook";
+import Cookies from "js-cookie";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -10,12 +10,19 @@ const Register = () => {
   const { handleSubmit, register, watch, control } =
     useForm<IRegisterRequest>();
 
-  const { mutate, isPending } = useRegister();
+  const [registerAccount] = useRegister();
 
   const handleRegister = (data: IRegisterRequest) => {
-    mutate(data, {
-      onSuccess: (response) => {
-        if (response.status == 200) navigate("/login");
+    registerAccount({
+      variables: {
+        ...data,
+      },
+      onCompleted({ register: response }, clientOptions) {
+        if (response.isValid && response.data != undefined) {
+          Cookies.set("accessToken", response.data.accessToken);
+          Cookies.set("userId", response.data.userId);
+          navigate("/m");
+        }
       },
     });
   };
