@@ -44,7 +44,7 @@ const apollo = new ApolloServer({
       if (token == "undefined") return;
       user = authService.verifyToken(token);
       if (!user) {
-        return;
+        return {};
         throw new Error("Missing auth token");
       }
     }
@@ -106,7 +106,6 @@ Promise.all([connectDB(), apollo.start()])
         },
         onConnect: async (ctx) => {
           if (!ctx.connectionParams?.authToken) {
-            return;
             throw new Error("Missing auth token");
           }
 

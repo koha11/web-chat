@@ -4,6 +4,8 @@ import Loading from "../components/ui/loading";
 import MainLayout from "../layouts/MainLayout";
 import PrivateRoute from "./privateRoute";
 import Chat from "../pages/chat/Chat";
+import { ApolloProvider } from "@apollo/client";
+import MyApolloProvider from "../layouts/MyApolloProvider";
 
 const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
@@ -15,66 +17,71 @@ const Me = lazy(() => import("../pages/contact/Contact"));
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: (
-      <Suspense fallback={<Loading></Loading>}>
-        <Home />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/login",
-    element: (
-      <Suspense fallback={<Loading></Loading>}>
-        <Login></Login>
-      </Suspense>
-    ),
-  },
-  {
-    path: "/register",
-    element: (
-      <Suspense fallback={<Loading></Loading>}>
-        <Register />
-      </Suspense>
-    ),
-  },
-  {
-    element: <PrivateRoute />,
+    element: <MyApolloProvider />,
     children: [
       {
-        path: "/contact",
+        path: "/",
         element: (
           <Suspense fallback={<Loading></Loading>}>
-            <Contact />
+            <Home />
           </Suspense>
         ),
       },
       {
-        path: "/me",
+        path: "/login",
         element: (
           <Suspense fallback={<Loading></Loading>}>
-            <Me />
+            <Login></Login>
           </Suspense>
         ),
       },
       {
-        element: <MainLayout />,
+        path: "/register",
+        element: (
+          <Suspense fallback={<Loading></Loading>}>
+            <Register />
+          </Suspense>
+        ),
+      },
+      {
+        element: <PrivateRoute />,
         children: [
           {
-            path: "/m",
+            path: "/contact",
             element: (
               <Suspense fallback={<Loading></Loading>}>
-                <Chat />
+                <Contact />
               </Suspense>
             ),
           },
           {
-            path: "/m/:id",
+            path: "/me",
             element: (
               <Suspense fallback={<Loading></Loading>}>
-                <Chat />
+                <Me />
               </Suspense>
             ),
+          },
+          {
+            element: <MainLayout />,
+            children: [
+              {
+                path: "/m",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <Chat />
+                  </Suspense>
+                ),
+              },
+              {
+                path: "/m/:id",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <Chat />
+                  </Suspense>
+                ),
+              },
+            ],
           },
         ],
       },
