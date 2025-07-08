@@ -276,8 +276,6 @@ const ChatDetails = ({
     }
   };
 
-  console.log(receivers);
-
   return (
     <section
       className="flex-5 h-full p-4 bg-white rounded-2xl"

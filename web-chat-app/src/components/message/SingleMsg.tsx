@@ -42,7 +42,7 @@ const SingleMsg = ({
 
   return (
     <div
-      className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-4"}`}
+      className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
     >
       {/* Hien thi noi dung tin nhan duoc phan hoi  */}
       {msg.replyForMsg && (

@@ -141,7 +141,7 @@ const MessageActions = ({
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
         onSubmit={() => {
           removeMessage({ variables: { chatId: id, msgId } });
-          toast.success("Unsend successful");
+          toast.success("Remove successful");
           setConfirmDialogOpen(false);
         }}
       ></MyConfirmDialog>

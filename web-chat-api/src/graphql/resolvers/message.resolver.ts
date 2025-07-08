@@ -107,7 +107,11 @@ export const messageResolvers: IResolvers = {
         } as PubsubEvents[SocketEvent.messageTyping]);
 
         setTimeout(async () => {
-          const chatBotMessageBody = await gemini_promp_process(msgBody, chatId, user);
+          const chatBotMessageBody = await gemini_promp_process(
+            msgBody,
+            chatId,
+            user
+          );
 
           const chatBotMessage = await Message.create({
             chat: chatId,
@@ -193,11 +197,7 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
-    removeMessage: async (
-      _p,
-      { chatId, msgId },
-      { pubsub, user }: IMyContext
-    ) => {
+    removeMessage: async (_p, { chatId, msgId }, { user }: IMyContext) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
       if (msg) {
@@ -224,17 +224,6 @@ export const messageResolvers: IResolvers = {
           },
           { timestamps: false }
         );
-
-        // pubsub.publish(SocketEvent.messageChanged, {
-        //   messageChanged: {
-        //     cursor: msg.id,
-        //     node: msg,
-        //   },
-        // } as PubsubEvents[SocketEvent.messageChanged]);
-
-        // pubsub.publish(SocketEvent.chatChanged, {
-        //   chatId,
-        // });
       }
 
       return msg;
