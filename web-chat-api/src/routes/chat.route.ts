@@ -1,9 +1,9 @@
+import chatController from "@/controllers/ChatController.ts";
+import { authJWT } from "@/middlewares/authJwt.middleware.ts";
 import { Router } from "express";
-import chatController from "../controllers/ChatController";
-import { authJWT } from "../middlewares/authJwt.middleware";
 
-const router = Router();
+const chatRouter = Router();
 
-router.get("/", authJWT, chatController.getRecentChat);
+chatRouter.get("/", authJWT, chatController.getRecentChat);
 
-export default router;
+export default chatRouter;

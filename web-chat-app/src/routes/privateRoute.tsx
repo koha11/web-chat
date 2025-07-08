@@ -1,10 +1,8 @@
-
 import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const PrivateRoute = () => {
-  const token = Cookies.get("accessToken")
-
+  const token = Cookies.get("accessToken");
 
   if (!token) {
     return <Navigate to="/login" replace={true} />;

@@ -6,6 +6,7 @@ import mongooseDelete from "mongoose-delete";
 // Define schema
 const UserSchema = new Schema<IUser>(
   {
+    ggid: { type: String, unique: true },
     username: { type: String, required: true },
     fullname: { type: String, required: true },
     avatar: { type: String, default: "" },

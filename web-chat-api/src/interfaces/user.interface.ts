@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 // Interface for User document
 export interface IUser {
   id: Types.ObjectId;
+  ggid: string;
   username: string;
   fullname: string;
   avatar?: string;

@@ -8,18 +8,30 @@ class UserService {
     fullname,
     _id,
     username,
+    ggid,
   }: {
-    _id: Types.ObjectId;
+    _id?: Types.ObjectId;
     username: string;
     fullname: string;
+    ggid?: string;
   }) => {
+    let user;
+
     // Tao User moi
-    const user = await User.create({
-      _id,
-      username,
-      fullname,
-      lastLogined: new Date().toISOString(),
-    });
+    if (_id)
+      user = await User.create({
+        _id,
+        username,
+        fullname,
+        lastLogined: new Date().toISOString(),
+      });
+    else
+      user = await User.create({
+        ggid,
+        username,
+        fullname,
+        lastLogined: new Date().toISOString(),
+      });
 
     // Tao chat voi gemini api
     const chatbot = await User.findOne({ userType: UserType.CHATBOT });
@@ -31,7 +43,10 @@ class UserService {
         [chatbot?.id]: chatbot?.fullname,
       },
     });
+
+    return user;
   };
+
   async setOnlineStatus(userId: string) {
     await User.findByIdAndUpdate(userId, {
       isOnline: true,

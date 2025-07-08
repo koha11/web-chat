@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
 import { useLogin } from "../../hooks/auth.hook";
+import { url } from "inspector";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,6 +66,14 @@ const Login = () => {
         <Link to="" className="cursor-pointer hover:opacity-70">
           Forgot Password
         </Link>
+      </div>
+      <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
+      <div className="mt-4 flex items-center justify-evenly w-[50%]">
+        <Link
+          to="http://localhost:3000/auth/google"
+          className="cursor-pointer hover:opacity-70 w-8 h-8 bg-contain bg-no-repeat bg-center"
+          style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
+        ></Link>
       </div>
     </section>
   );

@@ -1,11 +1,11 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Loading from "../components/ui/loading";
 import MainLayout from "../layouts/MainLayout";
 import PrivateRoute from "./privateRoute";
 import Chat from "../pages/chat/Chat";
-import { ApolloProvider } from "@apollo/client";
 import MyApolloProvider from "../layouts/MyApolloProvider";
+import OauthRoute from "./oauthRoute";
 
 const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
@@ -24,6 +24,10 @@ const router = createBrowserRouter([
             <Home />
           </Suspense>
         ),
+      },
+      {
+        path: "/login-success",
+        element: <OauthRoute />,
       },
       {
         path: "/login",

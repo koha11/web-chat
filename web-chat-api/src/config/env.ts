@@ -10,3 +10,5 @@ export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 export const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
 export const HMS_ACCESS_KEY = process.env.HMS_ACCESS_KEY;
 export const HMS_SECRET = process.env.HMS_SECRET;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;

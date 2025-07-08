@@ -307,6 +307,7 @@ const ChatDetails = ({
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
                 {receivers &&
+                  Object.keys(receivers).length > 0 &&
                   (Object.values(receivers).some(
                     (receiver) =>
                       receiver.isOnline || receiver.userType == UserType.CHATBOT
