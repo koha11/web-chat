@@ -18,6 +18,7 @@ export const userTypeDefs = gql`
 
   extend type Query {
     users(userId: ID): [User!]!
+    connectableUsers(userId: ID!): [User]
   }
 
   extend type Mutation {

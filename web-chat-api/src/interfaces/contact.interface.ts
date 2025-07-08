@@ -1,6 +1,6 @@
+import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
 import { Types } from "mongoose";
-import ContactRelationship from "../enums/ContactRelationship.enum";
-import { IUser } from "./user.interface";
+import { IUser } from "./user.interface.ts";
 
 export default interface IContact {
   id: Types.ObjectId;

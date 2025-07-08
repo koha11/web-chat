@@ -10,8 +10,15 @@ import {
 import { useGetContacts } from "../../hooks/contact.hook";
 import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
-import { ArrowLeftCircle, MoreHorizontal, MoveLeftIcon } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  MoreHorizontal,
+  MoveLeftIcon,
+  Plus,
+} from "lucide-react";
 import { usePostChat } from "../../hooks/chat.hook";
+import { Button } from "../../components/ui/button";
+import AddContactDialog from "../../components/contact/AddContactDialog";
 
 const Contact = () => {
   const userId = Cookies.get("userId") ?? "";
@@ -20,6 +27,7 @@ const Contact = () => {
   const [contactList, setContactList] = useState([]);
   const [onlineList, setOnlineList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
 
   const { data: contacts, loading: isContactsLoading } = useGetContacts({
     userId,
@@ -69,6 +77,7 @@ const Contact = () => {
                     }
                   }}
                   className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300"
+                  key={contact?.id}
                 >
                   <div className="flex gap-4 items-center">
                     <div
@@ -77,9 +86,15 @@ const Contact = () => {
                     ></div>
                     <span>{contact?.fullname}</span>
                   </div>
-                  <div
-                    className={`w-2 h-2 rounded-full bg-contain bg-no-repeat bg-center bg-green-600`}
-                  ></div>
+                  {contact?.isOnline ? (
+                    <div
+                      className={`w-3 h-3 rounded-full bg-contain bg-no-repeat bg-center bg-green-600`}
+                    ></div>
+                  ) : (
+                    <div
+                      className={`w-3 h-3 rounded-full bg-contain bg-no-repeat bg-center bg-gray-400`}
+                    ></div>
+                  )}
                 </NavLink>
               );
             })}
@@ -101,8 +116,16 @@ const Contact = () => {
               <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
             </form>
           </div>
-          <div className="h-[10%] flex items-center py-4 px-2">
+          <div className="h-[10%] flex items-center justify-between py-4 px-2">
             <div>SORT</div>
+            <Button
+              variant={"outline"}
+              className="cursor-pointer"
+              onClick={() => setAddDialogOpen(true)}
+            >
+              <Plus></Plus>
+              <b>Add contact</b>
+            </Button>
           </div>
           <div className="h-[80%] grid grid-cols-2 gap-4 auto-rows-min px-2">
             {contacts?.edges.map((edge) => {
@@ -113,11 +136,13 @@ const Contact = () => {
                   className={
                     "flex shadow rounded-2xl justify-center items-center px-4 py-2"
                   }
+                  key={contact?.id}
                 >
                   <div
                     className="rounded-2xl h-22 w-22 bg-contain bg-no-repeat bg-center"
                     style={{ backgroundImage: `url(${contact?.avatar})` }}
                   ></div>
+
                   <div className="flex-auto px-4">
                     <div className="font-bold">{contact?.fullname}</div>
                     <div className="">{contact?.username}</div>
@@ -134,6 +159,10 @@ const Contact = () => {
           </div>
         </section>
       </div>
+      <AddContactDialog
+        isOpen={isAddDialogOpen}
+        setOpen={setAddDialogOpen}
+      ></AddContactDialog>
     </div>
   );
 };

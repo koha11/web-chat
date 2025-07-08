@@ -1,5 +1,5 @@
+import IContact from "@/interfaces/contact.interface.ts";
 import mongoose, { Schema } from "mongoose";
-import IContact from "../interfaces/contact.interface";
 
 // Define schema
 const ContactSchema = new Schema<IContact>(

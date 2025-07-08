@@ -45,7 +45,7 @@ export const messageResolvers: IResolvers = {
 
       if (isNotSeenBefore) {
         chat?.lastMsgSeen.set(user.id.toString(), result.edges[0].cursor);
-        await chat?.save();
+        await chat?.save({ timestamps: false });
       }
 
       if (isUpdateSeenList) {
@@ -197,7 +197,11 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
-    removeMessage: async (_p, { chatId, msgId }, { user }: IMyContext) => {
+    removeMessage: async (
+      _p,
+      { chatId, msgId },
+      { user, pubsub }: IMyContext
+    ) => {
       const msg = await Message.findById(msgId).populate("replyForMsg");
 
       if (msg) {
@@ -212,7 +216,7 @@ export const messageResolvers: IResolvers = {
 
         const lastMsg = lastMsgMap[chatId] as IMessage;
 
-        await Chat.findByIdAndUpdate(
+        const chatChanged = await Chat.findByIdAndUpdate(
           chatId,
           {
             $set: {
@@ -224,6 +228,10 @@ export const messageResolvers: IResolvers = {
           },
           { timestamps: false }
         );
+
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatChanged,
+        } as PubsubEvents[SocketEvent.chatChanged]);
       }
 
       return msg;
