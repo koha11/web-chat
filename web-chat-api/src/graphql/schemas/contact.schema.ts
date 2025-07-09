@@ -29,5 +29,6 @@ export const contactTypeDefs = gql`
 
   extend type Mutation {
     postContact(contactId: ID): Contact
+    sendConnect(userId: ID): Contact
   }
 `;

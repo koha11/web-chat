@@ -12,6 +12,7 @@ const Home = lazy(() => import("../pages/home/Home"));
 const Register = lazy(() => import("../pages/home/Register"));
 const Contact = lazy(() => import("../pages/contact/Contact"));
 const Me = lazy(() => import("../pages/contact/Contact"));
+const Call = lazy(() => import("../pages/call/Call"));
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading></Loading>}>
                 <Contact />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/call",
+            element: (
+              <Suspense fallback={<Loading></Loading>}>
+                <Call />
               </Suspense>
             ),
           },

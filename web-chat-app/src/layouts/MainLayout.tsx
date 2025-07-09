@@ -84,10 +84,8 @@ const Mainlayout = () => {
       context={{
         chats,
         isChatsLoading,
-        subscribeToMore,
         lastMessges,
         isLastMsgLoading,
-        refetch,
         updatedChatMap,
         setUpdatedChatMap,
       }}

@@ -330,7 +330,12 @@ const ChatDetails = ({
           )}
         </div>
         <div className="text-2xl flex items-center gap-4 ">
-          <Button className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer">
+          <Button
+            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+            onClick={() => {
+              window.open("/call", "_blank", "width=1300,height=600");
+            }}
+          >
             <Phone></Phone>
           </Button>
           <Link

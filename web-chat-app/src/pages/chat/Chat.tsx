@@ -14,6 +14,7 @@ import { Edge } from "../../interfaces/modelConnection.interface";
 import { IChat } from "../../interfaces/chat.interface";
 import { GET_MESSAGES } from "../../services/messageService";
 import ChatInfo from "./ChatInfo";
+import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 
 const Chat = () => {
   const { id } = useParams();
@@ -22,15 +23,14 @@ const Chat = () => {
   const {
     chats,
     isChatsLoading,
-    subscribeToMore,
     lastMessges,
     isLastMsgLoading,
-    refetch,
     updatedChatMap,
     setUpdatedChatMap,
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
+  const [isOngoingCall, setOngoingCall] = useState(false);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -65,6 +65,10 @@ const Chat = () => {
           open={chatInfoOpen}
         ></ChatInfo>
       </div>
+      <OngoingCallDialog
+        isOpen={isOngoingCall}
+        setOpen={setOngoingCall}
+      ></OngoingCallDialog>
     </div>
   );
 };
