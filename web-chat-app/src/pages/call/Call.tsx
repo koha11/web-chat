@@ -51,7 +51,7 @@ const Call = () => {
 
     // Get media and add to connection
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
       .then((stream) => {
         setLocalStream(stream);
         if (localVideoRef.current) {
@@ -128,24 +128,20 @@ const Call = () => {
   }, []);
 
   useEffect(() => {
-    if (pcRef.current) {
-      // turn on/off for local
-      navigator.mediaDevices
-        .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
-        .then((stream) => {
-          setLocalStream(stream);
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-          }
+    localStream?.getVideoTracks().forEach((t) => (t.enabled = isCameraOpen));
 
-          console.log(pcRef.current);
-
-          stream
-            .getTracks()
-            .forEach((track) => pcRef.current!.addTrack(track, stream));
-        });
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = localStream;
     }
-  }, [isCameraOpen, isMicroOpen]);
+  }, [isCameraOpen]);
+
+  useEffect(() => {
+    localStream?.getAudioTracks().forEach((t) => (t.enabled = isMicroOpen));
+
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [isMicroOpen]);
 
   return (
     <div className="relative w-full h-screen flex justify-center items-center">
@@ -210,19 +206,19 @@ const Call = () => {
         >
           <ArrowBigLeftDashIcon></ArrowBigLeftDashIcon>
         </CollapsibleTrigger>
-        {/* {isCameraOpen ? ( */}
-        <CollapsibleContent className="w-full h-full">
-          <video
-            className="absolute bottom-4 right-4 h-full w-full rounded-lg scale-x-[-1]"
-            autoPlay
-            playsInline
-            ref={localVideoRef}
-          ></video>
-          <CollapsibleTrigger className="bg-gray-200 h-full w-4 absolute bottom-4 left-0 rounded-l-md flex items-center justify-center">
-            <ArrowBigRightDashIcon></ArrowBigRightDashIcon>
-          </CollapsibleTrigger>
-        </CollapsibleContent>
-        {/* ) : (
+        {isCameraOpen ? (
+          <CollapsibleContent className="w-full h-full">
+            <video
+              className="absolute bottom-4 right-4 h-full w-full rounded-lg scale-x-[-1]"
+              autoPlay
+              playsInline
+              ref={localVideoRef}
+            ></video>
+            <CollapsibleTrigger className="bg-gray-200 h-full w-4 absolute bottom-4 left-0 rounded-l-md flex items-center justify-center">
+              <ArrowBigRightDashIcon></ArrowBigRightDashIcon>
+            </CollapsibleTrigger>
+          </CollapsibleContent>
+        ) : (
           <CollapsibleContent
             className="absolute bottom-4 right-4 h-full w-full bg-contain bg-no-repeat bg-center rounded-md bg-red-200"
             style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
@@ -231,7 +227,7 @@ const Call = () => {
               <ArrowBigRightDashIcon></ArrowBigRightDashIcon>
             </CollapsibleTrigger>
           </CollapsibleContent>
-        )} */}
+        )}
       </Collapsible>
     </div>
   );
