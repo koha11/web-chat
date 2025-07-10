@@ -333,7 +333,11 @@ const ChatDetails = ({
           <Button
             className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
             onClick={() => {
-              window.open("/call", "_blank", "width=1300,height=600");
+              window.open(
+                "/call",
+                "_blank",
+                "width=1300,height=600,location=no,toolbar=no"
+              );
             }}
           >
             <Phone></Phone>

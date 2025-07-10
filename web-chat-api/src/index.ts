@@ -80,9 +80,12 @@ Promise.all([connectDB(), apollo.start()])
 
     // connectSocketIo(server);
 
-    const wsServer = new WebSocketServer({
-      server: server,
-      path: "/subscriptions",
+    const graphqlWSS = new WebSocketServer({
+      noServer: true,
+    });
+
+    const rtcWSS = new WebSocketServer({
+      noServer: true,
     });
 
     useServer(
@@ -106,6 +109,7 @@ Promise.all([connectDB(), apollo.start()])
         },
         onConnect: async (ctx) => {
           if (!ctx.connectionParams?.authToken) {
+            return;
             throw new Error("Missing auth token");
           }
 
@@ -118,6 +122,7 @@ Promise.all([connectDB(), apollo.start()])
         },
         onDisconnect: async (ctx) => {
           if (!ctx.connectionParams?.authToken) {
+            return;
             throw new Error("Missing auth token");
           }
 
@@ -129,8 +134,43 @@ Promise.all([connectDB(), apollo.start()])
           console.log(user.username + " is offline");
         },
       },
-      wsServer
+      graphqlWSS
     );
+
+    server.on("upgrade", (request, socket, head) => {
+      const { url } = request;
+
+      if (url === "/subscriptions") {
+        graphqlWSS.handleUpgrade(request, socket, head, (ws) => {
+          graphqlWSS.emit("connection", ws, request);
+        });
+      } else if (url === "/rtc-signal") {
+        rtcWSS.handleUpgrade(request, socket, head, (ws) => {
+          rtcWSS.emit("connection", ws, request);
+        });
+      } else {
+        socket.destroy(); // unknown path
+      }
+    });
+
+    rtcWSS.on("connection", (ws) => {
+      console.log(`RTC client connected`);
+
+      ws.on("message", (msg) => {
+        const msgText = msg.toString();
+
+        // Relay tin nhắn cho tất cả peer khác
+        rtcWSS.clients.forEach((client) => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(msgText);
+          }
+        });
+      });
+
+      ws.on("close", () => {
+        console.log("RTC client disconnected");
+      });
+    });
 
     console.log("MongoDB is connected");
 
@@ -138,6 +178,7 @@ Promise.all([connectDB(), apollo.start()])
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
       console.log(`GraphQL WS endpoint: ws://localhost:${PORT}/subscriptions`);
+      console.log(`RTC Signal WS endpoint: ws://localhost:${PORT}/rtc-signal`);
     });
   })
   .catch((err) => {
