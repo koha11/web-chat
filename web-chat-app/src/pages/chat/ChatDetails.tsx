@@ -34,6 +34,7 @@ import IModelConnection, {
 } from "../../interfaces/modelConnection.interface";
 import { TypingIndicator } from "../../components/ui/typing-indicator";
 import UserType from "../../enums/UserType.enum";
+import { useMakeCall } from "../../hooks/chat.hook";
 
 const ChatDetails = ({
   chat,
@@ -71,6 +72,7 @@ const ChatDetails = ({
   });
 
   const [postMessage] = usePostMessage({ first: 20 });
+  const [makeCall] = useMakeCall();
 
   const [typeMessage] = useTypeMessage();
 
@@ -333,8 +335,9 @@ const ChatDetails = ({
           <Button
             className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
             onClick={() => {
+              makeCall({ variables: { chatId, hasVideo: false } });
               window.open(
-                "/call",
+                "/call?has_video=false&initialize_video=true",
                 "_blank",
                 "width=1300,height=600,location=no,toolbar=no"
               );

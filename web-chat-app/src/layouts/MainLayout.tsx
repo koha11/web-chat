@@ -8,13 +8,23 @@ import { IChat } from "../interfaces/chat.interface";
 import IModelConnection, {
   Edge,
 } from "../interfaces/modelConnection.interface";
-import { CHAT_CHANGED_SUB, GET_CHATS } from "../services/chatService";
+import {
+  CHAT_CHANGED_SUB,
+  CHAT_ONGOING_CALL_SUB,
+  GET_CHATS,
+} from "../services/chatService";
 import { GET_LAST_MESSAGES, GET_MESSAGES } from "../services/messageService";
 import Cookies from "js-cookie";
 import { set } from "mongoose";
+import { IUser } from "../interfaces/user.interface";
 
 const Mainlayout = () => {
   const userId = Cookies.get("userId") ?? "";
+
+  const [ongoingCall, setOngoingCall] = useState<{
+    user: IUser;
+    hasVideo: boolean;
+  } | null>(null);
 
   const {
     data: chats,
@@ -37,7 +47,7 @@ const Mainlayout = () => {
 
   useEffect(() => {
     if (chats) {
-      const unsubscribe = subscribeToMore({
+      const unsubscribeChatChanged = subscribeToMore({
         document: CHAT_CHANGED_SUB,
         variables: { userId },
         updateQuery: (prev, { subscriptionData }) => {
@@ -71,10 +81,22 @@ const Mainlayout = () => {
         },
       });
 
+      const unsubscribeOngoingCall = subscribeToMore({
+        document: CHAT_ONGOING_CALL_SUB,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData) return prev;
+
+          console.log(subscriptionData.data);
+
+          setOngoingCall(subscriptionData.data.ongoingCall);
+        },
+      });
+
       refetch();
 
       return () => {
-        unsubscribe();
+        unsubscribeChatChanged();
+        unsubscribeOngoingCall();
       };
     }
   }, [chats, subscribeToMore]);
@@ -88,6 +110,8 @@ const Mainlayout = () => {
         isLastMsgLoading,
         updatedChatMap,
         setUpdatedChatMap,
+        ongoingCall,
+        setOngoingCall,
       }}
     ></Outlet>
   );

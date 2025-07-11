@@ -37,6 +37,9 @@ const Call = () => {
   const [isCameraOpen, setCameraOpen] = useState(initializeVideo);
   const [isMicroOpen, setMicroOpen] = useState(true);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStreams, setRemoteStreams] = useState<
+    readonly MediaStream[] | null
+  >(null);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -57,15 +60,20 @@ const Call = () => {
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
+
         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
       });
 
     // Remote track handler
     pc.ontrack = ({ streams }) => {
-      console.log(streams[0].getTracks());
+      // setRemoteStreams(streams);
+      const myRemoteStream = streams[0];
+      setRemoteStreams(streams);
+
+      console.log(myRemoteStream.getTracks());
 
       if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = streams[0];
+        remoteVideoRef.current.srcObject = myRemoteStream;
       }
     };
 
@@ -128,6 +136,15 @@ const Call = () => {
   }, []);
 
   useEffect(() => {
+    if (remoteStreams && remoteVideoRef.current) {
+      console.log(remoteStreams[0].getVideoTracks());
+
+      remoteVideoRef.current.srcObject = remoteStreams[0];
+    }
+  }, [remoteStreams]);
+
+  // hanlde toggle camera
+  useEffect(() => {
     localStream?.getVideoTracks().forEach((t) => (t.enabled = isCameraOpen));
 
     if (localVideoRef.current) {
@@ -135,6 +152,7 @@ const Call = () => {
     }
   }, [isCameraOpen]);
 
+  // hanlde toggle micro
   useEffect(() => {
     localStream?.getAudioTracks().forEach((t) => (t.enabled = isMicroOpen));
 
@@ -149,12 +167,27 @@ const Call = () => {
         Top
       </div>
       <div className="flex flex-col justify-center items-center gap-2 w-full">
-        <video
+        {/* <video
           className="scale-x-[-1] w-fit"
           autoPlay
           playsInline
           ref={remoteVideoRef}
-        ></video>
+        ></video> */}
+        {remoteStreams &&
+          (remoteStreams[0].getVideoTracks()[0].enabled ? (
+            <video
+              className="scale-x-[-1] w-fit"
+              autoPlay
+              playsInline
+              ref={remoteVideoRef}
+            ></video>
+          ) : (
+            <div
+              className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}
+              style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
+            ></div>
+          ))}
+
         {/* {remoteVideoRef.current?.srcObject ? (
           <video
             className="scale-x-[-1]"
@@ -212,6 +245,7 @@ const Call = () => {
               className="absolute bottom-4 right-4 h-full w-full rounded-lg scale-x-[-1]"
               autoPlay
               playsInline
+              muted
               ref={localVideoRef}
             ></video>
             <CollapsibleTrigger className="bg-gray-200 h-full w-4 absolute bottom-4 left-0 rounded-l-md flex items-center justify-center">

@@ -6,6 +6,7 @@ import { toObjectId } from "@/utils/mongoose.ts";
 import { PubSub, withFilter } from "graphql-subscriptions";
 import { IResolvers } from "@graphql-tools/utils";
 import Chat from "@/models/Chat.model.ts";
+import User from "@/models/User.model.ts";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -42,6 +43,23 @@ export const chatResolvers: IResolvers = {
 
       return chat;
     },
+    makeCall: async (
+      _p,
+      { chatId, hasVideo },
+      { pubsub, user }: IMyContext
+    ) => {
+      const myUser = await User.findById(user.id);
+
+      pubsub.publish(SocketEvent.ongoingCall, {
+        ongoingCall: {
+          user: myUser,
+          hasVideo,
+        },
+        chatId,
+      } as PubsubEvents[SocketEvent.ongoingCall]);
+
+      return true;
+    },
   },
   Subscription: {
     chatChanged: {
@@ -58,6 +76,27 @@ export const chatResolvers: IResolvers = {
             .includes(toObjectId(user.id.toString()));
 
           return isUserInThisChat;
+        }
+      ),
+    },
+    ongoingCall: {
+      subscribe: withFilter(
+        (_p, variables, { pubsub }) =>
+          pubsub.asyncIterableIterator(SocketEvent.ongoingCall),
+        async (
+          { ongoingCall, chatId }: PubsubEvents[SocketEvent.ongoingCall],
+          variables,
+          { user }: IMyContext
+        ) => {
+          const chat = await Chat.findById(chatId).populate("users");
+
+          const isNotSender = ongoingCall.user.id != toObjectId(user.id);
+
+          const isUserInThisChat = chat!.users
+            .map((user) => user.id)
+            .includes(toObjectId(user.id.toString()));
+
+          return isUserInThisChat && isNotSender;
         }
       ),
     },

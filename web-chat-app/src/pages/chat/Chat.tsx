@@ -27,11 +27,12 @@ const Chat = () => {
     isLastMsgLoading,
     updatedChatMap,
     setUpdatedChatMap,
+    ongoingCall,
+    setOngoingCall,
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-  const [isOngoingCall, setOngoingCall] = useState(false);
-
+  console.log(ongoingCall);
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
@@ -65,10 +66,14 @@ const Chat = () => {
           open={chatInfoOpen}
         ></ChatInfo>
       </div>
-      <OngoingCallDialog
-        isOpen={isOngoingCall}
-        setOpen={setOngoingCall}
-      ></OngoingCallDialog>
+      {ongoingCall && (
+        <OngoingCallDialog
+          isOpen={true}
+          setOpen={setOngoingCall}
+          hasVideo={ongoingCall.hasVideo}
+          user={ongoingCall.user}
+        ></OngoingCallDialog>
+      )}
     </div>
   );
 };

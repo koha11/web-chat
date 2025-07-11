@@ -68,6 +68,12 @@ export const CHANGE_NICKNAME = gql`
   }
 `;
 
+export const MAKE_CALL = gql`
+  mutation MakeCall($chatId: ID!, $hasVideo: Boolean!) {
+    makeCall(chatId: $chatId, hasVideo: $hasVideo)
+  }
+`;
+
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {
     chatChanged(userId: $userId) {
@@ -85,6 +91,19 @@ export const CHAT_CHANGED_SUB = gql`
         lastLogined
         userType
       }
+    }
+  }
+`;
+
+export const CHAT_ONGOING_CALL_SUB = gql`
+  subscription ongoingCall {
+    ongoingCall {
+      user {
+        id
+        avatar
+        fullname
+      }
+      hasVideo
     }
   }
 `;

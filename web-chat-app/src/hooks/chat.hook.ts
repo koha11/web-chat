@@ -1,5 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { CHANGE_NICKNAME, GET_CHATS, POST_CHAT } from "../services/chatService";
+import {
+  CHANGE_NICKNAME,
+  GET_CHATS,
+  MAKE_CALL,
+  POST_CHAT,
+} from "../services/chatService";
 import { IChat } from "../interfaces/chat.interface";
 import IModelConnection, {
   Edge,
@@ -78,4 +83,8 @@ export const usePostChat = () => {
 
 export const useChangeNickname = () => {
   return useMutation(CHANGE_NICKNAME);
+};
+
+export const useMakeCall = () => {
+  return useMutation(MAKE_CALL);
 };
