@@ -4,6 +4,7 @@ enum SocketEvent {
   messageChanged = "MESSAGE_CHANGED_SUB",
   messageTyping = "MESSAGE_TYPING_SUB",
   ongoingCall = "ONGOING_CALL_SUB",
+  responseCall = "RESPONSE_CALL_SUB"
 }
 
 export default SocketEvent;

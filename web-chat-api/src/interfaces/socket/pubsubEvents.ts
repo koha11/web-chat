@@ -18,4 +18,9 @@ export type PubsubEvents = {
   [SocketEvent.ongoingCall]: {
     ongoingCall: { user: IUser; hasVideo: boolean; chatId: string };
   };
+  [SocketEvent.responseCall]: {
+    responseCall: boolean;
+    chatId: string;
+    userId: string;
+  };
 };

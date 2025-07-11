@@ -41,11 +41,12 @@ export const chatTypeDefs = gql`
     changeNickname(chatId: ID!, changedUserId: ID!, nickname: String!): Chat!
     makeCall(chatId: ID!, hasVideo: Boolean!): Boolean
     handleCall(chatId: ID!, isAccepted: Boolean!): Boolean
-    hangoutCall(chatId: ID!): Boolean
+    hangupCall(chatId: ID!): Boolean
   }
 
   extend type Subscription {
     chatChanged(userId: ID!): Chat!
     ongoingCall: CallUser!
+    responseCall: Boolean
   }
 `;

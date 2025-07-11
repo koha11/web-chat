@@ -95,6 +95,12 @@ export const MAKE_CALL = gql`
   }
 `;
 
+export const HANGUP_CALL = gql`
+  mutation HangupCall($chatId: ID!) {
+    hangupCall(chatId: $chatId)
+  }
+`;
+
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {
     chatChanged(userId: $userId) {
@@ -127,5 +133,11 @@ export const CHAT_ONGOING_CALL_SUB = gql`
       hasVideo
       chatId
     }
+  }
+`;
+
+export const CHAT_RESPONSE_CALL_SUB = gql`
+  subscription ResponseCall {
+    responseCall
   }
 `;

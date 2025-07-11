@@ -11,6 +11,7 @@ import IModelConnection, {
 import {
   CHAT_CHANGED_SUB,
   CHAT_ONGOING_CALL_SUB,
+  CHAT_RESPONSE_CALL_SUB,
   GET_CHATS,
 } from "../services/chatService";
 import { GET_LAST_MESSAGES, GET_MESSAGES } from "../services/messageService";
@@ -24,6 +25,7 @@ const Mainlayout = () => {
   const [ongoingCall, setOngoingCall] = useState<{
     user: IUser;
     hasVideo: boolean;
+    chatId: string;
   } | null>(null);
 
   const {
@@ -85,10 +87,19 @@ const Mainlayout = () => {
         document: CHAT_ONGOING_CALL_SUB,
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData) return prev;
+          setOngoingCall(subscriptionData.data.ongoingCall);
+        },
+      });
 
+      const unsubscribeResponseCall = subscribeToMore({
+        document: CHAT_RESPONSE_CALL_SUB,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData) return prev;
+
+          const responseCall = subscriptionData.data.responseCall;
           console.log(subscriptionData.data);
 
-          setOngoingCall(subscriptionData.data.ongoingCall);
+          if (!responseCall) setOngoingCall(null);
         },
       });
 
@@ -97,6 +108,7 @@ const Mainlayout = () => {
       return () => {
         unsubscribeChatChanged();
         unsubscribeOngoingCall();
+        unsubscribeResponseCall();
       };
     }
   }, [chats, subscribeToMore]);

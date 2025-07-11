@@ -3,6 +3,7 @@ import {
   CHANGE_NICKNAME,
   GET_CHAT,
   GET_CHATS,
+  HANGUP_CALL,
   MAKE_CALL,
   POST_CHAT,
 } from "../services/chatService";
@@ -141,4 +142,8 @@ export const useChangeNickname = () => {
 
 export const useMakeCall = () => {
   return useMutation(MAKE_CALL);
+};
+
+export const useHangupCall = () => {
+  return useMutation(HANGUP_CALL);
 };

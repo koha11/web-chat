@@ -59,7 +59,7 @@ export const chatResolvers: IResolvers = {
         ongoingCall: {
           user: myUser,
           hasVideo,
-          chatId
+          chatId,
         },
       } as PubsubEvents[SocketEvent.ongoingCall]);
 
@@ -70,17 +70,21 @@ export const chatResolvers: IResolvers = {
       { chatId, isAccepted },
       { pubsub, user }: IMyContext
     ) => {
-      const myUser = await User.findById(user.id);
-
-      // pubsub.publish(SocketEvent.ongoingCall, {
-      //   ongoingCall: {
-      //     user: myUser,
-      //     hasVideo,
-      //   },
-      //   chatId,
-      // } as PubsubEvents[SocketEvent.ongoingCall]);
+      pubsub.publish(SocketEvent.responseCall, {
+        responseCall: isAccepted,
+        userId: user.id,
+      } as PubsubEvents[SocketEvent.responseCall]);
 
       return isAccepted;
+    },
+    hangupCall: async (_p, { chatId }, { pubsub, user }: IMyContext) => {
+      pubsub.publish(SocketEvent.responseCall, {
+        responseCall: false,
+        userId: user.id,
+        chatId,
+      } as PubsubEvents[SocketEvent.responseCall]);
+
+      return false;
     },
   },
   Subscription: {
@@ -110,9 +114,36 @@ export const chatResolvers: IResolvers = {
           variables,
           { user }: IMyContext
         ) => {
-          const chat = await Chat.findById(ongoingCall.chatId).populate("users");
+          const chat = await Chat.findById(ongoingCall.chatId).populate(
+            "users"
+          );
 
           const isNotSender = ongoingCall.user.id != toObjectId(user.id);
+
+          const isUserInThisChat = chat!.users
+            .map((user) => user.id)
+            .includes(toObjectId(user.id.toString()));
+
+          return isUserInThisChat && isNotSender;
+        }
+      ),
+    },
+    responseCall: {
+      subscribe: withFilter(
+        (_p, variables, { pubsub }) =>
+          pubsub.asyncIterableIterator(SocketEvent.responseCall),
+        async (
+          {
+            responseCall,
+            chatId,
+            userId,
+          }: PubsubEvents[SocketEvent.responseCall],
+          variables,
+          { user }: IMyContext
+        ) => {
+          const chat = await Chat.findById(chatId).populate("users");
+
+          const isNotSender = userId != user.id;
 
           const isUserInThisChat = chat!.users
             .map((user) => user.id)

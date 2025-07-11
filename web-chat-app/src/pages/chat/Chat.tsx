@@ -32,7 +32,7 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-  
+
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
