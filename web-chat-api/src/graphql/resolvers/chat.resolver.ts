@@ -59,8 +59,8 @@ export const chatResolvers: IResolvers = {
         ongoingCall: {
           user: myUser,
           hasVideo,
+          chatId
         },
-        chatId,
       } as PubsubEvents[SocketEvent.ongoingCall]);
 
       return true;
@@ -106,11 +106,11 @@ export const chatResolvers: IResolvers = {
         (_p, variables, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.ongoingCall),
         async (
-          { ongoingCall, chatId }: PubsubEvents[SocketEvent.ongoingCall],
+          { ongoingCall }: PubsubEvents[SocketEvent.ongoingCall],
           variables,
           { user }: IMyContext
         ) => {
-          const chat = await Chat.findById(chatId).populate("users");
+          const chat = await Chat.findById(ongoingCall.chatId).populate("users");
 
           const isNotSender = ongoingCall.user.id != toObjectId(user.id);
 

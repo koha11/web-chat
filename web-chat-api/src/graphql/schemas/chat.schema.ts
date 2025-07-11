@@ -28,6 +28,7 @@ export const chatTypeDefs = gql`
   type CallUser {
     user: User!
     hasVideo: Boolean!
+    chatId: ID!
   }
 
   extend type Query {

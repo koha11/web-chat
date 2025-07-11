@@ -125,6 +125,7 @@ export const CHAT_ONGOING_CALL_SUB = gql`
         fullname
       }
       hasVideo
+      chatId
     }
   }
 `;

@@ -8,11 +8,13 @@ const OngoingCallDialog = ({
   setOpen,
   user,
   hasVideo,
+  chatId,
 }: {
   isOpen: boolean;
   setOpen: Function;
   user: IUser;
   hasVideo: boolean;
+  chatId: string;
 }) => {
   return (
     <Dialog open={isOpen}>
@@ -45,7 +47,7 @@ const OngoingCallDialog = ({
               onClick={() => {
                 setOpen(null);
                 window.open(
-                  "/call?has_video=false&initialize_video=true",
+                  `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
                   "_blank",
                   "width=1300,height=600,location=no,toolbar=no"
                 );

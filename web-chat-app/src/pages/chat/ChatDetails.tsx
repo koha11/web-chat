@@ -199,13 +199,14 @@ const ChatDetails = ({
 
   useEffect(() => {
     if (chat && typeof chat.users == "object") {
+      const users = chat.users as IUser[];
       let myMap = {} as { [userId: string]: IUser };
-      chat.users.forEach((user) => {
+      users.forEach((user) => {
         if (user.id != userId) myMap[user.id] = user;
       });
 
       setReceivers(myMap);
-      setSender(chat.users.find((user) => user.id == userId));
+      setSender(users.find((user) => user.id == userId));
     }
   }, [chat]);
 
