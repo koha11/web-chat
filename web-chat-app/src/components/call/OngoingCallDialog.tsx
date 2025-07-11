@@ -10,7 +10,7 @@ const OngoingCallDialog = ({
   hasVideo,
 }: {
   isOpen: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: Function;
   user: IUser;
   hasVideo: boolean;
 }) => {
@@ -34,10 +34,23 @@ const OngoingCallDialog = ({
             <Button
               variant={"destructive"}
               className="rounded-full cursor-pointer"
+              onClick={() => {
+                setOpen(null);
+              }}
             >
               <X></X>
             </Button>
-            <Button className="rounded-full cursor-pointer bg-green-700">
+            <Button
+              className="rounded-full cursor-pointer bg-green-700"
+              onClick={() => {
+                setOpen(null);
+                window.open(
+                  "/call?has_video=false&initialize_video=true",
+                  "_blank",
+                  "width=1300,height=600,location=no,toolbar=no"
+                );
+              }}
+            >
               <Phone></Phone>
             </Button>
           </div>

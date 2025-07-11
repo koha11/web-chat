@@ -248,6 +248,7 @@ export const messageResolvers: IResolvers = {
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
     },
+    
   },
 
   Subscription: {

@@ -60,6 +60,23 @@ export const chatResolvers: IResolvers = {
 
       return true;
     },
+    handleCall: async (
+      _p,
+      { chatId, isAccepted },
+      { pubsub, user }: IMyContext
+    ) => {
+      const myUser = await User.findById(user.id);
+
+      // pubsub.publish(SocketEvent.ongoingCall, {
+      //   ongoingCall: {
+      //     user: myUser,
+      //     hasVideo,
+      //   },
+      //   chatId,
+      // } as PubsubEvents[SocketEvent.ongoingCall]);
+
+      return isAccepted;
+    },
   },
   Subscription: {
     chatChanged: {

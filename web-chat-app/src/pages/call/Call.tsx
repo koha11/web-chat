@@ -24,8 +24,6 @@ import {
 } from "react";
 import { useLocation } from "react-router-dom";
 
-const signaling = new WebSocket("ws://localhost:3000/rtc-signal");
-
 const Call = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -46,6 +44,8 @@ const Call = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
   useEffect(() => {
+    const signaling = new WebSocket("ws://localhost:3000/rtc-signal");
+
     // Setup peer connection
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -61,12 +61,14 @@ const Call = () => {
           localVideoRef.current.srcObject = stream;
         }
 
+        console.log(stream.getTracks());
+
         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
       });
 
     // Remote track handler
     pc.ontrack = ({ streams }) => {
-      // setRemoteStreams(streams);
+      console.log(streams);
       const myRemoteStream = streams[0];
       setRemoteStreams(streams);
 
@@ -84,20 +86,22 @@ const Call = () => {
       }
     };
 
+    // Fires when the browser thinks you need to renegotiate your session
+    pc.onicegatheringstatechange = () => {
+      console.log(pc.iceGatheringState);
+    };
+
+    //
+    pc.onnegotiationneeded = async () => {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      signaling.send(
+        JSON.stringify({ type: "offer", sdp: pc.localDescription })
+      );
+    };
+
     signaling.onopen = () => {
-      // safe to send now
-      if (pcRef.current) {
-        pcRef.current.createOffer().then(async (offer) => {
-          await pcRef.current!.setLocalDescription(offer);
-          signaling.send(
-            JSON.stringify({
-              type: "offer",
-              sdp: pcRef.current!.localDescription,
-            })
-          );
-          console.log("connected to RTC WS");
-        });
-      }
+      console.log("connected to RTC WS");
     };
 
     // Incoming signaling messages
@@ -130,18 +134,26 @@ const Call = () => {
       }
     };
 
-    // return () => {
-    //   signaling.close();
-    // };
+    signaling.onerror = console.error;
+    signaling.onclose = (e) => console.log("WS closed", e);
+
+    return () => {
+      // Close WebSocket
+      signaling.close();
+      // Close peer connection
+      pcRef.current?.close();
+      // Stop all local tracks
+      localStream?.getTracks().forEach((t) => t.stop());
+    };
   }, []);
 
-  useEffect(() => {
-    if (remoteStreams && remoteVideoRef.current) {
-      console.log(remoteStreams[0].getVideoTracks());
+  // useEffect(() => {
+  //   if (remoteStreams && remoteVideoRef.current) {
+  //     console.log(remoteStreams[0].getVideoTracks());
 
-      remoteVideoRef.current.srcObject = remoteStreams[0];
-    }
-  }, [remoteStreams]);
+  //     remoteVideoRef.current.srcObject = remoteStreams[0];
+  //   }
+  // }, [remoteStreams]);
 
   // hanlde toggle camera
   useEffect(() => {
@@ -167,13 +179,13 @@ const Call = () => {
         Top
       </div>
       <div className="flex flex-col justify-center items-center gap-2 w-full">
-        {/* <video
+        <video
           className="scale-x-[-1] w-fit"
           autoPlay
           playsInline
           ref={remoteVideoRef}
-        ></video> */}
-        {remoteStreams &&
+        ></video>
+        {/* {remoteStreams &&
           (remoteStreams[0].getVideoTracks()[0].enabled ? (
             <video
               className="scale-x-[-1] w-fit"
@@ -186,7 +198,7 @@ const Call = () => {
               className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}
               style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
             ></div>
-          ))}
+          ))} */}
 
         {/* {remoteVideoRef.current?.srcObject ? (
           <video
