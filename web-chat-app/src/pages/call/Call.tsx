@@ -263,7 +263,7 @@ const Call = () => {
 
   return (
     <div
-      className="relative w-full h-screen flex justify-center items-center overflow-hidden"
+      className="relative w-screen h-screen flex justify-center items-center overflow-hidden"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -289,15 +289,17 @@ const Call = () => {
         </div>
       </div>
 
+      <div
+        className="absolute inset-0 bg-cover bg-no-repeat bg-center scale-110 filter blur-md brightness-50"
+        style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
+      ></div>
+
+      {/* Overlay (optional) */}
+      <div className="absolute inset-0 bg-black/40"></div>
+
+      {/* MAIN DISPLAY  */}
       {!isConnected && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-no-repeat bg-center scale-110 filter blur-md brightness-50"
-            style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
-          ></div>
-
-          {/* Overlay (optional) */}
-          <div className="absolute inset-0 bg-black/40"></div>
           <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4 text-white">
             {/* Centered Avatar */}
             <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl">
@@ -313,12 +315,11 @@ const Call = () => {
         </>
       )}
 
-      {isConnected &&
-        remoteMediaState.length &&
+      {remoteMediaState.length &&
         (remoteMediaState[0].isCameraOpen ? (
-          <div className="flex flex-col justify-center items-center gap-2 w-full">
+          <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
             <video
-              className="scale-x-[-1] w-fit"
+              className="scale-x-[-1] h-screen w-auto mx-auto object-contain"
               autoPlay
               playsInline
               ref={remoteVideoRef}
@@ -346,8 +347,6 @@ const Call = () => {
             </div>
           </>
         ))}
-
-      {/* MAIN DISPLAY  */}
 
       <div className="flex items-center justify-center gap-4 absolute bottom-4 z-20">
         <Button className="rounded-full cursor-pointer">
