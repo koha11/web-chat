@@ -15,7 +15,7 @@ const ContactSchema = new Schema<IContact>(
       type: Schema.Types.ObjectId,
       ref: "Chat",
     },
-    relationship: { type: Schema.Types.String, required: true },
+    relationships: { type: Schema.Types.Map, of: String, required: true },
   },
   { timestamps: true }
 );

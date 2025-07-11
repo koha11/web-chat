@@ -5,7 +5,7 @@ export const contactTypeDefs = gql`
     id: ID!
     users: [User!]!
     chatId: String
-    relationship: String!
+    relationships: JSONObject
 
     createdAt: Date
     updatedAt: Date
@@ -29,6 +29,8 @@ export const contactTypeDefs = gql`
 
   extend type Mutation {
     postContact(contactId: ID): Contact
-    sendConnect(userId: ID): Contact
+    sendRequest(userId: ID!): Contact
+    hanldeRequest(userId: ID!, isAccepted: Boolean!): Contact
+    removeConnect(userId: ID!): Contact
   }
 `;

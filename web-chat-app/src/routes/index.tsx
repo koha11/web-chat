@@ -11,7 +11,7 @@ const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
 const Register = lazy(() => import("../pages/home/Register"));
 const Contact = lazy(() => import("../pages/contact/Contact"));
-const Me = lazy(() => import("../pages/contact/Contact"));
+const Me = lazy(() => import("../pages/account/Account"));
 const Call = lazy(() => import("../pages/call/Call"));
 
 const router = createBrowserRouter([

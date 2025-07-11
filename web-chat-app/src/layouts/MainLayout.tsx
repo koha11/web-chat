@@ -97,7 +97,6 @@ const Mainlayout = () => {
           if (!subscriptionData) return prev;
 
           const responseCall = subscriptionData.data.responseCall;
-          console.log(subscriptionData.data);
 
           if (!responseCall) setOngoingCall(null);
         },

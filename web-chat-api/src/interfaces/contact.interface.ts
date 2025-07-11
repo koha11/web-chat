@@ -6,7 +6,7 @@ export default interface IContact {
   id: Types.ObjectId;
   users: Types.ObjectId[] | IUser[];
   chatId: Types.ObjectId;
-  relationship: ContactRelationship;
+  relationships: Map<String, ContactRelationship>;
 
   createdAt?: Date;
   updatedAt?: Date;

@@ -1,0 +1,111 @@
+import { useEffect, useState } from "react";
+import {
+  Link,
+  NavigationType,
+  NavLink,
+  Outlet,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
+import { useGetContacts } from "../../hooks/contact.hook";
+import Cookies from "js-cookie";
+import Loading from "../../components/ui/loading";
+import {
+  ArrowLeftCircle,
+  Key,
+  MoreHorizontal,
+  MoveLeftIcon,
+  Plus,
+  Settings,
+  Shield,
+  ShieldAlert,
+  UserIcon,
+} from "lucide-react";
+import { usePostChat } from "../../hooks/chat.hook";
+import { Button } from "../../components/ui/button";
+import AddContactDialog from "../../components/contact/AddContactDialog";
+
+const Account = () => {
+  const userId = Cookies.get("userId") ?? "";
+  const navigate = useNavigate();
+
+  const [contactList, setContactList] = useState([]);
+  const [onlineList, setOnlineList] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
+
+  const { data: contacts, loading: isContactsLoading } = useGetContacts({
+    userId,
+  });
+
+  const [postChat, { data: createdChat }] = usePostChat();
+
+  useEffect(() => {
+    if (createdChat) navigate("/m/" + createdChat.postChat.cursor);
+  }, [createdChat]);
+
+  if (isContactsLoading) return <Loading></Loading>;
+
+  return (
+    <div className="flex justify-center text-black h-screen">
+      <div className="container flex bg-white gap-4 py-4">
+        <section
+          className="w-[25%] h-full p-2 bg-white rounded-2xl"
+          style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
+        >
+          <div className="flex justify-baseline items-center gap-4 h-[10%] px-2">
+            <div className="text-xl">
+              <Link to={"/m"}>
+                <ArrowLeftCircle></ArrowLeftCircle>
+              </Link>
+            </div>
+            <h1 className="text-2xl font-bold">Tài khoản</h1>
+          </div>
+
+          <div className="h-[90%] overflow-y-scroll flex flex-col gap-2 mt-4 px-2">
+            <Button
+              onClick={(e) => {}}
+              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
+              variant={"outline"}
+            >
+              <div className="flex gap-4 items-center">
+                <UserIcon></UserIcon>
+                <div className="font-bold">General Information</div>
+              </div>
+            </Button>
+            <Button
+              onClick={(e) => {}}
+              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
+              variant={"outline"}
+            >
+              <div className="flex gap-4 items-center">
+                <ShieldAlert></ShieldAlert>
+                <div className="font-bold">Security</div>
+              </div>
+            </Button>
+            <Button
+              onClick={(e) => {}}
+              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
+              variant={"outline"}
+            >
+              <div className="flex gap-4 items-center">
+                <Settings></Settings>
+                <div className="font-bold">Settings</div>
+              </div>
+            </Button>
+          </div>
+        </section>
+        <section
+          className="w-[75%] h-full p-4 bg-white rounded-2xl"
+          style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
+        ></section>
+      </div>
+      <AddContactDialog
+        isOpen={isAddDialogOpen}
+        setOpen={setAddDialogOpen}
+      ></AddContactDialog>
+    </div>
+  );
+};
+
+export default Account;
