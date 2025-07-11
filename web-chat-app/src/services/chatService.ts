@@ -31,6 +31,27 @@ export const GET_CHATS = gql`
   }
 `;
 
+export const GET_CHAT = gql`
+  query GetChat($chatId: ID!) {
+    chat(chatId: $chatId) {
+      id
+      chatName
+      chatAvatar
+      nicknames
+      updatedAt
+      lastMsgSeen
+      users {
+        id
+        fullname
+        avatar
+        isOnline
+        lastLogined
+        userType
+      }
+    }
+  }
+`;
+
 export const POST_CHAT = gql`
   mutation PostChat($users: [ID!]!) {
     postChat(users: $users) {

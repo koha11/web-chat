@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
   CHANGE_NICKNAME,
+  GET_CHAT,
   GET_CHATS,
   MAKE_CALL,
   POST_CHAT,
@@ -65,6 +66,59 @@ export const useGetChats = ({
         };
       }),
       pageInfo: queryData.pageInfo,
+    };
+  }
+
+  return {
+    data: data,
+    loading: myQuery.loading,
+    subscribeToMore: myQuery.subscribeToMore,
+    refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
+  };
+};
+
+export const useGetChat = ({
+  chatId,
+  userId,
+}: {
+  chatId: string;
+  userId: string;
+}): IMyQueryResult<IChat> => {
+  const myQuery = useQuery(GET_CHAT, { variables: { chatId } });
+
+  if (myQuery.error) throw myQuery.error;
+
+  let data: IChat | undefined;
+
+  if (myQuery.data) {
+    const chat = myQuery.data.chat;
+    const users = chat.users as IUser[];
+    const isGroupChat = chat.users.length > 2;
+
+    const defaultChatAvatar =
+      users.find((user) => user.id != userId)?.avatar ?? "";
+
+    const defaultChatName =
+      chat.nicknames[users.find((user) => user.id != userId)!.id];
+
+    const defaultGroupChatName = users.reduce<String>((acc, user) => {
+      if (user.id == userId) return acc;
+
+      return acc == ""
+        ? acc + chat.nicknames[user.id].split(" ")[0]
+        : acc + ", " + chat.nicknames[user.id].split(" ")[0];
+    }, "");
+
+    data = {
+      ...chat,
+      chatAvatar: chat.chatAvatar == "" ? defaultChatAvatar : chat.chatAvatar,
+      chatName:
+        chat.chatName == ""
+          ? isGroupChat
+            ? defaultGroupChatName
+            : defaultChatName
+          : chat.chatName,
     };
   }
 

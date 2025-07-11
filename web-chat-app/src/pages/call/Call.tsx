@@ -23,6 +23,9 @@ import {
   VideoHTMLAttributes,
 } from "react";
 import { useLocation } from "react-router-dom";
+import { useGetChat } from "../../hooks/chat.hook";
+import Cookies from "js-cookie";
+import Loading from "../../components/ui/loading";
 
 const Call = () => {
   const location = useLocation();
@@ -30,6 +33,14 @@ const Call = () => {
   const hasVideo = queryParams.get("has_video")?.toLowerCase() == "true";
   const initializeVideo =
     queryParams.get("initialize_video")?.toLowerCase() == "true";
+  const roomId = queryParams.get("room_id")!;
+
+  const userId = Cookies.get("userId")!;
+
+  const { data: chat, loading: isChatLoading } = useGetChat({
+    chatId: roomId,
+    userId,
+  });
 
   const [isVideoCollapsibleOpen, setVideoCollapsibleOpen] = useState(true);
   const [isCameraOpen, setCameraOpen] = useState(initializeVideo);
@@ -172,6 +183,10 @@ const Call = () => {
       localVideoRef.current.srcObject = localStream;
     }
   }, [isMicroOpen]);
+
+  if (isChatLoading) return <Loading></Loading>;
+
+  console.log(chat);
 
   return (
     <div className="relative w-full h-screen flex justify-center items-center">

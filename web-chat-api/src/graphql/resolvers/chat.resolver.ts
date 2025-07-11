@@ -10,7 +10,7 @@ import User from "@/models/User.model.ts";
 
 export const chatResolvers: IResolvers = {
   Query: {
-    chats: async (_p: any, { chatId, first, after }, { user }: IMyContext) => {
+    chats: async (_p: any, { first, after }, { user }: IMyContext) => {
       const result = await chatService.getChatList({
         userId: user.id.toString(),
         after,
@@ -18,6 +18,11 @@ export const chatResolvers: IResolvers = {
       });
 
       return result;
+    },
+    chat: async (_p, { chatId }, {}) => {
+      const chat = await Chat.findById(chatId).populate("users");
+
+      return chat;
     },
   },
   Mutation: {

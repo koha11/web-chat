@@ -337,7 +337,7 @@ const ChatDetails = ({
             onClick={() => {
               makeCall({ variables: { chatId, hasVideo: false } });
               window.open(
-                "/call?has_video=false&initialize_video=true",
+                `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
                 "_blank",
                 "width=1300,height=600,location=no,toolbar=no"
               );
@@ -345,12 +345,19 @@ const ChatDetails = ({
           >
             <Phone></Phone>
           </Button>
-          <Link
-            to={""}
+          <Button
             className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+            onClick={() => {
+              makeCall({ variables: { chatId, hasVideo: true } });
+              window.open(
+                `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
+                "_blank",
+                "width=1300,height=600,location=no,toolbar=no"
+              );
+            }}
           >
             <Video></Video>
-          </Link>
+          </Button>
           <Button
             className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
             onClick={() => setChatInfoOpen()}
