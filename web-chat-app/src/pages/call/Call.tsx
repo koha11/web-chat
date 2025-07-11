@@ -78,12 +78,16 @@ const Call = () => {
       setRemoveStream(myRemoteStream);
       setRemoteMediaState(() => [
         {
-          isCameraOpen: myRemoteStream.getVideoTracks()[0].enabled,
-          isMicroOpen: myRemoteStream.getAudioTracks()[0].enabled,
+          isCameraOpen:
+            myRemoteStream.getVideoTracks().length == 0
+              ? false
+              : myRemoteStream.getVideoTracks()[0].enabled,
+          isMicroOpen:
+            myRemoteStream.getAudioTracks().length == 0
+              ? false
+              : myRemoteStream.getAudioTracks()[0].enabled,
         },
       ]);
-
-      console.log(myRemoteStream.getTracks());
 
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = myRemoteStream;
@@ -276,21 +280,6 @@ const Call = () => {
               style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
             ></div>
           ))}
-
-        {/* {remoteStream &&
-          (remoteStream.getVideoTracks()[0].enabled ? (
-            <video
-              className="scale-x-[-1] w-fit"
-              autoPlay
-              playsInline
-              ref={remoteVideoRef}
-            ></video>
-          ) : (
-            <div
-              className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}
-              style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
-            ></div>
-          ))} */}
 
         {!isConnected && (
           <>

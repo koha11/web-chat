@@ -1,4 +1,4 @@
-import { Phone, X } from "lucide-react";
+import { Phone, Video, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { IUser } from "../../interfaces/user.interface";
@@ -47,13 +47,13 @@ const OngoingCallDialog = ({
               onClick={() => {
                 setOpen(null);
                 window.open(
-                  `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
+                  `/call?has_video=${hasVideo}&initialize_video=${hasVideo}&room_id=${chatId}`,
                   "_blank",
                   "width=1300,height=600,location=no,toolbar=no"
                 );
               }}
             >
-              <Phone></Phone>
+              {hasVideo ? <Video></Video> : <Phone></Phone>}
             </Button>
           </div>
         </div>

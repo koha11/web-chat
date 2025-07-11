@@ -338,7 +338,7 @@ const ChatDetails = ({
             onClick={() => {
               makeCall({ variables: { chatId, hasVideo: false } });
               window.open(
-                `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
+                `/call?has_video=false&initialize_video=false&room_id=${chatId}`,
                 "_blank",
                 "width=1300,height=600,location=no,toolbar=no"
               );
