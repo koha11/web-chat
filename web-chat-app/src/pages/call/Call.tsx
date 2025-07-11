@@ -1,8 +1,10 @@
 import {
   ArrowBigLeftDashIcon,
   ArrowBigRightDashIcon,
+  LucideGamepad,
   Mic,
   MicOff,
+  MoreHorizontal,
   PhoneIcon,
   ScreenShare,
   UserPlus2Icon,
@@ -48,7 +50,7 @@ const Call = () => {
   const [isMicroOpen, setMicroOpen] = useState(true);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoveStream] = useState<MediaStream | null>(null);
-  const [otherUserId, setOtherUserId] = useState<string | null>(null);
+  const [isHover, setHover] = useState(false);
 
   const [remoteMediaState, setRemoteMediaState] = useState<
     {
@@ -260,13 +262,61 @@ const Call = () => {
   if (isChatLoading) return <Loading></Loading>;
 
   return (
-    <div className="relative w-full h-screen flex justify-center items-center">
-      <div className="flex items-center justify-center gap-4 absolute top-4">
-        Top
+    <div
+      className="relative w-full h-screen flex justify-center items-center overflow-hidden"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {/* TOP SECTION  */}
+      <div
+        className="flex items-center justify-between w-full px-8 gap-4 absolute top-4 z-20"
+        hidden={!isHover}
+      >
+        <div className="flex gap-4 items-center">
+          <div
+            className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}
+            style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
+          ></div>
+          <div className={`font-bold text-white`}>{chat?.chatName}</div>
+        </div>
+        <div className="flex gap-4">
+          <Button variant={"outline"} className="rounded-full cursor-pointer">
+            <LucideGamepad></LucideGamepad>
+          </Button>
+          <Button variant={"outline"} className="rounded-full cursor-pointer">
+            <MoreHorizontal></MoreHorizontal>
+          </Button>
+        </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-2 w-full">
-        {remoteMediaState.length &&
-          (remoteMediaState[0].isCameraOpen ? (
+
+      {!isConnected && (
+        <>
+          <div
+            className="absolute inset-0 bg-cover bg-no-repeat bg-center scale-110 filter blur-md brightness-50"
+            style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
+          ></div>
+
+          {/* Overlay (optional) */}
+          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4 text-white">
+            {/* Centered Avatar */}
+            <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl">
+              <img
+                src={chat?.chatAvatar}
+                alt="User Avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="font-bold">{chat?.chatName}</div>
+            <div>is calling ...</div>
+          </div>
+        </>
+      )}
+
+      {isConnected &&
+        remoteMediaState.length &&
+        (remoteMediaState[0].isCameraOpen ? (
+          <div className="flex flex-col justify-center items-center gap-2 w-full">
             <video
               className="scale-x-[-1] w-fit"
               autoPlay
@@ -274,25 +324,32 @@ const Call = () => {
               ref={remoteVideoRef}
               hidden={!isConnected}
             ></video>
-          ) : (
-            <div
-              className={`w-24 h-24 rounded-full bg-contain bg-no-repeat bg-center`}
-              style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
-            ></div>
-          ))}
-
-        {!isConnected && (
+          </div>
+        ) : (
           <>
             <div
-              className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}
+              className="absolute inset-0 bg-cover bg-no-repeat bg-center scale-110 filter blur-md brightness-50"
               style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
             ></div>
-            <div className="text-xl font-bold">{chat?.chatName}</div>
-            <div className="text-sm">Is calling...</div>
+
+            {/* Overlay (optional) */}
+            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              {/* Centered Avatar */}
+              <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl">
+                <img
+                  src={chat?.chatAvatar}
+                  alt="User Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </>
-        )}
-      </div>
-      <div className="flex items-center justify-center gap-4 absolute bottom-4">
+        ))}
+
+      {/* MAIN DISPLAY  */}
+
+      <div className="flex items-center justify-center gap-4 absolute bottom-4 z-20">
         <Button className="rounded-full cursor-pointer">
           <ScreenShare></ScreenShare>
         </Button>
@@ -341,16 +398,28 @@ const Call = () => {
             </CollapsibleTrigger>
           </CollapsibleContent>
         ) : (
-          <CollapsibleContent className="absolute bottom-4 right-4 h-full w-full rounded-md bg-gray-100 flex justify-center items-center">
+          <CollapsibleContent className="absolute bottom-4 right-4 h-full w-full rounded-md flex justify-center items-center">
             <div
-              className="h-32 w-32 bg-contain bg-no-repeat bg-center rounded-full bg-gray-200"
-              style={{
-                backgroundImage: `url(${
-                  (chat?.users as IUser[]).find((user) => user.id == userId)!
-                    .avatar
-                })`,
-              }}
+              className="absolute inset-0 bg-cover bg-no-repeat bg-center scale-110 filter blur-md brightness-50 rounded-md"
+              style={{ backgroundImage: `url(${chat?.chatAvatar})` }}
             ></div>
+
+            {/* Overlay (optional) */}
+            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+              {/* Centered Avatar */}
+              <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl">
+                <img
+                  src={
+                    (chat?.users as IUser[]).find((user) => user.id == userId)!
+                      .avatar
+                  }
+                  alt="User Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
             <CollapsibleTrigger className="bg-gray-200 h-full w-4 absolute left-0 rounded-l-md flex items-center justify-center">
               <ArrowBigRightDashIcon></ArrowBigRightDashIcon>
             </CollapsibleTrigger>
