@@ -19,15 +19,23 @@ import {
 import { usePostChat } from "../../hooks/chat.hook";
 import { Button } from "../../components/ui/button";
 import AddContactDialog from "../../components/contact/AddContactDialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/ui/popover";
+import ReceivedConnectRequestDialog from "../../components/contact/ReceivedConnectRequestDialog";
+import SentConnectRequestDialog from "../../components/contact/SentConnectRequestDialog";
 
 const Contact = () => {
   const userId = Cookies.get("userId") ?? "";
   const navigate = useNavigate();
 
-  const [contactList, setContactList] = useState([]);
-  const [onlineList, setOnlineList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
+  const [isReceivedRequestDialogOpen, setReceivedRequestDialogOpen] =
+    useState(false);
+  const [isSentRequestDialogOpen, setSentRequestDialogOpen] = useState(false);
 
   const { data: contacts, loading: isContactsLoading } = useGetContacts({
     userId,
@@ -100,6 +108,7 @@ const Contact = () => {
             })}
           </nav>
         </section>
+
         <section
           className="w-[75%] h-full p-4 bg-white rounded-2xl"
           style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
@@ -117,7 +126,28 @@ const Contact = () => {
             </form>
           </div>
           <div className="h-[10%] flex items-center justify-between py-4 px-2">
-            <div>SORT</div>
+            <div className="flex items-center justify-baseline gap-4">
+              <Button
+                variant={"outline"}
+                className="cursor-pointer rounded-xl relative"
+                onClick={() => setReceivedRequestDialogOpen(true)}
+              >
+                <span>Received Connect Request</span>
+                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
+                  12
+                </div>
+              </Button>
+              <Button
+                variant={"outline"}
+                className="cursor-pointer rounded-xl relative"
+                onClick={() => setSentRequestDialogOpen(true)}
+              >
+                <span>Sent Connect Request</span>
+                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
+                  12
+                </div>
+              </Button>
+            </div>
             <Button
               variant={"outline"}
               className="cursor-pointer"
@@ -147,12 +177,17 @@ const Contact = () => {
                     <div className="font-bold">{contact?.fullname}</div>
                     <div className="">{contact?.username}</div>
                   </div>
-                  <Link
-                    to={""}
-                    className="p-2 rounded-full hover:bg-gray-200 font-bold text-xl"
-                  >
-                    <MoreHorizontal></MoreHorizontal>
-                  </Link>
+
+                  <Popover>
+                    <PopoverTrigger className="p-2 rounded-full hover:bg-gray-200 font-bold cursor-pointer">
+                      <MoreHorizontal></MoreHorizontal>
+                    </PopoverTrigger>
+                    <PopoverContent className="max-w-fit">
+                      <Button className="w-full text-black bg-white cursor-pointer hover:bg-gray-200">
+                        Remove connect
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               );
             })}
@@ -163,6 +198,14 @@ const Contact = () => {
         isOpen={isAddDialogOpen}
         setOpen={setAddDialogOpen}
       ></AddContactDialog>
+      <ReceivedConnectRequestDialog
+        isOpen={isReceivedRequestDialogOpen}
+        setOpen={setReceivedRequestDialogOpen}
+      ></ReceivedConnectRequestDialog>
+      <SentConnectRequestDialog
+        isOpen={isSentRequestDialogOpen}
+        setOpen={setSentRequestDialogOpen}
+      ></SentConnectRequestDialog>
     </div>
   );
 };

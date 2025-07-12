@@ -4,7 +4,7 @@ import { IUser } from "./user.interface";
 export default interface IContact {
   id: string;
   users: IUser[];
-  relationship: ContactRelationship;
+  relationships: { [userId: string]: ContactRelationship };
   chatId?: string;
 
   createdAt?: Date;

@@ -13,7 +13,7 @@ export const GET_CONTACTS = gql`
             fullname
           }
           chatId
-          relationship
+          relationships
         }
       }
     }
