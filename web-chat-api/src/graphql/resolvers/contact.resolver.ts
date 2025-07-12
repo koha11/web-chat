@@ -1,6 +1,7 @@
 import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
 import IMyContext from "@/interfaces/socket/myContext.interface.ts";
 import Contact from "@/models/Contact.model.ts";
+import User from "@/models/User.model.ts";
 import contactService from "@/services/ContactService.ts";
 import { IResolvers } from "@graphql-tools/utils";
 
@@ -22,7 +23,9 @@ export const contactResolvers: IResolvers = {
       let contact = await Contact.findOne({ users: [userId, user.id] });
 
       if (!contact) {
-        contact = await Contact.create({ users: [userId, user.id] });
+        contact = await Contact.create({
+          users: [userId, user.id],
+        });
       }
 
       // khoi tao relationsMap
@@ -34,7 +37,9 @@ export const contactResolvers: IResolvers = {
 
       await contact.save();
 
-      return contact;
+      const returnUser = await User.findById(userId);
+
+      return returnUser;
     },
     hanldeRequest: async (
       _p: any,

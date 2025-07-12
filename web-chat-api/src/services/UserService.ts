@@ -1,3 +1,4 @@
+import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
 import UserType from "@/enums/UserType.enum.ts";
 import IModelConnection from "@/interfaces/modelConnection.interface.ts";
 import { IUser } from "@/interfaces/user.interface.ts";
@@ -30,9 +31,9 @@ class UserService {
 
     const users = await User.find(filter).sort({ _id: -1 });
 
-    const userContacts = await Contact.find({ users: userId }).populate(
-      "users"
-    );
+    const userContacts = await Contact.find({
+      [`relationships.${userId}`]: { $ne: ContactRelationship.connected },
+    }).populate("users");
 
     const connectedUsers = userContacts.map(
       (userContact) =>
