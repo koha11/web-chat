@@ -3,14 +3,11 @@ import {
   GOOGLE_CLIENT_SECRET,
   JWT_SECRET,
 } from "@/config/env.ts";
-import authController from "@/controllers/AuthController.ts";
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
 import { google } from "googleapis";
 import authService from "@/services/AuthService.ts";
 import User from "@/models/User.model.ts";
-import Account from "@/models/Account.model.ts";
 import userService from "@/services/UserService.ts";
 
 const authRouter = Router();

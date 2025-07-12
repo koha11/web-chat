@@ -1,11 +1,10 @@
-import { DefaultEventsMap, Server, Socket } from "socket.io";
-import Chat from "../models/Chat.model";
-import SocketEvent from "../enums/SocketEvent.enum";
-import { IChat } from "../interfaces/chat.interface";
-import IModelConnection from "../interfaces/modelConnection.interface";
-import { toObjectId } from "../utils/mongoose";
-import User from "../models/User.model";
-import Contact from "../models/Contact.model";
+import { IChat } from "@/interfaces/chat.interface.ts";
+import IModelConnection from "@/interfaces/modelConnection.interface.ts";
+import Chat from "@/models/Chat.model.ts";
+import Contact from "@/models/Contact.model.ts";
+import User from "@/models/User.model.ts";
+import { toObjectId } from "@/utils/mongoose.ts";
+
 
 class ChatService {
   getChatList = async ({
