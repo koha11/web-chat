@@ -1,0 +1,19 @@
+import mongoose, { Schema } from "mongoose";
+import MessageStatus from "../enums/MessageStatus.enum";
+// Define schema
+const MessageSchema = new Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    chat: { type: Schema.Types.ObjectId, ref: "Chat" },
+    msgBody: { type: String, required: true },
+    status: { type: String, required: true, default: MessageStatus.SENT },
+    seenList: { type: Map, of: String, default: {} },
+    replyForMsg: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
+    isHiddenFor: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    editedAt: { type: Date },
+    unsentAt: { type: Date },
+    isForwarded: { type: Boolean, default: false },
+}, { timestamps: true });
+// Add soft delete plugin
+// Export model
+const Message = mongoose.model("Message", MessageSchema);
+export default Message;
