@@ -29,6 +29,8 @@ export const userTypeDefs = gql`
   extend type Query {
     users(userId: ID): [User!]!
     connectableUsers(userId: ID!, first: Int, after: ID): UserConnection!
+    receivedConnectRequests(after: ID, first: Int = 10): UserConnection!
+    sentConnectRequests(after: ID, first: Int = 10): UserConnection!
   }
 
   extend type Mutation {

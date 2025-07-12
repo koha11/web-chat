@@ -3,8 +3,12 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import Cookies from "js-cookie";
-import { useGetConnectableUsers } from "../../hooks/user.hook";
+import {
+  useGetConnectableUsers,
+  useGetReceivedConnectRequests,
+} from "../../hooks/user.hook";
 import Loading from "../ui/loading";
+import { useHandleRequest } from "../../hooks/contact.hook";
 
 const ReceivedConnectRequestDialog = ({
   isOpen,
@@ -13,14 +17,14 @@ const ReceivedConnectRequestDialog = ({
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 }) => {
-  const userId = Cookies.get("userId") ?? "";
+  const {
+    data: receivedConnectRequests,
+    loading: isReceivedConnectRequestsLoading,
+  } = useGetReceivedConnectRequests({});
 
-  const { data: connectableUsers, loading: isConnectableUsers } =
-    useGetConnectableUsers({
-      userId,
-    });
+  const [handleRequest] = useHandleRequest({});
 
-  if (isConnectableUsers) return <Loading></Loading>;
+  if (isReceivedConnectRequestsLoading) return <Loading></Loading>;
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -32,7 +36,8 @@ const ReceivedConnectRequestDialog = ({
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
           <div className="py-2">
-            {connectableUsers!.map((user) => {
+            {receivedConnectRequests?.edges.map((edge) => {
+              const user = edge.node;
               return (
                 <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
                   <div className="flex gap-4 items-center">
@@ -48,14 +53,28 @@ const ReceivedConnectRequestDialog = ({
                     <Button
                       className="cursor-pointer bg-red-600 text-white rounded-2xl"
                       variant={"outline"}
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleRequest({
+                          variables: {
+                            contactId: edge.cursor,
+                            isAccepted: false,
+                          },
+                        });
+                      }}
                     >
                       <X></X>
                     </Button>
                     <Button
                       className="cursor-pointer bg-green-400 text-white rounded-2xl"
                       variant={"outline"}
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleRequest({
+                          variables: {
+                            contactId: edge.cursor,
+                            isAccepted: true,
+                          },
+                        });
+                      }}
                     >
                       <Check></Check>
                     </Button>

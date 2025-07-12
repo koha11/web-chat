@@ -30,7 +30,7 @@ export const contactTypeDefs = gql`
   extend type Mutation {
     postContact(contactId: ID): Contact
     sendRequest(userId: ID!): User
-    hanldeRequest(userId: ID!, isAccepted: Boolean!): Contact
+    handleRequest(contactId: ID!, isAccepted: Boolean!): Boolean
     removeConnect(userId: ID!): Contact
   }
 `;

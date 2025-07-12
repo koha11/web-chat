@@ -24,13 +24,12 @@ export const SEND_REQUEST = gql`
   mutation SendRequest($userId: ID!) {
     sendRequest(userId: $userId) {
       id
-      users {
-        id
-        avatar
-        fullname
-      }
-      chatId
-      relationships
     }
+  }
+`;
+
+export const HANDLE_REQUEST = gql`
+  mutation HandleRequest($contactId: ID!, $isAccepted: Boolean!) {
+    handleRequest(contactId: $contactId, isAccepted: $isAccepted)
   }
 `;

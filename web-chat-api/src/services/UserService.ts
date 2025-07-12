@@ -64,6 +64,60 @@ class UserService {
     };
   };
 
+  getUsersByRelationship = async ({
+    relationship,
+    userId,
+    first = 10,
+    after,
+  }: {
+    userId: string;
+    relationship: ContactRelationship;
+    first?: number;
+    after?: string;
+  }): Promise<IModelConnection<IUser>> => {
+    const filter = {
+      [`relationships.${userId}`]: { $eq: relationship },
+    } as any;
+
+    if (after) {
+      // decode cursor into ObjectId timestamp or full id
+      filter._id = { $lt: toObjectId(after) };
+    }
+
+    const userContacts = await Contact.find(filter)
+      .sort({ _id: -1 })
+      .limit(first + 1)
+      .populate("users");
+
+    const docs = userContacts.map((userContact) => {
+      return {
+        user: (userContact.users as IUser[]).filter(
+          (user) => user.id.toString() != userId
+        )[0],
+        contactId: userContact.id,
+      };
+    });
+
+    const hasNextPage = docs.length > first;
+    const sliced = hasNextPage ? docs.slice(0, first) : docs;
+
+    const edges = sliced.map((doc) => ({
+      cursor: doc.contactId,
+      node: doc.user,
+    }));
+
+    const isNotEmpty = edges.length > 0;
+
+    return {
+      edges,
+      pageInfo: {
+        startCursor: isNotEmpty ? edges[0].cursor : null,
+        hasNextPage,
+        endCursor: isNotEmpty ? edges[edges.length - 1].cursor : null,
+      },
+    };
+  };
+
   createNewUser = async ({
     fullname,
     _id,

@@ -1,5 +1,9 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { GET_CONTACTS, SEND_REQUEST } from "../services/contactService";
+import {
+  GET_CONTACTS,
+  HANDLE_REQUEST,
+  SEND_REQUEST,
+} from "../services/contactService";
 import IContact from "../interfaces/contact.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
@@ -71,4 +75,12 @@ export const useSendRequest = (data: {
   //     }
   //   },
   // });
+};
+
+export const useHandleRequest = (data: {
+  userId?: string;
+  first?: number;
+  after?: string;
+}) => {
+  return useMutation(HANDLE_REQUEST);
 };

@@ -1,7 +1,8 @@
-import IContact from "../interfaces/contact.interface";
-import IModelConnection from "../interfaces/modelConnection.interface";
-import Contact from "../models/Contact.model";
-import { toObjectId } from "../utils/mongoose";
+import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
+import IContact from "@/interfaces/contact.interface.ts";
+import IModelConnection from "@/interfaces/modelConnection.interface.ts";
+import Contact from "@/models/Contact.model.ts";
+import { toObjectId } from "@/utils/mongoose.ts";
 
 class ContactService {
   getContacts = async ({
@@ -14,7 +15,9 @@ class ContactService {
     first?: number;
     after?: string;
   }): Promise<IModelConnection<IContact>> => {
-    const filter = { users: userId } as any;
+    const filter = {
+      [`relationships.${userId}`]: { $eq: ContactRelationship.connected },
+    } as any;
 
     if (after) {
       filter._id = { $lt: toObjectId(after) };

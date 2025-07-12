@@ -41,14 +41,18 @@ export const contactResolvers: IResolvers = {
 
       return returnUser;
     },
-    hanldeRequest: async (
+    handleRequest: async (
       _p: any,
-      { userId, isAccepted },
+      { contactId, isAccepted },
       { user }: IMyContext
     ) => {
-      const contact = await Contact.findOne({ users: [userId, user.id] });
+      const contact = await Contact.findById(contactId);
 
       if (!contact) throw new Error("ko ton tai contact nay");
+
+      const userId = contact.users
+        .filter((uid) => uid != user.id)[0]
+        .toString();
 
       const relationship = isAccepted
         ? ContactRelationship.connected
@@ -60,7 +64,7 @@ export const contactResolvers: IResolvers = {
 
       await contact.save();
 
-      return contact;
+      return true;
     },
   },
   Subscription: {},

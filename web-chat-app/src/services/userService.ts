@@ -19,3 +19,23 @@ export const GET_CONNECTABLE_USERS = gql`
     }
   }
 `;
+
+export const GET_RECEIVED_CONNECT_REQUESTS = gql`
+  query GetReceivedConnectRequests($first: Int, $after: ID) {
+    receivedConnectRequests(first: $first, after: $after) {
+      edges {
+        cursor
+        node {
+          id
+          avatar
+          fullname
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
