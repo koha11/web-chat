@@ -1,8 +1,8 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.js";
-import IMyContext from "@/interfaces/socket/myContext.interface.js";
-import Contact from "@/models/Contact.model.js";
-import User from "@/models/User.model.js";
-import contactService from "@/services/ContactService.js";
+import ContactRelationship from "../../enums/ContactRelationship.enum.js";
+import IMyContext from "../../interfaces/socket/myContext.interface.js";
+import Contact from "../../models/Contact.model.js";
+import User from "../../models/User.model.js";
+import contactService from "../../services/ContactService.js";
 import { IResolvers } from "@graphql-tools/utils";
 
 export const contactResolvers: IResolvers = {

@@ -1,4 +1,4 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.js";
+import ContactRelationship from "../enums/ContactRelationship.enum.js";
 import { Types } from "mongoose";
 import { IUser } from "./user.interface.js";
 

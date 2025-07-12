@@ -1,5 +1,5 @@
-import UserType from "@/enums/UserType.enum.js";
-import { IUser } from "@/interfaces/user.interface.js";
+import UserType from "../enums/UserType.enum.js";
+import { IUser } from "../interfaces/user.interface.js";
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 

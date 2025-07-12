@@ -1,4 +1,4 @@
-import Chat from "@/models/Chat.model.js";
+import Chat from "../../models/Chat.model.js";
 import { withFilter } from "graphql-subscriptions";
 import MessageStatus from "../../enums/MessageStatus.enum.js";
 import SocketEvent from "../../enums/SocketEvent.enum.js";
@@ -8,7 +8,7 @@ import User from "../../models/User.model.js";
 import chatService from "../../services/ChatService.js";
 import messageService from "../../services/MessageService.js";
 import { toObjectId } from "../../utils/mongoose.js";
-import UserType from "@/enums/UserType.enum.js";
+import UserType from "../../enums/UserType.enum.js";
 export const messageResolvers = {
     Query: {
         messages: async (_p, { chatId, msgId, after, first }, { user, pubsub }) => {

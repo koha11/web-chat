@@ -1,8 +1,8 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.js";
-import IContact from "@/interfaces/contact.interface.js";
-import IModelConnection from "@/interfaces/modelConnection.interface.js";
-import Contact from "@/models/Contact.model.js";
-import { toObjectId } from "@/utils/mongoose.js";
+import ContactRelationship from "../enums/ContactRelationship.enum.js";
+import IContact from "../interfaces/contact.interface.js";
+import IModelConnection from "../interfaces/modelConnection.interface.js";
+import Contact from "../models/Contact.model.js";
+import { toObjectId } from "../utils/mongoose.js";
 
 class ContactService {
   getContacts = async ({

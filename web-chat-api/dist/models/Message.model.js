@@ -1,4 +1,4 @@
-import MessageStatus from "@/enums/MessageStatus.enum.js";
+import MessageStatus from "../enums/MessageStatus.enum.js";
 import mongoose, { Schema } from "mongoose";
 // Define schema
 const MessageSchema = new Schema({

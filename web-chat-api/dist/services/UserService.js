@@ -1,9 +1,9 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.js";
-import UserType from "@/enums/UserType.enum.js";
-import Chat from "@/models/Chat.model.js";
-import Contact from "@/models/Contact.model.js";
-import User from "@/models/User.model.js";
-import { toObjectId } from "@/utils/mongoose.js";
+import ContactRelationship from "../enums/ContactRelationship.enum.js";
+import UserType from "../enums/UserType.enum.js";
+import Chat from "../models/Chat.model.js";
+import Contact from "../models/Contact.model.js";
+import User from "../models/User.model.js";
+import { toObjectId } from "../utils/mongoose.js";
 class UserService {
     constructor() {
         this.getConnectableUsers = async ({ userId, first = 10, after, }) => {

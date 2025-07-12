@@ -1,4 +1,4 @@
-import UserType from "@/enums/UserType.enum.js";
+import UserType from "../enums/UserType.enum.js";
 import { Types } from "mongoose";
 
 // Interface for User document
@@ -10,7 +10,7 @@ export interface IUser {
   avatar?: string;
   isOnline: boolean;
   lastLogined?: string;
-  userType: UserType
+  userType: UserType;
 
   createdAt?: Date;
   updatedAt?: Date;

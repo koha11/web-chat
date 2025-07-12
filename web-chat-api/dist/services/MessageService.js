@@ -1,6 +1,6 @@
-import MessageStatus from "@/enums/MessageStatus.enum.js";
-import Message from "@/models/Message.model.js";
-import { toObjectId } from "@/utils/mongoose.js";
+import MessageStatus from "../enums/MessageStatus.enum.js";
+import Message from "../models/Message.model.js";
+import { toObjectId } from "../utils/mongoose.js";
 class MessageService {
     constructor() {
         this.getMessages = async ({ chatId, first = 10, after, }) => {

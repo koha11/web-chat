@@ -1,4 +1,4 @@
-import { OPEN_WEATHER_API_KEY } from "@/config/env.js";
+import { OPEN_WEATHER_API_KEY } from "../../config/env.js";
 import { Type } from "@google/genai";
 
 // Define the function declaration for the model

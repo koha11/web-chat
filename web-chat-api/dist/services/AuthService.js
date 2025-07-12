@@ -1,5 +1,5 @@
-import { JWT_SECRET } from "@/config/env.js";
-import Account from "@/models/Account.model.js";
+import { JWT_SECRET } from "../config/env.js";
+import Account from "../models/Account.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userService from "./UserService.js";

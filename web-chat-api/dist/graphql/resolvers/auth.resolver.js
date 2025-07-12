@@ -1,6 +1,6 @@
-import Account from "@/models/Account.model.js";
-import User from "@/models/User.model.js";
-import authService from "@/services/AuthService.js";
+import Account from "../../models/Account.model.js";
+import User from "../../models/User.model.js";
+import authService from "../../services/AuthService.js";
 import bcrypt from "bcryptjs";
 export const authResolvers = {
     Query: {},

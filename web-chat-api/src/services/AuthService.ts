@@ -1,8 +1,8 @@
-import { JWT_SECRET } from "@/config/env.js";
-import { IRegisterRequest } from "@/interfaces/auth/registerRequest.interface.js";
-import { ITokenPayload } from "@/interfaces/auth/tokenPayload.interface.js";
-import { IMyResponse } from "@/interfaces/myResponse.interface.js";
-import Account, { IAccount } from "@/models/Account.model.js";
+import { JWT_SECRET } from "../config/env.js";
+import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface.js";
+import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface.js";
+import { IMyResponse } from "../interfaces/myResponse.interface.js";
+import Account, { IAccount } from "../models/Account.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userService from "./UserService.js";

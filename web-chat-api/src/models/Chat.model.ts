@@ -1,4 +1,4 @@
-import { IChat } from "@/interfaces/chat.interface.js";
+import { IChat } from "../interfaces/chat.interface.js";
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import mongooseDelete, {
   SoftDeleteDocument,

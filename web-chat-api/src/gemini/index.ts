@@ -1,5 +1,5 @@
-import { GEMINI_API_KEY } from "@/config/env.js";
-import Message from "@/models/Message.model.js";
+import { GEMINI_API_KEY } from "../config/env.js";
+import Message from "../models/Message.model.js";
 import {
   GoogleGenAI,
   FunctionCallingConfigMode,

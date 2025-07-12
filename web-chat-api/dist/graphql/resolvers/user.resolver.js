@@ -1,6 +1,6 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.js";
-import User from "@/models/User.model.js";
-import userService from "@/services/UserService.js";
+import ContactRelationship from "../../enums/ContactRelationship.enum.js";
+import User from "../../models/User.model.js";
+import userService from "../../services/UserService.js";
 export const userResolvers = {
     Query: {
         users: async (_p, { userId }) => {

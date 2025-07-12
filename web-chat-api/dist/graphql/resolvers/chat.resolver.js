@@ -1,9 +1,9 @@
-import SocketEvent from "@/enums/SocketEvent.enum.js";
-import chatService from "@/services/ChatService.js";
-import { toObjectId } from "@/utils/mongoose.js";
+import SocketEvent from "../../enums/SocketEvent.enum.js";
+import chatService from "../../services/ChatService.js";
+import { toObjectId } from "../../utils/mongoose.js";
 import { withFilter } from "graphql-subscriptions";
-import Chat from "@/models/Chat.model.js";
-import User from "@/models/User.model.js";
+import Chat from "../../models/Chat.model.js";
+import User from "../../models/User.model.js";
 export const chatResolvers = {
     Query: {
         chats: async (_p, { first, after }, { user }) => {

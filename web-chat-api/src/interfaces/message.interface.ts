@@ -1,4 +1,4 @@
-import MessageStatus from "@/enums/MessageStatus.enum.js";
+import MessageStatus from "../enums/MessageStatus.enum.js";
 import { Types } from "mongoose";
 import { IChat } from "./chat.interface.js";
 import { IUser } from "./user.interface.js";

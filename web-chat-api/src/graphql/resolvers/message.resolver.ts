@@ -1,4 +1,4 @@
-import Chat from "@/models/Chat.model.js";
+import Chat from "../../models/Chat.model.js";
 import { withFilter } from "graphql-subscriptions";
 import {} from "graphql-type-json";
 import { Types } from "mongoose";
@@ -14,10 +14,10 @@ import chatService from "../../services/ChatService.js";
 import messageService from "../../services/MessageService.js";
 import { toObjectId } from "../../utils/mongoose.js";
 import { IResolvers } from "@graphql-tools/utils";
-import { Edge } from "@/interfaces/modelConnection.interface.js";
-import { IChat } from "@/interfaces/chat.interface.js";
-import UserType from "@/enums/UserType.enum.js";
-import { IUser } from "@/interfaces/user.interface.js";
+import { Edge } from "../../interfaces/modelConnection.interface.js";
+import { IChat } from "../../interfaces/chat.interface.js";
+import UserType from "../../enums/UserType.enum.js";
+import { IUser } from "../../interfaces/user.interface.js";
 
 export const messageResolvers: IResolvers = {
   Query: {

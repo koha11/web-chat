@@ -1,5 +1,5 @@
-import MessageStatus from "@/enums/MessageStatus.enum.js";
-import { IMessage } from "@/interfaces/message.interface.js";
+import MessageStatus from "../enums/MessageStatus.enum.js";
+import { IMessage } from "../interfaces/message.interface.js";
 import mongoose, { Schema } from "mongoose";
 
 // Define schema

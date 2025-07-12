@@ -2,13 +2,13 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   JWT_SECRET,
-} from "@/config/env.js";
+} from "../config/env.js";
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
-import authService from "@/services/AuthService.js";
-import User from "@/models/User.model.js";
-import userService from "@/services/UserService.js";
+import authService from "../services/AuthService.js";
+import User from "../models/User.model.js";
+import userService from "../services/UserService.js";
 
 const authRouter = Router();
 

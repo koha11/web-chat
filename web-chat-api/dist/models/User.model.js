@@ -1,4 +1,4 @@
-import UserType from "@/enums/UserType.enum.js";
+import UserType from "../enums/UserType.enum.js";
 import mongoose, { Schema } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 // Define schema
