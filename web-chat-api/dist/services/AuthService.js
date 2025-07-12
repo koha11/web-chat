@@ -1,71 +1,79 @@
-import { JWT_SECRET } from "../config/env";
-import jwt from "jsonwebtoken";
-import User from "../models/User.model";
+import { JWT_SECRET } from "@/config/env.js";
+import Account from "@/models/Account.model.js";
 import bcrypt from "bcryptjs";
-import Account from "../models/Account.model";
+import jwt from "jsonwebtoken";
+import userService from "./UserService.js";
 class AuthService {
-    async login(loginRequest) {
-        const account = await Account.findOne({ username: loginRequest.username });
-        if (!account)
-            return {
-                status: 401,
-                message: "Username is wrong",
-            };
-        var passwordIsValid = bcrypt.compareSync(loginRequest.password, account.password);
-        if (!passwordIsValid)
-            return {
-                status: 401,
-                message: "Password is wrong",
-            };
-        const user = await User.findOne({ username: loginRequest.username });
-        if (!user)
-            return {
-                status: 400,
-                message: "sai id roi",
-            };
-        const token = this.createToken({
-            expiresIn: "24h",
-            id: user.id,
-            username: user.username,
-        });
-        return {
-            status: 200,
-            data: {
-                accessToken: token,
-                userId: user.id,
-            },
-            message: "login success",
-        };
-    }
-    async register(registerRequest) {
+    // async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
+    //   const account = await Account.findOne({ username: loginRequest.username });
+    //   if (!account)
+    //     return {
+    //       status: 401,
+    //       message: "Username is wrong",
+    //     };
+    //   var passwordisValid = bcrypt.compareSync(
+    //     loginRequest.password,
+    //     account.password
+    //   );
+    //   if (!passwordisValid)
+    //     return {
+    //       status: 401,
+    //       message: "Password is wrong",
+    //     };
+    //   const user = await User.findOne({ username: loginRequest.username });
+    //   if (!user)
+    //     return {
+    //       status: 400,
+    //       message: "sai id roi",
+    //     };
+    //   const token = this.createToken({
+    //     expiresIn: "24h",
+    //     id: user.id,
+    //     username: user.username,
+    //   });
+    //   return {
+    //     status: 200,
+    //     data: {
+    //       accessToken: token,
+    //       userId: user.id,
+    //     },
+    //     message: "login success",
+    //   };
+    // }
+    async register({ email, fullname, password, username, }) {
         const isUsernameExists = await Account.findOne({
-            username: registerRequest.username,
+            username,
         });
         if (isUsernameExists)
             return {
-                status: 409,
+                isValid: false,
                 message: "Username is already exists",
             };
         const isEmailExists = await Account.findOne({
-            email: registerRequest.email,
+            email,
         });
         if (isEmailExists)
             return {
-                status: 409,
+                isValid: false,
                 message: "Email is already exists",
             };
         const account = await Account.create({
-            username: registerRequest.username,
-            password: bcrypt.hashSync(registerRequest.password),
-            email: registerRequest.email,
+            username,
+            password: bcrypt.hashSync(password),
+            email,
         });
-        const user = await User.create({
-            id: account._id,
-            username: account.username,
-            fullname: registerRequest.fullname,
+        await userService.createNewUser({ username, fullname, _id: account.id });
+        const token = this.createToken({
+            expiresIn: "24h",
+            id: account.id,
+            username,
         });
         return {
-            status: 200,
+            isValid: true,
+            data: {
+                accessToken: token,
+                userId: account.id,
+            },
             message: "register success",
         };
     }

@@ -1,11 +1,11 @@
-import { OPEN_WEATHER_API_KEY } from "@/config/env.ts";
+import { OPEN_WEATHER_API_KEY } from "@/config/env.js";
 import { Type } from "@google/genai";
 
 // Define the function declaration for the model
 export const weatherFunctionDeclaration = {
   name: "get_current_weather",
   description: "Gets the current weather for a given location.",
-  parameters: { 
+  parameters: {
     type: Type.OBJECT,
     properties: {
       location: {

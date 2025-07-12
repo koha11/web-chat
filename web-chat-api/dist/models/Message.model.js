@@ -1,5 +1,5 @@
+import MessageStatus from "@/enums/MessageStatus.enum.js";
 import mongoose, { Schema } from "mongoose";
-import MessageStatus from "../enums/MessageStatus.enum";
 // Define schema
 const MessageSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

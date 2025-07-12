@@ -1,6 +1,6 @@
-import MessageStatus from "../enums/MessageStatus.enum";
-import { toObjectId } from "../utils/mongoose";
-import Message from "../models/Message.model";
+import MessageStatus from "@/enums/MessageStatus.enum.js";
+import Message from "@/models/Message.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 class MessageService {
     constructor() {
         this.getMessages = async ({ chatId, first = 10, after, }) => {
@@ -16,7 +16,7 @@ class MessageService {
             const hasNextPage = docs.length > first;
             const sliced = hasNextPage ? docs.slice(0, first) : docs;
             const edges = sliced.map((doc) => ({
-                cursor: doc._id.toString(),
+                cursor: doc.id,
                 node: doc,
             }));
             const isNotEmpty = edges.length > 0;

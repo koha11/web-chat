@@ -24,15 +24,28 @@ export const chatTypeDefs = gql `
     pageInfo: PageInfo!
   }
 
+  type CallUser {
+    user: User!
+    hasVideo: Boolean!
+    chatId: ID!
+  }
+
   extend type Query {
-    chats(userId: ID!, chatId: ID, first: Int = 10, after: ID): ChatConnection!
+    chats(userId: ID!, first: Int = 10, after: ID): ChatConnection!
+    chat(chatId: ID!): Chat
   }
 
   extend type Mutation {
     postChat(users: [ID!]!): Chat!
+    changeNickname(chatId: ID!, changedUserId: ID!, nickname: String!): Chat!
+    makeCall(chatId: ID!, hasVideo: Boolean!): Boolean
+    handleCall(chatId: ID!, isAccepted: Boolean!): Boolean
+    hangupCall(chatId: ID!): Boolean
   }
 
   extend type Subscription {
     chatChanged(userId: ID!): Chat!
+    ongoingCall: CallUser!
+    responseCall: Boolean
   }
 `;

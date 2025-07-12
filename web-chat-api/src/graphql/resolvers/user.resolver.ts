@@ -1,9 +1,9 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
-import UserType from "@/enums/UserType.enum.ts";
-import IMyContext from "@/interfaces/socket/myContext.interface.ts";
-import Contact from "@/models/Contact.model.ts";
-import User from "@/models/User.model.ts";
-import userService from "@/services/UserService.ts";
+import ContactRelationship from "@/enums/ContactRelationship.enum.js";
+import UserType from "@/enums/UserType.enum.js";
+import IMyContext from "@/interfaces/socket/myContext.interface.js";
+import Contact from "@/models/Contact.model.js";
+import User from "@/models/User.model.js";
+import userService from "@/services/UserService.js";
 import { IResolvers } from "@graphql-tools/utils";
 
 export const userResolvers: IResolvers = {

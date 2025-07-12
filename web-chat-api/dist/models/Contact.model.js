@@ -12,7 +12,12 @@ const ContactSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Chat",
     },
-    relationship: { type: Schema.Types.String, required: true },
+    relationships: {
+        type: Schema.Types.Map,
+        of: String,
+        required: true,
+        default: {},
+    },
 }, { timestamps: true });
 // Add soft delete plugin
 // Export model

@@ -1,4 +1,4 @@
-import IContact from "@/interfaces/contact.interface.ts";
+import IContact from "@/interfaces/contact.interface.js";
 import mongoose, { Schema } from "mongoose";
 
 // Define schema

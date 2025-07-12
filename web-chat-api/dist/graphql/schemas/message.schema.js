@@ -60,7 +60,6 @@ export const messageTypeDefs = gql `
 
     typeMessage(chatId: ID!, isTyping: Boolean!): Message
 
-    askAI(promp: String!): JSONObject!
   }
 
   extend type Subscription {

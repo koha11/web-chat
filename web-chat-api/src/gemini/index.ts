@@ -1,5 +1,5 @@
 import { GEMINI_API_KEY } from "@/config/env.js";
-import Message from "@/models/Message.model.ts";
+import Message from "@/models/Message.model.js";
 import {
   GoogleGenAI,
   FunctionCallingConfigMode,
@@ -9,7 +9,7 @@ import {
 import {
   getCurrentWeather,
   weatherFunctionDeclaration,
-} from "./tools/weather.tools.ts";
+} from "./tools/weather.tools.js";
 
 export const gemini_promp_process = async (
   promp: string,

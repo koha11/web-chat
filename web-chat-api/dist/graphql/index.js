@@ -1,13 +1,15 @@
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { chatResolvers } from "./resolvers/chat.resolver";
-import { chatTypeDefs } from "./schemas/chat.schema";
-import { messageResolvers } from "./resolvers/message.resolver";
-import { messageTypeDefs } from "./schemas/message.schema";
-import { userTypeDefs } from "./schemas/user.schema";
-import { userResolvers } from "./resolvers/user.resolver";
-import { contactTypeDefs } from "./schemas/contact.schema";
-import { contactResolvers } from "./resolvers/contact.resolver";
+import { chatResolvers } from "./resolvers/chat.resolver.js";
+import { contactResolvers } from "./resolvers/contact.resolver.js";
+import { messageResolvers } from "./resolvers/message.resolver.js";
+import { userResolvers } from "./resolvers/user.resolver.js";
+import { chatTypeDefs } from "./schemas/chat.schema.js";
+import { contactTypeDefs } from "./schemas/contact.schema.js";
+import { messageTypeDefs } from "./schemas/message.schema.js";
+import { userTypeDefs } from "./schemas/user.schema.js";
+import { authTypeDefs } from "./schemas/auth.schema.js";
+import { authResolvers } from "./resolvers/auth.resolver.js";
 export const typeDefs = mergeTypeDefs([
     `type Query`,
     `type Mutation`, // base root types
@@ -23,12 +25,14 @@ export const typeDefs = mergeTypeDefs([
     messageTypeDefs,
     userTypeDefs,
     contactTypeDefs,
+    authTypeDefs,
 ]);
 export const resolvers = mergeResolvers([
     chatResolvers,
     messageResolvers,
     userResolvers,
     contactResolvers,
+    authResolvers,
 ]);
 export const graphqlSchema = makeExecutableSchema({
     typeDefs,

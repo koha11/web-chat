@@ -1,7 +1,7 @@
-import Chat from "../models/Chat.model";
-import { toObjectId } from "../utils/mongoose";
-import User from "../models/User.model";
-import Contact from "../models/Contact.model";
+import Chat from "@/models/Chat.model.js";
+import Contact from "@/models/Contact.model.js";
+import User from "@/models/User.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 class ChatService {
     constructor() {
         this.getChatList = async ({ userId, first = 10, after, }) => {

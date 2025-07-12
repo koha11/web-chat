@@ -1,10 +1,9 @@
-import { IChat } from "@/interfaces/chat.interface.ts";
-import IModelConnection from "@/interfaces/modelConnection.interface.ts";
-import Chat from "@/models/Chat.model.ts";
-import Contact from "@/models/Contact.model.ts";
-import User from "@/models/User.model.ts";
-import { toObjectId } from "@/utils/mongoose.ts";
-
+import { IChat } from "@/interfaces/chat.interface.js";
+import IModelConnection from "@/interfaces/modelConnection.interface.js";
+import Chat from "@/models/Chat.model.js";
+import Contact from "@/models/Contact.model.js";
+import User from "@/models/User.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 
 class ChatService {
   getChatList = async ({

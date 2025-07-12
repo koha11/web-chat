@@ -3,10 +3,10 @@ import mongooseDelete from "mongoose-delete";
 // Schema definition
 const ChatSchema = new Schema({
     users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    nicknames: { type: Map, of: String },
+    nicknames: { type: Map, of: String, default: {} },
     chatName: { type: String, default: "" },
     chatAvatar: { type: String, default: "" },
-    lastMsgSeen: { type: Map, of: String },
+    lastMsgSeen: { type: Map, of: String, default: {} },
 }, { timestamps: true });
 // Add soft delete plugin
 ChatSchema.plugin(mongooseDelete, {

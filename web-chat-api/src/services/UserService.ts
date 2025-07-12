@@ -1,11 +1,11 @@
-import ContactRelationship from "@/enums/ContactRelationship.enum.ts";
-import UserType from "@/enums/UserType.enum.ts";
-import IModelConnection from "@/interfaces/modelConnection.interface.ts";
-import { IUser } from "@/interfaces/user.interface.ts";
-import Chat from "@/models/Chat.model.ts";
-import Contact from "@/models/Contact.model.ts";
-import User from "@/models/User.model.ts";
-import { toObjectId } from "@/utils/mongoose.ts";
+import ContactRelationship from "@/enums/ContactRelationship.enum.js";
+import UserType from "@/enums/UserType.enum.js";
+import IModelConnection from "@/interfaces/modelConnection.interface.js";
+import { IUser } from "@/interfaces/user.interface.js";
+import Chat from "@/models/Chat.model.js";
+import Contact from "@/models/Contact.model.js";
+import User from "@/models/User.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 import { Types } from "mongoose";
 
 class UserService {

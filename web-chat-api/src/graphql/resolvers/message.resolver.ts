@@ -1,23 +1,23 @@
-import Chat from "@/models/Chat.model.ts";
+import Chat from "@/models/Chat.model.js";
 import { withFilter } from "graphql-subscriptions";
 import {} from "graphql-type-json";
 import { Types } from "mongoose";
-import MessageStatus from "../../enums/MessageStatus.enum.ts";
-import SocketEvent from "../../enums/SocketEvent.enum.ts";
-import { gemini_promp_process } from "../../gemini/index.ts";
-import { IMessage } from "../../interfaces/message.interface.ts";
-import IMyContext from "../../interfaces/socket/myContext.interface.ts";
-import { PubsubEvents } from "../../interfaces/socket/pubsubEvents.ts";
-import Message from "../../models/Message.model.ts";
-import User from "../../models/User.model.ts";
-import chatService from "../../services/ChatService.ts";
-import messageService from "../../services/MessageService.ts";
-import { toObjectId } from "../../utils/mongoose.ts";
+import MessageStatus from "../../enums/MessageStatus.enum.js";
+import SocketEvent from "../../enums/SocketEvent.enum.js";
+import { gemini_promp_process } from "../../gemini/index.js";
+import { IMessage } from "../../interfaces/message.interface.js";
+import IMyContext from "../../interfaces/socket/myContext.interface.js";
+import { PubsubEvents } from "../../interfaces/socket/pubsubEvents.js";
+import Message from "../../models/Message.model.js";
+import User from "../../models/User.model.js";
+import chatService from "../../services/ChatService.js";
+import messageService from "../../services/MessageService.js";
+import { toObjectId } from "../../utils/mongoose.js";
 import { IResolvers } from "@graphql-tools/utils";
-import { Edge } from "@/interfaces/modelConnection.interface.ts";
-import { IChat } from "@/interfaces/chat.interface.ts";
-import UserType from "@/enums/UserType.enum.ts";
-import { IUser } from "@/interfaces/user.interface.ts";
+import { Edge } from "@/interfaces/modelConnection.interface.js";
+import { IChat } from "@/interfaces/chat.interface.js";
+import UserType from "@/enums/UserType.enum.js";
+import { IUser } from "@/interfaces/user.interface.js";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -248,7 +248,6 @@ export const messageResolvers: IResolvers = {
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
     },
-    
   },
 
   Subscription: {

@@ -1,6 +1,6 @@
-import Account from "@/models/Account.model.ts";
-import User from "@/models/User.model.ts";
-import authService from "@/services/AuthService.ts";
+import Account from "@/models/Account.model.js";
+import User from "@/models/User.model.js";
+import authService from "@/services/AuthService.js";
 import { IResolvers } from "@graphql-tools/utils";
 import bcrypt from "bcryptjs";
 

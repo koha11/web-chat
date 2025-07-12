@@ -1,8 +1,7 @@
-import MessageStatus from "@/enums/MessageStatus.enum.ts";
+import MessageStatus from "@/enums/MessageStatus.enum.js";
 import { Types } from "mongoose";
-import { IChat } from "./chat.interface.ts";
-import { IUser } from "./user.interface.ts";
-
+import { IChat } from "./chat.interface.js";
+import { IUser } from "./user.interface.js";
 
 // Interface for Message document
 export interface IMessage {
@@ -14,9 +13,9 @@ export interface IMessage {
   seenList: Map<string, string>;
   replyForMsg?: IMessage | Types.ObjectId;
   isHiddenFor?: Types.ObjectId[];
-  unsentAt?: Date
-  editedAt?: Date
-  isForwarded?: Boolean
+  unsentAt?: Date;
+  editedAt?: Date;
+  isForwarded?: Boolean;
 
   createdAt?: Date;
   updatedAt?: Date;

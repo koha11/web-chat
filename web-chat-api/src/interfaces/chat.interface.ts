@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { IUser } from "./user.interface.ts";
+import { IUser } from "./user.interface.js";
 
 
 // Interface for Chat document

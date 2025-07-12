@@ -1,9 +1,12 @@
-import Contact from "../models/Contact.model";
-import { toObjectId } from "../utils/mongoose";
+import ContactRelationship from "@/enums/ContactRelationship.enum.js";
+import Contact from "@/models/Contact.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 class ContactService {
     constructor() {
         this.getContacts = async ({ userId, first = 10, after, }) => {
-            const filter = { users: userId };
+            const filter = {
+                [`relationships.${userId}`]: { $eq: ContactRelationship.connected },
+            };
             if (after) {
                 filter._id = { $lt: toObjectId(after) };
             }

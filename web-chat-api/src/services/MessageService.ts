@@ -1,8 +1,8 @@
-import MessageStatus from "@/enums/MessageStatus.enum.ts";
-import { IMessage } from "@/interfaces/message.interface.ts";
-import IModelConnection from "@/interfaces/modelConnection.interface.ts";
-import Message from "@/models/Message.model.ts";
-import { toObjectId } from "@/utils/mongoose.ts";
+import MessageStatus from "@/enums/MessageStatus.enum.js";
+import { IMessage } from "@/interfaces/message.interface.js";
+import IModelConnection from "@/interfaces/modelConnection.interface.js";
+import Message from "@/models/Message.model.js";
+import { toObjectId } from "@/utils/mongoose.js";
 
 class MessageService {
   getMessages = async ({

@@ -1,1 +1,1 @@
-import SocketEvent from "../../enums/SocketEvent.enum";
+import SocketEvent from "../../enums/SocketEvent.enum.js";

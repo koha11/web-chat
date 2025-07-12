@@ -1,4 +1,4 @@
-import UserType from "@/enums/UserType.enum.ts";
+import UserType from "@/enums/UserType.enum.js";
 import { Types } from "mongoose";
 
 // Interface for User document

@@ -1,13 +1,14 @@
-import Message from "../../models/Message.model";
-import { toObjectId } from "../../utils/mongoose";
+import Chat from "@/models/Chat.model.js";
 import { withFilter } from "graphql-subscriptions";
-import messageService from "../../services/MessageService";
-import chatService from "../../services/ChatService";
-import Chat from "../../models/Chat.model";
-import SocketEvent from "../../enums/SocketEvent.enum";
-import MessageStatus from "../../enums/MessageStatus.enum";
-import User from "../../models/User.model";
-import { gemini_promp_process } from "../../gemini";
+import MessageStatus from "../../enums/MessageStatus.enum.js";
+import SocketEvent from "../../enums/SocketEvent.enum.js";
+import { gemini_promp_process } from "../../gemini/index.js";
+import Message from "../../models/Message.model.js";
+import User from "../../models/User.model.js";
+import chatService from "../../services/ChatService.js";
+import messageService from "../../services/MessageService.js";
+import { toObjectId } from "../../utils/mongoose.js";
+import UserType from "@/enums/UserType.enum.js";
 export const messageResolvers = {
     Query: {
         messages: async (_p, { chatId, msgId, after, first }, { user, pubsub }) => {
@@ -25,7 +26,7 @@ export const messageResolvers = {
             });
             if (isNotSeenBefore) {
                 chat?.lastMsgSeen.set(user.id.toString(), result.edges[0].cursor);
-                await chat?.save();
+                await chat?.save({ timestamps: false });
             }
             if (isUpdateSeenList) {
                 pubsub.publish(SocketEvent.chatChanged, {
@@ -51,6 +52,43 @@ export const messageResolvers = {
             });
             const message = await createdMsg.populate("replyForMsg");
             const chatChanged = await Chat.findByIdAndUpdate(message.chat, { updatedAt: new Date() }, { new: true }).populate("users");
+            const users = chatChanged?.users;
+            const chatbot = users.find((user) => user.userType == UserType.CHATBOT);
+            if (chatbot) {
+                pubsub.publish(SocketEvent.messageTyping, {
+                    chatId,
+                    messageTyping: {
+                        isTyping: true,
+                        typingUser: chatbot,
+                    },
+                });
+                setTimeout(async () => {
+                    const chatBotMessageBody = await gemini_promp_process(msgBody, chatId, user);
+                    const chatBotMessage = await Message.create({
+                        chat: chatId,
+                        user: chatbot.id,
+                        msgBody: chatBotMessageBody,
+                    });
+                    pubsub.publish(SocketEvent.messageAdded, {
+                        messageAdded: {
+                            node: chatBotMessage,
+                            cursor: chatBotMessage.id,
+                        },
+                        chatId,
+                    });
+                    pubsub.publish(SocketEvent.chatChanged, {
+                        chatChanged,
+                    });
+                    pubsub.publish(SocketEvent.messageTyping, {
+                        chatId,
+                        messageTyping: {
+                            isTyping: false,
+                            typingUser: chatbot,
+                        },
+                    });
+                }, 500);
+                return message;
+            }
             pubsub.publish(SocketEvent.messageAdded, {
                 messageAdded: {
                     node: message,
@@ -85,29 +123,23 @@ export const messageResolvers = {
             }
             return msg;
         },
-        removeMessage: async (_p, { chatId, msgId }, { pubsub, user }) => {
+        removeMessage: async (_p, { chatId, msgId }, { user, pubsub }) => {
             const msg = await Message.findById(msgId).populate("replyForMsg");
             if (msg) {
                 msg.isHiddenFor?.push(toObjectId(user.id));
                 await msg.save();
                 const lastMsgMap = await messageService.getLastMessage([chatId], user.id.toString());
                 const lastMsg = lastMsgMap[chatId];
-                await Chat.findByIdAndUpdate(chatId, {
+                const chatChanged = await Chat.findByIdAndUpdate(chatId, {
                     $set: {
                         updatedAt: lastMsg.status == MessageStatus.UNSEND
                             ? lastMsg.unsentAt
                             : lastMsg.createdAt,
                     },
                 }, { timestamps: false });
-                // pubsub.publish(SocketEvent.messageChanged, {
-                //   messageChanged: {
-                //     cursor: msg.id,
-                //     node: msg,
-                //   },
-                // } as PubsubEvents[SocketEvent.messageChanged]);
-                // pubsub.publish(SocketEvent.chatChanged, {
-                //   chatId,
-                // });
+                pubsub.publish(SocketEvent.chatChanged, {
+                    chatChanged,
+                });
             }
             return msg;
         },
@@ -117,10 +149,6 @@ export const messageResolvers = {
                 messageTyping: { typingUser: myUser, isTyping },
                 chatId,
             });
-        },
-        askAI: async (_p, { promp }, { pubsub, user }) => {
-            const res = await gemini_promp_process(promp);
-            return res;
         },
     },
     Subscription: {
