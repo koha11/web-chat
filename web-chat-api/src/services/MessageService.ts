@@ -1,8 +1,8 @@
-import MessageStatus from "../enums/MessageStatus.enum";
-import { toObjectId } from "../utils/mongoose";
-import { IMessage } from "../interfaces/message.interface";
-import Message from "../models/Message.model";
-import IModelConnection from "../interfaces/modelConnection.interface";
+import MessageStatus from "@/enums/MessageStatus.enum.ts";
+import { IMessage } from "@/interfaces/message.interface.ts";
+import IModelConnection from "@/interfaces/modelConnection.interface.ts";
+import Message from "@/models/Message.model.ts";
+import { toObjectId } from "@/utils/mongoose.ts";
 
 class MessageService {
   getMessages = async ({
@@ -31,7 +31,7 @@ class MessageService {
     const sliced = hasNextPage ? docs.slice(0, first) : docs;
 
     const edges = sliced.map((doc) => ({
-      cursor: doc._id.toString(),
+      cursor: doc.id,
       node: doc,
     }));
 

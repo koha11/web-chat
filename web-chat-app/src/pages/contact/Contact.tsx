@@ -198,14 +198,14 @@ const Contact = () => {
         isOpen={isAddDialogOpen}
         setOpen={setAddDialogOpen}
       ></AddContactDialog>
-      <ReceivedConnectRequestDialog
+      {/* <ReceivedConnectRequestDialog
         isOpen={isReceivedRequestDialogOpen}
         setOpen={setReceivedRequestDialogOpen}
       ></ReceivedConnectRequestDialog>
       <SentConnectRequestDialog
         isOpen={isSentRequestDialogOpen}
         setOpen={setSentRequestDialogOpen}
-      ></SentConnectRequestDialog>
+      ></SentConnectRequestDialog> */}
     </div>
   );
 };

@@ -16,9 +16,19 @@ export const userTypeDefs = gql`
     deletedAt: String
   }
 
+  type UserEdge {
+    node: User
+    cursor: ID!
+  }
+
+  type UserConnection {
+    edges: [UserEdge]!
+    pageInfo: PageInfo!
+  }
+
   extend type Query {
     users(userId: ID): [User!]!
-    connectableUsers(userId: ID!): [User]
+    connectableUsers(userId: ID!, first: Int, after: ID): UserConnection!
   }
 
   extend type Mutation {

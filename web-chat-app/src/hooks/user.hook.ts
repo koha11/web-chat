@@ -7,11 +7,15 @@ import { IUser } from "../interfaces/user.interface";
 
 export const useGetConnectableUsers = ({
   userId,
+  first=10,
+  after
 }: {
   userId: string;
-}): IMyQueryResult<IUser[]> => {
+  first?: number;
+  after?: string;
+}): IMyQueryResult<IModelConnection<IUser>> => {
   const myQuery = useQuery(GET_CONNECTABLE_USERS, {
-    variables: { userId },
+    variables: { userId, first, after },
     skip: !userId,
   });
 

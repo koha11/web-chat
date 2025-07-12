@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 
 import { useGetChats, usePostChat } from "../../hooks/chat.hook";
 import Loading from "../ui/loading";
-import { useGetContacts } from "../../hooks/contact.hook";
+import { useGetContacts, useSendRequest } from "../../hooks/contact.hook";
 import { useEffect } from "react";
 import { useGetConnectableUsers } from "../../hooks/user.hook";
 
@@ -19,12 +19,12 @@ const AddContactDialog = ({
 }) => {
   const userId = Cookies.get("userId") ?? "";
 
-  const { data: connectableUsers, loading: isConnectableUsers } =
+  const { data: connectableUsersConnection, loading: isConnectableUsers } =
     useGetConnectableUsers({
       userId,
     });
 
-  const [postChat, { data: createdChat }] = usePostChat();
+  const [sendRequest] = useSendRequest({});
 
   if (isConnectableUsers) return <Loading></Loading>;
 
@@ -48,7 +48,8 @@ const AddContactDialog = ({
             <span className="font-bold">Suggested People</span>
 
             <div className="py-2">
-              {connectableUsers!.map((user) => {
+              {connectableUsersConnection?.edges.map((edge) => {
+                const user = edge.node;
                 return (
                   <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
                     <div className="flex gap-4 items-center">
@@ -64,13 +65,7 @@ const AddContactDialog = ({
                       className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
                       variant={"outline"}
                       onClick={() => {
-                        // if (!chatId) {
-                        //   postChat({
-                        //     variables: {
-                        //       users: edge.node.users.map((user) => user.id),
-                        //     },
-                        //   });
-                        // } else handleSendMsg(chatId);
+                        sendRequest({ variables: { userId: user.id } });
                       }}
                     >
                       Connect
