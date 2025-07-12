@@ -62,48 +62,47 @@ const Account = () => {
             <h1 className="text-2xl font-bold">Tài khoản</h1>
           </div>
 
-          <div className="h-[90%] overflow-y-scroll flex flex-col gap-2 mt-4 px-2">
-            <Button
-              onClick={(e) => {}}
-              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
-              variant={"outline"}
+          <nav className="h-[90%] overflow-y-scroll flex flex-col gap-2 mt-4 px-2">
+            <NavLink
+              to={"/me"}
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-xl py-2 px-4  ${
+                  isActive ? "cursor-default bg-gray-300" : "hover:bg-gray-300"
+                }`
+              }
             >
               <div className="flex gap-4 items-center">
                 <UserIcon></UserIcon>
                 <div className="font-bold">General Information</div>
               </div>
-            </Button>
-            <Button
-              onClick={(e) => {}}
+            </NavLink>
+            <NavLink
+              to={"/me/security"}
               className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
-              variant={"outline"}
             >
               <div className="flex gap-4 items-center">
                 <ShieldAlert></ShieldAlert>
                 <div className="font-bold">Security</div>
               </div>
-            </Button>
-            <Button
-              onClick={(e) => {}}
+            </NavLink>
+            <NavLink
+              to={"/me/settings"}
               className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
-              variant={"outline"}
             >
               <div className="flex gap-4 items-center">
                 <Settings></Settings>
                 <div className="font-bold">Settings</div>
               </div>
-            </Button>
-          </div>
+            </NavLink>
+          </nav>
         </section>
         <section
           className="w-[75%] h-full p-4 bg-white rounded-2xl"
           style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
-        ></section>
+        >
+          <Outlet></Outlet>
+        </section>
       </div>
-      <AddContactDialog
-        isOpen={isAddDialogOpen}
-        setOpen={setAddDialogOpen}
-      ></AddContactDialog>
     </div>
   );
 };

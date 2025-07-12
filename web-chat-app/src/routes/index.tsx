@@ -11,8 +11,12 @@ const Login = lazy(() => import("../pages/home/Login"));
 const Home = lazy(() => import("../pages/home/Home"));
 const Register = lazy(() => import("../pages/home/Register"));
 const Contact = lazy(() => import("../pages/contact/Contact"));
-const Me = lazy(() => import("../pages/account/Account"));
 const Call = lazy(() => import("../pages/call/Call"));
+
+const AccountLayout = lazy(() => import("../pages/account/Account"));
+const GeneralInformation = lazy(
+  () => import("../pages/account/GeneralInformation")
+);
 
 const router = createBrowserRouter([
   {
@@ -67,11 +71,18 @@ const router = createBrowserRouter([
           },
           {
             path: "/me",
-            element: (
-              <Suspense fallback={<Loading></Loading>}>
-                <Me />
-              </Suspense>
-            ),
+            element: <AccountLayout></AccountLayout>,
+            children: [
+              {
+                index: true,
+                path: "",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <GeneralInformation />
+                  </Suspense>
+                ),
+              },
+            ],
           },
           {
             element: <MainLayout />,
