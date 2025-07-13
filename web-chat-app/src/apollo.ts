@@ -1,22 +1,17 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  split,
-  HttpLink,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, split, HttpLink } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
-const IS_DEV_ENV = import.meta.env.VITE_ENVIRONMENT == "DEV";
-const HOST = IS_DEV_ENV ? "localhost" : import.meta.env.VITE_API_HOST;
-const PORT = import.meta.env.VITE_API_PORT ?? "3000";
+export const IS_DEV_ENV = import.meta.env.VITE_ENVIRONMENT == "DEV";
+export const SERVER_HOST = IS_DEV_ENV ? "localhost" : import.meta.env.VITE_API_HOST;
+export const SERVER_PORT = import.meta.env.VITE_API_PORT ?? "3000";
 
 const httpLink = new HttpLink({
   uri: IS_DEV_ENV
-    ? `http://${HOST}:${PORT}/graphql`
-    : `https://${HOST}/graphql`,
+    ? `http://${SERVER_HOST}:${SERVER_PORT}/graphql`
+    : `https://${SERVER_HOST}/graphql`,
 });
 
 export const httpOnlyClient = new ApolloClient({
@@ -30,8 +25,8 @@ export const createWsClient = () => {
   const wsLink = new GraphQLWsLink(
     createClient({
       url: IS_DEV_ENV
-        ? `ws://${HOST}:${PORT}/subscriptions`
-        : `wss://${HOST}/subscriptions`,
+        ? `ws://${SERVER_HOST}:${SERVER_PORT}/subscriptions`
+        : `wss://${SERVER_HOST}/subscriptions`,
       connectionParams: {
         authToken: token,
       },
@@ -42,8 +37,8 @@ export const createWsClient = () => {
 
   const httpLink = new HttpLink({
     uri: IS_DEV_ENV
-      ? `http://${HOST}:${PORT}/graphql`
-      : `https://${HOST}/graphql`,
+      ? `http://${SERVER_HOST}:${SERVER_PORT}/graphql`
+      : `https://${SERVER_HOST}/graphql`,
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -25,6 +25,7 @@ import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
 import { IUser } from "../../interfaces/user.interface";
 import { CHAT_RESPONSE_CALL_SUB } from "../../services/chatService";
+import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
 
 const Call = () => {
   const location = useLocation();
@@ -69,7 +70,11 @@ const Call = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
   useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:3000/rtc-signal");
+    ws.current = new WebSocket(
+      IS_DEV_ENV
+        ? `ws://${SERVER_HOST}:${SERVER_PORT}/rtc-signal`
+        : `wss://${SERVER_HOST}/rtc-signal`
+    );
     const signaling = ws.current;
     // Setup peer connection
     const pc = new RTCPeerConnection({
