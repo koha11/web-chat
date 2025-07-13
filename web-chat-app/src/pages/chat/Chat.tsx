@@ -1,18 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useOutletContext, useParams } from "react-router-dom";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
-import { useGetChats } from "../../hooks/chat.hook";
 import Cookies from "js-cookie";
-import { useGetLastMessages } from "../../hooks/message.hook";
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import { CHAT_CHANGED_SUB, GET_CHATS } from "../../services/chatService";
-import { useApolloClient } from "@apollo/client";
-import { Edge } from "../../interfaces/modelConnection.interface";
-import { IChat } from "../../interfaces/chat.interface";
-import { GET_MESSAGES } from "../../services/messageService";
 import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 

@@ -4,7 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./collapsible";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Button } from "./button";
 
 const MyCollapsible = ({

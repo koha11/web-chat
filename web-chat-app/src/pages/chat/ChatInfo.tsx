@@ -1,13 +1,8 @@
-import { ArrowDown, BellOffIcon, ChevronDown, Search } from "lucide-react";
+import { BellOffIcon, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../../components/ui/collapsible";
 import CollapsibleChatInfo from "../../components/chat/CollapsibleChatInfo";
 import CollapsibleChatConfig from "../../components/chat/CollapsibleChatConfig";
 import CollapsibleChatMembers from "../../components/chat/CollapsibleChatMembers";

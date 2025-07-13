@@ -3,7 +3,6 @@ import {
   GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
 } from "../services/userService";
-import { IMessage } from "../interfaces/messages/message.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import { IUser } from "../interfaces/user.interface";
@@ -33,7 +32,6 @@ export const useGetConnectableUsers = ({
 
 export const useGetReceivedConnectRequests = ({
   first = 10,
-  after,
 }: {
   first?: number;
   after?: string;

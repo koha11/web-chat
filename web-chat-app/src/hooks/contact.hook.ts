@@ -7,8 +7,6 @@ import {
 import IContact from "../interfaces/contact.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
-import { IUser } from "../interfaces/user.interface";
-import { GET_CONNECTABLE_USERS } from "../services/userService";
 
 export const useGetContacts = ({
   userId,
@@ -33,11 +31,7 @@ export const useGetContacts = ({
   };
 };
 
-export const useSendRequest = (data: {
-  userId?: string;
-  first?: number;
-  after?: string;
-}) => {
+export const useSendRequest = () => {
   return useMutation(SEND_REQUEST);
   // return useMutation(SEND_REQUEST, {
   //   update(cache, { data }) {
@@ -77,10 +71,6 @@ export const useSendRequest = (data: {
   // });
 };
 
-export const useHandleRequest = (data: {
-  userId?: string;
-  first?: number;
-  after?: string;
-}) => {
+export const useHandleRequest = () => {
   return useMutation(HANDLE_REQUEST);
 };

@@ -4,11 +4,9 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "./dialog";
 import { Label } from "./label";
 import { RadioGroup, RadioGroupItem } from "./radio-group";

@@ -1,48 +1,25 @@
-import { useEffect, useState } from "react";
 import {
   Link,
-  NavigationType,
   NavLink,
   Outlet,
-  useNavigate,
-  useNavigation,
+  
 } from "react-router-dom";
 import { useGetContacts } from "../../hooks/contact.hook";
 import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
 import {
   ArrowLeftCircle,
-  Key,
-  MoreHorizontal,
-  MoveLeftIcon,
-  Plus,
   Settings,
-  Shield,
   ShieldAlert,
   UserIcon,
 } from "lucide-react";
-import { usePostChat } from "../../hooks/chat.hook";
-import { Button } from "../../components/ui/button";
-import AddContactDialog from "../../components/contact/AddContactDialog";
 
 const Account = () => {
   const userId = Cookies.get("userId") ?? "";
-  const navigate = useNavigate();
 
-  const [contactList, setContactList] = useState([]);
-  const [onlineList, setOnlineList] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
-
-  const { data: contacts, loading: isContactsLoading } = useGetContacts({
+  const { loading: isContactsLoading } = useGetContacts({
     userId,
   });
-
-  const [postChat, { data: createdChat }] = usePostChat();
-
-  useEffect(() => {
-    if (createdChat) navigate("/m/" + createdChat.postChat.cursor);
-  }, [createdChat]);
 
   if (isContactsLoading) return <Loading></Loading>;
 

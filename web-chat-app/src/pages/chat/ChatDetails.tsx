@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { MoreHorizontal, Phone, Video, X } from "lucide-react";

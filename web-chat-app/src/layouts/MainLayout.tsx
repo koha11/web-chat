@@ -1,4 +1,3 @@
-import { useApolloClient } from "@apollo/client";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
@@ -12,11 +11,8 @@ import {
   CHAT_CHANGED_SUB,
   CHAT_ONGOING_CALL_SUB,
   CHAT_RESPONSE_CALL_SUB,
-  GET_CHATS,
 } from "../services/chatService";
-import { GET_LAST_MESSAGES, GET_MESSAGES } from "../services/messageService";
 import Cookies from "js-cookie";
-import { set } from "mongoose";
 import { IUser } from "../interfaces/user.interface";
 
 const Mainlayout = () => {

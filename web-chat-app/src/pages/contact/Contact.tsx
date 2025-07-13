@@ -1,21 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  Link,
-  NavigationType,
-  NavLink,
-  Outlet,
-  useNavigate,
-  useNavigation,
-} from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useGetContacts } from "../../hooks/contact.hook";
 import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
-import {
-  ArrowLeftCircle,
-  MoreHorizontal,
-  MoveLeftIcon,
-  Plus,
-} from "lucide-react";
+import { ArrowLeftCircle, MoreHorizontal, Plus } from "lucide-react";
 import { usePostChat } from "../../hooks/chat.hook";
 import { Button } from "../../components/ui/button";
 import AddContactDialog from "../../components/contact/AddContactDialog";
@@ -25,7 +13,7 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import ReceivedConnectRequestDialog from "../../components/contact/ReceivedConnectRequestDialog";
-import SentConnectRequestDialog from "../../components/contact/SentConnectRequestDialog";
+import SentConnectRequestDialog from "@/components/contact/SentConnectRequestDialog";
 
 const Contact = () => {
   const userId = Cookies.get("userId") ?? "";
@@ -202,10 +190,10 @@ const Contact = () => {
         isOpen={isReceivedRequestDialogOpen}
         setOpen={setReceivedRequestDialogOpen}
       ></ReceivedConnectRequestDialog>
-      {/* <SentConnectRequestDialog
+      <SentConnectRequestDialog
         isOpen={isSentRequestDialogOpen}
         setOpen={setSentRequestDialogOpen}
-      ></SentConnectRequestDialog> */}
+      ></SentConnectRequestDialog>
     </div>
   );
 };

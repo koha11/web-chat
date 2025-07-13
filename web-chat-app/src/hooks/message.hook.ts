@@ -2,7 +2,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_LAST_MESSAGES,
   GET_MESSAGES,
-  MESSAGE_TYPING_SUB,
   POST_MESSAGE,
   REMOVE_MESSAGE,
   TYPE_MESSAGE,

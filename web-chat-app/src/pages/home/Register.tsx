@@ -1,14 +1,13 @@
-import { Link, redirect, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { IRegisterRequest } from "../../interfaces/auth/registerRequest.interface";
-import { useRegister } from "../../hooks/auth.hook";
 import Cookies from "js-cookie";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { useRegister } from "../../hooks/auth.hook";
+import { IRegisterRequest } from "../../interfaces/auth/registerRequest.interface";
 
 const Register = () => {
   const navigate = useNavigate();
 
-  const { handleSubmit, register, watch, control } =
-    useForm<IRegisterRequest>();
+  const { handleSubmit, register } = useForm<IRegisterRequest>();
 
   const [registerAccount] = useRegister();
 
@@ -17,7 +16,7 @@ const Register = () => {
       variables: {
         ...data,
       },
-      onCompleted({ register: response }, clientOptions) {
+      onCompleted({ register: response }) {
         if (response.isValid && response.data != undefined) {
           Cookies.set("accessToken", response.data.accessToken);
           Cookies.set("userId", response.data.userId);

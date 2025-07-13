@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
 import { useLogin } from "../../hooks/auth.hook";
-import { url } from "inspector";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,7 +16,7 @@ const Login = () => {
       variables: {
         ...data,
       },
-      onCompleted({ login: response }, clientOptions) {
+      onCompleted({ login: response }) {
         if (response.isValid && response.data != undefined) {
           Cookies.set("accessToken", response.data.accessToken);
           Cookies.set("userId", response.data.userId);

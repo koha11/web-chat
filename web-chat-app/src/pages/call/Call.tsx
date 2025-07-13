@@ -18,13 +18,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../../components/ui/collapsible";
-import {
-  startTransition,
-  useEffect,
-  useRef,
-  useState,
-  VideoHTMLAttributes,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useGetChat, useHangupCall } from "../../hooks/chat.hook";
 import Cookies from "js-cookie";
@@ -35,7 +29,7 @@ import { CHAT_RESPONSE_CALL_SUB } from "../../services/chatService";
 const Call = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const hasVideo = queryParams.get("has_video")?.toLowerCase() == "true";
+  // const hasVideo = queryParams.get("has_video")?.toLowerCase() == "true";
   const initializeVideo =
     queryParams.get("initialize_video")?.toLowerCase() == "true";
   const roomId = queryParams.get("room_id")!;
@@ -255,9 +249,6 @@ const Call = () => {
       document: CHAT_RESPONSE_CALL_SUB,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData) return prev;
-
-        const responseCall = subscriptionData.data.responseCall;
-        console.log(subscriptionData.data);
 
         setHangup(true);
       },
