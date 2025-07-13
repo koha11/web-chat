@@ -9,7 +9,7 @@ import { PubSub } from "graphql-subscriptions";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
 import { typeDefs, resolvers, graphqlSchema } from "./graphql/index.js";
-import { HOST, PORT } from "./config/env.js";
+import { ENVIRONMENT, HOST, PORT } from "./config/env.js";
 import { connectDB } from "./db/index.js";
 import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface.js";
 import { PubsubEvents } from "./interfaces/socket/pubsubEvents.js";
@@ -169,8 +169,30 @@ rtcWSS.on("connection", (ws) => {
 console.log("MongoDB is connected");
 
 server.listen(PORT, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-  console.log(`GraphQL endpoint: http://${HOST}:${PORT}/graphql`);
-  console.log(`GraphQL WS endpoint: ws://${HOST}:${PORT}/subscriptions`);
-  console.log(`RTC Signal WS endpoint: ws://${HOST}:${PORT}/rtc-signal`);
+  console.log(
+    `Server running on ${
+      ENVIRONMENT == "DEV" ? `http://${HOST}:${PORT}` : `https://${HOST}`
+    }`
+  );
+  console.log(
+    `GraphQL endpoint: ${
+      ENVIRONMENT == "DEV"
+        ? `http://${HOST}:${PORT}/graphql`
+        : `https://${HOST}/graphql`
+    }`
+  );
+  console.log(
+    `GraphQL WS endpoint: ${
+      ENVIRONMENT == "DEV"
+        ? `ws://${HOST}:${PORT}/subscriptions`
+        : `wss://${HOST}/subscriptions`
+    }`
+  );
+  console.log(
+    `RTC Signal WS endpoint: ${
+      ENVIRONMENT == "DEV"
+        ? `ws://${HOST}:${PORT}/rtc-signal`
+        : `wss://${HOST}/rtc-signal`
+    }`
+  );
 });

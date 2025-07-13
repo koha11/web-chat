@@ -10,12 +10,14 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
-const HOST = "localhost";
-
-const SERVER_URI = ``;
+const IS_DEV_ENV = import.meta.env.VITE_ENVIRONTMENT == "DEV";
+const HOST = IS_DEV_ENV ? "localhost" : import.meta.env.VITE_API_HOST;
+const PORT = import.meta.env.VITE_API_PORT ?? "3000";
 
 const httpLink = new HttpLink({
-  uri: `http://localhost:3000/graphql`,
+  uri: IS_DEV_ENV
+    ? `http://${HOST}:${PORT}/graphql`
+    : `https://${HOST}/graphql`,
 });
 
 export const httpOnlyClient = new ApolloClient({
@@ -28,7 +30,9 @@ export const createWsClient = () => {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: "ws://localhost:3000/subscriptions",
+      url: IS_DEV_ENV
+        ? `ws://${HOST}:${PORT}/subscriptions`
+        : `wss://${HOST}/subscriptions`,
       connectionParams: {
         authToken: token,
       },
@@ -38,7 +42,9 @@ export const createWsClient = () => {
   );
 
   const httpLink = new HttpLink({
-    uri: "http://localhost:3000/graphql",
+    uri: IS_DEV_ENV
+      ? `http://${HOST}:${PORT}/graphql`
+      : `https://${HOST}/graphql`,
     headers: {
       Authorization: `Bearer ${token}`,
     },
