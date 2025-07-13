@@ -1,9 +1,7 @@
 import { Check, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import {
-  useGetReceivedConnectRequests,
-} from "../../hooks/user.hook";
+import { useGetReceivedConnectRequests } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
 import { useHandleRequest } from "../../hooks/contact.hook";
 
@@ -19,7 +17,7 @@ const ReceivedConnectRequestDialog = ({
     loading: isReceivedConnectRequestsLoading,
   } = useGetReceivedConnectRequests({});
 
-  const [handleRequest] = useHandleRequest({});
+  const [handleRequest] = useHandleRequest();
 
   if (isReceivedConnectRequestsLoading) return <Loading></Loading>;
 

@@ -22,7 +22,7 @@ const AddContactDialog = ({
       userId,
     });
 
-  const [sendRequest] = useSendRequest({});
+  const [sendRequest] = useSendRequest();
 
   if (isConnectableUsers) return <Loading></Loading>;
 

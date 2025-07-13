@@ -28,9 +28,7 @@ const MyRadioDialog = ({
   name: string;
   initValue: any;
 }) => {
-  const { handleSubmit, control } = useForm<{
-    [name]: any;
-  }>({
+  const { handleSubmit, control } = useForm<Record<string, any>>({
     defaultValues: {
       [name]: initValue,
     },
