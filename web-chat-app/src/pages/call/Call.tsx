@@ -76,6 +76,7 @@ const Call = () => {
         : `wss://${SERVER_HOST}/rtc-signal`
     );
     const signaling = ws.current;
+    const pendingSignals: any[] = [];
     // Setup peer connection
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -106,8 +107,13 @@ const Call = () => {
 
     // ICE candidate handler
     pc.onicecandidate = ({ candidate }) => {
-      if (candidate) {
+      if (!candidate) return;
+
+      if (signaling.readyState === WebSocket.OPEN) {
         signaling.send(JSON.stringify({ type: "candidate", candidate }));
+      } else {
+        // buffer or defer
+        pendingSignals.push({ type: "candidate", candidate });
       }
     };
 
@@ -122,25 +128,34 @@ const Call = () => {
     pc.onnegotiationneeded = async () => {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      signaling.send(
-        JSON.stringify({ type: "offer", sdp: pc.localDescription })
-      );
+      const msg = { type: "offer", sdp: pc.localDescription };
+      if (signaling.readyState === WebSocket.OPEN) {
+        signaling.send(JSON.stringify(msg));
+      } else {
+        pendingSignals.push(msg);
+      }
     };
 
-    // Get media and add to connection
-    navigator.mediaDevices
-      .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
-      .then((stream) => {
-        setLocalStream(stream);
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-      });
-
     signaling.onopen = () => {
-      console.log("connected to RTC WS");
+      console.log("RTC WS open");
+
+      for (const msg of pendingSignals) {
+        console.log(msg);
+        signaling.send(JSON.stringify(msg));
+      }
+      pendingSignals.length = 0;
+
+      // Get media and add to connection
+      navigator.mediaDevices
+        .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
+        .then((stream) => {
+          setLocalStream(stream);
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+          }
+
+          stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+        });
     };
 
     // Incoming signaling messages
