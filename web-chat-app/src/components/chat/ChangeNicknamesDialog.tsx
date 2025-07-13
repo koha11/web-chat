@@ -1,17 +1,12 @@
-import { Check, Edit, Search, X } from "lucide-react";
+import { Check, Edit, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
-import Cookies from "js-cookie";
 
 import {
   useChangeNickname,
-  useGetChats,
-  usePostChat,
 } from "../../hooks/chat.hook";
-import Loading from "../ui/loading";
-import { useGetContacts } from "../../hooks/contact.hook";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 

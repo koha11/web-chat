@@ -4,10 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import Cookies from "js-cookie";
 
-import { useGetChats, usePostChat } from "../../hooks/chat.hook";
 import Loading from "../ui/loading";
-import { useGetContacts, useSendRequest } from "../../hooks/contact.hook";
-import { useEffect } from "react";
+import { useSendRequest } from "../../hooks/contact.hook";
 import { useGetConnectableUsers } from "../../hooks/user.hook";
 
 const AddContactDialog = ({

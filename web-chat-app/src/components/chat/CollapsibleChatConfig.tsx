@@ -1,23 +1,11 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  Edit,
-  Hand,
-  Image,
-  PinIcon,
-  TextQuote,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
+import { Edit, Hand, Image } from "lucide-react";
+
 import { useState } from "react";
 import MyCollapsible from "../ui/my-collapsible";
 import ChangeNicknamesDialog from "./ChangeNicknamesDialog";
 import { IChat } from "../../interfaces/chat.interface";
 
-const CollapsibleChatConfig = ({chat}: {chat: IChat}) => {
+const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
   const [isChangeNicknamesOpen, setChangeNicknamesOpen] = useState(false);
 
   return (

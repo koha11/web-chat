@@ -1,5 +1,3 @@
-import { Int32 } from "mongoose";
-
 export const getDisplaySendMsgTime = (sendTime: Date) => {
   let timeString = "";
 

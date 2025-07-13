@@ -1,17 +1,8 @@
 import {
-  ChevronDown,
-  ChevronUp,
   File,
   Image,
   Link,
-  PinIcon,
 } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import { useState } from "react";
 import MyCollapsible from "../ui/my-collapsible";
 
 const CollapsibleChatMedia = ({}: {}) => {

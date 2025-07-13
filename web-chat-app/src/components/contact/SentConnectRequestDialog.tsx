@@ -1,7 +1,4 @@
-import { Check, Search, X } from "lucide-react";
-import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Input } from "../ui/input";
 import Cookies from "js-cookie";
 import { useGetConnectableUsers } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
@@ -21,7 +18,7 @@ const SentConnectRequestDialog = ({
     });
 
   if (isConnectableUsers) return <Loading></Loading>;
-
+console.log(connectableUsers)
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent>
@@ -32,7 +29,7 @@ const SentConnectRequestDialog = ({
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
           <div className="py-2">
-            {connectableUsers!.map((user) => {
+            {/* {connectableUsers!.map((user) => {
               return (
                 <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
                   <div className="flex gap-4 items-center">
@@ -55,7 +52,7 @@ const SentConnectRequestDialog = ({
                   </div>
                 </div>
               );
-            })}
+            })} */}
           </div>
         </div>
       </DialogContent>

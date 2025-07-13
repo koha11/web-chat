@@ -3,7 +3,6 @@ import {
   InMemoryCache,
   split,
   HttpLink,
-  DocumentNode,
 } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";

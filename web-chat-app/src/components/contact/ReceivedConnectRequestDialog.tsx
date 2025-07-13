@@ -1,10 +1,7 @@
-import { Check, Search, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Input } from "../ui/input";
-import Cookies from "js-cookie";
 import {
-  useGetConnectableUsers,
   useGetReceivedConnectRequests,
 } from "../../hooks/user.hook";
 import Loading from "../ui/loading";

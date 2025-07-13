@@ -1,15 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  Dot,
-  LucideMailCheck,
-  MailCheck,
-  MailOpen,
-  MailPlusIcon,
-  MessageCircleCode,
-  MoreHorizontal,
-  Pin,
-} from "lucide-react";
+import { Dot, MessageCircleCode, MoreHorizontal, Pin } from "lucide-react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
@@ -45,9 +36,7 @@ const ChatRow = ({
 
   useEffect(() => {
     if (chat != undefined && !isLastMsgLoading) {
-      if (typeof chat.users == "object") {
-        setUsers(chat.users);
-      }
+      setUsers(chat.users as IUser[]);
     }
   }, [chat]);
 
@@ -64,6 +53,7 @@ const ChatRow = ({
             e.preventDefault();
             return;
           }
+          console.log(isOpen);
 
           // setMsgLoading(true);
         }}
