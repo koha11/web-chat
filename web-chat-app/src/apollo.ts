@@ -10,8 +10,12 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
+const HOST = "localhost";
+
+const SERVER_URI = ``;
+
 const httpLink = new HttpLink({
-  uri: "http://localhost:3000/graphql",
+  uri: `http://localhost:3000/graphql`,
 });
 
 export const httpOnlyClient = new ApolloClient({

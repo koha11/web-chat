@@ -4,13 +4,12 @@ import http from "http";
 import cors from "cors";
 import methodOverride from "method-override";
 import cookieParser from "cookie-parser";
-import path from "path";
 import { ApolloServer } from "apollo-server-express";
 import { PubSub } from "graphql-subscriptions";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
 import { typeDefs, resolvers, graphqlSchema } from "./graphql/index.js";
-import { PORT } from "./config/env.js";
+import { HOST, PORT } from "./config/env.js";
 import { connectDB } from "./db/index.js";
 import { ITokenPayload } from "./interfaces/auth/tokenPayload.interface.js";
 import { PubsubEvents } from "./interfaces/socket/pubsubEvents.js";
@@ -52,135 +51,126 @@ const apollo = new ApolloServer({
     return { pubsub, user };
   },
 });
-Promise.all([connectDB(), apollo.start()])
-  .then(() => {
-    apollo.applyMiddleware({ app, path: "/graphql" });
-    app.use(cors());
 
-    // xu li file tinh
-    // app.use(
-    //   Express.static(
-    //     path.join(__dirname.slice(0, __dirname.length - 4), "public")
-    //   )
-    // );
+await connectDB();
 
-    app.use(Express.static("node_modules"));
+await apollo.start();
 
-    //xu li du lieu tu form (dua vao middleware duoc xay dung san cua express js)
-    app.use(Express.urlencoded({ extended: true }));
-    app.use(Express.json());
+apollo.applyMiddleware({ app, path: "/graphql" });
+app.use(cors());
 
-    //middleware giup ghi de` cac phthuc khac len pthuc post hoac get cua form
-    app.use(methodOverride("_method"));
+// xu li file tinh
 
-    //middleware giup giai ma cookies
-    app.use(cookieParser());
+app.use(Express.static("node_modules"));
 
-    route(app);
+//xu li du lieu tu form (dua vao middleware duoc xay dung san cua express js)
+app.use(Express.urlencoded({ extended: true }));
+app.use(Express.json());
 
-    // connectSocketIo(server);
+//middleware giup ghi de` cac phthuc khac len pthuc post hoac get cua form
+app.use(methodOverride("_method"));
 
-    const graphqlWSS = new WebSocketServer({
-      noServer: true,
+//middleware giup giai ma cookies
+app.use(cookieParser());
+
+route(app);
+
+const graphqlWSS = new WebSocketServer({
+  noServer: true,
+});
+
+const rtcWSS = new WebSocketServer({
+  noServer: true,
+});
+
+useServer(
+  {
+    schema: graphqlSchema,
+    context: async (ctx, msg, args) => {
+      const token = ctx.connectionParams?.authToken as string;
+
+      let user = null;
+
+      if (!token) {
+        return;
+        throw new Error("no token provided");
+      }
+
+      user = authService.verifyToken(token);
+
+      if (!user) throw new Error("Missing auth token");
+
+      return { pubsub, user };
+    },
+    onConnect: async (ctx) => {
+      if (!ctx.connectionParams?.authToken) {
+        return;
+      }
+
+      const token = ctx.connectionParams?.authToken as string;
+      const user = authService.verifyToken(token);
+
+      await userService.setOnlineStatus(user.id.toString());
+
+      console.log(user.username + " is online");
+    },
+    onDisconnect: async (ctx) => {
+      if (!ctx.connectionParams?.authToken) {
+        return;
+      }
+
+      const token = ctx.connectionParams?.authToken as string;
+      const user = authService.verifyToken(token);
+
+      await userService.setOfflineStatus(user.id.toString());
+
+      console.log(user.username + " is offline");
+    },
+  },
+  graphqlWSS
+);
+
+// upgrade socket endpoint
+server.on("upgrade", (request, socket, head) => {
+  const { url } = request;
+
+  if (url === "/subscriptions") {
+    graphqlWSS.handleUpgrade(request, socket, head, (ws) => {
+      graphqlWSS.emit("connection", ws, request);
     });
-
-    const rtcWSS = new WebSocketServer({
-      noServer: true,
+  } else if (url === "/rtc-signal") {
+    rtcWSS.handleUpgrade(request, socket, head, (ws) => {
+      rtcWSS.emit("connection", ws, request);
     });
+  } else {
+    socket.destroy(); // unknown path
+  }
+});
 
-    useServer(
-      {
-        schema: graphqlSchema,
-        context: async (ctx, msg, args) => {
-          const token = ctx.connectionParams?.authToken as string;
+rtcWSS.on("connection", (ws) => {
+  console.log(`RTC client connected`);
 
-          let user = null;
+  ws.on("message", (msg) => {
+    const msgText = msg.toString();
 
-          if (!token) {
-            return;
-            throw new Error("no token provided");
-          }
-
-          user = authService.verifyToken(token);
-
-          if (!user) throw new Error("Missing auth token");
-
-          return { pubsub, user };
-        },
-        onConnect: async (ctx) => {
-          if (!ctx.connectionParams?.authToken) {
-            return;
-            throw new Error("Missing auth token");
-          }
-
-          const token = ctx.connectionParams?.authToken as string;
-          const user = authService.verifyToken(token);
-
-          await userService.setOnlineStatus(user.id.toString());
-
-          console.log(user.username + " is online");
-        },
-        onDisconnect: async (ctx) => {
-          if (!ctx.connectionParams?.authToken) {
-            return;
-            throw new Error("Missing auth token");
-          }
-
-          const token = ctx.connectionParams?.authToken as string;
-          const user = authService.verifyToken(token);
-
-          await userService.setOfflineStatus(user.id.toString());
-
-          console.log(user.username + " is offline");
-        },
-      },
-      graphqlWSS
-    );
-
-    server.on("upgrade", (request, socket, head) => {
-      const { url } = request;
-
-      if (url === "/subscriptions") {
-        graphqlWSS.handleUpgrade(request, socket, head, (ws) => {
-          graphqlWSS.emit("connection", ws, request);
-        });
-      } else if (url === "/rtc-signal") {
-        rtcWSS.handleUpgrade(request, socket, head, (ws) => {
-          rtcWSS.emit("connection", ws, request);
-        });
-      } else {
-        socket.destroy(); // unknown path
+    // Relay tin nhắn cho tất cả peer khác
+    rtcWSS.clients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(msgText);
       }
     });
-
-    rtcWSS.on("connection", (ws) => {
-      console.log(`RTC client connected`);
-
-      ws.on("message", (msg) => {
-        const msgText = msg.toString();
-
-        // Relay tin nhắn cho tất cả peer khác
-        rtcWSS.clients.forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
-            client.send(msgText);
-          }
-        });
-      });
-
-      ws.on("close", () => {
-        console.log("RTC client disconnected");
-      });
-    });
-
-    console.log("MongoDB is connected");
-
-    server.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-      console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
-      console.log(`GraphQL WS endpoint: ws://localhost:${PORT}/subscriptions`);
-      console.log(`RTC Signal WS endpoint: ws://localhost:${PORT}/rtc-signal`);
-    });
-  })
-  .catch((err) => {
-    console.log(err);
   });
+
+  ws.on("close", () => {
+    console.log("RTC client disconnected");
+  });
+});
+
+console.log("MongoDB is connected");
+
+server.listen(PORT, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+  console.log(`GraphQL endpoint: http://${HOST}:${PORT}/graphql`);
+  console.log(`GraphQL WS endpoint: ws://${HOST}:${PORT}/subscriptions`);
+  console.log(`RTC Signal WS endpoint: ws://${HOST}:${PORT}/rtc-signal`);
+});
