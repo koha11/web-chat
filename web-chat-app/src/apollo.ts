@@ -9,7 +9,7 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
-const IS_DEV_ENV = import.meta.env.VITE_ENVIRONTMENT == "DEV";
+const IS_DEV_ENV = import.meta.env.VITE_ENVIRONMENT == "DEV";
 const HOST = IS_DEV_ENV ? "localhost" : import.meta.env.VITE_API_HOST;
 const PORT = import.meta.env.VITE_API_PORT ?? "3000";
 
