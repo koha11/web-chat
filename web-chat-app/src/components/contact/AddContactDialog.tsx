@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import Cookies from "js-cookie";
 
 import Loading from "../ui/loading";
-import { useSendRequest } from "../../hooks/contact.hook";
+import { useHandleRequest, useSendRequest } from "../../hooks/contact.hook";
 import { useGetConnectableUsers } from "../../hooks/user.hook";
 import { useEffect, useState } from "react";
 
@@ -23,7 +23,8 @@ const AddContactDialog = ({
       userId,
     });
 
-  const [sendRequest, { data: requestUserId }] = useSendRequest();
+  const [sendRequest] = useSendRequest();
+  const [handleRequest] = useHandleRequest();
 
   const [requestMap, setRequestMap] = useState<Record<string, boolean>>({});
 
@@ -37,11 +38,6 @@ const AddContactDialog = ({
       setRequestMap(myMap);
     }
   }, [connectableUsersConnection]);
-
-  useEffect(() => {
-    console.log(requestUserId);
-    setRequestMap({ ...requestMap, [requestUserId]: true });
-  }, [requestUserId]);
 
   if (isConnectableUsers) return <Loading></Loading>;
 
@@ -86,7 +82,10 @@ const AddContactDialog = ({
                         className="cursor-pointer h-8 w-16 bg-gray-400 text-white"
                         variant={"outline"}
                         onClick={() => {
-                          sendRequest({ variables: { userId: user.id } });
+                          handleRequest({
+                            variables: { userId: user.id, isAccepted: false },
+                          });
+                          setRequestMap({ ...requestMap, [user.id]: false });
                         }}
                       >
                         Cancel
@@ -97,6 +96,7 @@ const AddContactDialog = ({
                         variant={"outline"}
                         onClick={() => {
                           sendRequest({ variables: { userId: user.id } });
+                          setRequestMap({ ...requestMap, [user.id]: true });
                         }}
                       >
                         Connect

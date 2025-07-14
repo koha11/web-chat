@@ -22,12 +22,17 @@ export const GET_CONTACTS = gql`
 
 export const SEND_REQUEST = gql`
   mutation SendRequest($userId: ID!) {
-    sendRequest(userId: $userId)
+    sendRequest(userId: $userId) {
+      id
+      users {
+        id
+      }
+    }
   }
 `;
 
 export const HANDLE_REQUEST = gql`
-  mutation HandleRequest($contactId: ID!, $isAccepted: Boolean!) {
-    handleRequest(contactId: $contactId, isAccepted: $isAccepted)
+  mutation HandleRequest($userId: ID!, $isAccepted: Boolean!) {
+    handleRequest(userId: $userId, isAccepted: $isAccepted)
   }
 `;

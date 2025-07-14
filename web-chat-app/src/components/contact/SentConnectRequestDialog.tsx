@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useGetSentConnectRequests } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
 import { Button } from "../ui/button";
-import { X } from "lucide-react";
+import { useHandleRequest } from "@/hooks/contact.hook";
 
 const SentConnectRequestDialog = ({
   isOpen,
@@ -13,6 +13,8 @@ const SentConnectRequestDialog = ({
 }) => {
   const { data: sentConnectRequest, loading: isSentConnectRequest } =
     useGetSentConnectRequests({});
+
+  const [handleRequest] = useHandleRequest();
 
   if (isSentConnectRequest) return <Loading></Loading>;
 
@@ -43,7 +45,11 @@ const SentConnectRequestDialog = ({
                     <Button
                       className="cursor-pointer bg-gray-400 text-white rounded-2xl"
                       variant={"outline"}
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleRequest({
+                          variables: { userId: user.id, isAccepted: false },
+                        });
+                      }}
                     >
                       Cancel
                     </Button>

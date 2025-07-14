@@ -19,12 +19,16 @@ export const contactResolvers: IResolvers = {
   Mutation: {
     sendRequest: async (_p: any, { userId }, { user }: IMyContext) => {
       // Tao contact neu chua co
-      let contact = await Contact.findOne({ users: [userId, user.id] });
+      let contact = await Contact.findOne({
+        users: [userId, user.id],
+      }).populate("users");
 
       if (!contact) {
         contact = await Contact.create({
           users: [userId, user.id],
         });
+
+        contact = await contact.populate("users");
       }
 
       // khoi tao relationsMap
@@ -36,20 +40,16 @@ export const contactResolvers: IResolvers = {
 
       await contact.save();
 
-      return userId;
+      return contact;
     },
     handleRequest: async (
       _p: any,
-      { contactId, isAccepted },
+      { userId, isAccepted },
       { user }: IMyContext
     ) => {
-      const contact = await Contact.findById(contactId);
+      const contact = await Contact.findOne({ users: [userId, user.id] });
 
       if (!contact) throw new Error("ko ton tai contact nay");
-
-      const userId = contact.users
-        .filter((uid) => uid != user.id)[0]
-        .toString();
 
       const relationship = isAccepted
         ? ContactRelationship.connected
