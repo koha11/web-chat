@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_CONTACTS,
   HANDLE_REQUEST,
+  REMOVE_CONNECT,
   SEND_REQUEST,
 } from "../services/contactService";
 import IContact from "../interfaces/contact.interface";
@@ -12,17 +13,14 @@ import { IUser } from "@/interfaces/user.interface";
 import Cookies from "js-cookie";
 
 export const useGetContacts = ({
-  userId,
   after,
-  first,
+  first = 10,
 }: {
-  userId: string;
   first?: number;
   after?: string;
 }): IMyQueryResult<IModelConnection<IContact>> => {
   const myQuery = useQuery(GET_CONTACTS, {
-    variables: { userId, first, after },
-    skip: !userId,
+    variables: { first, after },
   });
 
   return {
@@ -109,6 +107,51 @@ export const useHandleRequest = ({ first = 10 }: { first?: number }) => {
                   : null,
               },
             } as IModelConnection<IUser>,
+          },
+        });
+      }
+    },
+  });
+};
+
+export const useRemoveConnect = ({
+  first = 10,
+  after,
+}: {
+  first?: number;
+  after?: string;
+}) => {
+  return useMutation(REMOVE_CONNECT, {
+    update(cache, { data }) {
+      const removeConnect = data.removeConnect as IContact;
+
+      const existing = cache.readQuery<{
+        contacts: IModelConnection<IContact>;
+      }>({
+        query: GET_CONTACTS,
+        variables: { first, after },
+      });
+
+      if (existing) {
+        const newEdges = existing.contacts.edges.filter(
+          (edge) => edge.cursor != removeConnect.id
+        );
+
+        cache.writeQuery({
+          query: GET_CONTACTS,
+          variables: { first, after },
+          data: {
+            contacts: {
+              ...existing.contacts,
+              edges: newEdges,
+              pageInfo: {
+                ...existing.contacts.pageInfo,
+                startCursor: newEdges.length ? newEdges[0].cursor : null,
+                endCursor: newEdges.length
+                  ? newEdges[newEdges.length - 1].cursor
+                  : null,
+              },
+            } as IModelConnection<IContact>,
           },
         });
       }

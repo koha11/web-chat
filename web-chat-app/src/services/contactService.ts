@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CONTACTS = gql`
-  query GetContacts($userId: ID, $after: ID, $first: Int) {
-    contacts(userId: $userId, after: $after, first: $first) {
+  query GetContacts($after: ID, $first: Int) {
+    contacts(after: $after, first: $first) {
       edges {
         cursor
         node {
@@ -34,6 +34,17 @@ export const SEND_REQUEST = gql`
 export const HANDLE_REQUEST = gql`
   mutation HandleRequest($userId: ID!, $isAccepted: Boolean!) {
     handleRequest(userId: $userId, isAccepted: $isAccepted) {
+      id
+      users {
+        id
+      }
+    }
+  }
+`;
+
+export const REMOVE_CONNECT = gql`
+  mutation RemoveConnect($userId: ID!) {
+    removeConnect(userId: $userId) {
       id
       users {
         id

@@ -65,6 +65,24 @@ export const contactResolvers: IResolvers = {
 
       return contact;
     },
+    removeConnect: async (_p: any, { userId }, { user }: IMyContext) => {
+      const contact = await Contact.findOne({
+        users: [userId, user.id],
+      }).populate("users");
+
+      if (!contact) throw new Error("ko ton tai contact nay");
+
+      // khoi tao relationsMap
+      contact.relationships.set(userId, ContactRelationship.stranger);
+      contact.relationships.set(
+        user.id.toString(),
+        ContactRelationship.stranger
+      );
+
+      await contact.save();
+
+      return contact;
+    },
   },
   Subscription: {},
 };
