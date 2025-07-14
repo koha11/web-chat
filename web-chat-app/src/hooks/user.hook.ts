@@ -1,8 +1,9 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
   GET_SENT_CONNECT_REQUESTS,
+  UPLOAD_USER_AVATAR,
 } from "../services/userService";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
@@ -71,4 +72,8 @@ export const useGetSentConnectRequests = ({
     refetch: myQuery.refetch,
     fetchMore: myQuery.fetchMore,
   };
+};
+
+export const useUploadUserAvatar = () => {
+  return useMutation(UPLOAD_USER_AVATAR);
 };

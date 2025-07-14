@@ -22,6 +22,7 @@ export const typeDefs = mergeTypeDefs([
   }`,
   `scalar JSONObject`,
   `scalar Date`,
+  `scalar Upload`,
   chatTypeDefs,
   messageTypeDefs,
   userTypeDefs,

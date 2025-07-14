@@ -59,3 +59,9 @@ export const GET_SENT_CONNECT_REQUESTS = gql`
     }
   }
 `;
+
+export const UPLOAD_USER_AVATAR = gql`
+  mutation UploadUserAvatar($file: Upload!) {
+    uploadUserAvatar(file: $file)
+  }
+`;

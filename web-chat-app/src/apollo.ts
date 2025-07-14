@@ -1,11 +1,14 @@
 import { ApolloClient, InMemoryCache, split, HttpLink } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookies from "js-cookie";
 
 export const IS_DEV_ENV = import.meta.env.VITE_ENVIRONMENT == "DEV";
-export const SERVER_HOST = IS_DEV_ENV ? "localhost" : import.meta.env.VITE_API_HOST;
+export const SERVER_HOST = IS_DEV_ENV
+  ? "localhost"
+  : import.meta.env.VITE_API_HOST;
 export const SERVER_PORT = import.meta.env.VITE_API_PORT ?? "3000";
 
 const httpLink = new HttpLink({
@@ -35,7 +38,7 @@ export const createWsClient = () => {
     })
   );
 
-  const httpLink = new HttpLink({
+  const httpLink = createUploadLink({
     uri: IS_DEV_ENV
       ? `http://${SERVER_HOST}:${SERVER_PORT}/graphql`
       : `https://${SERVER_HOST}/graphql`,

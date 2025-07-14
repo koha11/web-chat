@@ -9,7 +9,7 @@ const UserSchema = new Schema<IUser>(
     ggid: { type: String, unique: true },
     username: { type: String, required: true },
     fullname: { type: String, required: true },
-    avatar: { type: String, default: "" },
+    avatar: { type: String, default: "" },    
     isOnline: { type: Boolean, default: false },
     lastLogined: { type: String, default: new Date().toISOString() },
     userType: { type: String, default: UserType.USER },

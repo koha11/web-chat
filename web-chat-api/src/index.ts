@@ -16,6 +16,7 @@ import { PubsubEvents } from "./interfaces/socket/pubsubEvents.js";
 import { route } from "./routes/index.js";
 import authService from "./services/AuthService.js";
 import userService from "./services/UserService.js";
+import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 
 declare global {
   namespace Express {
@@ -29,6 +30,8 @@ const app = Express();
 const server = http.createServer(app);
 
 const pubsub = new PubSub<PubsubEvents>();
+
+app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }));
 
 const apollo = new ApolloServer({
   typeDefs,
@@ -44,7 +47,6 @@ const apollo = new ApolloServer({
       user = authService.verifyToken(token);
       if (!user) {
         return {};
-        throw new Error("Missing auth token");
       }
     }
 

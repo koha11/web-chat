@@ -1,10 +1,13 @@
+import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
 import ContactRelationship from "../../enums/ContactRelationship.enum.js";
 import IMyContext from "../../interfaces/socket/myContext.interface.js";
 import User from "../../models/User.model.js";
 import userService from "../../services/UserService.js";
 import { IResolvers } from "@graphql-tools/utils";
+import cloudinary from "lib/cloudinary.js";
 
 export const userResolvers: IResolvers = {
+  Upload: GraphQLUpload,
   Query: {
     users: async (_p: any, { userId }) => {
       const data = await User.find();
@@ -33,5 +36,20 @@ export const userResolvers: IResolvers = {
       return data;
     },
   },
-  Mutation: {},
+  Mutation: {
+    uploadUserAvatar: async (_p: any, { file }, { user }: IMyContext) => {
+      const { createReadStream } = await file;
+
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "uploads" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result!.secure_url);
+          }
+        );
+        createReadStream().pipe(stream);
+      });
+    },
+  },
 };

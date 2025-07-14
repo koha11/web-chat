@@ -11,3 +11,4 @@ export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 export const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+export const CLOUDINARY_URL = process.env.CLOUDINARY_URL
