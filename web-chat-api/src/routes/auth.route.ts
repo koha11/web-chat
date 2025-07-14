@@ -40,16 +40,16 @@ authRouter.get("/google/callback", async (req, res) => {
   const userInfo = await oauth2.userinfo.get();
   const userInfoData = userInfo.data;
 
-  // Create your user or find in DB
   let user = await User.findOne({ ggid: userInfoData.id });
 
   if (!user) {
     user = await userService.createNewUser({
       fullname: userInfoData.name ?? "",
       username: userInfoData.email ?? "",
+      avatar: userInfoData.picture ?? undefined,
+      ggid: userInfoData.id ?? undefined,
     });
   }
-
   const token = authService.createToken({
     expiresIn: "7d",
     id: user.id,

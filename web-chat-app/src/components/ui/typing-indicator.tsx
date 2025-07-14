@@ -1,18 +1,18 @@
-import React from 'react'
+import React from "react";
 
 type TypingIndicatorProps = {
-  dotColor?: string
-  dotSize?: number
-  className?: string
-}
+  dotColor?: string;
+  dotSize?: number;
+  className?: string;
+};
 
 export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
-  dotColor = 'bg-gray-400',
-  dotSize = 2,
-  className = '',
+  dotColor = "bg-gray-400",
+  dotSize = 3,
+  className = "",
 }) => {
   // We’ll stagger the animation for each dot
-  const delays = ['0s', '0.2s', '0.4s']
+  const delays = ["0s", "0.2s", "0.4s"];
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -32,5 +32,5 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         />
       ))}
     </div>
-  )
-}
+  );
+};

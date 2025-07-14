@@ -3,6 +3,8 @@ import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
 import { useLogin } from "../../hooks/auth.hook";
+import { Button } from "@/components/ui/button";
+import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -68,11 +70,18 @@ const Login = () => {
       </div>
       <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
       <div className="mt-4 flex items-center justify-evenly w-[50%]">
-        <Link
-          to="http://localhost:3000/auth/google"
-          className="cursor-pointer hover:opacity-70 w-8 h-8 bg-contain bg-no-repeat bg-center"
+        <Button
+          className="cursor-pointer hover:opacity-70 w-12 h-12 bg-contain bg-no-repeat bg-center rounded-full"
           style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
-        ></Link>
+          variant={"outline"}
+          onClick={() => {
+            const URL = IS_DEV_ENV
+              ? `http://${SERVER_HOST}:${SERVER_PORT}/auth/google`
+              : `https://${SERVER_HOST}/auth/google`;
+
+            window.open(URL, "_blank");
+          }}
+        ></Button>
       </div>
     </section>
   );

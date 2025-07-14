@@ -123,11 +123,13 @@ class UserService {
     _id,
     username,
     ggid,
+    avatar
   }: {
     _id?: Types.ObjectId;
     username: string;
     fullname: string;
     ggid?: string;
+    avatar?: string;
   }) => {
     let user;
 
@@ -138,6 +140,7 @@ class UserService {
         username,
         fullname,
         lastLogined: new Date().toISOString(),
+        avatar,
       });
     else
       user = await User.create({
@@ -145,6 +148,7 @@ class UserService {
         username,
         fullname,
         lastLogined: new Date().toISOString(),
+        avatar,
       });
 
     // Tao chat voi gemini api
