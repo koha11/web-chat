@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import {
   GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
+  GET_SENT_CONNECT_REQUESTS,
 } from "../services/userService";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
@@ -45,6 +46,26 @@ export const useGetReceivedConnectRequests = ({
       myQuery.data == undefined
         ? undefined
         : myQuery.data.receivedConnectRequests,
+    loading: myQuery.loading,
+    subscribeToMore: myQuery.subscribeToMore,
+    refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
+  };
+};
+
+export const useGetSentConnectRequests = ({
+  first = 10,
+}: {
+  first?: number;
+  after?: string;
+}): IMyQueryResult<IModelConnection<IUser>> => {
+  const myQuery = useQuery(GET_SENT_CONNECT_REQUESTS, {
+    variables: { first },
+  });
+
+  return {
+    data:
+      myQuery.data == undefined ? undefined : myQuery.data.sentConnectRequests,
     loading: myQuery.loading,
     subscribeToMore: myQuery.subscribeToMore,
     refetch: myQuery.refetch,

@@ -24,9 +24,9 @@ export const userResolvers: IResolvers = {
 
       return data;
     },
-    sentConnectRequests: async (_p: any, { userId }) => {
+    sentConnectRequests: async (_p: any, {}, { user }) => {
       const data = await userService.getUsersByRelationship({
-        userId,
+        userId: user.id.toString(),
         relationship: ContactRelationship.request,
       });
 

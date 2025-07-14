@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import Cookies from "js-cookie";
-import { useGetConnectableUsers } from "../../hooks/user.hook";
+import { useGetSentConnectRequests } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
+import { Button } from "../ui/button";
+import { X } from "lucide-react";
 
 const SentConnectRequestDialog = ({
   isOpen,
@@ -10,15 +11,11 @@ const SentConnectRequestDialog = ({
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 }) => {
-  const userId = Cookies.get("userId") ?? "";
+  const { data: sentConnectRequest, loading: isSentConnectRequest } =
+    useGetSentConnectRequests({});
 
-  const { data: connectableUsers, loading: isConnectableUsers } =
-    useGetConnectableUsers({
-      userId,
-    });
+  if (isSentConnectRequest) return <Loading></Loading>;
 
-  if (isConnectableUsers) return <Loading></Loading>;
-console.log(connectableUsers)
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent>
@@ -29,7 +26,8 @@ console.log(connectableUsers)
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
           <div className="py-2">
-            {/* {connectableUsers!.map((user) => {
+            {sentConnectRequest?.edges.map((edge) => {
+              const user = edge.node;
               return (
                 <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">
                   <div className="flex gap-4 items-center">
@@ -43,16 +41,16 @@ console.log(connectableUsers)
                   </div>
                   <div className="flex items-center gap-4">
                     <Button
-                      className="cursor-pointer bg-gray-300 text-white rounded-2xl"
+                      className="cursor-pointer bg-gray-400 text-white rounded-2xl"
                       variant={"outline"}
                       onClick={() => {}}
                     >
-                      <X></X>
+                      Cancel
                     </Button>
                   </div>
                 </div>
               );
-            })} */}
+            })}
           </div>
         </div>
       </DialogContent>

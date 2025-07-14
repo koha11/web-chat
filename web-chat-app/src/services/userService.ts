@@ -39,3 +39,23 @@ export const GET_RECEIVED_CONNECT_REQUESTS = gql`
     }
   }
 `;
+
+export const GET_SENT_CONNECT_REQUESTS = gql`
+  query GetSentConnectRequests($first: Int, $after: ID) {
+    sentConnectRequests(first: $first, after: $after) {
+      edges {
+        cursor
+        node {
+          id
+          avatar
+          fullname
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;

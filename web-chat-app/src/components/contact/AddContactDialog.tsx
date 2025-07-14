@@ -39,6 +39,7 @@ const AddContactDialog = ({
   }, [connectableUsersConnection]);
 
   useEffect(() => {
+    console.log(requestUserId);
     setRequestMap({ ...requestMap, [requestUserId]: true });
   }, [requestUserId]);
 

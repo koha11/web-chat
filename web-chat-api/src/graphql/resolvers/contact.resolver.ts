@@ -1,7 +1,6 @@
 import ContactRelationship from "../../enums/ContactRelationship.enum.js";
 import IMyContext from "../../interfaces/socket/myContext.interface.js";
 import Contact from "../../models/Contact.model.js";
-import User from "../../models/User.model.js";
 import contactService from "../../services/ContactService.js";
 import { IResolvers } from "@graphql-tools/utils";
 
@@ -29,10 +28,10 @@ export const contactResolvers: IResolvers = {
       }
 
       // khoi tao relationsMap
-      contact.relationships.set(userId, ContactRelationship.request);
+      contact.relationships.set(userId, ContactRelationship.requested);
       contact.relationships.set(
         user.id.toString(),
-        ContactRelationship.requested
+        ContactRelationship.request
       );
 
       await contact.save();
