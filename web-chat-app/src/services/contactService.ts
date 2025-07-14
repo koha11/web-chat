@@ -26,7 +26,11 @@ export const SEND_REQUEST = gql`
       id
       users {
         id
+        avatar
+        fullname
       }
+      chatId
+      relationships
     }
   }
 `;
@@ -37,7 +41,11 @@ export const HANDLE_REQUEST = gql`
       id
       users {
         id
+        avatar
+        fullname
       }
+      chatId
+      relationships
     }
   }
 `;
@@ -48,7 +56,11 @@ export const REMOVE_CONNECT = gql`
       id
       users {
         id
+        avatar
+        fullname
       }
+      chatId
+      relationships
     }
   }
 `;

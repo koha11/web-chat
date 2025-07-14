@@ -20,7 +20,7 @@ export const contactResolvers: IResolvers = {
     sendRequest: async (_p: any, { userId }, { user }: IMyContext) => {
       // Tao contact neu chua co
       let contact = await Contact.findOne({
-        users: [userId, user.id],
+        users: { $all: [userId, user.id], $size: 2 },
       }).populate("users");
 
       if (!contact) {
@@ -48,8 +48,11 @@ export const contactResolvers: IResolvers = {
       { user }: IMyContext
     ) => {
       const contact = await Contact.findOne({
-        users: [userId, user.id],
+        users: { $all: [userId, user.id], $size: 2 },
       }).populate("users");
+
+      console.log(userId);
+      console.log(user.id);
 
       if (!contact) throw new Error("ko ton tai contact nay");
 
@@ -67,7 +70,7 @@ export const contactResolvers: IResolvers = {
     },
     removeConnect: async (_p: any, { userId }, { user }: IMyContext) => {
       const contact = await Contact.findOne({
-        users: [userId, user.id],
+        users: { $all: [userId, user.id], $size: 2 },
       }).populate("users");
 
       if (!contact) throw new Error("ko ton tai contact nay");

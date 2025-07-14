@@ -48,7 +48,7 @@ const ReceivedConnectRequestDialog = ({
                       onClick={() => {
                         handleRequest({
                           variables: {
-                            contactId: edge.cursor,
+                            userId: user.id,
                             isAccepted: false,
                           },
                         });
@@ -62,7 +62,7 @@ const ReceivedConnectRequestDialog = ({
                       onClick={() => {
                         handleRequest({
                           variables: {
-                            contactId: edge.cursor,
+                            userId: user.id,
                             isAccepted: true,
                           },
                         });
