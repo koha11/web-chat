@@ -93,7 +93,6 @@ useServer(
 
       if (!token) {
         return;
-        throw new Error("no token provided");
       }
 
       user = authService.verifyToken(token);
