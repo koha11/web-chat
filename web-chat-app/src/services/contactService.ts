@@ -22,9 +22,7 @@ export const GET_CONTACTS = gql`
 
 export const SEND_REQUEST = gql`
   mutation SendRequest($userId: ID!) {
-    sendRequest(userId: $userId) {
-      id
-    }
+    sendRequest(userId: $userId)
   }
 `;
 

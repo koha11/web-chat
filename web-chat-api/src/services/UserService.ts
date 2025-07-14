@@ -32,16 +32,16 @@ class UserService {
     const users = await User.find(filter).sort({ _id: -1 });
 
     const userContacts = await Contact.find({
-      [`relationships.${userId}`]: { $ne: ContactRelationship.connected },
+      [`relationships.${userId}`]: { $ne: ContactRelationship.stranger },
     }).populate("users");
 
-    const connectedUsers = userContacts.map(
+    const connectedUserIds = userContacts.map(
       (userContact) =>
         userContact.users.filter((user) => user.id.toString() != userId)[0].id
     );
 
     const docs = users
-      .filter((user) => !connectedUsers.includes(user.id))
+      .filter((user) => !connectedUserIds.includes(user.id))
       .slice(0, first + 1);
 
     const hasNextPage = docs.length > first;

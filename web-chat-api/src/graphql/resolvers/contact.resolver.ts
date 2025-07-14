@@ -37,9 +37,7 @@ export const contactResolvers: IResolvers = {
 
       await contact.save();
 
-      const returnUser = await User.findById(userId);
-
-      return returnUser;
+      return userId;
     },
     handleRequest: async (
       _p: any,
