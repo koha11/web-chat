@@ -15,6 +15,7 @@ import {
 import ReceivedConnectRequestDialog from "../../components/contact/ReceivedConnectRequestDialog";
 import SentConnectRequestDialog from "@/components/contact/SentConnectRequestDialog";
 import ActiveList from "./ActiveList";
+import ContactActionBar from "./ContactActionBar";
 
 const Contact = () => {
   const userId = Cookies.get("userId") ?? "";
@@ -52,38 +53,9 @@ const Contact = () => {
               <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
             </form>
           </div>
-          <div className="h-[10%] flex items-center justify-between py-4 px-2">
-            <div className="flex items-center justify-baseline gap-4">
-              <Button
-                variant={"outline"}
-                className="cursor-pointer rounded-xl relative"
-                onClick={() => setReceivedRequestDialogOpen(true)}
-              >
-                <span>Received Connect Request</span>
-                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
-                  12
-                </div>
-              </Button>
-              <Button
-                variant={"outline"}
-                className="cursor-pointer rounded-xl relative"
-                onClick={() => setSentRequestDialogOpen(true)}
-              >
-                <span>Sent Connect Request</span>
-                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
-                  12
-                </div>
-              </Button>
-            </div>
-            <Button
-              variant={"outline"}
-              className="cursor-pointer"
-              onClick={() => setAddDialogOpen(true)}
-            >
-              <Plus></Plus>
-              <b>Add contact</b>
-            </Button>
-          </div>
+
+          <ContactActionBar></ContactActionBar>
+
           <div className="h-[80%] grid grid-cols-2 gap-4 auto-rows-min px-2">
             {contacts?.edges.map((edge) => {
               const contact = edge.node.users.find((user) => user.id != userId);
@@ -126,18 +98,6 @@ const Contact = () => {
           </div>
         </section>
       </div>
-      <AddContactDialog
-        isOpen={isAddDialogOpen}
-        setOpen={setAddDialogOpen}
-      ></AddContactDialog>
-      <ReceivedConnectRequestDialog
-        isOpen={isReceivedRequestDialogOpen}
-        setOpen={setReceivedRequestDialogOpen}
-      ></ReceivedConnectRequestDialog>
-      <SentConnectRequestDialog
-        isOpen={isSentRequestDialogOpen}
-        setOpen={setSentRequestDialogOpen}
-      ></SentConnectRequestDialog>
     </div>
   );
 };

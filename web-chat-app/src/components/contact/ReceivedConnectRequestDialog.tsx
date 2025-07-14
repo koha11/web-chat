@@ -4,23 +4,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useGetReceivedConnectRequests } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
 import { useHandleRequest } from "../../hooks/contact.hook";
+import IModelConnection from "@/interfaces/modelConnection.interface";
+import { IUser } from "@/interfaces/user.interface";
 
 const ReceivedConnectRequestDialog = ({
   isOpen,
   setOpen,
+  receivedConnectRequests,
+  handleRequest,
 }: {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
+  receivedConnectRequests: IModelConnection<IUser>;
+  handleRequest: Function;
 }) => {
-  const {
-    data: receivedConnectRequests,
-    loading: isReceivedConnectRequestsLoading,
-  } = useGetReceivedConnectRequests({});
-
-  const [handleRequest] = useHandleRequest({});
-
-  if (isReceivedConnectRequestsLoading) return <Loading></Loading>;
-
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent>

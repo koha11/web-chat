@@ -3,21 +3,20 @@ import { useGetSentConnectRequests } from "../../hooks/user.hook";
 import Loading from "../ui/loading";
 import { Button } from "../ui/button";
 import { useHandleRequest } from "@/hooks/contact.hook";
+import IModelConnection from "@/interfaces/modelConnection.interface";
+import { IUser } from "@/interfaces/user.interface";
 
 const SentConnectRequestDialog = ({
   isOpen,
   setOpen,
+  handleRequest,
+  sentConnectRequests,
 }: {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
+  sentConnectRequests: IModelConnection<IUser>;
+  handleRequest: Function;
 }) => {
-  const { data: sentConnectRequest, loading: isSentConnectRequest } =
-    useGetSentConnectRequests({});
-
-  const [handleRequest] = useHandleRequest({});
-
-  if (isSentConnectRequest) return <Loading></Loading>;
-
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent>
@@ -28,7 +27,7 @@ const SentConnectRequestDialog = ({
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
           <div className="py-2">
-            {sentConnectRequest?.edges.map((edge) => {
+            {sentConnectRequests?.edges.map((edge) => {
               const user = edge.node;
               return (
                 <div className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300">

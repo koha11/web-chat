@@ -24,9 +24,9 @@ const ActiveList = () => {
     >
       <div className="flex justify-between items-center h-[10%] px-2">
         <div className="text-xl">
-          <Link to={"/m"}>
+          <NavLink to={"/m"}>
             <ArrowLeftCircle></ArrowLeftCircle>
-          </Link>
+          </NavLink>
         </div>
         <h1 className="text-2xl font-bold">Danh sách hoạt động</h1>
       </div>
