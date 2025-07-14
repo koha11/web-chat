@@ -51,9 +51,6 @@ export const contactResolvers: IResolvers = {
         users: { $all: [userId, user.id], $size: 2 },
       }).populate("users");
 
-      console.log(userId);
-      console.log(user.id);
-
       if (!contact) throw new Error("ko ton tai contact nay");
 
       const relationship = isAccepted

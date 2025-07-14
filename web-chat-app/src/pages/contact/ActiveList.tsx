@@ -14,7 +14,9 @@ const ActiveList = () => {
   const [postChat, { data: createdChat }] = usePostChat();
 
   useEffect(() => {
-    if (createdChat) navigate("/m/" + createdChat.postChat.cursor);
+    if (createdChat) {
+      navigate("/m/" + createdChat.postChat.id);
+    }
   }, [createdChat]);
 
   return (
@@ -42,12 +44,12 @@ const ActiveList = () => {
               to={"/m/" + edge.node.chatId}
               onClick={(e) => {
                 if (!edge.node.chatId) {
+                  e.preventDefault();
                   postChat({
                     variables: {
                       users: edge.node.users.map((user) => user.id),
                     },
                   });
-                  e.preventDefault();
                 }
               }}
               className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300"
