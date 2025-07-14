@@ -1,5 +1,15 @@
 import { gql } from "@apollo/client";
 
+export const GET_USERS = gql`
+  query GetUsers($userId: ID!) {
+    users(userId: $userId) {
+      id
+      avatar
+      fullname
+    }
+  }
+`;
+
 export const GET_CONNECTABLE_USERS = gql`
   query GetConnectableUsers($userId: ID!, $first: Int, $after: ID) {
     connectableUsers(userId: $userId, first: $first, after: $after) {

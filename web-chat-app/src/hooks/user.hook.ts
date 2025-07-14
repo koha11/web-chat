@@ -3,11 +3,31 @@ import {
   GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
   GET_SENT_CONNECT_REQUESTS,
+  GET_USERS,
   UPLOAD_USER_AVATAR,
 } from "../services/userService";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import { IUser } from "../interfaces/user.interface";
+
+export const useGetUser = ({
+  userId,
+}: {
+  userId: string;
+}): IMyQueryResult<IUser> => {
+  const myQuery = useQuery(GET_USERS, {
+    variables: { userId },
+    skip: !userId,
+  });
+
+  return {
+    data: myQuery.data == undefined ? undefined : myQuery.data.users[0],
+    loading: myQuery.loading,
+    subscribeToMore: myQuery.subscribeToMore,
+    refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
+  };
+};
 
 export const useGetConnectableUsers = ({
   userId,

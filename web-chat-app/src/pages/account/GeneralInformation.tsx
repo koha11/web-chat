@@ -1,22 +1,31 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useUploadUserAvatar } from "@/hooks/user.hook";
+import { useGetUser, useUploadUserAvatar } from "@/hooks/user.hook";
 import { IUser } from "@/interfaces/user.interface";
 import { Camera } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Form } from "react-router-dom";
+import Cookies from "js-cookie";
+import Loading from "@/components/ui/loading";
+import { useRef } from "react";
 
 const GeneralInformation = () => {
+  const userId = Cookies.get("userId")!;
+  const avatarRef = useRef<HTMLImageElement>(null);
   const { register } = useForm<IUser>();
   const [uploadUserAvatar] = useUploadUserAvatar();
+  const { data: userData, loading } = useGetUser({ userId });
+
+  if (loading) return <Loading></Loading>;
 
   return (
     <div className="flex flex-col gap-4 items-center">
       <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl relative">
         <img
-          src={`assets/images/google-logo.png`}
+          src={userData?.avatar}
           alt="User Avatar"
           className="w-full h-full object-cover"
+          ref={avatarRef}
         />
         <Label
           htmlFor="user_avatar"
@@ -33,9 +42,9 @@ const GeneralInformation = () => {
             const file = e.target.files?.[0];
             if (!file) return;
 
-            console.log(file);
-
             const result = await uploadUserAvatar({ variables: { file } });
+            avatarRef.current!.src = result.data.uploadUserAvatar;
+            
             console.log("Uploaded URL:", result.data.uploadUserAvatar);
           }}
         ></Input>

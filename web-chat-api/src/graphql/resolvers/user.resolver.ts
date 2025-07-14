@@ -5,12 +5,13 @@ import User from "../../models/User.model.js";
 import userService from "../../services/UserService.js";
 import { IResolvers } from "@graphql-tools/utils";
 import cloudinary from "lib/cloudinary.js";
+import { toObjectId } from "utils/mongoose.js";
 
 export const userResolvers: IResolvers = {
   Upload: GraphQLUpload,
   Query: {
     users: async (_p: any, { userId }) => {
-      const data = await User.find();
+      const data = await User.find({ _id: toObjectId(userId) });
 
       return data;
     },
@@ -43,9 +44,15 @@ export const userResolvers: IResolvers = {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: "uploads" },
-          (error, result) => {
+          async (error, result) => {
             if (error) reject(error);
-            else resolve(result!.secure_url);
+            else {
+              const image_url = result!.secure_url;
+              const updatedUser = await User.findByIdAndUpdate(user.id, {
+                avatar: image_url,
+              });
+              resolve(image_url);
+            }
           }
         );
         createReadStream().pipe(stream);
