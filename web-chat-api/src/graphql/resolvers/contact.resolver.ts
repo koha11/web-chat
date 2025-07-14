@@ -47,7 +47,9 @@ export const contactResolvers: IResolvers = {
       { userId, isAccepted },
       { user }: IMyContext
     ) => {
-      const contact = await Contact.findOne({ users: [userId, user.id] });
+      const contact = await Contact.findOne({
+        users: [userId, user.id],
+      }).populate("users");
 
       if (!contact) throw new Error("ko ton tai contact nay");
 
@@ -61,7 +63,7 @@ export const contactResolvers: IResolvers = {
 
       await contact.save();
 
-      return true;
+      return contact;
     },
   },
   Subscription: {},

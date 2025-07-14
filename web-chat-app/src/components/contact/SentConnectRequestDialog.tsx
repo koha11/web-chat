@@ -14,7 +14,7 @@ const SentConnectRequestDialog = ({
   const { data: sentConnectRequest, loading: isSentConnectRequest } =
     useGetSentConnectRequests({});
 
-  const [handleRequest] = useHandleRequest();
+  const [handleRequest] = useHandleRequest({});
 
   if (isSentConnectRequest) return <Loading></Loading>;
 

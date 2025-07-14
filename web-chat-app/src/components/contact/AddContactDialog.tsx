@@ -23,8 +23,8 @@ const AddContactDialog = ({
       userId,
     });
 
-  const [sendRequest] = useSendRequest();
-  const [handleRequest] = useHandleRequest();
+  const [sendRequest] = useSendRequest({});
+  const [handleRequest] = useHandleRequest({});
 
   const [requestMap, setRequestMap] = useState<Record<string, boolean>>({});
 

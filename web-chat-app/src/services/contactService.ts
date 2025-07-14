@@ -33,6 +33,11 @@ export const SEND_REQUEST = gql`
 
 export const HANDLE_REQUEST = gql`
   mutation HandleRequest($userId: ID!, $isAccepted: Boolean!) {
-    handleRequest(userId: $userId, isAccepted: $isAccepted)
+    handleRequest(userId: $userId, isAccepted: $isAccepted) {
+      id
+      users {
+        id
+      }
+    }
   }
 `;

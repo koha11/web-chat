@@ -17,7 +17,7 @@ const ReceivedConnectRequestDialog = ({
     loading: isReceivedConnectRequestsLoading,
   } = useGetReceivedConnectRequests({});
 
-  const [handleRequest] = useHandleRequest();
+  const [handleRequest] = useHandleRequest({});
 
   if (isReceivedConnectRequestsLoading) return <Loading></Loading>;
 
