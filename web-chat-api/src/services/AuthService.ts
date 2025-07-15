@@ -6,51 +6,47 @@ import Account, { IAccount } from "../models/Account.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userService from "./UserService.js";
+import { ILoginRequest } from "interfaces/auth/loginRequest.interface.js";
+import User from "models/User.model.js";
 
 class AuthService {
-  // async login(loginRequest: ILoginRequest): Promise<IMyResponse> {
-  //   const account = await Account.findOne({ username: loginRequest.username });
+  async login({ username, password }: ILoginRequest): Promise<{
+    isValid: boolean;
+    data?: {
+      accessToken: string;
+      userId: string;
+    };
+    message: string;
+  }> {
+    const account = await Account.findOne({ username });
 
-  //   if (!account)
-  //     return {
-  //       status: 401,
-  //       message: "Username is wrong",
-  //     };
+    if (!account) throw new Error("Username is not existed");
 
-  //   var passwordisValid = bcrypt.compareSync(
-  //     loginRequest.password,
-  //     account.password
-  //   );
+    // kiem tra email da xac thuc chua
 
-  //   if (!passwordisValid)
-  //     return {
-  //       status: 401,
-  //       message: "Password is wrong",
-  //     };
+    var passwordisValid = bcrypt.compareSync(password, account.password);
 
-  //   const user = await User.findOne({ username: loginRequest.username });
+    if (!passwordisValid) throw new Error("Password is not correct");
 
-  //   if (!user)
-  //     return {
-  //       status: 400,
-  //       message: "sai id roi",
-  //     };
+    const user = await User.findOne({ username });
 
-  //   const token = this.createToken({
-  //     expiresIn: "24h",
-  //     id: user.id,
-  //     username: user.username,
-  //   });
+    if (!user) throw new Error("User is not existed");
 
-  //   return {
-  //     status: 200,
-  //     data: {
-  //       accessToken: token,
-  //       userId: user.id,
-  //     },
-  //     message: "login success",
-  //   };
-  // }
+    const token = this.createToken({
+      expiresIn: "24h",
+      id: user.id,
+      username: user.username,
+    });
+
+    return {
+      isValid: true,
+      data: {
+        accessToken: token,
+        userId: user.id,
+      },
+      message: "login success",
+    };
+  }
 
   async register({
     email,

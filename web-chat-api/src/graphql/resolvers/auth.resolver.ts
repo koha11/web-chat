@@ -8,44 +8,48 @@ export const authResolvers: IResolvers = {
   Query: {},
   Mutation: {
     login: async (_p, { username, password }, {}) => {
-      const account = await Account.findOne({ username });
+      // const account = await Account.findOne({ username });
 
-      if (!account)
-        return {
-          isValid: false,
-          message: "Username is wrong",
-        };
+      // if (!account)
+      //   return {
+      //     isValid: false,
+      //     message: "Username is wrong",
+      //   };
 
-      let passwordIsValid = bcrypt.compareSync(password, account.password);
+      // let passwordIsValid = bcrypt.compareSync(password, account.password);
 
-      if (!passwordIsValid)
-        return {
-          isValid: false,
-          message: "Password is wrong",
-        };
+      // if (!passwordIsValid)
+      //   return {
+      //     isValid: false,
+      //     message: "Password is wrong",
+      //   };
 
-      const user = await User.findOne({ username });
+      // const user = await User.findOne({ username });
 
-      if (!user)
-        return {
-          isValid: false,
-          message: "sai id roi",
-        };
+      // if (!user)
+      //   return {
+      //     isValid: false,
+      //     message: "sai id roi",
+      //   };
 
-      const token = authService.createToken({
-        expiresIn: "24h",
-        id: user.id,
-        username: user.username,
-      });
+      // const token = authService.createToken({
+      //   expiresIn: "24h",
+      //   id: user.id,
+      //   username: user.username,
+      // });
 
-      return {
-        isValid: true,
-        data: {
-          accessToken: token,
-          userId: user.id,
-        },
-        message: "login success",
-      };
+      const test = await authService.login({ username, password });
+
+      return test;
+
+      // return {
+      //   isValid: true,
+      //   data: {
+      //     accessToken: token,
+      //     userId: user.id,
+      //   },
+      //   message: "login success",
+      // };
     },
     register: async (_p, registerRequest, {}) => {
       const data = await authService.register(registerRequest);

@@ -44,7 +44,7 @@ const GeneralInformation = () => {
 
             const result = await uploadUserAvatar({ variables: { file } });
             avatarRef.current!.src = result.data.uploadUserAvatar;
-            
+              
             console.log("Uploaded URL:", result.data.uploadUserAvatar);
           }}
         ></Input>

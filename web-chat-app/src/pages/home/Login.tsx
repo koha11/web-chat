@@ -5,11 +5,23 @@ import { ILoginRequest } from "../../interfaces/auth/loginRequest.interface";
 import { useLogin } from "../../hooks/auth.hook";
 import { Button } from "@/components/ui/button";
 import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AuthSchema, authSchema } from "@/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const { register, handleSubmit } = useForm<ILoginRequest>();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<AuthSchema>({
+    resolver: zodResolver(authSchema),
+  });
 
   const [login] = useLogin();
 
@@ -25,6 +37,11 @@ const Login = () => {
           navigate("/m");
         }
       },
+      onError: ({ message }) => {
+        if (message.startsWith("Username")) setError("username", { message });
+
+        if (message.startsWith("Password")) setError("password", { message });
+      },
     });
   };
 
@@ -36,27 +53,43 @@ const Login = () => {
         className="flex flex-col w-[40%] items-center mt-12"
         onSubmit={handleSubmit(handleLogin)}
       >
-        <input
+        <Input
           {...register("username")}
           placeholder="Username"
           className="py-2 px-3 border rounded border-gray-400 w-full"
-        ></input>
-        <input
+        ></Input>
+        <div className="py-2 relative w-full">
+          <div className="text-sm absolute text-nowrap left-2 text-red-600">
+            {errors.username && errors.username.message}
+          </div>
+        </div>
+        <Input
           {...register("password")}
           placeholder="Password"
+          type="password"
           className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
-        ></input>
-        <button
+        ></Input>
+        <div className="py-2 relative w-full">
+          <div className="text-sm absolute text-nowrap left-2 text-red-600">
+            {errors.password && errors.password.message}
+          </div>
+        </div>{" "}
+        <Button
           type="submit"
           className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-4xl mt-6"
         >
           Continue
-        </button>
-        <div className="mt-6">
-          <input id="rbmBtn" type="checkbox" name="rmbBtn"></input>
-          <label htmlFor="rbmBtn" className="ml-2">
+        </Button>
+        <div className="mt-6 flex justify-center items-center gap-4">
+          <Input
+            id="rbmBtn"
+            type="checkbox"
+            name="rmbBtn"
+            className="h-4 w-4"
+          ></Input>
+          <Label htmlFor="rbmBtn" className="">
             Keep Logining
-          </label>
+          </Label>
         </div>
       </form>
       <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
