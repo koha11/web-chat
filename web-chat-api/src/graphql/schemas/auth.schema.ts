@@ -2,9 +2,8 @@ import { gql } from "apollo-server-express";
 
 export const authTypeDefs = gql`
   type AuthResponse {
-    data: JSONObject
-    message: String!
-    isValid: Boolean!
+    accessToken: String!
+    userId: String!
   }
 
   extend type Mutation {
@@ -12,7 +11,6 @@ export const authTypeDefs = gql`
     register(
       username: String!
       password: String!
-      rePassword: String!
       fullname: String!
       email: String!
     ): AuthResponse

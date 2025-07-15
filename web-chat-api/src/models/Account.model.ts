@@ -1,21 +1,6 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
-import mongooseDelete, {
-  SoftDeleteDocument,
-  SoftDeleteModel,
-} from "mongoose-delete";
-
-// Interface for User document
-export interface IAccount extends Document {
-  username: string;
-  password: string;
-  email: string;
-  isConfirmedEmail: boolean;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-  deleted?: boolean;
-  deletedAt?: Date;
-}
+import { IAccount } from "interfaces/account.interface.js";
+import mongoose, { Schema } from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 // Define schema
 const AccountSchema = new Schema<IAccount>(
@@ -35,8 +20,5 @@ AccountSchema.plugin(mongooseDelete, {
 });
 
 // Export model
-const Account: SoftDeleteModel<IAccount> = mongoose.model<
-  IAccount,
-  SoftDeleteModel<IAccount>
->("Account", AccountSchema);
+const Account = mongoose.model<IAccount>("Account", AccountSchema);
 export default Account;

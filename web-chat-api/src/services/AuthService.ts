@@ -2,29 +2,27 @@ import { JWT_SECRET } from "../config/env.js";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface.js";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface.js";
 import { IMyResponse } from "../interfaces/myResponse.interface.js";
-import Account, { IAccount } from "../models/Account.model.js";
+import Account from "../models/Account.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userService from "./UserService.js";
 import { ILoginRequest } from "interfaces/auth/loginRequest.interface.js";
 import User from "models/User.model.js";
+import { IAccount } from "interfaces/account.interface.js";
 
 class AuthService {
   async login({ username, password }: ILoginRequest): Promise<{
-    isValid: boolean;
-    data?: {
-      accessToken: string;
-      userId: string;
-    };
-    message: string;
+    accessToken: string;
+    userId: string;
   }> {
     const account = await Account.findOne({ username });
 
     if (!account) throw new Error("Username is not existed");
 
     // kiem tra email da xac thuc chua
+    // if (!account.isConfirmedEmail) throw new Error("Email is no vertified");
 
-    var passwordisValid = bcrypt.compareSync(password, account.password);
+    const passwordisValid = bcrypt.compareSync(password, account.password);
 
     if (!passwordisValid) throw new Error("Password is not correct");
 
@@ -39,12 +37,8 @@ class AuthService {
     });
 
     return {
-      isValid: true,
-      data: {
-        accessToken: token,
-        userId: user.id,
-      },
-      message: "login success",
+      accessToken: token,
+      userId: user.id,
     };
   }
 
@@ -58,21 +52,13 @@ class AuthService {
       username,
     });
 
-    if (isUsernameExists)
-      return {
-        isValid: false,
-        message: "Username is already exists",
-      };
+    if (isUsernameExists) throw new Error("Username is already exists");
 
     const isEmailExists = await Account.findOne({
       email,
     });
 
-    if (isEmailExists)
-      return {
-        isValid: false,
-        message: "Email is already exists",
-      };
+    if (isEmailExists) throw new Error("Email is already exists");
 
     const account = await Account.create({
       username,

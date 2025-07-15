@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthSchema, authSchema } from "@/schemas/auth";
+import { LoginSchemaType, loginSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,8 +18,8 @@ const Login = () => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<AuthSchema>({
-    resolver: zodResolver(authSchema),
+  } = useForm<LoginSchemaType>({
+    resolver: zodResolver(loginSchema),
   });
 
   const [login] = useLogin();
@@ -31,9 +30,9 @@ const Login = () => {
         ...data,
       },
       onCompleted({ login: response }) {
-        if (response.isValid && response.data != undefined) {
-          Cookies.set("accessToken", response.data.accessToken);
-          Cookies.set("userId", response.data.userId);
+        if (response) {
+          Cookies.set("accessToken", response.accessToken);
+          Cookies.set("userId", response.userId);
           navigate("/m");
         }
       },
@@ -56,10 +55,12 @@ const Login = () => {
         <Input
           {...register("username")}
           placeholder="Username"
-          className="py-2 px-3 border rounded border-gray-400 w-full"
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
+            errors.username && "border-red-700"
+          }`}
         ></Input>
-        <div className="py-2 relative w-full">
-          <div className="text-sm absolute text-nowrap left-2 text-red-600">
+        <div className="py-4 relative w-full">
+          <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.username && errors.username.message}
           </div>
         </div>
@@ -67,13 +68,15 @@ const Login = () => {
           {...register("password")}
           placeholder="Password"
           type="password"
-          className="py-2 px-3 mt-6 border rounded border-gray-400 w-full"
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
+            errors.password && "border-red-700"
+          }`}
         ></Input>
-        <div className="py-2 relative w-full">
-          <div className="text-sm absolute text-nowrap left-2 text-red-600">
+        <div className="py-4 relative w-full">
+          <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.password && errors.password.message}
           </div>
-        </div>{" "}
+        </div>
         <Button
           type="submit"
           className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-4xl mt-6"

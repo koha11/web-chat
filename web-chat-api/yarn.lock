@@ -1208,6 +1208,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:^6.4.17":
+  version: 6.4.17
+  resolution: "@types/nodemailer@npm:6.4.17"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/689abb3005cf36cf89c2abe56f0aa4469a37e0814633a73fbeb35732e856f4b0d7ab32b6d91585038b6941f5b70db58ec2bd147ebe9f73e528eb6c99604f4e82
+  languageName: node
+  linkType: hard
+
 "@types/oauth@npm:*":
   version: 0.9.6
   resolution: "@types/oauth@npm:0.9.6"
@@ -3799,6 +3808,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodemailer@npm:^7.0.5":
+  version: 7.0.5
+  resolution: "nodemailer@npm:7.0.5"
+  checksum: 10c0/8fcd417a5dc6cdde4193c3f27c8ae07f6998527578c1e70adfa5f2f00121471fcaa14abbf26b2a8c513ac8505c956f437aa2c2a693606eb0e8c68bc712698fa7
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^8.0.0":
   version: 8.1.0
   resolution: "nopt@npm:8.1.0"
@@ -4910,6 +4926,7 @@ __metadata:
     "@types/mongoose-delete": "npm:^1.0.6"
     "@types/multer": "npm:^2"
     "@types/node": "npm:^24.0.1"
+    "@types/nodemailer": "npm:^6.4.17"
     "@types/passport": "npm:^1.0.17"
     "@types/passport-oauth2": "npm:^1"
     "@types/socket.io": "npm:^3.0.2"
@@ -4933,6 +4950,7 @@ __metadata:
     mongoose: "npm:^8.15.2"
     mongoose-delete: "npm:^1.0.2"
     multer: "npm:^2.0.1"
+    nodemailer: "npm:^7.0.5"
     passport: "npm:^0.7.0"
     passport-oauth2: "npm:^1.8.0"
     socket.io: "npm:^4.8.1"
