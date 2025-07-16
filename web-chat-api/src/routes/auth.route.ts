@@ -1,4 +1,6 @@
 import {
+  DEFAULT_CLIENT_URL,
+  DEFAULT_URL,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   JWT_SECRET,
@@ -15,7 +17,7 @@ const authRouter = Router();
 const oauth2Client = new OAuth2Client(
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  "http://localhost:3000/auth/google/callback"
+  `${DEFAULT_URL}/auth/google/callback`
 );
 
 // Redirect to Google
@@ -58,8 +60,16 @@ authRouter.get("/google/callback", async (req, res) => {
 
   // Send token to frontend
   res.redirect(
-    `http://localhost:5173/login-success?accessToken=${token}&userId=${user.id}`
+    `${DEFAULT_CLIENT_URL}/login-success?accessToken=${token}&userId=${user.id}`
   );
+});
+
+authRouter.get("/verify-email", async (req, res) => {
+  const { token } = req.query;
+
+  await authService.verifyEmail(token as string);
+
+  res.redirect(`${DEFAULT_CLIENT_URL}/me/security`);
 });
 
 export default authRouter;

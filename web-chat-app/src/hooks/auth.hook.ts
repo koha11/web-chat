@@ -40,6 +40,27 @@ export const useVerifyEmail = () => {
   return useMutation(VERIFY_EMAIL);
 };
 
-export const useChangeEmail = () => {
-  return useMutation(CHANGE_EMAIL);
+export const useChangeEmail = (userId: string) => {
+  return useMutation(CHANGE_EMAIL, {
+    update: (cache, { data }) => {
+      const email = data.changeEmail;
+
+      const account = cache.readQuery({
+        query: GET_ACCOUNT,
+        variables: { userId },
+      });
+
+      if (account)
+        cache.writeQuery({
+          query: GET_ACCOUNT,
+          variables: { userId },
+          data: {
+            account: {
+              ...account,
+              email,
+            },
+          },
+        });
+    },
+  });
 };

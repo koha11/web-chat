@@ -23,17 +23,17 @@ export const authResolvers: IResolvers = {
       return data;
     },
     verifyEmail: async (_p, { email }, {}) => {
-      const auth = await authService.sendVerifyCode(email);
+      const auth = await authService.sendVerifyMail(email);
 
       return auth;
     },
     changeEmail: async (_p, { email }, { user }: IMyContext) => {
-      const auth = await authService.changeEmail({
+      await authService.changeEmail({
         email,
         userId: user.id.toString(),
       });
 
-      return auth;
+      return email;
     },
   },
 };

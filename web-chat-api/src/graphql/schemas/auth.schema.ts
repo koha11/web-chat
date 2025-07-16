@@ -25,6 +25,6 @@ export const authTypeDefs = gql`
       email: String
     ): AuthResponse
     verifyEmail(email: String!): Boolean
-    changeEmail(email: String!): Boolean
+    changeEmail(email: String!): String
   }
 `;

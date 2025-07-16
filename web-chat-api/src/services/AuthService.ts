@@ -85,11 +85,11 @@ class AuthService {
     };
   }
 
-  verifyToken(token: string): ITokenPayload {
-    return jwt.verify(token, JWT_SECRET) as ITokenPayload;
+  verifyToken(token: string): ITokenPayload | { email: string } {
+    return jwt.verify(token, JWT_SECRET) as ITokenPayload | { email: string };
   }
 
-  createToken(payload: ITokenPayload) {
+  createToken(payload: ITokenPayload | { email: string }) {
     const token = jwt.sign(payload, JWT_SECRET, {
       algorithm: "HS256",
       allowInsecureKeySizes: true,
@@ -99,8 +99,8 @@ class AuthService {
     return token;
   }
 
-  sendVerifyCode = async (email: string) => {
-    const code = "abcxyz";
+  sendVerifyMail = async (email: string) => {
+    const token = this.createToken({ email });
 
     const transporter = createTransport({
       service: "Gmail", // or use host, port for custom SMTP
@@ -114,10 +114,22 @@ class AuthService {
       from: '"My App" <nevertotryhope11@gmail.com@gmail.com>',
       to: email,
       subject: "Verify your email",
-      html: `<p>Click <a href="${DEFAULT_URL}/auth/vertify-email?code=${code}">here</a> to verify your email.</p>`,
+      html: `<p>Click <a href="${DEFAULT_URL}/auth/verify-email?token=${token}">here</a> to verify your email.</p>`,
     });
 
     return true;
+  };
+
+  verifyEmail = async (token: string) => {
+    const { email } = this.verifyToken(token) as { email: string };
+
+    const account = await Account.findOne({ email });
+
+    if (!account) throw new Error("email is not existed");
+
+    account.isConfirmedEmail = true;
+
+    await account.save();
   };
 
   changeEmail = async ({
@@ -139,7 +151,7 @@ class AuthService {
 
     await account.save();
 
-    await this.sendVerifyCode(email);
+    await this.sendVerifyMail(email);
 
     return true;
   };

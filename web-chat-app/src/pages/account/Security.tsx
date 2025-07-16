@@ -13,7 +13,6 @@ import Loading from "@/components/ui/loading";
 import { useForm } from "react-hook-form";
 import { emailFieldSchema, EmailSchemaType } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { any } from "zod";
 
 const Security = () => {
   const userId = Cookies.get("userId")!;
@@ -22,7 +21,7 @@ const Security = () => {
   const { data: account, loading } = useGetAccount({ userId });
 
   const [verifyEmail] = useVerifyEmail();
-  const [changeEmail] = useChangeEmail();
+  const [changeEmail] = useChangeEmail(userId);
 
   const {
     register,
@@ -45,8 +44,15 @@ const Security = () => {
   const handleChangeEmail = async ({ email }: EmailSchemaType) => {
     setEmailEdited(false);
     if (account?.email == email) return;
-    await changeEmail({ variables: { email } });
-    setSentVerifyMail(true);
+    changeEmail({
+      variables: { email },
+      onCompleted(data, clientOptions) {
+        setSentVerifyMail(true);
+      },
+      onError({ message }, clientOptions) {
+        setError("email", { message });
+      },
+    });
   };
 
   if (loading) return <Loading></Loading>;
@@ -100,25 +106,25 @@ const Security = () => {
           <div>
             Your Email is empty, verify it to get password when you forget it
           </div>
+        ) : !account?.isConfirmedEmail ? (
+          <div>
+            {isSentVerifyMail
+              ? "We have sent to your mail box to verify "
+              : "Your email is not verify"}
+            ,{" "}
+            <span
+              onClick={async () => {
+                await verifyEmail({
+                  variables: { email: account.email },
+                });
+              }}
+              className="cursor-pointer text-blue-600 underline"
+            >
+              Click here to verify
+            </span>
+          </div>
         ) : (
-          !account?.isConfirmedEmail && (
-            <div>
-              {isSentVerifyMail
-                ? "We have sent to your mail box to verify "
-                : "Your email is not verify"}
-              ,{" "}
-              <span
-                onClick={async () => {
-                  await verifyEmail({
-                    variables: { email: account.email },
-                  });
-                }}
-                className="cursor-pointer text-blue-600 underline"
-              >
-                Click here to verify
-              </span>
-            </div>
-          )
+          <div>You have verified email</div>
         )}
       </div>
     </>
