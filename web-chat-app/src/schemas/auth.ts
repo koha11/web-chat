@@ -1,10 +1,17 @@
 import { z } from "zod";
 
+const emailSchema = z
+  .email({ error: "Invalid email" })
+  .or(z.literal(""))
+  .transform((val) => val.trim().replace(/\s+/g, " "));
+
+export const emailFieldSchema = z.object({email: emailSchema})
+
 export const loginSchema = z.object({
   username: z
     .string()
     .nonempty("Username is required")
-    .transform((val) => val.trim().replace(/\s+/g, " ")), 
+    .transform((val) => val.trim().replace(/\s+/g, " ")),
   password: z.string().nonempty("Password is required"),
 });
 
@@ -29,10 +36,7 @@ export const registerSchema = z
       .nonempty("Username is required")
       .transform((val) => val.trim().replace(/\s+/g, " ")),
     password: z.string().nonempty("Password is required"),
-    email: z
-      .email({ error: "Invalid email" })
-      .or(z.literal(""))
-      .transform((val) => val.trim().replace(/\s+/g, " ")),
+    email: emailSchema,
     confirmPassword: z.string().nonempty("Confirm password is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -45,3 +49,5 @@ export type LoginSchemaType = z.infer<typeof loginSchema>;
 
 // Optionally infer the TS type for useForm
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
+
+export type EmailSchemaType = z.infer<typeof emailFieldSchema>;

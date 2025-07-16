@@ -1,28 +1,7 @@
-import {
-  Link,
-  NavLink,
-  Outlet,
-  
-} from "react-router-dom";
-import { useGetContacts } from "../../hooks/contact.hook";
-import Cookies from "js-cookie";
-import Loading from "../../components/ui/loading";
-import {
-  ArrowLeftCircle,
-  Settings,
-  ShieldAlert,
-  UserIcon,
-} from "lucide-react";
+import { Link, NavLink, Outlet } from "react-router-dom";
+import { ArrowLeftCircle, Settings, ShieldAlert, UserIcon } from "lucide-react";
 
 const Account = () => {
-  const userId = Cookies.get("userId") ?? "";
-
-  const { loading: isContactsLoading } = useGetContacts({
-    userId,
-  });
-
-  if (isContactsLoading) return <Loading></Loading>;
-
   return (
     <div className="flex justify-center text-black h-screen">
       <div className="container flex bg-white gap-4 py-4">
@@ -47,6 +26,7 @@ const Account = () => {
                   isActive ? "cursor-default bg-gray-300" : "hover:bg-gray-300"
                 }`
               }
+              end
             >
               <div className="flex gap-4 items-center">
                 <UserIcon></UserIcon>
@@ -55,7 +35,11 @@ const Account = () => {
             </NavLink>
             <NavLink
               to={"/me/security"}
-              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-xl py-2 px-4  ${
+                  isActive ? "cursor-default bg-gray-300" : "hover:bg-gray-300"
+                }`
+              }
             >
               <div className="flex gap-4 items-center">
                 <ShieldAlert></ShieldAlert>
@@ -64,7 +48,11 @@ const Account = () => {
             </NavLink>
             <NavLink
               to={"/me/settings"}
-              className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300 cursor-pointer"
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-xl py-2 px-4  ${
+                  isActive ? "cursor-default bg-gray-300" : "hover:bg-gray-300"
+                }`
+              }
             >
               <div className="flex gap-4 items-center">
                 <Settings></Settings>

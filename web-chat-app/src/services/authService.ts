@@ -1,5 +1,15 @@
 import { gql } from "@apollo/client";
 
+export const GET_ACCOUNT = gql`
+  query GetAccount($userId: ID!) {
+    account(userId: $userId) {
+      username
+      email
+      isConfirmedEmail
+    }
+  }
+`;
+
 export const LOGIN = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
@@ -14,7 +24,7 @@ export const REGISTER = gql`
     $username: String!
     $password: String!
     $fullname: String!
-    $email: String!
+    $email: String
   ) {
     register(
       username: $username
@@ -25,5 +35,17 @@ export const REGISTER = gql`
       accessToken
       userId
     }
+  }
+`;
+
+export const VERIFY_EMAIL = gql`
+  mutation VerifyEmail($email: String!) {
+    verifyEmail(email: $email)
+  }
+`;
+
+export const CHANGE_EMAIL = gql`
+  mutation ChangeEmail($email: String!) {
+    changeEmail(email: $email)
   }
 `;

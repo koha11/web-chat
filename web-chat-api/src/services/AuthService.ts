@@ -1,4 +1,4 @@
-import { JWT_SECRET } from "../config/env.js";
+import { DEFAULT_URL, JWT_SECRET } from "../config/env.js";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface.js";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface.js";
 import { IMyResponse } from "../interfaces/myResponse.interface.js";
@@ -9,6 +9,7 @@ import userService from "./UserService.js";
 import { ILoginRequest } from "interfaces/auth/loginRequest.interface.js";
 import User from "models/User.model.js";
 import { IAccount } from "interfaces/account.interface.js";
+import { createTransport } from "nodemailer";
 
 class AuthService {
   async login({ username, password }: ILoginRequest): Promise<{
@@ -97,6 +98,51 @@ class AuthService {
 
     return token;
   }
+
+  sendVerifyCode = async (email: string) => {
+    const code = "abcxyz";
+
+    const transporter = createTransport({
+      service: "Gmail", // or use host, port for custom SMTP
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: '"My App" <nevertotryhope11@gmail.com@gmail.com>',
+      to: email,
+      subject: "Verify your email",
+      html: `<p>Click <a href="${DEFAULT_URL}/auth/vertify-email?code=${code}">here</a> to verify your email.</p>`,
+    });
+
+    return true;
+  };
+
+  changeEmail = async ({
+    email,
+    userId,
+  }: {
+    userId: string;
+    email: string;
+  }) => {
+    const account = await Account.findById(userId);
+
+    if (!account) throw new Error("Account is not existed");
+
+    const isEmailExists = await Account.findOne({ email });
+
+    if (isEmailExists) throw new Error("Email is existed");
+
+    account.email = email;
+
+    await account.save();
+
+    await this.sendVerifyCode(email);
+
+    return true;
+  };
 }
 
 const authService = new AuthService();

@@ -1,7 +1,5 @@
-// Interface for User document
-export interface IAccount extends Document {
+export default interface IAccount {
   username: string;
-  password: string;
   email?: string;
   isConfirmedEmail: boolean;
 

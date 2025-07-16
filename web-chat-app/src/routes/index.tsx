@@ -17,6 +17,8 @@ const AccountLayout = lazy(() => import("../pages/account/Account"));
 const GeneralInformation = lazy(
   () => import("../pages/account/GeneralInformation")
 );
+const Security = lazy(() => import("@/pages/account/Security"));
+const VerifyEmail = lazy(() => import("@/pages/home/VerifyEmail"));
 
 const router = createBrowserRouter([
   {
@@ -51,6 +53,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/verify-email",
+        element: (
+          <Suspense fallback={<Loading></Loading>}>
+            <VerifyEmail />
+          </Suspense>
+        ),
+      },
+      {
         element: <PrivateRoute />,
         children: [
           {
@@ -70,15 +80,29 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "/me",
             element: <AccountLayout></AccountLayout>,
             children: [
               {
-                index: true,
-                path: "",
+                path: "/me",
                 element: (
                   <Suspense fallback={<Loading></Loading>}>
                     <GeneralInformation />
+                  </Suspense>
+                ),
+              },
+              {
+                path: "/me/security",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <Security />
+                  </Suspense>
+                ),
+              },
+              {
+                path: "/me/settings",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <Security />
                   </Suspense>
                 ),
               },
