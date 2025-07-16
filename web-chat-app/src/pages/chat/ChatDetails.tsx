@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
-import { MoreHorizontal, Phone, Video, X } from "lucide-react";
+import {
+  Forward,
+  Hand,
+  Image,
+  MoreHorizontal,
+  Phone,
+  Send,
+  Video,
+  X,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import {
@@ -34,6 +43,16 @@ import IModelConnection, {
 import { TypingIndicator } from "../../components/ui/typing-indicator";
 import UserType from "../../enums/UserType.enum";
 import { useMakeCall } from "../../hooks/chat.hook";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const ChatDetails = ({
   chat,
@@ -280,7 +299,7 @@ const ChatDetails = ({
 
   return (
     <section
-      className="flex-5 h-full p-4 bg-white rounded-2xl"
+      className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="container flex items-center justify-between h-[10%]">
@@ -392,33 +411,6 @@ const ChatDetails = ({
           </div>
         )}
 
-        {watch("replyForMsg") != undefined && (
-          <Collapsible open={isOpen} onOpenChange={setOpen}>
-            <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2">
-              <div className="py-1 space-y-2">
-                <div className="font-semibold">
-                  Replying to{" "}
-                  {receivers[(watch("replyForMsg") as IMessage).user.toString()]
-                    ?.fullname ?? "yourself"}
-                </div>
-                <div className="text-[0.7rem]">
-                  {(watch("replyForMsg") as IMessage).msgBody}
-                </div>
-              </div>
-              <Button
-                variant={"outline"}
-                className="h-6 w-4 rounded-full cursor-pointer border-0"
-                onClick={() => {
-                  setOpen(false);
-                  resetField("replyForMsg");
-                }}
-              >
-                <X></X>
-              </Button>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-
         {chat && sender && messages
           ? messages.map((msg, index) => {
               return (
@@ -449,7 +441,33 @@ const ChatDetails = ({
           </div>
         )}
       </div>
-      <div className="container h-[5%]">
+      <div className="container min-h-[5%] flex items-center flex-col py-2">
+        {watch("replyForMsg") != undefined && (
+          <Collapsible open={isOpen} onOpenChange={setOpen} className="w-full">
+            <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2 w-full">
+              <div className="py-1 space-y-2">
+                <div className="font-semibold">
+                  Replying to{" "}
+                  {receivers[(watch("replyForMsg") as IMessage).user.toString()]
+                    ?.fullname ?? "yourself"}
+                </div>
+                <div className="text-[0.7rem]">
+                  {(watch("replyForMsg") as IMessage).msgBody}
+                </div>
+              </div>
+              <Button
+                variant={"outline"}
+                className="h-6 w-4 rounded-full cursor-pointer border-0"
+                onClick={() => {
+                  setOpen(false);
+                  resetField("replyForMsg");
+                }}
+              >
+                <X></X>
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
         <form
           className="relative w-full flex items-center justify-between"
           autoComplete="off"
@@ -469,16 +487,21 @@ const ChatDetails = ({
             }
           })}
         >
-          <label
+          <Label
             htmlFor="uploaded-image"
             className="rounded-full mr-2 cursor-pointer"
           >
-            <i className="bx bx-image text-2xl p-2 rounded-full hover:bg-gray-200"></i>
-          </label>
+            <Image></Image>
+          </Label>
 
-          {/* <input id="uploaded-image" type="file" className="hidden"></input>   */}
+          <Input
+            id="uploaded-image"
+            type="file"
+            hidden
+            accept="image/*"
+          ></Input>
 
-          <input
+          <Input
             {...register("msgBody", { required: true })}
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
             placeholder="Aa"
@@ -488,14 +511,21 @@ const ChatDetails = ({
             onBlur={() => {
               typeMessage({ variables: { chatId, isTyping: false } });
             }}
-          ></input>
+          ></Input>
 
-          <button className="rounded-full ml-2 cursor-pointer" type="submit">
-            <i className="bx bx-send text-2xl p-2 rounded-full hover:bg-gray-200"></i>
-          </button>
-          <button className="rounded-full ml-2 cursor-pointer">
-            <i className="bx bxs-hand text-2xl p-2 rounded-full hover:bg-gray-200"></i>
-          </button>
+          <Button
+            className="rounded-full ml-2 cursor-pointer"
+            variant={"secondary"}
+            type="submit"
+          >
+            <Send></Send>
+          </Button>
+          <Button
+            className="rounded-full ml-2 cursor-pointer"
+            variant={"secondary"}
+          >
+            <Hand></Hand>
+          </Button>
         </form>
       </div>
     </section>
