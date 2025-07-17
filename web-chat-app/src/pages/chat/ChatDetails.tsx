@@ -5,8 +5,11 @@ import {
   Forward,
   Hand,
   Image,
+  ImageDown,
+  ImagePlus,
   MoreHorizontal,
   Phone,
+  PictureInPicture,
   Send,
   Video,
   X,
@@ -76,6 +79,16 @@ const ChatDetails = ({
   const [isOpen, setOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
+  const [imageObjects, setImageObjects] = useState<
+    {
+      url: string;
+      filename: string;
+      file: File;
+      type: string;
+    }[]
+  >([]);
+
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const {
     data: messagesConnection,
@@ -91,7 +104,6 @@ const ChatDetails = ({
 
   const [postMessage] = usePostMessage({ first: 20 });
   const [makeCall] = useMakeCall();
-
   const [typeMessage] = useTypeMessage();
 
   // useForm
@@ -468,8 +480,47 @@ const ChatDetails = ({
             </CollapsibleContent>
           </Collapsible>
         )}
+        {imageObjects.length > 0 && (
+          <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
+            <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
+              <ImagePlus></ImagePlus>
+            </div>
+            {imageObjects.map((imgObj, index) => (
+              <div key={index} className="relative h-12 w-12 shrink-0">
+                <img
+                  src={imgObj.url}
+                  className="object-cover rounded-md h-full w-full"
+                ></img>
+                <Button
+                  className="absolute -top-1 -right-1 cursor-pointer"
+                  size={"no_style"}
+                  onClick={() => {
+                    URL.revokeObjectURL(imgObj.url);
+                    setImageObjects((old) =>
+                      old.filter((oldObject) => oldObject.url != imgObj.url)
+                    );
+
+                    const input = uploadInputRef.current;
+                    if (!input || !input.files) return;
+
+                    const dt = new DataTransfer();
+                    Array.from(input.files).forEach((file, fileIndex) => {
+                      if (fileIndex !== index) {
+                        dt.items.add(file);
+                      }
+                    });
+
+                    input.files = dt.files;
+                  }}
+                >
+                  <X></X>
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
         <form
-          className="relative w-full flex items-center justify-between"
+          className="relative w-full flex items-center justify-between gap-4"
           autoComplete="off"
           onSubmit={handleSubmit((msg: IMessage) => {
             if (chat != undefined) {
@@ -489,7 +540,7 @@ const ChatDetails = ({
         >
           <Label
             htmlFor="uploaded-image"
-            className="rounded-full mr-2 cursor-pointer"
+            className="rounded-full cursor-pointer"
           >
             <Image></Image>
           </Label>
@@ -499,6 +550,23 @@ const ChatDetails = ({
             type="file"
             hidden
             accept="image/*"
+            multiple={true}
+            ref={uploadInputRef}
+            onChange={(e) => {
+              const files = e.target.files!;
+              let myImageObjects = [] as any[];
+
+              for (let file of files) {
+                myImageObjects.push({
+                  url: URL.createObjectURL(file),
+                  file,
+                  filename: file.name,
+                  type: file.type,
+                });
+              }
+
+              setImageObjects((old) => [...old, ...myImageObjects]);
+            }}
           ></Input>
 
           <Input
@@ -514,16 +582,13 @@ const ChatDetails = ({
           ></Input>
 
           <Button
-            className="rounded-full ml-2 cursor-pointer"
+            className="rounded-full cursor-pointer"
             variant={"secondary"}
             type="submit"
           >
             <Send></Send>
           </Button>
-          <Button
-            className="rounded-full ml-2 cursor-pointer"
-            variant={"secondary"}
-          >
+          <Button className="rounded-full cursor-pointer" variant={"secondary"}>
             <Hand></Hand>
           </Button>
         </form>
