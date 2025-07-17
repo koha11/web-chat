@@ -413,6 +413,19 @@ const ChatDetails = ({
           }
         }}
       >
+        {/* {imageObjects.length > 0 &&
+          imageObjects.map((imgObj, index) => {
+            return (
+              <a
+                href={imgObj.url}
+                download={imgObj.filename}
+                className="text-blue-600 underline"
+              >
+                {imgObj.filename}
+              </a>
+            );  
+          })} */}
+
         {typingUsers && typingUsers?.length > 0 && (
           <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div

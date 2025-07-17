@@ -1,3 +1,4 @@
+import MessageType from "enums/MessageType.enum.js";
 import MessageStatus from "../enums/MessageStatus.enum.js";
 import { IMessage } from "../interfaces/message.interface.js";
 import mongoose, { Schema } from "mongoose";
@@ -12,6 +13,13 @@ const MessageSchema = new Schema<IMessage>(
     seenList: { type: Map, of: String, default: {} },
     replyForMsg: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
     isHiddenFor: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    type: { type: String, required: true, default: MessageType.TEXT },
+    file: {
+      filename: { type: String, required: true },
+      url: { type: String, required: true },
+      size: { type: Number, required: true },
+      type: { type: String, required: true },
+    },
     editedAt: { type: Date },
     unsentAt: { type: Date },
     isForwarded: { type: Boolean, default: false },

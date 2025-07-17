@@ -1,3 +1,4 @@
+import MessageType from "@/enums/MessageType.enum";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import { IUser } from "../user.interface";
 
@@ -7,6 +8,13 @@ export interface IMessage {
   chat: string;
   msgBody: string;
   status: MessageStatus;
+  type: MessageType;
+  file?: {
+    filename: string;
+    type: string;
+    url: string;
+    size: number;
+  };
   seenList: { [userId: string]: string };
   replyForMsg?: IMessage | String;
   isHiddenFor?: string;
