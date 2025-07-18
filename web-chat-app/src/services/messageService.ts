@@ -15,6 +15,8 @@ export const GET_MESSAGES = gql`
           unsentAt
           editedAt
           isForwarded
+          type
+          file
           replyForMsg {
             id
             user
@@ -45,14 +47,52 @@ export const POST_MESSAGE = gql`
   mutation PostMessage(
     $chatId: ID!
     $msgBody: String!
-    $user: ID!
     $replyForMsg: String
     $isForwarded: Boolean
   ) {
     postMessage(
       chatId: $chatId
       msgBody: $msgBody
-      user: $user
+      replyForMsg: $replyForMsg
+      isForwarded: $isForwarded
+    ) {
+      id
+      chat
+      user
+      msgBody
+      status
+      type
+      file
+      replyForMsg {
+        id
+        user
+        type
+        file
+        msgBody
+        status
+        seenList
+        createdAt
+      }
+      seenList
+      createdAt
+      isHiddenFor
+      unsentAt
+      editedAt
+      isForwarded
+    }
+  }
+`;
+
+export const POST_MEDIA_MESSAGE = gql`
+  mutation PostMediaMessage(
+    $chatId: ID!
+    $files: [Upload!]!
+    $replyForMsg: String
+    $isForwarded: Boolean
+  ) {
+    postMediaMessage(
+      chatId: $chatId
+      files: $files
       replyForMsg: $replyForMsg
       isForwarded: $isForwarded
     ) {
@@ -67,6 +107,8 @@ export const POST_MESSAGE = gql`
         msgBody
         status
         seenList
+        type
+        file
         createdAt
       }
       seenList
@@ -75,6 +117,8 @@ export const POST_MESSAGE = gql`
       unsentAt
       editedAt
       isForwarded
+      type
+      file
     }
   }
 `;
@@ -93,6 +137,8 @@ export const UNSEND_MESSAGE = gql`
         status
         seenList
         createdAt
+        type
+        file
       }
       seenList
       createdAt
@@ -100,6 +146,8 @@ export const UNSEND_MESSAGE = gql`
       unsentAt
       editedAt
       isForwarded
+      type
+      file
     }
   }
 `;
@@ -118,6 +166,8 @@ export const REMOVE_MESSAGE = gql`
         status
         seenList
         createdAt
+        type
+        file
       }
       seenList
       createdAt
@@ -125,6 +175,8 @@ export const REMOVE_MESSAGE = gql`
       unsentAt
       editedAt
       isForwarded
+      type
+      file
     }
   }
 `;
@@ -160,6 +212,8 @@ export const MESSAGE_ADDED_SUB = gql`
         unsentAt
         editedAt
         isForwarded
+        type
+        file
       }
     }
   }
@@ -188,6 +242,8 @@ export const MESSAGE_CHANGED_SUB = gql`
         unsentAt
         editedAt
         isForwarded
+        type
+        file
       }
     }
   }

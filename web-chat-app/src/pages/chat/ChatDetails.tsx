@@ -12,6 +12,7 @@ import {
   PictureInPicture,
   Send,
   Video,
+  WalletCards,
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -31,6 +32,7 @@ import {
 import { Button } from "../../components/ui/button";
 import {
   useGetMessages,
+  usePostMediaMessage,
   usePostMessage,
   useTypeMessage,
 } from "../../hooks/message.hook";
@@ -48,14 +50,6 @@ import UserType from "../../enums/UserType.enum";
 import { useMakeCall } from "../../hooks/chat.hook";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 const ChatDetails = ({
   chat,
@@ -88,8 +82,6 @@ const ChatDetails = ({
     }[]
   >([]);
 
-  const uploadInputRef = useRef<HTMLInputElement>(null);
-
   const {
     data: messagesConnection,
     loading: isMsgLoading,
@@ -103,20 +95,22 @@ const ChatDetails = ({
   });
 
   const [postMessage] = usePostMessage({ first: 20 });
+  const [postMediaMessage] = usePostMediaMessage({ first: 20 });
+
   const [makeCall] = useMakeCall();
   const [typeMessage] = useTypeMessage();
 
   // useForm
-  const { register, handleSubmit, resetField, setValue, watch } =
-    useForm<IMessage>({
-      defaultValues: {
-        user: userId,
+  const { register, handleSubmit, resetField, setValue, watch } = useForm<{
+    msg: IMessage;
+    files?: FileList;
+  }>({
+    defaultValues: {
+      msg: {
         msgBody: "",
-        status: MessageStatus.SENT,
-        seenList: {},
-        replyForMsg: undefined,
       },
-    });
+    },
+  });
 
   const msgsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -249,30 +243,58 @@ const ChatDetails = ({
     }
   }, [chatId]);
 
+  useEffect(() => {
+    const files = watch("files");
+
+    if (files) {
+      let myImageObjects = [] as any[];
+      for (let file of files) {
+        myImageObjects.push({
+          url: URL.createObjectURL(file),
+          file,
+          filename: file.name,
+          type: file.type,
+        });
+      }
+      setImageObjects((old) => [...old, ...myImageObjects]);
+    } else setImageObjects([]);
+  }, [watch("files")]);
+
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
-    setValue("replyForMsg", msg);
+    setValue("msg.replyForMsg", msg);
     setOpen(true);
   };
 
-  const handleSendMessage = ({
+  const handleSendMessage = async ({
     chatId,
     msgBody,
-    user,
     replyForMsg,
     isForwarded,
+    files,
   }: {
-    msgBody: string;
-    user: string;
+    msgBody?: string;
     chatId: string;
     replyForMsg?: string;
     isForwarded?: boolean;
+    files?: FileList;
   }) => {
-    postMessage({
+    const fileArr = files ? Array.from(files) : undefined;
+
+    if (fileArr)
+      await postMediaMessage({
+        variables: {
+          chatId,
+          replyForMsg,
+          isForwarded,
+          files: fileArr,
+        },
+      });
+
+    await postMessage({
       variables: {
         chatId,
         msgBody,
-        user,
         replyForMsg,
         isForwarded,
       },
@@ -466,18 +488,20 @@ const ChatDetails = ({
           </div>
         )}
       </div>
+
       <div className="container min-h-[5%] flex items-center flex-col py-2">
-        {watch("replyForMsg") != undefined && (
+        {watch("msg.replyForMsg") != undefined && (
           <Collapsible open={isOpen} onOpenChange={setOpen} className="w-full">
             <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2 w-full">
               <div className="py-1 space-y-2">
                 <div className="font-semibold">
                   Replying to{" "}
-                  {receivers[(watch("replyForMsg") as IMessage).user.toString()]
-                    ?.fullname ?? "yourself"}
+                  {receivers[
+                    (watch("msg.replyForMsg") as IMessage).user.toString()
+                  ]?.fullname ?? "yourself"}
                 </div>
                 <div className="text-[0.7rem]">
-                  {(watch("replyForMsg") as IMessage).msgBody}
+                  {(watch("msg.replyForMsg") as IMessage).msgBody}
                 </div>
               </div>
               <Button
@@ -485,7 +509,7 @@ const ChatDetails = ({
                 className="h-6 w-4 rounded-full cursor-pointer border-0"
                 onClick={() => {
                   setOpen(false);
-                  resetField("replyForMsg");
+                  resetField("msg.replyForMsg");
                 }}
               >
                 <X></X>
@@ -493,7 +517,8 @@ const ChatDetails = ({
             </CollapsibleContent>
           </Collapsible>
         )}
-        {imageObjects.length > 0 && (
+
+        {imageObjects.length && (
           <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
             <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
               <ImagePlus></ImagePlus>
@@ -513,17 +538,18 @@ const ChatDetails = ({
                       old.filter((oldObject) => oldObject.url != imgObj.url)
                     );
 
-                    const input = uploadInputRef.current;
-                    if (!input || !input.files) return;
+                    // const input = watch("upload.file");
 
-                    const dt = new DataTransfer();
-                    Array.from(input.files).forEach((file, fileIndex) => {
-                      if (fileIndex !== index) {
-                        dt.items.add(file);
-                      }
-                    });
+                    // if (!input || !input.files) return;
 
-                    input.files = dt.files;
+                    // const dt = new DataTransfer();
+                    // Array.from(input.files).forEach((file, fileIndex) => {
+                    //   if (fileIndex !== index) {
+                    //     dt.items.add(file);
+                    //   }
+                    // });
+
+                    // input.files = dt.files;
                   }}
                 >
                   <X></X>
@@ -535,18 +561,21 @@ const ChatDetails = ({
         <form
           className="relative w-full flex items-center justify-between gap-4"
           autoComplete="off"
-          onSubmit={handleSubmit((msg: IMessage) => {
-            if (chat != undefined) {
-              handleSendMessage({
+          onSubmit={handleSubmit(async ({ msg, files }) => {
+            if (chat != undefined && (msg.msgBody != "" || files)) {
+              await handleSendMessage({
                 msgBody: msg.msgBody,
-                user: msg.user.toString(),
                 chatId,
                 replyForMsg: msg.replyForMsg
                   ? (msg.replyForMsg as IMessage).id
                   : undefined,
+                files,
               });
-              resetField("msgBody");
-              resetField("replyForMsg");
+
+              resetField("msg.msgBody");
+              resetField("msg.replyForMsg");
+              resetField("files");
+
               setOpen(false);
             }
           })}
@@ -564,26 +593,11 @@ const ChatDetails = ({
             hidden
             accept="image/*"
             multiple={true}
-            ref={uploadInputRef}
-            onChange={(e) => {
-              const files = e.target.files!;
-              let myImageObjects = [] as any[];
-
-              for (let file of files) {
-                myImageObjects.push({
-                  url: URL.createObjectURL(file),
-                  file,
-                  filename: file.name,
-                  type: file.type,
-                });
-              }
-
-              setImageObjects((old) => [...old, ...myImageObjects]);
-            }}
+            {...register("files")}
           ></Input>
 
           <Input
-            {...register("msgBody", { required: true })}
+            {...register("msg.msgBody")}
             className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
             placeholder="Aa"
             onFocus={() => {

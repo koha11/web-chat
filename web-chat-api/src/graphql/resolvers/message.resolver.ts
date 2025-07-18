@@ -18,6 +18,10 @@ import { Edge } from "../../interfaces/modelConnection.interface.js";
 import { IChat } from "../../interfaces/chat.interface.js";
 import UserType from "../../enums/UserType.enum.js";
 import { IUser } from "../../interfaces/user.interface.js";
+import { FileUpload } from "graphql-upload/processRequest.mjs";
+import { uploadMedia } from "utils/cloudinary.js";
+import FileType from "enums/FileType.enum.js";
+import MessageType from "enums/MessageType.enum.js";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -74,13 +78,13 @@ export const messageResolvers: IResolvers = {
   Mutation: {
     postMessage: async (
       _p,
-      { chatId, msgBody, user, replyForMsg, isForwarded },
-      { pubsub }: IMyContext
+      { chatId, msgBody, replyForMsg, isForwarded },
+      { pubsub, user }: IMyContext
     ) => {
       const createdMsg = await Message.create({
         chat: chatId,
+        user: user.id,
         msgBody,
-        user,
         replyForMsg,
         isForwarded,
       });
@@ -110,7 +114,7 @@ export const messageResolvers: IResolvers = {
           const chatBotMessageBody = await gemini_promp_process(
             msgBody,
             chatId,
-            user
+            user.id.toString()
           );
 
           const chatBotMessage = await Message.create({
@@ -156,6 +160,71 @@ export const messageResolvers: IResolvers = {
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       return message;
+    },
+    postMediaMessage: async (
+      _p,
+      { chatId, files, replyForMsg, isForwarded },
+      { pubsub, user }: IMyContext
+    ) => {
+      const myFiles = (await Promise.all(files)) as FileUpload[];
+
+      console.log(myFiles);
+
+      let messages: IMessage[] = [];
+
+      for (let file of myFiles) {
+        const url = await uploadMedia({
+          file,
+          folder: `chats/${chatId}`,
+        });
+
+        let type: MessageType;
+
+        switch (file.mimetype) {
+          case FileType.IMAGE:
+            type = MessageType.IMAGE;
+          default:
+            type = MessageType.TEXT;
+        }
+
+        const createdMsg = await Message.create({
+          chat: chatId,
+          user: user.id,
+          file: {
+            filename: file.filename,
+            type: file.mimetype,
+            url,
+            size: 10000,
+          },
+          replyForMsg,
+          isForwarded,
+          type,
+        });
+
+        const message = await createdMsg.populate("replyForMsg");
+
+        messages.push(message);
+
+        const chatChanged = await Chat.findByIdAndUpdate(
+          message.chat,
+          { updatedAt: new Date() },
+          { new: true }
+        ).populate("users");
+
+        pubsub.publish(SocketEvent.messageAdded, {
+          messageAdded: {
+            node: message,
+            cursor: message.id,
+          },
+          chatId,
+        } as PubsubEvents[SocketEvent.messageAdded]);
+
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatChanged,
+        } as PubsubEvents[SocketEvent.chatChanged]);
+      }
+
+      return messages;
     },
     unsendMessage: async (
       _p,

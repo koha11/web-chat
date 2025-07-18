@@ -15,7 +15,7 @@ export const messageTypeDefs = gql`
     id: ID!
     user: ID!
     chat: ID!
-    msgBody: String!
+    msgBody: String
     status: String!
     replyForMsg: Message
     seenList: JSONObject
@@ -23,6 +23,8 @@ export const messageTypeDefs = gql`
     unsentAt: Date
     editedAt: Date
     isForwarded: Boolean
+    type: String
+    file: JSONObject
 
     createdAt: Date
     updatedAt: Date
@@ -50,17 +52,22 @@ export const messageTypeDefs = gql`
     postMessage(
       chatId: ID!
       msgBody: String!
-      user: ID!
       replyForMsg: String
       isForwarded: Boolean
     ): Message!
+
+    postMediaMessage(
+      chatId: ID!
+      files: [Upload!]!
+      replyForMsg: String
+      isForwarded: Boolean
+    ): [Message!]!
 
     unsendMessage(chatId: ID!, msgId: ID!): Message!
 
     removeMessage(chatId: ID!, msgId: ID!): Message!
 
     typeMessage(chatId: ID!, isTyping: Boolean!): Message
-
   }
 
   extend type Subscription {

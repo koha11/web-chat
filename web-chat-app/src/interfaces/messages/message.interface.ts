@@ -6,7 +6,7 @@ export interface IMessage {
   id: string;
   user: string | IUser;
   chat: string;
-  msgBody: string;
+  msgBody?: string;
   status: MessageStatus;
   type: MessageType;
   file?: {

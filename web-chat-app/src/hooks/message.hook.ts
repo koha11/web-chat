@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_LAST_MESSAGES,
   GET_MESSAGES,
+  POST_MEDIA_MESSAGE,
   POST_MESSAGE,
   REMOVE_MESSAGE,
   TYPE_MESSAGE,
@@ -87,6 +88,48 @@ export const usePostMessage = ({ first = 20 }: { first?: number }) => {
               pageInfo: {
                 ...existing.messages.pageInfo,
                 startCursor: addedMsg.id,
+              },
+            } as IModelConnection<IMessage>,
+          },
+        });
+      }
+    },
+  });
+};
+
+export const usePostMediaMessage = ({ first = 20 }: { first?: number }) => {
+  return useMutation(POST_MEDIA_MESSAGE, {
+    update(cache, { data }) {
+      const addedMsgs = data.postMediaMessage as IMessage[];
+      const chatId = addedMsgs[0].chat;
+
+      const existing = cache.readQuery<{
+        messages: IModelConnection<IMessage>;
+      }>({
+        query: GET_MESSAGES,
+        variables: { chatId, first },
+      });
+
+      if (existing) {
+        cache.writeQuery({
+          query: GET_MESSAGES,
+          variables: { chatId, first },
+          data: {
+            messages: {
+              ...existing.messages,
+              edges: [
+                ...addedMsgs.reverse().map((addedMsg) => {
+                  return {
+                    __typename: "MessageEdge",
+                    cursor: addedMsg.id,
+                    node: addedMsg,
+                  };
+                }),
+                ...existing.messages.edges,
+              ],
+              pageInfo: {
+                ...existing.messages.pageInfo,
+                startCursor: addedMsgs[addedMsgs.length - 1].id,
               },
             } as IModelConnection<IMessage>,
           },

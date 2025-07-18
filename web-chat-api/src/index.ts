@@ -31,7 +31,7 @@ const server = http.createServer(app);
 
 const pubsub = new PubSub<PubsubEvents>();
 
-app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }));
+app.use(graphqlUploadExpress({ maxFileSize: 10_000_000, maxFiles: 10 }));
 
 const apollo = new ApolloServer({
   typeDefs,
@@ -109,7 +109,7 @@ useServer(
       }
 
       const token = ctx.connectionParams?.authToken as string;
-      const user = authService.verifyToken(token);
+      const user = authService.verifyToken(token) as ITokenPayload;
 
       await userService.setOnlineStatus(user.id.toString());
 
@@ -121,7 +121,7 @@ useServer(
       }
 
       const token = ctx.connectionParams?.authToken as string;
-      const user = authService.verifyToken(token);
+      const user = authService.verifyToken(token) as ITokenPayload;
 
       await userService.setOfflineStatus(user.id.toString());
 

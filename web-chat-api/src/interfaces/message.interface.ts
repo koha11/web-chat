@@ -9,7 +9,7 @@ export interface IMessage {
   id: Types.ObjectId;
   user: IUser | Types.ObjectId;
   chat: IChat | Types.ObjectId;
-  msgBody: string;
+  msgBody?: string;
   status: MessageStatus;
   type: MessageType;
   file?: {

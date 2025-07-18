@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { IMessage } from "../../interfaces/messages/message.interface";
+import MessageType from "@/enums/MessageType.enum";
 
 const ChatRow = ({
   userId,
@@ -33,6 +34,14 @@ const ChatRow = ({
   const [users, setUsers] = useState<IUser[]>();
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
+
+  const name =
+    lastMsg &&
+    (lastMsg.user == userId
+      ? "You"
+      : (chat.users as IUser[])
+          .find((user) => user.id == lastMsg.user)
+          ?.fullname.split(" ")[0]);
 
   useEffect(() => {
     if (chat != undefined && !isLastMsgLoading) {
@@ -82,9 +91,11 @@ const ChatRow = ({
               ) : (
                 <div className="">
                   {lastMsg.user == userId && "You:"}{" "}
-                  {lastMsg.msgBody.length > 12
-                    ? strimMessageBody(lastMsg.msgBody, 12)
-                    : lastMsg.msgBody}
+                  {lastMsg.type == MessageType.TEXT
+                    ? lastMsg.msgBody!.length > 12
+                      ? strimMessageBody(lastMsg.msgBody!, 12)
+                      : lastMsg.msgBody
+                    : `${name} have sent you a media`}
                 </div>
               ))}
 
