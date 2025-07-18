@@ -13,6 +13,7 @@ import { IUser } from "../../interfaces/user.interface";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { usePostMessage } from "../../hooks/message.hook";
 import Markdown from "react-markdown";
+import MessageType from "@/enums/MessageType.enum";
 
 const SingleMsg = ({
   isLongGap,
@@ -134,33 +135,48 @@ const SingleMsg = ({
         )}
 
         {/* Hien thi noi dung tin nhan  */}
-        {msg.status == MessageStatus.UNSEND
-          ? MyTooltip(
-              <span
-                className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                  isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                } ${msg.isForwarded ? "" : ""}`}
-              >
-                {isSentMsg
-                  ? "You"
-                  : receivers[msg.user.toString()].fullname.split(" ")[0]}{" "}
-                unsend a message
-              </span>,
-              `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
+        {msg.type == MessageType.TEXT &&
+          (msg.status == MessageStatus.UNSEND
+            ? MyTooltip(
+                <span
+                  className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                    isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+                  } ${msg.isForwarded ? "" : ""}`}
+                >
+                  {isSentMsg
+                    ? "You"
+                    : receivers[msg.user.toString()].fullname.split(
+                        " "
+                      )[0]}{" "}
+                  unsend a message
+                </span>,
+                `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
               Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
-              "order-2"
-            )
-          : MyTooltip(
-              <div
-                className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify   ${
-                  isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
-                }`}
-              >
-                <Markdown>{msg.msgBody}</Markdown>
-              </div>,
-              getDisplaySendMsgTime(new Date(msg.createdAt!)),
-              "order-2 text-center max-w-[80%]"
-            )}
+                "order-2"
+              )
+            : MyTooltip(
+                <div
+                  className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify   ${
+                    isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                >
+                  <Markdown>{msg.msgBody}</Markdown>
+                </div>,
+                getDisplaySendMsgTime(new Date(msg.createdAt!)),
+                "order-2 text-center max-w-[80%]"
+              ))}
+
+        {msg.type == MessageType.IMAGE &&
+          MyTooltip(
+            <div className="py-2 px-3">
+              <img
+                src={msg.file?.url}
+                className={`rounded-3xl object-contain`}
+              ></img>
+            </div>,
+            getDisplaySendMsgTime(new Date(msg.createdAt!)),
+            "order-2 max-w-[70%]"
+          )}
       </div>
 
       {/* Hien thi trang thai cua tin nhan */}
