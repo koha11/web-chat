@@ -214,6 +214,19 @@ const SingleMsg = ({
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
             "order-2 max-w-[80%]"
           )}
+
+        {msg.type == MessageType.AUDIO &&
+          MyTooltip(
+            <div className="py-2 px-3">
+              <audio
+                src={msg.file?.url}
+                className={`rounded-3xl object-contain`}
+                controls  
+              ></audio>
+            </div>,
+            getDisplaySendMsgTime(new Date(msg.createdAt!)),
+            "order-2 max-w-[70%]"
+          )}
       </div>
 
       {/* Hien thi trang thai cua tin nhan */}

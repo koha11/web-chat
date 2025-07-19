@@ -7,10 +7,17 @@ import {
   Image,
   ImageDown,
   ImagePlus,
+  Mic,
+  MicOff,
   MoreHorizontal,
+  Pause,
   Phone,
   PictureInPicture,
+  Play,
+  RectangleHorizontal,
   Send,
+  Square,
+  StopCircle,
   Video,
   WalletCards,
   X,
@@ -50,6 +57,7 @@ import UserType from "../../enums/UserType.enum";
 import { useMakeCall } from "../../hooks/chat.hook";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useReactMediaRecorder } from "react-media-recorder";
 
 const ChatDetails = ({
   chat,
@@ -73,6 +81,7 @@ const ChatDetails = ({
   const [isOpen, setOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
+  const [isAudioRecording, setAudioRecording] = useState(false);
   const [imageObjects, setImageObjects] = useState<
     {
       url: string;
@@ -112,10 +121,19 @@ const ChatDetails = ({
     },
   });
 
+  const {
+    status: audioStatus,
+    startRecording,
+    stopRecording,
+    mediaBlobUrl,
+    previewAudioStream,
+    clearBlobUrl,
+  } = useReactMediaRecorder({ video: false });
+
   const msgsContainerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // useEffect
-
   useEffect(() => {
     if (messagesConnection) {
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
@@ -260,6 +278,29 @@ const ChatDetails = ({
     } else setImageObjects([]);
   }, [watch("files")]);
 
+  useEffect(() => {
+    if (audioStatus == "stopped") {
+      console.log(mediaBlobUrl);
+
+      fetch(mediaBlobUrl!)
+        .then((res) => res.blob())
+        .then((blob) => {
+          console.log(blob);
+          console.log(blob.type);
+
+          const file = new File([blob], "test.webm", {
+            type: blob.type,
+          });
+
+          const dataTransfer = new DataTransfer();
+
+          dataTransfer.items.add(file);
+
+          setValue("files", dataTransfer.files);
+        });
+    }
+  }, [audioStatus]);
+
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
     setValue("msg.replyForMsg", msg);
@@ -331,6 +372,8 @@ const ChatDetails = ({
       });
     }
   };
+
+  console.log(audioStatus);
 
   return (
     <section
@@ -582,6 +625,7 @@ const ChatDetails = ({
               resetField("msg.replyForMsg");
               resetField("files");
 
+              setAudioRecording(false);
               setOpen(false);
             }
           })}
@@ -593,6 +637,31 @@ const ChatDetails = ({
             <Image></Image>
           </Label>
 
+          {isAudioRecording ? (
+            <Button
+              className="rounded-full cursor-pointer"
+              variant={"outline"}
+              onClick={() => {
+                stopRecording();
+                clearBlobUrl();
+                setAudioRecording(false);
+              }}
+            >
+              <X></X>
+            </Button>
+          ) : (
+            <Button
+              className="rounded-full cursor-pointer"
+              variant={"outline"}
+              onClick={() => {
+                startRecording();
+                setAudioRecording(true);
+              }}
+            >
+              <Mic></Mic>
+            </Button>
+          )}
+
           <Input
             id="uploaded-image"
             type="file"
@@ -601,17 +670,56 @@ const ChatDetails = ({
             {...register("files")}
           ></Input>
 
-          <Input
-            {...register("msg.msgBody")}
-            className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
-            placeholder="Aa"
-            onFocus={() => {
-              typeMessage({ variables: { chatId, isTyping: true } });
-            }}
-            onBlur={() => {
-              typeMessage({ variables: { chatId, isTyping: false } });
-            }}
-          ></Input>
+          {isAudioRecording ? (
+            <div className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500 relative">
+              <audio
+                className="w-full"
+                ref={audioRef}
+                src={mediaBlobUrl}
+              ></audio>
+
+              {audioStatus == "recording" ? (
+                <Button
+                  onClick={async () => {
+                    stopRecording();
+                  }}
+                  className="absolute top-[50%] -translate-y-[50%] left-2"
+                >
+                  <Square />
+                </Button>
+              ) : audioRef.current?.paused ? (
+                <Button
+                  onClick={() => {
+                    audioRef.current?.play();
+                  }}
+                  className="absolute top-[50%] -translate-y-[50%] left-2"
+                >
+                  <Play />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    audioRef.current?.pause();
+                  }}
+                  className="absolute top-[50%] -translate-y-[50%] left-2"
+                >
+                  <Pause />
+                </Button>
+              )}
+            </div>
+          ) : (
+            <Input
+              {...register("msg.msgBody")}
+              className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
+              placeholder="Aa"
+              onFocus={() => {
+                typeMessage({ variables: { chatId, isTyping: true } });
+              }}
+              onBlur={() => {
+                typeMessage({ variables: { chatId, isTyping: false } });
+              }}
+            ></Input>
+          )}
 
           <Button
             className="rounded-full cursor-pointer"
