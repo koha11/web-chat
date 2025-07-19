@@ -291,14 +291,15 @@ const ChatDetails = ({
         },
       });
 
-    await postMessage({
-      variables: {
-        chatId,
-        msgBody,
-        replyForMsg,
-        isForwarded,
-      },
-    });
+    if (msgBody)
+      await postMessage({
+        variables: {
+          chatId,
+          msgBody,
+          replyForMsg,
+          isForwarded,
+        },
+      });
   };
 
   const handleLoadMoreMessages = () => {
@@ -518,7 +519,7 @@ const ChatDetails = ({
           </Collapsible>
         )}
 
-        {imageObjects.length && (
+        {imageObjects.length > 0 && (
           <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
             <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
               <ImagePlus></ImagePlus>
@@ -558,10 +559,15 @@ const ChatDetails = ({
             ))}
           </div>
         )}
+
         <form
           className="relative w-full flex items-center justify-between gap-4"
           autoComplete="off"
           onSubmit={handleSubmit(async ({ msg, files }) => {
+            if (files) {
+              for (let file of files) if (file.size > 10_000_000) return;
+            }
+
             if (chat != undefined && (msg.msgBody != "" || files)) {
               await handleSendMessage({
                 msgBody: msg.msgBody,
@@ -591,7 +597,6 @@ const ChatDetails = ({
             id="uploaded-image"
             type="file"
             hidden
-            accept="image/*"
             multiple={true}
             {...register("files")}
           ></Input>

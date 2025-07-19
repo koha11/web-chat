@@ -168,24 +168,27 @@ export const messageResolvers: IResolvers = {
     ) => {
       const myFiles = (await Promise.all(files)) as FileUpload[];
 
-      console.log(myFiles);
-
       let messages: IMessage[] = [];
 
       for (let file of myFiles) {
-        const url = await uploadMedia({
+        let type = MessageType.TEXT;
+        const mimeType = file.mimetype;
+
+        if (mimeType.startsWith("video")) type = MessageType.VIDEO;
+
+        if (mimeType.startsWith("image")) type = MessageType.IMAGE;
+
+        if (mimeType.startsWith("audio")) type = MessageType.AUDIO;
+
+        if (mimeType.startsWith("application")) type = MessageType.FILE;
+
+        console.log(file);
+
+        const { secure_url, bytes } = await uploadMedia({
           file,
-          folder: `chats/${chatId}`,
+          folder: `chats/${chatId}/${type}`,
+          type,
         });
-
-        let type: MessageType;
-
-        switch (file.mimetype) {
-          case FileType.IMAGE:
-            type = MessageType.IMAGE;
-          default:
-            type = MessageType.TEXT;
-        }
 
         const createdMsg = await Message.create({
           chat: chatId,
@@ -193,8 +196,8 @@ export const messageResolvers: IResolvers = {
           file: {
             filename: file.filename,
             type: file.mimetype,
-            url,
-            size: 10000,
+            url: secure_url,
+            size: bytes,
           },
           replyForMsg,
           isForwarded,

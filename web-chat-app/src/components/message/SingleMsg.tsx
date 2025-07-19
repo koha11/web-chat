@@ -1,4 +1,11 @@
-import { Reply } from "lucide-react";
+import {
+  Dock,
+  DownloadCloud,
+  FileText,
+  PackageXIcon,
+  Paperclip,
+  Reply,
+} from "lucide-react";
 import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
@@ -13,7 +20,9 @@ import { IUser } from "../../interfaces/user.interface";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { usePostMessage } from "../../hooks/message.hook";
 import Markdown from "react-markdown";
+import ReactPlayer from "react-player";
 import MessageType from "@/enums/MessageType.enum";
+import { Link } from "react-router-dom";
 
 const SingleMsg = ({
   isLongGap,
@@ -176,6 +185,34 @@ const SingleMsg = ({
             </div>,
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
             "order-2 max-w-[70%]"
+          )}
+
+        {msg.type == MessageType.VIDEO &&
+          MyTooltip(
+            <div className="py-2 px-3">
+              <ReactPlayer
+                src={msg.file?.url}
+                className={`rounded-3xl object-contain`}
+                controls
+              ></ReactPlayer>
+            </div>,
+            getDisplaySendMsgTime(new Date(msg.createdAt!)),
+            "order-2 max-w-[70%]"
+          )}
+
+        {msg.type == MessageType.FILE &&
+          MyTooltip(
+            <a
+              href={msg.file!.url}
+              download
+              className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl"
+              target="_blank"
+            >
+              <FileText />
+              <div>{msg.file?.filename}</div>
+            </a>,
+            getDisplaySendMsgTime(new Date(msg.createdAt!)),
+            "order-2 max-w-[80%]"
           )}
       </div>
 
