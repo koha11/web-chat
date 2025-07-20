@@ -46,33 +46,27 @@ const ReactionMsgDialog = ({
             })}
           </TabsList>
 
-          <TabsContent
-            value="all"
-            className="flex gap-8 items-baseline justify-baseline"
-          >
+          <TabsContent value="all" className="space-y-4">
             {Object.keys(reactionListMap).map((unified: any) => {
               const userIds = reactionListMap[unified];
 
               return userIds.map((userId: any) => (
-                <>
+                <div className="flex gap-8 items-baseline justify-baseline">
                   <div>{emojiMap[unified]}</div>
                   <div>{userId}</div>
-                </>
+                </div>
               ));
             })}
           </TabsContent>
 
           {Object.keys(emojiMap).map((unified) => {
             return (
-              <TabsContent
-                value={unified}
-                className="flex gap-8 items-baseline justify-baseline"
-              >
+              <TabsContent value={unified} className="space-y-4">
                 {Object.values(reactionListMap[unified]).map((userId: any) => (
-                  <>
+                  <div className="flex gap-8 items-baseline justify-baseline">
                     <div>{emojiMap[unified]}</div>
                     <div>{userId}</div>
-                  </>
+                  </div>
                 ))}
               </TabsContent>
             );
