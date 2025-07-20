@@ -25,6 +25,7 @@ export const messageTypeDefs = gql`
     isForwarded: Boolean
     type: String
     file: JSONObject
+    reactions: JSONObject
 
     createdAt: Date
     updatedAt: Date

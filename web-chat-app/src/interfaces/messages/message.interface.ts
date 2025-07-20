@@ -21,6 +21,9 @@ export interface IMessage {
   unsentAt?: Date;
   editedAt?: Date;
   isForwarded?: boolean;
+  reactions?: {
+    [userId: string]: { unified: string; reactTime: Date; emoji: string };
+  };
 
   createdAt?: Date;
   updatedAt?: Date;

@@ -7,7 +7,7 @@ export const MyTooltip = (
   className: string = ""
 ) => (
   <Tooltip>
-    <TooltipTrigger className={className}>{hover}</TooltipTrigger>
+    <TooltipTrigger className={`-z-5 ${className}`}>{hover}</TooltipTrigger>
     <TooltipContent>
       {content.split("\n").map((myContent, index) => (
         <p key={index}>{myContent}</p>

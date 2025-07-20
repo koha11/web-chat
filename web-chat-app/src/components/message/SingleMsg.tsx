@@ -15,7 +15,7 @@ import { usePostMessage } from "../../hooks/message.hook";
 import ReactPlayer from "react-player";
 import MessageType from "@/enums/MessageType.enum";
 import MarkdownMessage from "@/components/message/MarkdownMessage";
-import EmojiPicker from "emoji-picker-react";
+import ReactionMsgDialog from "./ReactionMsgDialog";
 
 const SingleMsg = ({
   isLongGap,
@@ -40,6 +40,7 @@ const SingleMsg = ({
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
+  const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
 
@@ -91,7 +92,7 @@ const SingleMsg = ({
 
       {/* Phan chinh  */}
       <div
-        className={`flex items-center gap-2 z-10 ${
+        className={`relative flex items-center gap-2 z-10 ${
           isSentMsg ? "justify-end" : "justify-baseline"
         }`}
         onMouseEnter={() => setHover(true)}
@@ -121,7 +122,7 @@ const SingleMsg = ({
             msgId={msg.id}
             isSentMsg={isSentMsg}
             isOpen={isOpen}
-            setOpen={() => setOpen(!isOpen)}
+            setOpen={setOpen}
             handleReplyMsg={() => handleReplyMsg(msg)}
             handleSendMsg={(chatId: string) => {
               postMessage({
@@ -214,6 +215,21 @@ const SingleMsg = ({
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
             "order-2 max-w-[70%]"
           )}
+
+        {/* hien thi reactions  */}
+        {msg.reactions &&
+          Object.keys(msg.reactions).map((userId) => {
+            const reaction = msg.reactions![userId];
+            const fullname = userId;
+
+            return MyTooltip(
+              <span onClick={() => setReactionDialogOpen(true)}>
+                {reaction.emoji}
+              </span>,
+              fullname,
+              "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
+            );
+          })}
       </div>
 
       {/* Hien thi trang thai cua tin nhan */}
@@ -245,6 +261,14 @@ const SingleMsg = ({
                 )
               )))}
       </div>
+      
+      {msg.reactions && (
+        <ReactionMsgDialog
+          reactions={msg.reactions}
+          isOpen={isReactionDialogOpen}
+          setOpen={setReactionDialogOpen}
+        ></ReactionMsgDialog>
+      )}
     </div>
   );
 };

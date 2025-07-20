@@ -25,7 +25,7 @@ const ForwardMsgDialog = ({
   });
 
   const { data: contactConnection, loading: isContactLoading } = useGetContacts(
-    { userId }
+    {}
   );
 
   const [postChat, { data: createdChat }] = usePostChat();

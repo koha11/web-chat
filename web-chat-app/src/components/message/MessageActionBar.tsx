@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyConfirmDialog from "../ui/my-confirm-dialog";
 import MyRadioDialog from "../ui/my-radio-dialog";
 import { useParams } from "react-router-dom";
@@ -25,7 +25,7 @@ const MessageActions = ({
   handleSendMsg,
 }: {
   isOpen: boolean;
-  setOpen: () => void;
+  setOpen: (open: boolean) => void;
   isSentMsg: boolean;
   msgId: string;
   isUnsendMsg: boolean;
@@ -40,6 +40,14 @@ const MessageActions = ({
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
   const [isForwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
+
+  const [isMoreDropdownOpen, setMoreDropdownOpen] = useState<boolean>(false);
+  const [isReactionOpen, setReactionOpen] = useState(false);
+
+  // ngan ko cho message action bar bi unhover
+  useEffect(() => {
+    setOpen(isMoreDropdownOpen || isReactionOpen);
+  }, [isMoreDropdownOpen, isReactionOpen]);
 
   // Handlers
   const handleUnsentOrRemoveMsg = ({ isUnsend }: { isUnsend: boolean }) => {
@@ -56,7 +64,9 @@ const MessageActions = ({
 
   return (
     <div
-      className={`flex ${isSentMsg ? "order-1 flex-row-reverse" : "order-3"}`}
+      className={`relative flex ${
+        isSentMsg ? "order-1 flex-row-reverse" : "order-3"
+      }`}
     >
       {/* emoji btn  */}
       <Button
@@ -65,9 +75,23 @@ const MessageActions = ({
         className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
           isUnsendMsg && "hidden"
         }`}
+        onClick={(e) => {
+          setReactionOpen(!isReactionOpen);
+        }}
       >
         <SmileIcon></SmileIcon>
       </Button>
+
+      <EmojiPicker
+        open={isReactionOpen}
+        reactionsDefaultOpen={true}
+        onReactionClick={(emojiData) => {
+          console.log(emojiData);
+        }}
+        lazyLoadEmojis={true}
+        searchDisabled
+        style={{ position: "absolute", top: -60, zIndex: 99999999, right: 40 }}
+      />
 
       {/* reply BTN  */}
       <Button
@@ -81,8 +105,11 @@ const MessageActions = ({
         <Reply></Reply>
       </Button>
 
-      <DropdownMenu open={isOpen} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild onClick={setOpen}>
+      <DropdownMenu
+        open={isMoreDropdownOpen}
+        onOpenChange={setMoreDropdownOpen}
+      >
+        <DropdownMenuTrigger asChild onClick={() => setOpen(true)}>
           <Button
             size={"sm"}
             variant="link"

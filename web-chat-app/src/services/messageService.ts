@@ -17,6 +17,7 @@ export const GET_MESSAGES = gql`
           isForwarded
           type
           file
+          reactions
           replyForMsg {
             id
             user
@@ -79,6 +80,7 @@ export const POST_MESSAGE = gql`
       unsentAt
       editedAt
       isForwarded
+      reactions
     }
   }
 `;
@@ -119,6 +121,7 @@ export const POST_MEDIA_MESSAGE = gql`
       isForwarded
       type
       file
+      reactions
     }
   }
 `;
@@ -148,6 +151,7 @@ export const UNSEND_MESSAGE = gql`
       isForwarded
       type
       file
+      reactions
     }
   }
 `;
@@ -177,6 +181,7 @@ export const REMOVE_MESSAGE = gql`
       isForwarded
       type
       file
+      reactions
     }
   }
 `;
@@ -214,6 +219,7 @@ export const MESSAGE_ADDED_SUB = gql`
         isForwarded
         type
         file
+        reactions
       }
     }
   }
@@ -244,6 +250,7 @@ export const MESSAGE_CHANGED_SUB = gql`
         isForwarded
         type
         file
+        reactions
       }
     }
   }

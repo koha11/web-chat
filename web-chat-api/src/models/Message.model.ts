@@ -23,6 +23,7 @@ const MessageSchema = new Schema<IMessage>(
     editedAt: { type: Date },
     unsentAt: { type: Date },
     isForwarded: { type: Boolean, default: false },
+    reactions: { type: Map, of: Object },
   },
   { timestamps: true }
 );
