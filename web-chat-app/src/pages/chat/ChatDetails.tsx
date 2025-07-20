@@ -574,18 +574,18 @@ const ChatDetails = ({
                       old.filter((oldObject) => oldObject.url != imgObj.url)
                     );
 
-                    // const input = watch("upload.file");
+                    const fileList = watch("files");
 
-                    // if (!input || !input.files) return;
+                    if (!fileList) return;
 
-                    // const dt = new DataTransfer();
-                    // Array.from(input.files).forEach((file, fileIndex) => {
-                    //   if (fileIndex !== index) {
-                    //     dt.items.add(file);
-                    //   }
-                    // });
+                    const dt = new DataTransfer();
+                    Array.from(fileList).forEach((file, fileIndex) => {
+                      if (fileIndex !== index) {
+                        dt.items.add(file);
+                      }
+                    });
 
-                    // input.files = dt.files;
+                    setValue("files", dt.files);
                   }}
                 >
                   <X></X>
@@ -599,18 +599,18 @@ const ChatDetails = ({
           className="relative w-full flex items-center justify-between gap-4"
           autoComplete="off"
           onSubmit={handleSubmit(async ({ msg, files }) => {
-            if (files) {
+            if (files?.length) {
               for (let file of files) if (file.size > 10_000_000) return;
             }
 
-            if (chat != undefined && (msg.msgBody != "" || files)) {
+            if (chat != undefined && (msg.msgBody != "" || !files?.length)) {
               await handleSendMessage({
                 msgBody: msg.msgBody,
                 chatId,
                 replyForMsg: msg.replyForMsg
                   ? (msg.replyForMsg as IMessage).id
                   : undefined,
-                files,
+                files: files?.length == 0 ? undefined : files,
               });
 
               resetField("msg.msgBody");
@@ -633,6 +633,7 @@ const ChatDetails = ({
             <Button
               className="rounded-full cursor-pointer"
               variant={"outline"}
+              type="button"
               onClick={() => {
                 stopRecording();
                 clearBlobUrl();
@@ -646,6 +647,7 @@ const ChatDetails = ({
             <Button
               className="rounded-full cursor-pointer"
               variant={"outline"}
+              type="button"
               onClick={() => {
                 startRecording();
                 setAudioRecording(true);
@@ -673,9 +675,9 @@ const ChatDetails = ({
 
               {audioStatus != "stopped" ? (
                 <Button
-                  onClick={async (e) => {
+                  type="button"
+                  onClick={async () => {
                     stopRecording();
-                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >
@@ -683,11 +685,10 @@ const ChatDetails = ({
                 </Button>
               ) : !isAudioPlayed ? (
                 <Button
-                  onClick={(e) => {
+                  type="button"
+                  onClick={() => {
                     setAudioPlayed(true);
                     audioRef.current?.play();
-
-                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >
@@ -695,11 +696,10 @@ const ChatDetails = ({
                 </Button>
               ) : (
                 <Button
-                  onClick={(e) => {
+                  type="button"
+                  onClick={() => {
                     audioRef.current?.pause();
                     setAudioPlayed(false);
-
-                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >

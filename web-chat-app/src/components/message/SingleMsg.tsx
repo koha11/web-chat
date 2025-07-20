@@ -19,11 +19,9 @@ import MessageStatus from "../../enums/MessageStatus.enum";
 import { IUser } from "../../interfaces/user.interface";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { usePostMessage } from "../../hooks/message.hook";
-import Markdown from "react-markdown";
 import ReactPlayer from "react-player";
 import MessageType from "@/enums/MessageType.enum";
-import { Link } from "react-router-dom";
-
+import MarkdownMessage from "@/components/message/MarkdownMessage";
 const SingleMsg = ({
   isLongGap,
   isSentMsg,
@@ -169,7 +167,7 @@ const SingleMsg = ({
                     isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
                   }`}
                 >
-                  <Markdown>{msg.msgBody}</Markdown>
+                  <MarkdownMessage text={msg.msgBody!}></MarkdownMessage>
                 </div>,
                 getDisplaySendMsgTime(new Date(msg.createdAt!)),
                 "order-2 text-center max-w-[80%]"
@@ -221,7 +219,7 @@ const SingleMsg = ({
               <audio
                 src={msg.file?.url}
                 className={`rounded-3xl object-contain`}
-                controls  
+                controls
               ></audio>
             </div>,
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
