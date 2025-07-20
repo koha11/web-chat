@@ -78,6 +78,26 @@ export const chatResolvers: IResolvers = {
 
       return chat;
     },
+    changeChatName: async (
+      _p: any,
+      { chatId, chatName },
+      { user, pubsub }: IMyContext
+    ) => {
+
+      const chat = await Chat.findById(chatId).populate("users");
+
+      if (!chat) throw new Error("this chat is not existed");
+
+      chat.chatName = chatName;
+
+      await chat.save();
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      return chat;
+    },
     makeCall: async (
       _p,
       { chatId, hasVideo },

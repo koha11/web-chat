@@ -5,10 +5,12 @@ import MyCollapsible from "../ui/my-collapsible";
 import ChangeNicknamesDialog from "./ChangeNicknamesDialog";
 import { IChat } from "../../interfaces/chat.interface";
 import ChangeChatAvatarDialog from "./ChangeChatAvatarDialog";
+import ChangeChatNameDialog from "./ChangeChatNameDialog";
 
 const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
   const [isChangeNicknamesOpen, setChangeNicknamesOpen] = useState(false);
-  const [isChangeAvatarOpen, setChangeAvatarOpen] = useState(false);
+  const [isChangeChatAvatarOpen, setChangeChatAvatarOpen] = useState(false);
+  const [isChangeChatNameOpen, setChangeChatNameOpen] = useState(false);
 
   return (
     <MyCollapsible
@@ -20,7 +22,16 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
               <span>Rename chat</span>
             </>
           ),
-          onClick: () => {},
+          onClick: () => {
+            setChangeChatNameOpen(true);
+          },
+          dialog: (
+            <ChangeChatNameDialog
+              isOpen={isChangeChatNameOpen}
+              setOpen={setChangeChatNameOpen}
+              chat={chat}
+            ></ChangeChatNameDialog>
+          ),
         },
         {
           content: (
@@ -30,12 +41,12 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
             </>
           ),
           onClick: () => {
-            setChangeAvatarOpen(true);
+            setChangeChatAvatarOpen(true);
           },
           dialog: (
             <ChangeChatAvatarDialog
-              isOpen={isChangeAvatarOpen}
-              setOpen={setChangeAvatarOpen}
+              isOpen={isChangeChatAvatarOpen}
+              setOpen={setChangeChatAvatarOpen}
               chat={chat}
             ></ChangeChatAvatarDialog>
           ),

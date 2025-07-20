@@ -40,6 +40,7 @@ export const chatTypeDefs = gql`
     postChat(users: [ID!]!): Chat!
     changeNickname(chatId: ID!, changedUserId: ID!, nickname: String!): Chat!
     changeChatAvatar(chatId: ID!, file: Upload!): Chat!
+    changeChatName(chatId: ID!, chatName: String!): Chat!
     makeCall(chatId: ID!, hasVideo: Boolean!): Boolean
     handleCall(chatId: ID!, isAccepted: Boolean!): Boolean
     hangupCall(chatId: ID!): Boolean
