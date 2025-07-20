@@ -89,6 +89,27 @@ export const CHANGE_NICKNAME = gql`
   }
 `;
 
+export const CHANGE_CHAT_AVATAR = gql`
+  mutation ChangeChatAvatar($chatId: ID!, $file: Upload!) {
+    changeChatAvatar(chatId: $chatId, file: $file) {
+      id
+      chatName
+      chatAvatar
+      nicknames
+      updatedAt
+      lastMsgSeen
+      users {
+        id
+        fullname
+        avatar
+        isOnline
+        lastLogined
+        userType
+      }
+    }
+  }
+`;
+
 export const MAKE_CALL = gql`
   mutation MakeCall($chatId: ID!, $hasVideo: Boolean!) {
     makeCall(chatId: $chatId, hasVideo: $hasVideo)

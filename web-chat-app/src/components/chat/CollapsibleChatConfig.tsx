@@ -4,9 +4,11 @@ import { useState } from "react";
 import MyCollapsible from "../ui/my-collapsible";
 import ChangeNicknamesDialog from "./ChangeNicknamesDialog";
 import { IChat } from "../../interfaces/chat.interface";
+import ChangeChatAvatarDialog from "./ChangeChatAvatarDialog";
 
 const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
   const [isChangeNicknamesOpen, setChangeNicknamesOpen] = useState(false);
+  const [isChangeAvatarOpen, setChangeAvatarOpen] = useState(false);
 
   return (
     <MyCollapsible
@@ -27,7 +29,16 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
               <span>Change chat avatar</span>
             </>
           ),
-          onClick: () => {},
+          onClick: () => {
+            setChangeAvatarOpen(true);
+          },
+          dialog: (
+            <ChangeChatAvatarDialog
+              isOpen={isChangeAvatarOpen}
+              setOpen={setChangeAvatarOpen}
+              chat={chat}
+            ></ChangeChatAvatarDialog>
+          ),
         },
         {
           content: (

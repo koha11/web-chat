@@ -1,5 +1,4 @@
 import { UploadApiResponse } from "cloudinary";
-import FileType from "enums/FileType.enum.js";
 import MessageType from "enums/MessageType.enum.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import cloudinary from "lib/cloudinary.js";
@@ -13,7 +12,7 @@ export const uploadMedia = async ({
   file: FileUpload;
   folder: string;
   filename_override?: string;
-  type: MessageType;
+  type?: MessageType;
 }): Promise<UploadApiResponse> => {
   const { createReadStream } = file;
 

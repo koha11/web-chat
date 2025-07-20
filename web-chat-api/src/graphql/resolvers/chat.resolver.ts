@@ -7,6 +7,8 @@ import { PubSub, withFilter } from "graphql-subscriptions";
 import { IResolvers } from "@graphql-tools/utils";
 import Chat from "../../models/Chat.model.js";
 import User from "../../models/User.model.js";
+import { uploadMedia } from "utils/cloudinary.js";
+import { FileUpload } from "graphql-upload/processRequest.mjs";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -38,9 +40,37 @@ export const chatResolvers: IResolvers = {
     ) => {
       const chat = await Chat.findById(chatId).populate("users");
 
-      chat?.nicknames.set(changedUserId, nickname);
+      if (!chat) throw new Error("this chat is not existed");
 
-      chat?.save();
+      chat.nicknames.set(changedUserId, nickname);
+
+      await chat.save();
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      return chat;
+    },
+    changeChatAvatar: async (
+      _p: any,
+      { chatId, file },
+      { user, pubsub }: IMyContext
+    ) => {
+      const chatAvatarFile = (await file) as FileUpload;
+
+      const { secure_url } = await uploadMedia({
+        file: chatAvatarFile,
+        folder: `chats/${chatId}/avatar`,
+      });
+
+      const chat = await Chat.findById(chatId).populate("users");
+
+      if (!chat) throw new Error("this chat is not existed");
+
+      chat.chatAvatar = secure_url;
+
+      await chat.save();
 
       pubsub.publish(SocketEvent.chatChanged, {
         chatChanged: chat,
