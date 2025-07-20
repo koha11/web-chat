@@ -23,7 +23,6 @@ import {
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import MessageStatus from "../../enums/MessageStatus.enum";
 import {
   getDisplayTimeDiff,
   getTimeDiff,
@@ -82,6 +81,7 @@ const ChatDetails = ({
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
   const [isAudioRecording, setAudioRecording] = useState(false);
+  const [isAudioPlayed, setAudioPlayed] = useState(false);
   const [imageObjects, setImageObjects] = useState<
     {
       url: string;
@@ -126,7 +126,6 @@ const ChatDetails = ({
     startRecording,
     stopRecording,
     mediaBlobUrl,
-    previewAudioStream,
     clearBlobUrl,
   } = useReactMediaRecorder({ video: false });
 
@@ -280,15 +279,10 @@ const ChatDetails = ({
 
   useEffect(() => {
     if (audioStatus == "stopped") {
-      console.log(mediaBlobUrl);
-
       fetch(mediaBlobUrl!)
         .then((res) => res.blob())
         .then((blob) => {
-          console.log(blob);
-          console.log(blob.type);
-
-          const file = new File([blob], "test.webm", {
+          const file = new File([blob], `${userId}.voice.${chatId}`, {
             type: blob.type,
           });
 
@@ -372,8 +366,6 @@ const ChatDetails = ({
       });
     }
   };
-
-  console.log(audioStatus);
 
   return (
     <section
@@ -644,6 +636,7 @@ const ChatDetails = ({
               onClick={() => {
                 stopRecording();
                 clearBlobUrl();
+                resetField("files");
                 setAudioRecording(false);
               }}
             >
@@ -678,19 +671,23 @@ const ChatDetails = ({
                 src={mediaBlobUrl}
               ></audio>
 
-              {audioStatus == "recording" ? (
+              {audioStatus != "stopped" ? (
                 <Button
-                  onClick={async () => {
+                  onClick={async (e) => {
                     stopRecording();
+                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >
                   <Square />
                 </Button>
-              ) : audioRef.current?.paused ? (
+              ) : !isAudioPlayed ? (
                 <Button
-                  onClick={() => {
+                  onClick={(e) => {
+                    setAudioPlayed(true);
                     audioRef.current?.play();
+
+                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >
@@ -698,8 +695,11 @@ const ChatDetails = ({
                 </Button>
               ) : (
                 <Button
-                  onClick={() => {
+                  onClick={(e) => {
                     audioRef.current?.pause();
+                    setAudioPlayed(false);
+
+                    e.preventDefault();
                   }}
                   className="absolute top-[50%] -translate-y-[50%] left-2"
                 >
