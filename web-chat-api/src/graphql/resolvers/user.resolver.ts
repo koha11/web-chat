@@ -42,16 +42,16 @@ export const userResolvers: IResolvers = {
     uploadUserAvatar: async (_p: any, { file }, { user }: IMyContext) => {
       const myFile = await file;
 
-      const url = await uploadMedia({
+      const { secure_url } = await uploadMedia({
         file: myFile,
         folder: `profile/${user.id}`,
       });
 
       await User.findByIdAndUpdate(user.id, {
-        avatar: url,
+        avatar: secure_url,
       });
 
-      return url;
+      return secure_url;
     },
   },
 };
