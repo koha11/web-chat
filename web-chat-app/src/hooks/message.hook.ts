@@ -4,6 +4,7 @@ import {
   GET_MESSAGES,
   POST_MEDIA_MESSAGE,
   POST_MESSAGE,
+  REACT_MESSAGE,
   REMOVE_MESSAGE,
   TYPE_MESSAGE,
   UNSEND_MESSAGE,
@@ -149,4 +150,8 @@ export const useRemoveMessage = () => {
 
 export const useTypeMessage = () => {
   return useMutation(TYPE_MESSAGE);
+};
+
+export const useReactMessage = () => {
+  return useMutation(REACT_MESSAGE);
 };

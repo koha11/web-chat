@@ -186,6 +186,36 @@ export const REMOVE_MESSAGE = gql`
   }
 `;
 
+export const REACT_MESSAGE = gql`
+  mutation ReactMessage($msgId: ID!, $unified: String!, $emoji: String!) {
+    reactMessage(unified: $unified, msgId: $msgId, emoji: $emoji) {
+      id
+      user
+      msgBody
+      status
+      replyForMsg {
+        id
+        user
+        msgBody
+        status
+        seenList
+        createdAt
+        type
+        file
+      }
+      seenList
+      createdAt
+      isHiddenFor
+      unsentAt
+      editedAt
+      isForwarded
+      type
+      file
+      reactions
+    }
+  }
+`;
+
 export const TYPE_MESSAGE = gql`
   mutation TypeMessage($chatId: ID!, $isTyping: Boolean!) {
     typeMessage(chatId: $chatId, isTyping: $isTyping) {

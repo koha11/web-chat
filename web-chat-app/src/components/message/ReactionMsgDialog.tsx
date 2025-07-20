@@ -1,4 +1,3 @@
-import { IUser } from "@/interfaces/user.interface";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
@@ -53,7 +52,7 @@ const ReactionMsgDialog = ({
           >
             {Object.keys(reactionListMap).map((unified: any) => {
               const userIds = reactionListMap[unified];
-              
+
               return userIds.map((userId: any) => (
                 <>
                   <div>{emojiMap[unified]}</div>

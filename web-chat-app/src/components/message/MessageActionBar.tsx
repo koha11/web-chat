@@ -12,7 +12,11 @@ import MyRadioDialog from "../ui/my-radio-dialog";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ForwardMsgDialog from "./ForwardMsgDialog";
-import { useRemoveMessage, useUnsendMessage } from "../../hooks/message.hook";
+import {
+  useReactMessage,
+  useRemoveMessage,
+  useUnsendMessage,
+} from "../../hooks/message.hook";
 import EmojiPicker from "emoji-picker-react";
 
 const MessageActions = ({
@@ -36,6 +40,7 @@ const MessageActions = ({
 
   const [unsendMessage] = useUnsendMessage();
   const [removeMessage] = useRemoveMessage();
+  const [reactMessage] = useReactMessage();
 
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
   const [isRadioDialogOpen, setRadioDialogOpen] = useState<boolean>(false);
@@ -69,29 +74,43 @@ const MessageActions = ({
       }`}
     >
       {/* emoji btn  */}
-      <Button
+      {/* <Button
         size={"sm"}
         variant="link"
         className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
           isUnsendMsg && "hidden"
         }`}
-        onClick={(e) => {
-          setReactionOpen(!isReactionOpen);
-        }}
+        onClick={(e) => {}}
       >
         <SmileIcon></SmileIcon>
-      </Button>
+      </Button> */}
 
-      <EmojiPicker
-        open={isReactionOpen}
-        reactionsDefaultOpen={true}
-        onReactionClick={(emojiData) => {
-          console.log(emojiData);
-        }}
-        lazyLoadEmojis={true}
-        searchDisabled
-        style={{ position: "absolute", top: -60, zIndex: 99999999, right: 40 }}
-      />
+      <DropdownMenu open={isReactionOpen} onOpenChange={setReactionOpen}>
+        <DropdownMenuTrigger
+          asChild
+          onClick={() => setReactionOpen(!isReactionOpen)}
+        >
+          <Button
+            size={"sm"}
+            variant="link"
+            className="hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full"
+          >
+            <SmileIcon></SmileIcon>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="top" sideOffset={0}>
+          <EmojiPicker
+            open={isReactionOpen}
+            reactionsDefaultOpen={true}
+            onReactionClick={({ emoji, unified }) => {
+              reactMessage({ variables: { unified, emoji, msgId } });
+              setReactionOpen(false);
+            }}
+            lazyLoadEmojis={true}
+            searchDisabled
+          />
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* reply BTN  */}
       <Button
@@ -109,7 +128,7 @@ const MessageActions = ({
         open={isMoreDropdownOpen}
         onOpenChange={setMoreDropdownOpen}
       >
-        <DropdownMenuTrigger asChild onClick={() => setOpen(true)}>
+        <DropdownMenuTrigger asChild onClick={() => setMoreDropdownOpen(true)}>
           <Button
             size={"sm"}
             variant="link"

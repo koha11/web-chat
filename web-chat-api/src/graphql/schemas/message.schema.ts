@@ -69,6 +69,8 @@ export const messageTypeDefs = gql`
     removeMessage(chatId: ID!, msgId: ID!): Message!
 
     typeMessage(chatId: ID!, isTyping: Boolean!): Message
+
+    reactMessage(msgId: ID!, unified: String!, emoji: String!): Message
   }
 
   extend type Subscription {

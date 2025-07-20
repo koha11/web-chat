@@ -320,6 +320,44 @@ export const messageResolvers: IResolvers = {
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
     },
+    reactMessage: async (
+      _p,
+      { msgId, unified, emoji },
+      { pubsub, user }: IMyContext
+    ) => {
+      const msg = await Message.findById(msgId).populate("replyForMsg");
+
+      if (msg) {
+        if (!msg.reactions) msg.reactions = new Map();
+
+        msg.reactions?.set(user.id.toString(), {
+          emoji,
+          unified,
+          reactTime: new Date(),
+        });
+
+        await msg.save();
+
+        // const chatChanged = await Chat.findByIdAndUpdate(
+        //   chatId,
+        //   {
+        //     $set: {
+        //       updatedAt:
+        //         lastMsg.status == MessageStatus.UNSEND
+        //           ? lastMsg.unsentAt
+        //           : lastMsg.createdAt,
+        //     },
+        //   },
+        //   { timestamps: false }
+        // );
+
+        // pubsub.publish(SocketEvent.chatChanged, {
+        //   chatChanged,
+        // } as PubsubEvents[SocketEvent.chatChanged]);
+      }
+
+      return msg;
+    },
   },
 
   Subscription: {
