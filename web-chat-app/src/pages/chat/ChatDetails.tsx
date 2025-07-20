@@ -603,7 +603,10 @@ const ChatDetails = ({
               for (let file of files) if (file.size > 10_000_000) return;
             }
 
-            if (chat != undefined && (msg.msgBody != "" || !files?.length)) {
+            if (
+              chat != undefined &&
+              (msg.msgBody != "" || (files && files.length))
+            ) {
               await handleSendMessage({
                 msgBody: msg.msgBody,
                 chatId,
