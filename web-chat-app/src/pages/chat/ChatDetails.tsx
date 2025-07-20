@@ -2,24 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import {
-  Forward,
+  FileText,
   Hand,
   Image,
-  ImageDown,
   ImagePlus,
   Mic,
-  MicOff,
   MoreHorizontal,
   Pause,
   Phone,
-  PictureInPicture,
   Play,
-  RectangleHorizontal,
   Send,
   Square,
-  StopCircle,
   Video,
-  WalletCards,
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -82,7 +76,7 @@ const ChatDetails = ({
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
   const [isAudioRecording, setAudioRecording] = useState(false);
   const [isAudioPlayed, setAudioPlayed] = useState(false);
-  const [imageObjects, setImageObjects] = useState<
+  const [fileObjects, setFileObjects] = useState<
     {
       url: string;
       filename: string;
@@ -264,17 +258,17 @@ const ChatDetails = ({
     const files = watch("files");
 
     if (files) {
-      let myImageObjects = [] as any[];
+      let myfileObjects = [] as any[];
       for (let file of files) {
-        myImageObjects.push({
+        myfileObjects.push({
           url: URL.createObjectURL(file),
           file,
           filename: file.name,
           type: file.type,
         });
       }
-      setImageObjects((old) => [...old, ...myImageObjects]);
-    } else setImageObjects([]);
+      setFileObjects((old) => [...old, ...myfileObjects]);
+    } else setFileObjects([]);
   }, [watch("files")]);
 
   useEffect(() => {
@@ -471,19 +465,6 @@ const ChatDetails = ({
           }
         }}
       >
-        {/* {imageObjects.length > 0 &&
-          imageObjects.map((imgObj, index) => {
-            return (
-              <a
-                href={imgObj.url}
-                download={imgObj.filename}
-                className="text-blue-600 underline"
-              >
-                {imgObj.filename}
-              </a>
-            );  
-          })} */}
-
         {typingUsers && typingUsers?.length > 0 && (
           <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div
@@ -554,46 +535,80 @@ const ChatDetails = ({
           </Collapsible>
         )}
 
-        {imageObjects.length > 0 && (
-          <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
-            <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
-              <ImagePlus></ImagePlus>
-            </div>
-            {imageObjects.map((imgObj, index) => (
-              <div key={index} className="relative h-12 w-12 shrink-0">
-                <img
-                  src={imgObj.url}
-                  className="object-cover rounded-md h-full w-full"
-                ></img>
-                <Button
-                  className="absolute -top-1 -right-1 cursor-pointer"
-                  size={"no_style"}
-                  onClick={() => {
-                    URL.revokeObjectURL(imgObj.url);
-                    setImageObjects((old) =>
-                      old.filter((oldObject) => oldObject.url != imgObj.url)
-                    );
-
-                    const fileList = watch("files");
-
-                    if (!fileList) return;
-
-                    const dt = new DataTransfer();
-                    Array.from(fileList).forEach((file, fileIndex) => {
-                      if (fileIndex !== index) {
-                        dt.items.add(file);
-                      }
-                    });
-
-                    setValue("files", dt.files);
-                  }}
-                >
-                  <X></X>
-                </Button>
+        {fileObjects.length > 0 &&
+          !fileObjects.some((obj) => obj.type.startsWith("audio")) && (
+            <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
+              <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
+                <ImagePlus></ImagePlus>
               </div>
-            ))}
-          </div>
-        )}
+              {fileObjects.map((obj, index) => {
+                let myComponent;
+
+                if (obj.type.startsWith("image"))
+                  myComponent = (
+                    <img
+                      src={obj.url}
+                      className="object-cover rounded-md h-full w-full"
+                    ></img>
+                  );
+
+                if (obj.type.startsWith("video"))
+                  myComponent = (
+                    <video
+                      src={obj.url}
+                      className="object-cover rounded-md h-full w-full"
+                      disablePictureInPicture
+                    ></video>
+                  );
+
+                if (obj.type.startsWith("application"))
+                  myComponent = (
+                    <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl text-sm">
+                      <FileText></FileText>
+                      <div>{obj.filename}</div>
+                    </div>
+                  );
+
+                if (!myComponent) return <></>;
+
+                return (
+                  <div
+                    key={index}
+                    className={`relative h-12 shrink-0 ${
+                      obj.type.startsWith("application") ? "w-24" : "w-12"
+                    }`}
+                  >
+                    {myComponent}
+                    <Button
+                      className="absolute -top-1 -right-1 cursor-pointer"
+                      size={"no_style"}
+                      onClick={() => {
+                        URL.revokeObjectURL(obj.url);
+                        setFileObjects((old) =>
+                          old.filter((oldObject) => oldObject.url != obj.url)
+                        );
+
+                        const fileList = watch("files");
+
+                        if (!fileList) return;
+
+                        const dt = new DataTransfer();
+                        Array.from(fileList).forEach((file, fileIndex) => {
+                          if (fileIndex !== index) {
+                            dt.items.add(file);
+                          }
+                        });
+
+                        setValue("files", dt.files);
+                      }}
+                    >
+                      <X></X>
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
         <form
           className="relative w-full flex items-center justify-between gap-4"

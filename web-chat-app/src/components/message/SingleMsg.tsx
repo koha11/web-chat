@@ -175,27 +175,23 @@ const SingleMsg = ({
 
         {msg.type == MessageType.IMAGE &&
           MyTooltip(
-            <div className="py-2 px-3">
-              <img
-                src={msg.file?.url}
-                className={`rounded-3xl object-contain`}
-              ></img>
-            </div>,
+            <img
+              src={msg.file?.url}
+              className={`rounded-3xl object-contain`}
+            ></img>,
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[70%]"
+            "order-2 max-w-[30%]"
           )}
 
         {msg.type == MessageType.VIDEO &&
           MyTooltip(
-            <div className="py-2 px-3">
-              <ReactPlayer
-                src={msg.file?.url}
-                className={`rounded-3xl object-contain`}
-                controls
-              ></ReactPlayer>
-            </div>,
+            <ReactPlayer
+              src={msg.file?.url}
+              className={`rounded-3xl`}
+              controls
+            ></ReactPlayer>,
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[70%]"
+            "order-2 max-w-[30%]"
           )}
 
         {msg.type == MessageType.FILE &&
@@ -215,13 +211,11 @@ const SingleMsg = ({
 
         {msg.type == MessageType.AUDIO &&
           MyTooltip(
-            <div className="py-2 px-3">
-              <audio
-                src={msg.file?.url}
-                className={`rounded-3xl object-contain`}
-                controls
-              ></audio>
-            </div>,
+            <audio
+              src={msg.file?.url}
+              className={`rounded-3xl object-contain`}
+              controls
+            ></audio>,
             getDisplaySendMsgTime(new Date(msg.createdAt!)),
             "order-2 max-w-[70%]"
           )}
