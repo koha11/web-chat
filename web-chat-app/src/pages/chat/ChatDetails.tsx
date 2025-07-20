@@ -12,6 +12,7 @@ import {
   Phone,
   Play,
   Send,
+  Smile,
   Square,
   Video,
   X,
@@ -51,6 +52,7 @@ import { useMakeCall } from "../../hooks/chat.hook";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useReactMediaRecorder } from "react-media-recorder";
+import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
 const ChatDetails = ({
   chat,
@@ -84,6 +86,7 @@ const ChatDetails = ({
       type: string;
     }[]
   >([]);
+  const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   const {
     data: messagesConnection,
@@ -726,17 +729,46 @@ const ChatDetails = ({
               )}
             </div>
           ) : (
-            <Input
-              {...register("msg.msgBody")}
-              className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500"
-              placeholder="Aa"
-              onFocus={() => {
-                typeMessage({ variables: { chatId, isTyping: true } });
-              }}
-              onBlur={() => {
-                typeMessage({ variables: { chatId, isTyping: false } });
-              }}
-            ></Input>
+            <div className="flex-auto relative">
+              <Input
+                {...register("msg.msgBody")}
+                className="rounded-3xl w-full bg-gray-200 px-4 py-2 text-gray-500"
+                placeholder="Aa"
+                onFocus={() => {
+                  typeMessage({ variables: { chatId, isTyping: true } });
+                }}
+                onBlur={() => {
+                  typeMessage({ variables: { chatId, isTyping: false } });
+                }}
+              ></Input>
+              <Button
+                className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
+                variant={"no_style"}
+                type="button"
+                onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)}
+              >
+                <Smile></Smile>
+              </Button>
+              <EmojiPicker
+                open={isEmojiPickerOpen}
+                lazyLoadEmojis={true}
+                emojiStyle={EmojiStyle.FACEBOOK}
+                height={400}
+                searchDisabled
+                onEmojiClick={(emojiData) => {
+                  setValue(
+                    "msg.msgBody",
+                    watch("msg.msgBody") + emojiData.emoji
+                  );
+                }}
+                style={{
+                  position: "absolute",
+                  top: -410,
+                  right: 40,
+                  zIndex: 20,
+                }}
+              />
+            </div>
           )}
 
           <Button

@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ForwardMsgDialog from "./ForwardMsgDialog";
 import { useRemoveMessage, useUnsendMessage } from "../../hooks/message.hook";
+import EmojiPicker from "emoji-picker-react";
 
 const MessageActions = ({
   isOpen,
@@ -57,6 +58,7 @@ const MessageActions = ({
     <div
       className={`flex ${isSentMsg ? "order-1 flex-row-reverse" : "order-3"}`}
     >
+      {/* emoji btn  */}
       <Button
         size={"sm"}
         variant="link"
@@ -66,6 +68,8 @@ const MessageActions = ({
       >
         <SmileIcon></SmileIcon>
       </Button>
+
+      {/* reply BTN  */}
       <Button
         size={"sm"}
         variant="link"
@@ -76,6 +80,7 @@ const MessageActions = ({
       >
         <Reply></Reply>
       </Button>
+
       <DropdownMenu open={isOpen} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild onClick={setOpen}>
           <Button

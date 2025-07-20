@@ -1,11 +1,4 @@
-import {
-  Dock,
-  DownloadCloud,
-  FileText,
-  PackageXIcon,
-  Paperclip,
-  Reply,
-} from "lucide-react";
+import { FileText, Reply } from "lucide-react";
 import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
@@ -22,6 +15,8 @@ import { usePostMessage } from "../../hooks/message.hook";
 import ReactPlayer from "react-player";
 import MessageType from "@/enums/MessageType.enum";
 import MarkdownMessage from "@/components/message/MarkdownMessage";
+import EmojiPicker from "emoji-picker-react";
+
 const SingleMsg = ({
   isLongGap,
   isSentMsg,
