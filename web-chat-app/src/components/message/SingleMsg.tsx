@@ -16,6 +16,7 @@ import ReactPlayer from "react-player";
 import MessageType from "@/enums/MessageType.enum";
 import MarkdownMessage from "@/components/message/MarkdownMessage";
 import ReactionMsgDialog from "./ReactionMsgDialog";
+import MsgBody from "./MsgBody";
 
 const SingleMsg = ({
   isLongGap,
@@ -137,81 +138,25 @@ const SingleMsg = ({
         )}
 
         {/* Hien thi noi dung tin nhan  */}
-        {msg.type == MessageType.TEXT &&
-          (msg.status == MessageStatus.UNSEND
-            ? MyTooltip(
-                <span
-                  className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                    isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                  } ${msg.isForwarded ? "" : ""}`}
-                >
-                  {isSentMsg
-                    ? "You"
-                    : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
-                  unsend a message
-                </span>,
-                `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
-              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
-                "order-2"
-              )
-            : MyTooltip(
-                <div
-                  className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify   ${
-                    isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
-                  }`}
-                >
-                  <MarkdownMessage text={msg.msgBody!}></MarkdownMessage>
-                </div>,
-                getDisplaySendMsgTime(new Date(msg.createdAt!)),
-                "order-2 text-center max-w-[80%]"
-              ))}
-
-        {msg.type == MessageType.IMAGE &&
+        {msg.status == MessageStatus.UNSEND ? (
           MyTooltip(
-            <img
-              src={msg.file?.url}
-              className={`rounded-3xl object-contain`}
-            ></img>,
-            getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[30%]"
-          )}
-
-        {msg.type == MessageType.VIDEO &&
-          MyTooltip(
-            <ReactPlayer
-              src={msg.file?.url}
-              className={`rounded-3xl`}
-              controls
-            ></ReactPlayer>,
-            getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[30%]"
-          )}
-
-        {msg.type == MessageType.FILE &&
-          MyTooltip(
-            <a
-              href={msg.file!.url}
-              download
-              className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl"
-              target="_blank"
+            <span
+              className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+              } ${msg.isForwarded ? "" : ""}`}
             >
-              <FileText />
-              <div>{msg.file?.filename}</div>
-            </a>,
-            getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[80%]"
-          )}
-
-        {msg.type == MessageType.AUDIO &&
-          MyTooltip(
-            <audio
-              src={msg.file?.url}
-              className={`rounded-3xl object-contain`}
-              controls
-            ></audio>,
-            getDisplaySendMsgTime(new Date(msg.createdAt!)),
-            "order-2 max-w-[70%]"
-          )}
+              {isSentMsg
+                ? "You"
+                : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
+              unsend a message
+            </span>,
+            `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
+              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
+            "order-2"
+          )
+        ) : (
+          <MsgBody isSentMsg={isSentMsg} msg={msg}></MsgBody>
+        )}
 
         {/* hien thi reactions  */}
         {msg.reactions &&
