@@ -70,8 +70,7 @@ const ChatDetails = ({
   setChatInfoOpen: Function;
 }) => {
   // states
-  const [receivers, setReceivers] = useState<{ [userId: string]: IUser }>({});
-  const [sender, setSender] = useState<IUser>();
+  const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser }>({});
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isOpen, setOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
@@ -240,11 +239,10 @@ const ChatDetails = ({
       const users = chat.users as IUser[];
       let myMap = {} as { [userId: string]: IUser };
       users.forEach((user) => {
-        if (user.id != userId) myMap[user.id] = user;
+        myMap[user.id] = user;
       });
 
-      setReceivers(myMap);
-      setSender(users.find((user) => user.id == userId));
+      setUsersMap(myMap);
     }
   }, [chat]);
 
@@ -377,10 +375,12 @@ const ChatDetails = ({
                 className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: `url(${chat.chatAvatar})` }}
               ></div>
-              {Object.values(receivers).some(
-                (receiver) =>
-                  receiver.isOnline || receiver.userType == UserType.CHATBOT
-              ) && (
+              {Object.values(usersMap)
+                .filter((user) => user.id != userId)
+                .some(
+                  (receiver) =>
+                    receiver.isOnline || receiver.userType == UserType.CHATBOT
+                ) && (
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
               )}
             </div>
@@ -392,16 +392,16 @@ const ChatDetails = ({
             <div className="ml-4">
               <h1 className="font-bold">{chat.chatName}</h1>
               <div className="text-gray-500 text-[0.75rem]">
-                {receivers &&
-                  Object.keys(receivers).length > 0 &&
-                  (Object.values(receivers).some(
+                {usersMap &&
+                  Object.keys(usersMap).length > 0 &&
+                  (Object.values(usersMap).some(
                     (receiver) =>
                       receiver.isOnline || receiver.userType == UserType.CHATBOT
                   )
                     ? "Online"
                     : `Online ${getDisplayTimeDiff(
                         new Date(
-                          Object.values(receivers).sort(
+                          Object.values(usersMap).sort(
                             (a, b) =>
                               new Date(b.lastLogined ?? "").getTime() -
                               new Date(a.lastLogined ?? "").getTime()
@@ -478,15 +478,15 @@ const ChatDetails = ({
           </div>
         )}
 
-        {chat && sender && messages
+        {chat && messages
           ? messages.map((msg, index) => {
               return (
                 <GroupMsg
+                  userId={userId}
                   key={msg.timeString}
                   messages={msg.messages}
                   timeString={msg.timeString}
-                  receivers={receivers}
-                  sender={sender}
+                  usersMap={usersMap}
                   isFirstGroup={index == 0}
                   handleReplyMsg={handleReplyMsg}
                 ></GroupMsg>
@@ -516,7 +516,7 @@ const ChatDetails = ({
               <div className="py-1 space-y-2">
                 <div className="font-semibold">
                   Replying to{" "}
-                  {receivers[
+                  {usersMap[
                     (watch("msg.replyForMsg") as IMessage).user.toString()
                   ]?.fullname ?? "yourself"}
                 </div>

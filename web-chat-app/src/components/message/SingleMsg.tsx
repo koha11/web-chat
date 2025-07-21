@@ -22,20 +22,20 @@ const SingleMsg = ({
   isSentMsg,
   msgSenderAvatar,
   msg,
-  senderId,
+  userId,
   isFirstMsg,
   seenList,
   handleReplyMsg,
-  receivers,
+  usersMap,
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
   isLongGap: boolean;
-  senderId: string;
+  userId: string;
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: IUser[];
-  receivers: { [userId: string]: IUser };
+  usersMap: { [userId: string]: IUser };
   handleReplyMsg: (msg: IMessage) => void;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
@@ -57,12 +57,11 @@ const SingleMsg = ({
         >
           <div className={`flex gap-2 mb-7`}>
             <Reply size={"14"}></Reply>{" "}
-            {isSentMsg ? "You" : receivers[msg.user.toString()].fullname}{" "}
-            replied to{" "}
-            {receivers[(msg.replyForMsg as IMessage).user.toString()] !=
+            {isSentMsg ? "You" : usersMap[msg.user.toString()].fullname} replied
+            to{" "}
+            {usersMap[(msg.replyForMsg as IMessage).user.toString()] !=
             undefined
-              ? receivers[(msg.replyForMsg as IMessage).user.toString()]
-                  .fullname
+              ? usersMap[(msg.replyForMsg as IMessage).user.toString()].fullname
               : "yourself"}
           </div>
           <div
@@ -84,7 +83,7 @@ const SingleMsg = ({
         >
           <div className={`flex gap-2 mb-1`}>
             <Reply size={"14"}></Reply>
-            {!isSentMsg ? receivers[msg.user.toString()].fullname : "You"}{" "}
+            {!isSentMsg ? usersMap[msg.user.toString()].fullname : "You"}{" "}
             forwarded a message
           </div>
         </div>
@@ -110,7 +109,7 @@ const SingleMsg = ({
               className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
               style={{ backgroundImage: `url(${msgSenderAvatar})` }}
             ></div>,
-            receivers[msg.user.toString()].fullname,
+            usersMap[msg.user.toString()].fullname,
             "order-1"
           )
         )}
@@ -127,7 +126,7 @@ const SingleMsg = ({
             handleSendMsg={(chatId: string) => {
               postMessage({
                 variables: {
-                  user: senderId,
+                  user: userId,
                   msgBody: msg.msgBody,
                   isForwarded: true,
                   chatId,
@@ -148,9 +147,7 @@ const SingleMsg = ({
                 >
                   {isSentMsg
                     ? "You"
-                    : receivers[msg.user.toString()].fullname.split(
-                        " "
-                      )[0]}{" "}
+                    : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
                   unsend a message
                 </span>,
                 `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
@@ -220,7 +217,7 @@ const SingleMsg = ({
         {msg.reactions &&
           Object.keys(msg.reactions).map((userId) => {
             const reaction = msg.reactions![userId];
-            const fullname = userId;
+            const fullname = usersMap[userId].fullname;
 
             return MyTooltip(
               <span onClick={() => setReactionDialogOpen(true)}>
@@ -261,12 +258,13 @@ const SingleMsg = ({
                 )
               )))}
       </div>
-      
+
       {msg.reactions && (
         <ReactionMsgDialog
           reactions={msg.reactions}
           isOpen={isReactionDialogOpen}
           setOpen={setReactionDialogOpen}
+          usersMap={usersMap}
         ></ReactionMsgDialog>
       )}
     </div>

@@ -62,9 +62,7 @@ const ChatRow = ({
             e.preventDefault();
             return;
           }
-          console.log(isOpen);
 
-          // setMsgLoading(true);
         }}
       >
         <div

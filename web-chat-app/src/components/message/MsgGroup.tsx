@@ -8,22 +8,22 @@ import {
 import SingleMsg from "./SingleMsg";
 
 const GroupMsg = ({
+  userId,
   messages,
   timeString,
-  receivers,
-  sender,
+  usersMap,
   isFirstGroup,
   handleReplyMsg,
 }: {
+  userId: string;
   messages: IMessage[];
   timeString: string;
-  sender: IUser;
-  receivers: { [userId: string]: IUser };
+  usersMap: { [userId: string]: IUser };
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
 }) => {
   const isGroupMsgHidden =
-    messages.filter((msg) => !msg.isHiddenFor?.includes(sender.id)).length == 0;
+    messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0;
 
   if (isGroupMsgHidden) return;
 
@@ -34,14 +34,14 @@ const GroupMsg = ({
       </div>
       <div className="flex flex-col-reverse gap-2">
         {messages.map((msg, index) => {
-          const isRemovedMsg = msg.isHiddenFor?.includes(sender.id);
+          const isRemovedMsg = msg.isHiddenFor?.includes(userId);
 
           if (isRemovedMsg) return <></>;
 
-          const receiver = receivers[msg.user.toString()];
+          const user = usersMap[msg.user.toString()];
 
-          const seenList = Object.values(receivers).filter((receiver) =>
-            Object.keys(msg.seenList).includes(receiver.id)
+          const seenList = Object.values(usersMap).filter((user) =>
+            Object.keys(msg.seenList).includes(user.id)
           );
 
           const isLongGap =
@@ -55,24 +55,24 @@ const GroupMsg = ({
           let msgSenderAvatar;
 
           if (
-            receiver &&
-            ((index > 0 && messages[index - 1].user != receiver.id) ||
-              index == 0)
+            msg.user != userId &&
+            user &&
+            ((index > 0 && messages[index - 1].user != user.id) || index == 0)
           )
-            msgSenderAvatar = receiver.avatar ?? "";
+            msgSenderAvatar = user.avatar ?? "";
           else msgSenderAvatar = "";
 
           return (
             <SingleMsg
-              key={msg.id}
+              key={msg.id}  
               msg={msg}
-              isSentMsg={msg.user == sender.id}
-              senderId={sender.id}
+              isSentMsg={msg.user == userId}
+              userId={userId}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
               seenList={seenList}
-              receivers={receivers}
+              usersMap={usersMap}
               handleReplyMsg={handleReplyMsg}
             ></SingleMsg>
           );
