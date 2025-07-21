@@ -51,13 +51,8 @@ const ChatInput = ({
   // states
   const [isAudioRecording, setAudioRecording] = useState(false);
   const [isAudioPlayed, setAudioPlayed] = useState(false);
-  const [fileObjects, setFileObjects] = useState<
-    {
-      url: string;
-      filename: string;
-      file: File;
-      type: string;
-    }[]
+  const [fileBlobUrls, setFileBlobUrls] = useState<
+    { url: string; type: string }[]
   >([]);
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
@@ -82,20 +77,20 @@ const ChatInput = ({
     const files = watch("files");
 
     if (files) {
-      let myfileObjects = [] as any[];
+      let myFileBlobUrls = [] as any[];
+
       for (let file of files) {
-        myfileObjects.push({
-          url: URL.createObjectURL(file),
-          file,
-          filename: file.name,
-          type: file.type,
-        });
-      }
-      setFileObjects((old) => [...old, ...myfileObjects]);
-    } else setFileObjects([]);
+        if (!file.type.startsWith("audio"))
+          myFileBlobUrls.push({
+            url: URL.createObjectURL(file),
+            type: file.type,
+          });
+      }      
+
+      setFileBlobUrls(myFileBlobUrls);
+    } else setFileBlobUrls([]);
   }, [watch("files")]);
 
-  //
   useEffect(() => {
     if (audioStatus == "stopped") {
       fetch(mediaBlobUrl!)
@@ -187,80 +182,81 @@ const ChatInput = ({
         </Collapsible>
       )}
 
-      {fileObjects.length > 0 &&
-        !fileObjects.some((obj) => obj.type.startsWith("audio")) && (
-          <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
-            <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
-              <ImagePlus></ImagePlus>
-            </div>
-            {fileObjects.map((obj, index) => {
-              let myComponent;
+      {fileBlobUrls.length > 0 && (
+        <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
+          <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
+            <ImagePlus></ImagePlus>
+          </div>
 
-              if (obj.type.startsWith("image"))
-                myComponent = (
-                  <img
-                    src={obj.url}
-                    className="object-cover rounded-md h-full w-full"
-                  ></img>
-                );
+          {fileBlobUrls.map(({ url, type }, index) => {
+            let myComponent;
 
-              if (obj.type.startsWith("video"))
-                myComponent = (
-                  <video
-                    src={obj.url}
-                    className="object-cover rounded-md h-full w-full"
-                    disablePictureInPicture
-                  ></video>
-                );
+            if (type.startsWith("image"))
+              myComponent = (
+                <img
+                  src={url}
+                  className="object-cover rounded-md h-full w-full"
+                ></img>
+              );
 
-              if (obj.type.startsWith("application"))
-                myComponent = (
-                  <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl text-sm">
-                    <FileText></FileText>
-                    <div>{obj.filename}</div>
-                  </div>
-                );
+            if (type.startsWith("video"))
+              myComponent = (
+                <video
+                  src={url}
+                  className="object-cover rounded-md h-full w-full"
+                  disablePictureInPicture
+                ></video>
+              );
 
-              if (!myComponent) return <></>;
-
-              return (
-                <div
-                  key={index}
-                  className={`relative h-12 shrink-0 ${
-                    obj.type.startsWith("application") ? "w-24" : "w-12"
-                  }`}
-                >
-                  {myComponent}
-                  <Button
-                    className="absolute -top-1 -right-1 cursor-pointer"
-                    size={"no_style"}
-                    onClick={() => {
-                      URL.revokeObjectURL(obj.url);
-                      setFileObjects((old) =>
-                        old.filter((oldObject) => oldObject.url != obj.url)
-                      );
-
-                      const fileList = watch("files");
-
-                      if (!fileList) return;
-
-                      const dt = new DataTransfer();
-                      Array.from(fileList).forEach((file, fileIndex) => {
-                        if (fileIndex !== index) {
-                          dt.items.add(file);
-                        }
-                      });
-
-                      setValue("files", dt.files);
-                    }}
-                  >
-                    <X></X>
-                  </Button>
+            if (type.startsWith("application"))
+              myComponent = (
+                <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl text-sm">
+                  <FileText></FileText>
+                  <div>{url}</div>
                 </div>
               );
-            })}
-          </div>
-        )}
+
+            if (!myComponent) return <></>;
+
+            return (
+              <div
+                key={index}
+                className={`relative h-12 shrink-0 ${
+                  type.startsWith("application") ? "w-24" : "w-12"
+                }`}
+              >
+                {myComponent}
+                <Button
+                  className="absolute -top-1 -right-1 cursor-pointer"
+                  size={"no_style"}
+                  onClick={() => {
+                    URL.revokeObjectURL(url);
+
+                    setFileBlobUrls((old) =>
+                      old.filter(({ url: oldUrl }) => oldUrl != url)
+                    );
+
+                    const fileList = watch("files");
+
+                    if (!fileList) return;
+
+                    const dt = new DataTransfer();
+                    Array.from(fileList).forEach((file, fileIndex) => {
+                      if (fileIndex !== index) {
+                        dt.items.add(file);
+                      }
+                    });
+
+                    setValue("files", dt.files);
+                  }}
+                >
+                  <X></X>
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <form
         className="relative w-full flex items-center justify-between gap-4"
@@ -341,6 +337,20 @@ const ChatInput = ({
                 type="button"
                 onClick={async () => {
                   stopRecording();
+
+                  const blob = await fetch(mediaBlobUrl!).then((res) =>
+                    res.blob()
+                  );
+
+                  const file = new File([blob], `${userId}.voice.${chat.id}`, {
+                    type: blob.type,
+                  });
+
+                  const dataTransfer = new DataTransfer();
+
+                  dataTransfer.items.add(file);
+
+                  setValue("files", dataTransfer.files);
                 }}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
               >
@@ -385,6 +395,7 @@ const ChatInput = ({
                 });
               }}
             ></Input>
+            
             <Button
               className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
               variant={"no_style"}
@@ -393,6 +404,7 @@ const ChatInput = ({
             >
               <Smile></Smile>
             </Button>
+
             <EmojiPicker
               open={isEmojiPickerOpen}
               lazyLoadEmojis={true}

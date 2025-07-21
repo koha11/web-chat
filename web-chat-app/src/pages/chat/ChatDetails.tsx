@@ -72,7 +72,9 @@ const ChatDetails = ({
   setChatInfoOpen: Function;
 }) => {
   // states
-  const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser }>({});
+  const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser } | null>(
+    null
+  );
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
@@ -313,7 +315,7 @@ const ChatDetails = ({
           </div>
         )}
 
-        {chat && messages
+        {chat && usersMap && messages
           ? messages.map((msg, index) => {
               return (
                 <GroupMsg
