@@ -36,6 +36,7 @@ const Chat = () => {
           isLastMsgLoading={isLastMsgLoading}
           userId={userId!}
         ></ChatList>
+        
         {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (

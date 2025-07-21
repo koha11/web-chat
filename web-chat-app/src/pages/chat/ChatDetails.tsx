@@ -53,6 +53,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useReactMediaRecorder } from "react-media-recorder";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
+import ChatHeader from "./ChatHeader";
 
 const ChatDetails = ({
   chat,
@@ -102,7 +103,6 @@ const ChatDetails = ({
   const [postMessage] = usePostMessage({ first: 20 });
   const [postMediaMessage] = usePostMediaMessage({ first: 20 });
 
-  const [makeCall] = useMakeCall();
   const [typeMessage] = useTypeMessage();
 
   // useForm
@@ -131,6 +131,7 @@ const ChatDetails = ({
   // useEffect
   useEffect(() => {
     if (messagesConnection) {
+      // convert tung single msg thanh 1 group theo time string
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
         (acc, edge) => {
           const msg = edge.node;
@@ -158,6 +159,7 @@ const ChatDetails = ({
       setMessages(grouped);
       setFetchMore(false);
 
+      // lang msg dc gui den
       const unsubscribeMsgAdded = subscribeToMore({
         document: MESSAGE_CHANGED_SUB,
         variables: { chatId: chatId },
@@ -182,6 +184,7 @@ const ChatDetails = ({
         },
       });
 
+      // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
         variables: { chatId: chatId },
@@ -204,6 +207,7 @@ const ChatDetails = ({
         },
       });
 
+      // lang nghe hanh vi nhap tin nhan
       const unsubscribeMsgTyping = subscribeToMore({
         document: MESSAGE_TYPING_SUB,
         variables: { chatId: chatId },
@@ -235,9 +239,11 @@ const ChatDetails = ({
   }, [messagesConnection, subscribeToMore]);
 
   useEffect(() => {
-    if (chat && typeof chat.users == "object") {
+    if (chat) {
       const users = chat.users as IUser[];
+      
       let myMap = {} as { [userId: string]: IUser };
+
       users.forEach((user) => {
         myMap[user.id] = user;
       });
@@ -367,91 +373,11 @@ const ChatDetails = ({
       className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
-      <div className="container flex items-center justify-between h-[10%]">
-        <div className="flex items-center">
-          {chat && !isMsgLoading ? (
-            <div className="relative">
-              <div
-                className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
-                style={{ backgroundImage: `url(${chat.chatAvatar})` }}
-              ></div>
-              {Object.values(usersMap)
-                .filter((user) => user.id != userId)
-                .some(
-                  (receiver) =>
-                    receiver.isOnline || receiver.userType == UserType.CHATBOT
-                ) && (
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-              )}
-            </div>
-          ) : (
-            <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
-          )}
-
-          {chat && !isMsgLoading ? (
-            <div className="ml-4">
-              <h1 className="font-bold">{chat.chatName}</h1>
-              <div className="text-gray-500 text-[0.75rem]">
-                {usersMap &&
-                  Object.keys(usersMap).length > 0 &&
-                  (Object.values(usersMap).some(
-                    (receiver) =>
-                      receiver.isOnline || receiver.userType == UserType.CHATBOT
-                  )
-                    ? "Online"
-                    : `Online ${getDisplayTimeDiff(
-                        new Date(
-                          Object.values(usersMap).sort(
-                            (a, b) =>
-                              new Date(b.lastLogined ?? "").getTime() -
-                              new Date(a.lastLogined ?? "").getTime()
-                          )[0].lastLogined ?? ""
-                        )
-                      )} ago`)}
-              </div>
-            </div>
-          ) : (
-            <div className="ml-4 space-y-2">
-              <Skeleton className="h-4 w-[240px]"></Skeleton>
-              <Skeleton className="h-4 w-[120px]"></Skeleton>
-            </div>
-          )}
-        </div>
-        <div className="text-2xl flex items-center gap-4 ">
-          <Button
-            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-            onClick={() => {
-              makeCall({ variables: { chatId, hasVideo: false } });
-              window.open(
-                `/call?has_video=false&initialize_video=false&room_id=${chatId}`,
-                "_blank",
-                "width=1300,height=600,location=no,toolbar=no"
-              );
-            }}
-          >
-            <Phone></Phone>
-          </Button>
-          <Button
-            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-            onClick={() => {
-              makeCall({ variables: { chatId, hasVideo: true } });
-              window.open(
-                `/call?has_video=true&initialize_video=true&room_id=${chatId}`,
-                "_blank",
-                "width=1300,height=600,location=no,toolbar=no"
-              );
-            }}
-          >
-            <Video></Video>
-          </Button>
-          <Button
-            className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-            onClick={() => setChatInfoOpen()}
-          >
-            <MoreHorizontal></MoreHorizontal>
-          </Button>
-        </div>
-      </div>
+      <ChatHeader
+        chat={chat}
+        isMsgLoading={isMsgLoading}
+        setChatInfoOpen={setChatInfoOpen}
+      ></ChatHeader>
 
       <div
         className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
