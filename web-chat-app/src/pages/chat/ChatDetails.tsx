@@ -54,6 +54,7 @@ import { Label } from "@/components/ui/label";
 import { useReactMediaRecorder } from "react-media-recorder";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import ChatHeader from "./ChatHeader";
+import ChatInput from "./ChatInput";
 
 const ChatDetails = ({
   chat,
@@ -73,20 +74,9 @@ const ChatDetails = ({
   // states
   const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser }>({});
   const [messages, setMessages] = useState<IMessageGroup[]>();
-  const [isOpen, setOpen] = useState(false);
+  const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
-  const [isAudioRecording, setAudioRecording] = useState(false);
-  const [isAudioPlayed, setAudioPlayed] = useState(false);
-  const [fileObjects, setFileObjects] = useState<
-    {
-      url: string;
-      filename: string;
-      file: File;
-      type: string;
-    }[]
-  >([]);
-  const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   const {
     data: messagesConnection,
@@ -100,13 +90,8 @@ const ChatDetails = ({
     after: undefined,
   });
 
-  const [postMessage] = usePostMessage({ first: 20 });
-  const [postMediaMessage] = usePostMediaMessage({ first: 20 });
-
-  const [typeMessage] = useTypeMessage();
-
   // useForm
-  const { register, handleSubmit, resetField, setValue, watch } = useForm<{
+  const msgForm = useForm<{
     msg: IMessage;
     files?: FileList;
   }>({
@@ -117,18 +102,11 @@ const ChatDetails = ({
     },
   });
 
-  const {
-    status: audioStatus,
-    startRecording,
-    stopRecording,
-    mediaBlobUrl,
-    clearBlobUrl,
-  } = useReactMediaRecorder({ video: false });
-
   const msgsContainerRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   // useEffect
+
+  // tien xu ly du lieu cho msg va lang nghe cac event socket cua msg
   useEffect(() => {
     if (messagesConnection) {
       // convert tung single msg thanh 1 group theo time string
@@ -238,10 +216,11 @@ const ChatDetails = ({
     }
   }, [messagesConnection, subscribeToMore]);
 
+  // set usersMap
   useEffect(() => {
     if (chat) {
       const users = chat.users as IUser[];
-      
+
       let myMap = {} as { [userId: string]: IUser };
 
       users.forEach((user) => {
@@ -252,6 +231,7 @@ const ChatDetails = ({
     }
   }, [chat]);
 
+  // refetch lai msg neu can thiet
   useEffect(() => {
     if (hasUpdated) {
       refetchMessages();
@@ -261,81 +241,10 @@ const ChatDetails = ({
     }
   }, [chatId]);
 
-  useEffect(() => {
-    const files = watch("files");
-
-    if (files) {
-      let myfileObjects = [] as any[];
-      for (let file of files) {
-        myfileObjects.push({
-          url: URL.createObjectURL(file),
-          file,
-          filename: file.name,
-          type: file.type,
-        });
-      }
-      setFileObjects((old) => [...old, ...myfileObjects]);
-    } else setFileObjects([]);
-  }, [watch("files")]);
-
-  useEffect(() => {
-    if (audioStatus == "stopped") {
-      fetch(mediaBlobUrl!)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const file = new File([blob], `${userId}.voice.${chatId}`, {
-            type: blob.type,
-          });
-
-          const dataTransfer = new DataTransfer();
-
-          dataTransfer.items.add(file);
-
-          setValue("files", dataTransfer.files);
-        });
-    }
-  }, [audioStatus]);
-
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
-    setValue("msg.replyForMsg", msg);
-    setOpen(true);
-  };
-
-  const handleSendMessage = async ({
-    chatId,
-    msgBody,
-    replyForMsg,
-    isForwarded,
-    files,
-  }: {
-    msgBody?: string;
-    chatId: string;
-    replyForMsg?: string;
-    isForwarded?: boolean;
-    files?: FileList;
-  }) => {
-    const fileArr = files ? Array.from(files) : undefined;
-
-    if (fileArr)
-      await postMediaMessage({
-        variables: {
-          chatId,
-          replyForMsg,
-          isForwarded,
-          files: fileArr,
-        },
-      });
-
-    if (msgBody)
-      await postMessage({
-        variables: {
-          chatId,
-          msgBody,
-          replyForMsg,
-          isForwarded,
-        },
-      });
+    msgForm.setValue("msg.replyForMsg", msg);
+    setReplyMsgOpen(true);
   };
 
   const handleLoadMoreMessages = () => {
@@ -435,280 +344,14 @@ const ChatDetails = ({
         )}
       </div>
 
-      <div className="container min-h-[5%] flex items-center flex-col py-2">
-        {watch("msg.replyForMsg") != undefined && (
-          <Collapsible open={isOpen} onOpenChange={setOpen} className="w-full">
-            <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2 w-full">
-              <div className="py-1 space-y-2">
-                <div className="font-semibold">
-                  Replying to{" "}
-                  {usersMap[
-                    (watch("msg.replyForMsg") as IMessage).user.toString()
-                  ]?.fullname ?? "yourself"}
-                </div>
-                <div className="text-[0.7rem]">
-                  {(watch("msg.replyForMsg") as IMessage).msgBody}
-                </div>
-              </div>
-              <Button
-                variant={"outline"}
-                className="h-6 w-4 rounded-full cursor-pointer border-0"
-                onClick={() => {
-                  setOpen(false);
-                  resetField("msg.replyForMsg");
-                }}
-              >
-                <X></X>
-              </Button>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-
-        {fileObjects.length > 0 &&
-          !fileObjects.some((obj) => obj.type.startsWith("audio")) && (
-            <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
-              <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
-                <ImagePlus></ImagePlus>
-              </div>
-              {fileObjects.map((obj, index) => {
-                let myComponent;
-
-                if (obj.type.startsWith("image"))
-                  myComponent = (
-                    <img
-                      src={obj.url}
-                      className="object-cover rounded-md h-full w-full"
-                    ></img>
-                  );
-
-                if (obj.type.startsWith("video"))
-                  myComponent = (
-                    <video
-                      src={obj.url}
-                      className="object-cover rounded-md h-full w-full"
-                      disablePictureInPicture
-                    ></video>
-                  );
-
-                if (obj.type.startsWith("application"))
-                  myComponent = (
-                    <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl text-sm">
-                      <FileText></FileText>
-                      <div>{obj.filename}</div>
-                    </div>
-                  );
-
-                if (!myComponent) return <></>;
-
-                return (
-                  <div
-                    key={index}
-                    className={`relative h-12 shrink-0 ${
-                      obj.type.startsWith("application") ? "w-24" : "w-12"
-                    }`}
-                  >
-                    {myComponent}
-                    <Button
-                      className="absolute -top-1 -right-1 cursor-pointer"
-                      size={"no_style"}
-                      onClick={() => {
-                        URL.revokeObjectURL(obj.url);
-                        setFileObjects((old) =>
-                          old.filter((oldObject) => oldObject.url != obj.url)
-                        );
-
-                        const fileList = watch("files");
-
-                        if (!fileList) return;
-
-                        const dt = new DataTransfer();
-                        Array.from(fileList).forEach((file, fileIndex) => {
-                          if (fileIndex !== index) {
-                            dt.items.add(file);
-                          }
-                        });
-
-                        setValue("files", dt.files);
-                      }}
-                    >
-                      <X></X>
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-        <form
-          className="relative w-full flex items-center justify-between gap-4"
-          autoComplete="off"
-          onSubmit={handleSubmit(async ({ msg, files }) => {
-            if (files?.length) {
-              for (let file of files) if (file.size > 10_000_000) return;
-            }
-
-            if (
-              chat != undefined &&
-              (msg.msgBody != "" || (files && files.length))
-            ) {
-              await handleSendMessage({
-                msgBody: msg.msgBody,
-                chatId,
-                replyForMsg: msg.replyForMsg
-                  ? (msg.replyForMsg as IMessage).id
-                  : undefined,
-                files: files?.length == 0 ? undefined : files,
-              });
-
-              resetField("msg.msgBody");
-              resetField("msg.replyForMsg");
-              resetField("files");
-
-              setAudioRecording(false);
-              setOpen(false);
-            }
-          })}
-        >
-          <Label
-            htmlFor="uploaded-image"
-            className="rounded-full cursor-pointer"
-          >
-            <Image></Image>
-          </Label>
-
-          {isAudioRecording ? (
-            <Button
-              className="rounded-full cursor-pointer"
-              variant={"outline"}
-              type="button"
-              onClick={() => {
-                stopRecording();
-                clearBlobUrl();
-                resetField("files");
-                setAudioRecording(false);
-              }}
-            >
-              <X></X>
-            </Button>
-          ) : (
-            <Button
-              className="rounded-full cursor-pointer"
-              variant={"outline"}
-              type="button"
-              onClick={() => {
-                startRecording();
-                setAudioRecording(true);
-              }}
-            >
-              <Mic></Mic>
-            </Button>
-          )}
-
-          <Input
-            id="uploaded-image"
-            type="file"
-            hidden
-            multiple={true}
-            {...register("files")}
-          ></Input>
-
-          {isAudioRecording ? (
-            <div className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500 relative">
-              <audio
-                className="w-full"
-                ref={audioRef}
-                src={mediaBlobUrl}
-              ></audio>
-
-              {audioStatus != "stopped" ? (
-                <Button
-                  type="button"
-                  onClick={async () => {
-                    stopRecording();
-                  }}
-                  className="absolute top-[50%] -translate-y-[50%] left-2"
-                >
-                  <Square />
-                </Button>
-              ) : !isAudioPlayed ? (
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setAudioPlayed(true);
-                    audioRef.current?.play();
-                  }}
-                  className="absolute top-[50%] -translate-y-[50%] left-2"
-                >
-                  <Play />
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={() => {
-                    audioRef.current?.pause();
-                    setAudioPlayed(false);
-                  }}
-                  className="absolute top-[50%] -translate-y-[50%] left-2"
-                >
-                  <Pause />
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="flex-auto relative">
-              <Input
-                {...register("msg.msgBody")}
-                className="rounded-3xl w-full bg-gray-200 px-4 py-2 text-gray-500"
-                placeholder="Aa"
-                onFocus={() => {
-                  typeMessage({ variables: { chatId, isTyping: true } });
-                }}
-                onBlur={() => {
-                  typeMessage({ variables: { chatId, isTyping: false } });
-                }}
-              ></Input>
-              <Button
-                className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
-                variant={"no_style"}
-                type="button"
-                onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)}
-              >
-                <Smile></Smile>
-              </Button>
-              <EmojiPicker
-                open={isEmojiPickerOpen}
-                lazyLoadEmojis={true}
-                emojiStyle={EmojiStyle.FACEBOOK}
-                height={400}
-                searchDisabled
-                onEmojiClick={(emojiData) => {
-                  setValue(
-                    "msg.msgBody",
-                    watch("msg.msgBody") + emojiData.emoji
-                  );
-                }}
-                style={{
-                  position: "absolute",
-                  top: -410,
-                  right: 40,
-                  zIndex: 20,
-                }}
-              />
-            </div>
-          )}
-
-          <Button
-            className="rounded-full cursor-pointer"
-            variant={"secondary"}
-            type="submit"
-          >
-            <Send></Send>
-          </Button>
-          <Button className="rounded-full cursor-pointer" variant={"secondary"}>
-            <Hand></Hand>
-          </Button>
-        </form>
-      </div>
+      {chat && (
+        <ChatInput
+          form={msgForm}
+          chat={chat}
+          isReplyMsgOpen={isReplyMsgOpen}
+          setReplyMsgOpen={setReplyMsgOpen}
+        ></ChatInput>
+      )}
     </section>
   );
 };
