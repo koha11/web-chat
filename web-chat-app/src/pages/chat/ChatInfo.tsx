@@ -65,7 +65,7 @@ const ChatInfo = ({
 
       <CollapsibleChatInfo></CollapsibleChatInfo>
       <CollapsibleChatConfig chat={chat}></CollapsibleChatConfig>
-      {isGroupChat && <CollapsibleChatMembers></CollapsibleChatMembers>}
+      {isGroupChat && <CollapsibleChatMembers chat={chat}></CollapsibleChatMembers>}
       <CollapsibleChatMedia></CollapsibleChatMedia>
       <CollapsibleChatPrivacy></CollapsibleChatPrivacy>
     </section>
