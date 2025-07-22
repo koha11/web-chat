@@ -12,17 +12,21 @@ const MyCollapsible = ({
   data,
 }: {
   title: string;
-  data: { content: ReactNode; onClick: Function; dialog?: ReactNode }[];
+  data: { content: ReactNode; onClick: Function; dialog?: ReactNode; hidden?: boolean }[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
+  
   return (
     <Collapsible className="w-full" open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="hover:bg-gray-200 flex items-center justify-between w-full rounded-md cursor-pointer px-2 py-3 font-bold">
-        <span>{title}</span>
+        <div className="text-left">{title}</div>
         {open ? <ChevronUp></ChevronUp> : <ChevronDown></ChevronDown>}
       </CollapsibleTrigger>
       <CollapsibleContent>
         {data.map((row) => {
+          if(row.hidden)
+            return <></>
+
           return (
             <>
               <Button

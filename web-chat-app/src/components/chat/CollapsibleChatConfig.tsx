@@ -8,6 +8,8 @@ import ChangeChatAvatarDialog from "./ChangeChatAvatarDialog";
 import ChangeChatNameDialog from "./ChangeChatNameDialog";
 
 const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
+  const isGroupChat = chat.users.length > 2;
+
   const [isChangeNicknamesOpen, setChangeNicknamesOpen] = useState(false);
   const [isChangeChatAvatarOpen, setChangeChatAvatarOpen] = useState(false);
   const [isChangeChatNameOpen, setChangeChatNameOpen] = useState(false);
@@ -32,6 +34,7 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
               chat={chat}
             ></ChangeChatNameDialog>
           ),
+          hidden: !isGroupChat,
         },
         {
           content: (
@@ -50,6 +53,7 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
               chat={chat}
             ></ChangeChatAvatarDialog>
           ),
+          hidden: !isGroupChat,
         },
         {
           content: (

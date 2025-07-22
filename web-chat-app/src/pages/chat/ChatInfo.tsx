@@ -21,6 +21,7 @@ const ChatInfo = ({
   if (!chat) return <></>;
 
   const receivers = (chat.users as IUser[]).filter((user) => user.id != userId);
+  const isGroupChat = chat.users.length > 2;
 
   return (
     <section
@@ -64,7 +65,7 @@ const ChatInfo = ({
 
       <CollapsibleChatInfo></CollapsibleChatInfo>
       <CollapsibleChatConfig chat={chat}></CollapsibleChatConfig>
-      <CollapsibleChatMembers></CollapsibleChatMembers>
+      {isGroupChat && <CollapsibleChatMembers></CollapsibleChatMembers>}
       <CollapsibleChatMedia></CollapsibleChatMedia>
       <CollapsibleChatPrivacy></CollapsibleChatPrivacy>
     </section>
