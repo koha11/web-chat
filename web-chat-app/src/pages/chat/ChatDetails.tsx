@@ -1,25 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
-import {
-  FileText,
-  Hand,
-  Image,
-  ImagePlus,
-  Mic,
-  MoreHorizontal,
-  Pause,
-  Phone,
-  Play,
-  Send,
-  Smile,
-  Square,
-  Video,
-  X,
-} from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
-  getDisplayTimeDiff,
   getTimeDiff,
   TimeTypeOption,
 } from "../../utils/messageTime.helper";
@@ -27,15 +10,7 @@ import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
 import {
-  Collapsible,
-  CollapsibleContent,
-} from "../../components/ui/collapsible";
-import { Button } from "../../components/ui/button";
-import {
   useGetMessages,
-  usePostMediaMessage,
-  usePostMessage,
-  useTypeMessage,
 } from "../../hooks/message.hook";
 import {
   MESSAGE_ADDED_SUB,
@@ -47,12 +22,6 @@ import IModelConnection, {
   Edge,
 } from "../../interfaces/modelConnection.interface";
 import { TypingIndicator } from "../../components/ui/typing-indicator";
-import UserType from "../../enums/UserType.enum";
-import { useMakeCall } from "../../hooks/chat.hook";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useReactMediaRecorder } from "react-media-recorder";
-import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 

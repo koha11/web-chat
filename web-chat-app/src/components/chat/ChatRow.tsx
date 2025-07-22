@@ -62,7 +62,6 @@ const ChatRow = ({
             e.preventDefault();
             return;
           }
-
         }}
       >
         <div
@@ -71,7 +70,7 @@ const ChatRow = ({
         ></div>
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
-          <div className="text-gray-500 text-[0.75rem] flex items-center w-full">
+          <div className="text-gray-500 text-[0.75rem] flex items-center w-full  text-nowrap">
             {isLastMsgLoading && (
               <Skeleton className="w-[180px] h-4"></Skeleton>
             )}
