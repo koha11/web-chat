@@ -1,6 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 
 import "./App.css";
+import "./embla.css";
 import router from "./routes";
 
 function App() {
