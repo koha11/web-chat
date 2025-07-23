@@ -11,7 +11,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { title } from "process";
 import { Input } from "@/components/ui/input";
 import EmblaCarousel from "@/components/carousel/EmblaCarousel";
 
@@ -71,19 +70,6 @@ const ChatList = ({
           </Link>
         </div>
       </div>
-
-      {/* <div className="flex items-center px-2">
-        <form action="" className="relative w-full">
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
-            placeholder="Tìm kiếm đoạn chat"
-          ></input>
-          <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
-        </form>
-      </div> */}
 
       <Collapsible className="py-2" open={isOpen} onOpenChange={setOpen}>
         <CollapsibleTrigger className=" flex items-center justify-between w-full rounded-md cursor-pointer font-bold">
