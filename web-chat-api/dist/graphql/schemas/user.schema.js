@@ -34,5 +34,6 @@ export const userTypeDefs = gql `
 
   extend type Mutation {
     postUser(userId: ID): User
+    uploadUserAvatar(file: Upload!): String
   }
 `;

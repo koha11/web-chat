@@ -23,13 +23,13 @@ export const contactTypeDefs = gql `
   }
 
   extend type Query {
-    contacts(userId: ID, after: ID, first: Int = 10): ContactConnection!
+    contacts(after: ID, first: Int = 10): ContactConnection!
   }
 
   extend type Mutation {
     postContact(contactId: ID): Contact
-    sendRequest(userId: ID!): User
-    handleRequest(contactId: ID!, isAccepted: Boolean!): Boolean
+    sendRequest(userId: ID!): Contact
+    handleRequest(userId: ID!, isAccepted: Boolean!): Contact
     removeConnect(userId: ID!): Contact
   }
 `;

@@ -1,4 +1,4 @@
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, } from "../config/env.js";
+import { DEFAULT_CLIENT_URL, DEFAULT_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, } from "../config/env.js";
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
@@ -6,7 +6,7 @@ import authService from "../services/AuthService.js";
 import User from "../models/User.model.js";
 import userService from "../services/UserService.js";
 const authRouter = Router();
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, "http://localhost:3000/auth/google/callback");
+const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, `${DEFAULT_URL}/auth/google/callback`);
 // Redirect to Google
 authRouter.get("/google", (req, res) => {
     const url = oauth2Client.generateAuthUrl({
@@ -25,12 +25,13 @@ authRouter.get("/google/callback", async (req, res) => {
     });
     const userInfo = await oauth2.userinfo.get();
     const userInfoData = userInfo.data;
-    // Create your user or find in DB
     let user = await User.findOne({ ggid: userInfoData.id });
     if (!user) {
         user = await userService.createNewUser({
             fullname: userInfoData.name ?? "",
             username: userInfoData.email ?? "",
+            avatar: userInfoData.picture ?? undefined,
+            ggid: userInfoData.id ?? undefined,
         });
     }
     const token = authService.createToken({
@@ -39,6 +40,11 @@ authRouter.get("/google/callback", async (req, res) => {
         username: user.username,
     });
     // Send token to frontend
-    res.redirect(`http://localhost:5173/login-success?accessToken=${token}&userId=${user.id}`);
+    res.redirect(`${DEFAULT_CLIENT_URL}/login-success?accessToken=${token}&userId=${user.id}`);
+});
+authRouter.get("/verify-email", async (req, res) => {
+    const { token } = req.query;
+    await authService.verifyEmail(token);
+    res.redirect(`${DEFAULT_CLIENT_URL}/me/security`);
 });
 export default authRouter;

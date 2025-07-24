@@ -17,11 +17,11 @@ class UserService {
             }
             const users = await User.find(filter).sort({ _id: -1 });
             const userContacts = await Contact.find({
-                [`relationships.${userId}`]: { $ne: ContactRelationship.connected },
+                [`relationships.${userId}`]: { $ne: ContactRelationship.stranger },
             }).populate("users");
-            const connectedUsers = userContacts.map((userContact) => userContact.users.filter((user) => user.id.toString() != userId)[0].id);
+            const connectedUserIds = userContacts.map((userContact) => userContact.users.filter((user) => user.id.toString() != userId)[0].id);
             const docs = users
-                .filter((user) => !connectedUsers.includes(user.id))
+                .filter((user) => !connectedUserIds.includes(user.id))
                 .slice(0, first + 1);
             const hasNextPage = docs.length > first;
             const sliced = hasNextPage ? docs.slice(0, first) : docs;
@@ -73,7 +73,7 @@ class UserService {
                 },
             };
         };
-        this.createNewUser = async ({ fullname, _id, username, ggid, }) => {
+        this.createNewUser = async ({ fullname, _id, username, ggid, avatar }) => {
             let user;
             // Tao User moi
             if (_id)
@@ -82,6 +82,7 @@ class UserService {
                     username,
                     fullname,
                     lastLogined: new Date().toISOString(),
+                    avatar,
                 });
             else
                 user = await User.create({
@@ -89,6 +90,7 @@ class UserService {
                     username,
                     fullname,
                     lastLogined: new Date().toISOString(),
+                    avatar,
                 });
             // Tao chat voi gemini api
             const chatbot = await User.findOne({ userType: UserType.CHATBOT });

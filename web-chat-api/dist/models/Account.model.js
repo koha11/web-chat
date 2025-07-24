@@ -4,7 +4,7 @@ import mongooseDelete from "mongoose-delete";
 const AccountSchema = new Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, unique: true },
     isConfirmedEmail: { type: Boolean, default: false },
 }, { timestamps: true });
 // Add soft delete plugin

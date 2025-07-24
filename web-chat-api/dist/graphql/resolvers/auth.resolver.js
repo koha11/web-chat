@@ -1,46 +1,31 @@
-import Account from "../../models/Account.model.js";
-import User from "../../models/User.model.js";
+import Account from "models/Account.model.js";
 import authService from "../../services/AuthService.js";
-import bcrypt from "bcryptjs";
 export const authResolvers = {
-    Query: {},
+    Query: {
+        account: async (_p, { userId }, {}) => {
+            const account = await Account.findById(userId).lean();
+            return account;
+        },
+    },
     Mutation: {
         login: async (_p, { username, password }, {}) => {
-            const account = await Account.findOne({ username });
-            if (!account)
-                return {
-                    isValid: false,
-                    message: "Username is wrong",
-                };
-            let passwordIsValid = bcrypt.compareSync(password, account.password);
-            if (!passwordIsValid)
-                return {
-                    isValid: false,
-                    message: "Password is wrong",
-                };
-            const user = await User.findOne({ username });
-            if (!user)
-                return {
-                    isValid: false,
-                    message: "sai id roi",
-                };
-            const token = authService.createToken({
-                expiresIn: "24h",
-                id: user.id,
-                username: user.username,
-            });
-            return {
-                isValid: true,
-                data: {
-                    accessToken: token,
-                    userId: user.id,
-                },
-                message: "login success",
-            };
+            const auth = await authService.login({ username, password });
+            return auth;
         },
         register: async (_p, registerRequest, {}) => {
             const data = await authService.register(registerRequest);
             return data;
+        },
+        verifyEmail: async (_p, { email }, {}) => {
+            const auth = await authService.sendVerifyMail(email);
+            return auth;
+        },
+        changeEmail: async (_p, { email }, { user }) => {
+            await authService.changeEmail({
+                email,
+                userId: user.id.toString(),
+            });
+            return email;
         },
     },
 };

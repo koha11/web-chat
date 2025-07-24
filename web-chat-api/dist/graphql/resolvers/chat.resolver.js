@@ -4,6 +4,7 @@ import { toObjectId } from "../../utils/mongoose.js";
 import { withFilter } from "graphql-subscriptions";
 import Chat from "../../models/Chat.model.js";
 import User from "../../models/User.model.js";
+import { uploadMedia } from "utils/cloudinary.js";
 export const chatResolvers = {
     Query: {
         chats: async (_p, { first, after }, { user }) => {
@@ -26,8 +27,37 @@ export const chatResolvers = {
         },
         changeNickname: async (_p, { chatId, changedUserId, nickname }, { user, pubsub }) => {
             const chat = await Chat.findById(chatId).populate("users");
-            chat?.nicknames.set(changedUserId, nickname);
-            chat?.save();
+            if (!chat)
+                throw new Error("this chat is not existed");
+            chat.nicknames.set(changedUserId, nickname);
+            await chat.save();
+            pubsub.publish(SocketEvent.chatChanged, {
+                chatChanged: chat,
+            });
+            return chat;
+        },
+        changeChatAvatar: async (_p, { chatId, file }, { user, pubsub }) => {
+            const chatAvatarFile = (await file);
+            const { secure_url } = await uploadMedia({
+                file: chatAvatarFile,
+                folder: `chats/${chatId}/avatar`,
+            });
+            const chat = await Chat.findById(chatId).populate("users");
+            if (!chat)
+                throw new Error("this chat is not existed");
+            chat.chatAvatar = secure_url;
+            await chat.save();
+            pubsub.publish(SocketEvent.chatChanged, {
+                chatChanged: chat,
+            });
+            return chat;
+        },
+        changeChatName: async (_p, { chatId, chatName }, { user, pubsub }) => {
+            const chat = await Chat.findById(chatId).populate("users");
+            if (!chat)
+                throw new Error("this chat is not existed");
+            chat.chatName = chatName;
+            await chat.save();
             pubsub.publish(SocketEvent.chatChanged, {
                 chatChanged: chat,
             });

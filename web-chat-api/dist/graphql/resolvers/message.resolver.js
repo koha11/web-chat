@@ -9,6 +9,8 @@ import chatService from "../../services/ChatService.js";
 import messageService from "../../services/MessageService.js";
 import { toObjectId } from "../../utils/mongoose.js";
 import UserType from "../../enums/UserType.enum.js";
+import { uploadMedia } from "utils/cloudinary.js";
+import MessageType from "enums/MessageType.enum.js";
 export const messageResolvers = {
     Query: {
         messages: async (_p, { chatId, msgId, after, first }, { user, pubsub }) => {
@@ -42,11 +44,11 @@ export const messageResolvers = {
         },
     },
     Mutation: {
-        postMessage: async (_p, { chatId, msgBody, user, replyForMsg, isForwarded }, { pubsub }) => {
+        postMessage: async (_p, { chatId, msgBody, replyForMsg, isForwarded }, { pubsub, user }) => {
             const createdMsg = await Message.create({
                 chat: chatId,
+                user: user.id,
                 msgBody,
-                user,
                 replyForMsg,
                 isForwarded,
             });
@@ -63,7 +65,7 @@ export const messageResolvers = {
                     },
                 });
                 setTimeout(async () => {
-                    const chatBotMessageBody = await gemini_promp_process(msgBody, chatId, user);
+                    const chatBotMessageBody = await gemini_promp_process(msgBody, chatId, user.id.toString());
                     const chatBotMessage = await Message.create({
                         chat: chatId,
                         user: chatbot.id,
@@ -100,6 +102,55 @@ export const messageResolvers = {
                 chatChanged,
             });
             return message;
+        },
+        postMediaMessage: async (_p, { chatId, files, replyForMsg, isForwarded }, { pubsub, user }) => {
+            const myFiles = (await Promise.all(files));
+            let messages = [];
+            for (let file of myFiles) {
+                let type = MessageType.TEXT;
+                const mimeType = file.mimetype;
+                if (mimeType.startsWith("video"))
+                    type = MessageType.VIDEO;
+                if (mimeType.startsWith("image"))
+                    type = MessageType.IMAGE;
+                if (mimeType.startsWith("audio"))
+                    type = MessageType.AUDIO;
+                if (mimeType.startsWith("application"))
+                    type = MessageType.FILE;
+                console.log(file);
+                const { secure_url, bytes } = await uploadMedia({
+                    file,
+                    folder: `chats/${chatId}/${type}`,
+                    type,
+                });
+                const createdMsg = await Message.create({
+                    chat: chatId,
+                    user: user.id,
+                    file: {
+                        filename: file.filename,
+                        type: file.mimetype,
+                        url: secure_url,
+                        size: bytes,
+                    },
+                    replyForMsg,
+                    isForwarded,
+                    type,
+                });
+                const message = await createdMsg.populate("replyForMsg");
+                messages.push(message);
+                const chatChanged = await Chat.findByIdAndUpdate(message.chat, { updatedAt: new Date() }, { new: true }).populate("users");
+                pubsub.publish(SocketEvent.messageAdded, {
+                    messageAdded: {
+                        node: message,
+                        cursor: message.id,
+                    },
+                    chatId,
+                });
+                pubsub.publish(SocketEvent.chatChanged, {
+                    chatChanged,
+                });
+            }
+            return messages;
         },
         unsendMessage: async (_p, { chatId, msgId }, { pubsub, user }) => {
             const msg = await Message.findById(msgId).populate("replyForMsg");
@@ -149,6 +200,35 @@ export const messageResolvers = {
                 messageTyping: { typingUser: myUser, isTyping },
                 chatId,
             });
+        },
+        reactMessage: async (_p, { msgId, unified, emoji }, { pubsub, user }) => {
+            const msg = await Message.findById(msgId).populate("replyForMsg");
+            if (msg) {
+                if (!msg.reactions)
+                    msg.reactions = new Map();
+                msg.reactions?.set(user.id.toString(), {
+                    emoji,
+                    unified,
+                    reactTime: new Date(),
+                });
+                await msg.save();
+                // const chatChanged = await Chat.findByIdAndUpdate(
+                //   chatId,
+                //   {
+                //     $set: {
+                //       updatedAt:
+                //         lastMsg.status == MessageStatus.UNSEND
+                //           ? lastMsg.unsentAt
+                //           : lastMsg.createdAt,
+                //     },
+                //   },
+                //   { timestamps: false }
+                // );
+                // pubsub.publish(SocketEvent.chatChanged, {
+                //   chatChanged,
+                // } as PubsubEvents[SocketEvent.chatChanged]);
+            }
+            return msg;
         },
     },
     Subscription: {
