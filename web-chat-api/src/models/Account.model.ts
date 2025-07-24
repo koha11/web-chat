@@ -1,4 +1,4 @@
-import { IAccount } from "interfaces/account.interface.js";
+import { IAccount } from "../interfaces/account.interface.js";
 import mongoose, { Schema } from "mongoose";
 import mongooseDelete from "mongoose-delete";
 

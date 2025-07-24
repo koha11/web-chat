@@ -1,4 +1,4 @@
-import cloudinary from "lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 export const uploadMedia = async ({ file, folder, filename_override, type, }) => {
     const { createReadStream } = file;
     // const resource_type =

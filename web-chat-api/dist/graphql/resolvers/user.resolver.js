@@ -2,8 +2,8 @@ import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
 import ContactRelationship from "../../enums/ContactRelationship.enum.js";
 import User from "../../models/User.model.js";
 import userService from "../../services/UserService.js";
-import { toObjectId } from "utils/mongoose.js";
-import { uploadMedia } from "utils/cloudinary.js";
+import { toObjectId } from "../../utils/mongoose.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 export const userResolvers = {
     Upload: GraphQLUpload,
     Query: {

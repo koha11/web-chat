@@ -9,8 +9,8 @@ import chatService from "../../services/ChatService.js";
 import messageService from "../../services/MessageService.js";
 import { toObjectId } from "../../utils/mongoose.js";
 import UserType from "../../enums/UserType.enum.js";
-import { uploadMedia } from "utils/cloudinary.js";
-import MessageType from "enums/MessageType.enum.js";
+import MessageType from "../../enums/MessageType.enum.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 export const messageResolvers = {
     Query: {
         messages: async (_p, { chatId, msgId, after, first }, { user, pubsub }) => {

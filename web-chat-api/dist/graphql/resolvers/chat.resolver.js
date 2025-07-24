@@ -4,7 +4,7 @@ import { toObjectId } from "../../utils/mongoose.js";
 import { withFilter } from "graphql-subscriptions";
 import Chat from "../../models/Chat.model.js";
 import User from "../../models/User.model.js";
-import { uploadMedia } from "utils/cloudinary.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 export const chatResolvers = {
     Query: {
         chats: async (_p, { first, after }, { user }) => {

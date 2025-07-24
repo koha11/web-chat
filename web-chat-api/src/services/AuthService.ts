@@ -7,8 +7,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userService from "./UserService.js";
 import User from "../models/User.model.js";
-import { ILoginRequest } from "interfaces/auth/loginRequest.interface.js";
-import { IAccount } from "interfaces/account.interface.js";
+import { ILoginRequest } from "../interfaces/auth/loginRequest.interface.js";
+import { IAccount } from "../interfaces/account.interface.js";
 import { createTransport } from "nodemailer";
 
 class AuthService {

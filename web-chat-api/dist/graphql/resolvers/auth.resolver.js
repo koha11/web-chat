@@ -1,4 +1,4 @@
-import Account from "models/Account.model.js";
+import Account from "../../models/Account.model.js";
 import authService from "../../services/AuthService.js";
 export const authResolvers = {
     Query: {
