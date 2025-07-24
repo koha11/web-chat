@@ -1,7 +1,7 @@
 import { UploadApiResponse } from "cloudinary";
-import MessageType from "enums/MessageType.enum.js";
+import MessageType from "../enums/MessageType.enum.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
-import cloudinary from "lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const uploadMedia = async ({
   file,

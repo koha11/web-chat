@@ -7,7 +7,7 @@ import { PubSub, withFilter } from "graphql-subscriptions";
 import { IResolvers } from "@graphql-tools/utils";
 import Chat from "../../models/Chat.model.js";
 import User from "../../models/User.model.js";
-import { uploadMedia } from "utils/cloudinary.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 
 export const chatResolvers: IResolvers = {

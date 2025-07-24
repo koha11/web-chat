@@ -19,9 +19,8 @@ import { IChat } from "../../interfaces/chat.interface.js";
 import UserType from "../../enums/UserType.enum.js";
 import { IUser } from "../../interfaces/user.interface.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
-import { uploadMedia } from "utils/cloudinary.js";
-import FileType from "enums/FileType.enum.js";
-import MessageType from "enums/MessageType.enum.js";
+import MessageType from "../../enums/MessageType.enum.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -430,7 +429,7 @@ export const messageResolvers: IResolvers = {
           { chatId: subChatId },
           { user }: IMyContext
         ) => {
-          const chat = await Chat.findById(chatId);
+        const chat = await Chat.findById(chatId);
 
           const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
             toObjectId(user.id.toString())

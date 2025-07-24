@@ -1,7 +1,7 @@
-import Account from "models/Account.model.js";
+import Account from "../../models/Account.model.js";
 import authService from "../../services/AuthService.js";
 import { IResolvers } from "@graphql-tools/utils";
-import IMyContext from "interfaces/socket/myContext.interface.js";
+import IMyContext from "../../interfaces/socket/myContext.interface.js";
 
 export const authResolvers: IResolvers = {
   Query: {

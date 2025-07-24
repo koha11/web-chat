@@ -11,8 +11,7 @@
     "resolveJsonModule": true,
     // "allowImportingTsExtensions": true,
     // "noEmit": true,
-    "lib": ["es2018.asynciterable"],
-    "baseUrl": "./src"
+    "lib": ["es2018.asynciterable"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

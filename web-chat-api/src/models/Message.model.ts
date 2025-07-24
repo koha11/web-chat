@@ -1,4 +1,4 @@
-import MessageType from "enums/MessageType.enum.js";
+import MessageType from "../enums/MessageType.enum.js";
 import MessageStatus from "../enums/MessageStatus.enum.js";
 import { IMessage } from "../interfaces/message.interface.js";
 import mongoose, { Schema } from "mongoose";

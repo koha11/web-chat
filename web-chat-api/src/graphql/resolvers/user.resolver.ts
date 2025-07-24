@@ -4,9 +4,8 @@ import IMyContext from "../../interfaces/socket/myContext.interface.js";
 import User from "../../models/User.model.js";
 import userService from "../../services/UserService.js";
 import { IResolvers } from "@graphql-tools/utils";
-import cloudinary from "lib/cloudinary.js";
-import { toObjectId } from "utils/mongoose.js";
-import { uploadMedia } from "utils/cloudinary.js";
+import { toObjectId } from "../../utils/mongoose.js";
+import { uploadMedia } from "../../utils/cloudinary.js";
 
 export const userResolvers: IResolvers = {
   Upload: GraphQLUpload,
