@@ -3,12 +3,12 @@ dotenv.config();
 
 export const ENVIRONMENT = process.env.ENVIRONMENT;
 export const MONGO_URI = process.env.MONGO_URI!;
-export const PORT = process.env.PORT || "3000";
+export const PORT = process.env.PORT || 3000;
 export const HOST =
   ENVIRONMENT == "DEV" ? "localhost" : process.env.SERVER_HOST;
 export const DEFAULT_URL =
   ENVIRONMENT == "DEV" ? `http://${HOST}:${PORT}` : `https://${HOST}`;
-export const CLIENT_PORT = process.env.CLIENT_PORT || "5173";
+export const CLIENT_PORT = process.env.CLIENT_PORT || 5173;
 export const CLIENT_HOST =
   ENVIRONMENT == "DEV" ? "localhost" : process.env.CLIENT_HOST;
 export const DEFAULT_CLIENT_URL =
