@@ -2,16 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { useForm } from "react-hook-form";
-import {
-  getTimeDiff,
-  TimeTypeOption,
-} from "../../utils/messageTime.helper";
+import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
-import {
-  useGetMessages,
-} from "../../hooks/message.hook";
+import { useGetMessages } from "../../hooks/message.hook";
 import {
   MESSAGE_ADDED_SUB,
   MESSAGE_CHANGED_SUB,
@@ -108,8 +103,8 @@ const ChatDetails = ({
       setMessages(grouped);
       setFetchMore(false);
 
-      // lang msg dc gui den
-      const unsubscribeMsgAdded = subscribeToMore({
+      // lang msg bi thay doi
+      const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_CHANGED_SUB,
         variables: { chatId: chatId },
         updateQuery: (prev, { subscriptionData }) => {
@@ -118,6 +113,7 @@ const ChatDetails = ({
           const messageChanged = subscriptionData.data
             .messageChanged as Edge<IMessage>;
           const prevMessages = prev.messages as IModelConnection<IMessage>;
+          console.log(messageChanged);
 
           return {
             ...prev,
@@ -133,8 +129,8 @@ const ChatDetails = ({
         },
       });
 
-      // lang msg bi thay doi
-      const unsubscribeMsgChanged = subscribeToMore({
+      // lang msg dc gui den
+      const unsubscribeMsgAdded = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
         variables: { chatId: chatId },
         updateQuery: (prev, { subscriptionData }) => {

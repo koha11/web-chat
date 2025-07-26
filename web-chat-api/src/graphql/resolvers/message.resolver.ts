@@ -251,6 +251,7 @@ export const messageResolvers: IResolvers = {
             cursor: msg.id,
             node: msg,
           },
+          userChangedId: user.id,
         } as PubsubEvents[SocketEvent.messageChanged]);
 
         if ((lastMsgMap[chatId] as IMessage).id == msgId) {
@@ -319,6 +320,7 @@ export const messageResolvers: IResolvers = {
         chatId,
       } as PubsubEvents[SocketEvent.messageTyping]);
     },
+
     reactMessage: async (
       _p,
       { msgId, unified, emoji },
@@ -337,22 +339,27 @@ export const messageResolvers: IResolvers = {
 
         await msg.save();
 
-        // const chatChanged = await Chat.findByIdAndUpdate(
-        //   chatId,
-        //   {
-        //     $set: {
-        //       updatedAt:
-        //         lastMsg.status == MessageStatus.UNSEND
-        //           ? lastMsg.unsentAt
-        //           : lastMsg.createdAt,
-        //     },
-        //   },
-        //   { timestamps: false }
-        // );
+        const chatChanged = await Chat.findByIdAndUpdate(
+          msg.chat,
+          {
+            $set: {
+              updatedAt: Date.now(),
+            },
+          },
+          { timestamps: false }
+        );
 
-        // pubsub.publish(SocketEvent.chatChanged, {
-        //   chatChanged,
-        // } as PubsubEvents[SocketEvent.chatChanged]);
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatChanged,
+        } as PubsubEvents[SocketEvent.chatChanged]);
+
+        pubsub.publish(SocketEvent.messageChanged, {
+          messageChanged: {
+            cursor: msg.id,
+            node: msg,
+          },
+          userChangedId: user.id,
+        } as PubsubEvents[SocketEvent.messageChanged]);
       }
 
       return msg;
@@ -406,14 +413,18 @@ export const messageResolvers: IResolvers = {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
           pubsub.asyncIterableIterator(SocketEvent.messageChanged),
-        async (payload, { chatId }, { user }: IMyContext) => {
+        async (
+          { messageChanged, userChangedId },
+          { chatId },
+          { user }: IMyContext
+        ) => {
           const chat = await Chat.findById(chatId);
 
           const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
             toObjectId(user.id.toString())
           );
 
-          const isNotSender = !payload.messageChanged.node.user.equals(user.id);
+          const isNotSender = userChangedId != user.id;
 
           return isNotSender && isUserInThisChat;
         }
@@ -429,7 +440,7 @@ export const messageResolvers: IResolvers = {
           { chatId: subChatId },
           { user }: IMyContext
         ) => {
-        const chat = await Chat.findById(chatId);
+          const chat = await Chat.findById(chatId);
 
           const isUserInThisChat = (chat?.users as Types.ObjectId[]).includes(
             toObjectId(user.id.toString())
