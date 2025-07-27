@@ -134,41 +134,43 @@ const SingleMsg = ({
           ></MessageActions>
         )}
 
-        {/* Hien thi noi dung tin nhan  */}
-        {msg.status == MessageStatus.UNSEND ? (
-          MyTooltip(
-            <span
-              className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-              } ${msg.isForwarded ? "" : ""}`}
-            >
-              {isSentMsg
-                ? "You"
-                : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
-              unsend a message
-            </span>,
-            `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
-              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
-            "order-2"
-          )
-        ) : (
-          <MsgBody isSentMsg={isSentMsg} msg={msg}></MsgBody>
-        )}
-
-        {/* hien thi reactions  */}
-        {msg.reactions &&
-          Object.keys(msg.reactions).map((userId) => {
-            const reaction = msg.reactions![userId];
-            const fullname = usersMap[userId].fullname;
-
-            return MyTooltip(
-              <span onClick={() => setReactionDialogOpen(true)}>
-                {reaction.emoji}
+        <div className="relative order-2">
+          {/* Hien thi noi dung tin nhan  */}
+          {msg.status == MessageStatus.UNSEND ? (
+            MyTooltip(
+              <span
+                className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                  isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+                } ${msg.isForwarded ? "" : ""}`}
+              >
+                {isSentMsg
+                  ? "You"
+                  : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
+                unsend a message
               </span>,
-              fullname,
-              "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
-            );
-          })}
+              `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
+              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
+              "order-2"
+            )
+          ) : (
+            <MsgBody isSentMsg={isSentMsg} msg={msg}></MsgBody>
+          )}
+
+          {/* hien thi reactions  */}
+          {msg.reactions &&
+            Object.keys(msg.reactions).map((userId) => {
+              const reaction = msg.reactions![userId];
+              const fullname = usersMap[userId].fullname;
+
+              return MyTooltip(
+                <span onClick={() => setReactionDialogOpen(true)}>
+                  {reaction.emoji}
+                </span>,
+                fullname,
+                "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
+              );
+            })}
+        </div>
       </div>
 
       {/* Hien thi trang thai cua tin nhan */}

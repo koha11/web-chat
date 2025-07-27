@@ -16,7 +16,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           controls
         ></audio>,
         getDisplaySendMsgTime(new Date(msg.createdAt!)),
-        "order-2 max-w-[70%]"
+        "max-w-[70%]"
       );
     case MessageType.FILE:
       return MyTooltip(
@@ -30,14 +30,14 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <div>{msg.file?.filename}</div>
         </a>,
         getDisplaySendMsgTime(new Date(msg.createdAt!)),
-        "order-2 max-w-[80%]"
+        "order-2 max-w-[100%]"
       );
     case MessageType.IMAGE:
       return MyTooltip(
-        <img
-          src={msg.file?.url}
-          className={`rounded-3xl object-contain`}
-        ></img>,
+        <div
+          className="rounded-3xl bg-contain bg-no-repeat bg-center w-48 h-48"
+          style={{ backgroundImage: `url(${msg.file?.url})` }}
+        ></div>,
         getDisplaySendMsgTime(new Date(msg.createdAt!)),
         "order-2 max-w-[30%]"
       );
@@ -49,7 +49,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           controls
         ></ReactPlayer>,
         getDisplaySendMsgTime(new Date(msg.createdAt!)),
-        "order-2 max-w-[30%]"
+        "order-2 max-w-[100%]"
       );
     default:
       return MyTooltip(
@@ -61,7 +61,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <MarkdownMessage text={msg.msgBody!}></MarkdownMessage>
         </div>,
         getDisplaySendMsgTime(new Date(msg.createdAt!)),
-        "order-2 text-center max-w-[80%]"
+        "text-center"
       );
   }
 };
