@@ -7,6 +7,7 @@ import ReactPlayer from "react-player";
 import MarkdownMessage from "./MarkdownMessage";
 
 const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
+
   switch (msg.type) {
     case MessageType.AUDIO:
       return MyTooltip(

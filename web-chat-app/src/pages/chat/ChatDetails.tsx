@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { useForm } from "react-hook-form";
-import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
+import {
+  getDisplaySendMsgTime,
+  getTimeDiff,
+  TimeTypeOption,
+} from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
