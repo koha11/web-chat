@@ -50,10 +50,10 @@ const ChatHeader = ({
   }, [chat]);
 
   //handlers
-  const handleMakeCall = (isVideoCall: boolean) => {
-    makeCall({ variables: { chatId: chat?.id, hasVideo: isVideoCall } });
+  const handleMakeCall = async (isVideoCall: boolean) => {
+    const msgId = await makeCall({ variables: { chatId: chat?.id, hasVideo: isVideoCall } });
     window.open(
-      `/call?has_video=${isVideoCall}&initialize_video=${isVideoCall}&room_id=${chat?.id}`,
+      `/call?has_video=${isVideoCall}&initialize_video=${isVideoCall}&room_id=${chat?.id}&msg_id=${msgId}`,
       "_blank",
       "width=1300,height=600,location=no,toolbar=no"
     );
@@ -93,13 +93,13 @@ const ChatHeader = ({
       <div className="text-2xl flex items-center gap-4 ">
         <Button
           className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-          onClick={() => handleMakeCall(false)}
+          onClick={async () => await handleMakeCall(false)}
         >
           <Phone></Phone>
         </Button>
         <Button
           className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-          onClick={() => handleMakeCall(true)}
+          onClick={async () => await handleMakeCall(true)}
         >
           <Video></Video>
         </Button>

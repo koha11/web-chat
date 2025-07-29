@@ -136,7 +136,7 @@ const ChatRow = ({
             <div className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center bg-blue-600"></div>
           )}
       </div>
-      {isHover && (
+      {/* {isHover && (
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button
@@ -193,7 +193,7 @@ const ChatRow = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )}
+      )} */}
     </NavLink>
   );
 };

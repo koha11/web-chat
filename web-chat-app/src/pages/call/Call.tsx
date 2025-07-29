@@ -30,10 +30,12 @@ import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
 const Call = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+
   // const hasVideo = queryParams.get("has_video")?.toLowerCase() == "true";
   const initializeVideo =
     queryParams.get("initialize_video")?.toLowerCase() == "true";
   const roomId = queryParams.get("room_id")!;
+  const msgId = queryParams.get("msg_id")!;
 
   const userId = Cookies.get("userId")!;
 
@@ -340,7 +342,7 @@ const Call = () => {
         </>
       )}
 
-      {remoteMediaState.length &&
+      {remoteMediaState.length > 0 &&
         !isHangup &&
         (remoteMediaState[0].isCameraOpen ? (
           <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
@@ -419,7 +421,7 @@ const Call = () => {
             <Button
               className="rounded-full cursor-pointer bg-red-600 hover:bg-red-500"
               onClick={() => {
-                hangupCall({ variables: { chatId: chat!.id } });
+                hangupCall({ variables: { chatId: chat!.id, msgId } });
                 setHangup(true);
               }}
             >

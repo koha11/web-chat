@@ -25,5 +25,6 @@ export type PubsubEvents = {
     responseCall: boolean;
     chatId: string;
     userId: string;
+    msgId: string;
   };
 };

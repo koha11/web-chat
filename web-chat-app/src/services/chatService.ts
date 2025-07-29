@@ -138,8 +138,8 @@ export const MAKE_CALL = gql`
 `;
 
 export const HANGUP_CALL = gql`
-  mutation HangupCall($chatId: ID!) {
-    hangupCall(chatId: $chatId)
+  mutation HangupCall($chatId: ID!, $msgId: ID!) {
+    hangupCall(chatId: $chatId, msgId: $msgId)
   }
 `;
 

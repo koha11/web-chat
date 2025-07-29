@@ -160,6 +160,7 @@ export const messageResolvers: IResolvers = {
 
       return message;
     },
+
     postMediaMessage: async (
       _p,
       { chatId, files, replyForMsg, isForwarded },
@@ -228,6 +229,7 @@ export const messageResolvers: IResolvers = {
 
       return messages;
     },
+
     unsendMessage: async (
       _p,
       { chatId, msgId },
@@ -269,6 +271,7 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
+
     removeMessage: async (
       _p,
       { chatId, msgId },
@@ -308,6 +311,7 @@ export const messageResolvers: IResolvers = {
 
       return msg;
     },
+
     typeMessage: async (
       _p,
       { chatId, isTyping },
@@ -409,6 +413,7 @@ export const messageResolvers: IResolvers = {
         }
       ),
     },
+
     messageChanged: {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) =>
@@ -430,6 +435,7 @@ export const messageResolvers: IResolvers = {
         }
       ),
     },
+
     messageTyping: {
       subscribe: withFilter(
         (_p, { chatId }, { pubsub }) => {

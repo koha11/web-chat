@@ -9,6 +9,8 @@ import Chat from "../../models/Chat.model.js";
 import User from "../../models/User.model.js";
 import { uploadMedia } from "../../utils/cloudinary.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
+import Message from "../../models/Message.model.js";
+import MessageType from "../../enums/MessageType.enum.js";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -33,6 +35,7 @@ export const chatResolvers: IResolvers = {
 
       return result;
     },
+
     changeNickname: async (
       _p: any,
       { chatId, changedUserId, nickname },
@@ -52,6 +55,7 @@ export const chatResolvers: IResolvers = {
 
       return chat;
     },
+
     changeChatAvatar: async (
       _p: any,
       { chatId, file },
@@ -78,12 +82,12 @@ export const chatResolvers: IResolvers = {
 
       return chat;
     },
+
     changeChatName: async (
       _p: any,
       { chatId, chatName },
       { user, pubsub }: IMyContext
     ) => {
-
       const chat = await Chat.findById(chatId).populate("users");
 
       if (!chat) throw new Error("this chat is not existed");
@@ -98,12 +102,19 @@ export const chatResolvers: IResolvers = {
 
       return chat;
     },
+
     makeCall: async (
       _p,
       { chatId, hasVideo },
       { pubsub, user }: IMyContext
     ) => {
       const myUser = await User.findById(user.id);
+
+      const msg = await Message.create({
+        chat: chatId,
+        user: user.id,
+        type: hasVideo ? MessageType.VIDEO_CALL : MessageType.AUDIO_CALL,
+      });
 
       pubsub.publish(SocketEvent.ongoingCall, {
         ongoingCall: {
@@ -113,25 +124,43 @@ export const chatResolvers: IResolvers = {
         },
       } as PubsubEvents[SocketEvent.ongoingCall]);
 
-      return true;
+      return msg.id;
     },
+
     handleCall: async (
       _p,
-      { chatId, isAccepted },
+      { chatId, isAccepted, msgId },
       { pubsub, user }: IMyContext
     ) => {
+      await Message.findByIdAndUpdate(msgId, { updatedAt: new Date() });
+
       pubsub.publish(SocketEvent.responseCall, {
         responseCall: isAccepted,
         userId: user.id,
+        msgId,
+        chatId,
       } as PubsubEvents[SocketEvent.responseCall]);
 
       return isAccepted;
     },
-    hangupCall: async (_p, { chatId }, { pubsub, user }: IMyContext) => {
+
+    hangupCall: async (_p, { chatId, msgId }, { pubsub, user }: IMyContext) => {
+      const msg = await Message.findById(msgId);
+
+      if (!msg) throw new Error("ko ton tai msg nay");
+
+      if (
+        new Date(msg.createdAt!).getTime() != new Date(msg.updatedAt!).getTime()
+      ) {
+        msg.endedCalldAt = new Date();
+        await msg.save();
+      }
+
       pubsub.publish(SocketEvent.responseCall, {
         responseCall: false,
         userId: user.id,
         chatId,
+        msgId,
       } as PubsubEvents[SocketEvent.responseCall]);
 
       return false;
@@ -155,6 +184,7 @@ export const chatResolvers: IResolvers = {
         }
       ),
     },
+
     ongoingCall: {
       subscribe: withFilter(
         (_p, variables, { pubsub }) =>
@@ -178,10 +208,12 @@ export const chatResolvers: IResolvers = {
         }
       ),
     },
+
     responseCall: {
       subscribe: withFilter(
-        (_p, variables, { pubsub }) =>
-          pubsub.asyncIterableIterator(SocketEvent.responseCall),
+        (_p, { msgId, responseCall }, { pubsub }) => {
+          return pubsub.asyncIterableIterator(SocketEvent.responseCall);
+        },
         async (
           {
             responseCall,
