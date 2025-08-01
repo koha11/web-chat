@@ -11,6 +11,7 @@ import { uploadMedia } from "../../utils/cloudinary.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import Message from "../../models/Message.model.js";
 import MessageType from "../../enums/MessageType.enum.js";
+import { Types } from "mongoose";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -121,6 +122,7 @@ export const chatResolvers: IResolvers = {
           user: myUser,
           hasVideo,
           chatId,
+          msgId: msg.id,
         },
       } as PubsubEvents[SocketEvent.ongoingCall]);
 
@@ -223,13 +225,13 @@ export const chatResolvers: IResolvers = {
           variables,
           { user }: IMyContext
         ) => {
-          const chat = await Chat.findById(chatId).populate("users");
+          const chat = await Chat.findById(chatId);
 
           const isNotSender = userId != user.id;
 
-          const isUserInThisChat = chat!.users
-            .map((user) => user.id)
-            .includes(toObjectId(user.id.toString()));
+          const isUserInThisChat = (chat!.users as Types.ObjectId[]).includes(
+            toObjectId(user.id)
+          );
 
           return isUserInThisChat && isNotSender;
         }

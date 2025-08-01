@@ -376,6 +376,7 @@ const Call = () => {
           </>
         ))}
 
+        {/* CALL ACTIONS  */}
       <div className="flex items-center justify-center gap-6 absolute bottom-4 z-20">
         {isHangup ? (
           <>
@@ -420,8 +421,8 @@ const Call = () => {
             </Button>
             <Button
               className="rounded-full cursor-pointer bg-red-600 hover:bg-red-500"
-              onClick={() => {
-                hangupCall({ variables: { chatId: chat!.id, msgId } });
+              onClick={async () => {
+                await hangupCall({ variables: { chatId: chat!.id, msgId } });
                 setHangup(true);
               }}
             >

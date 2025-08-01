@@ -24,7 +24,7 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-
+  
   return (
     <div className="flex justify-center text-black h-[100vh]">
       <div className="container flex bg-white gap-4 py-4">
@@ -36,7 +36,7 @@ const Chat = () => {
           isLastMsgLoading={isLastMsgLoading}
           userId={userId!}
         ></ChatList>
-        
+
         {id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (
@@ -66,6 +66,7 @@ const Chat = () => {
           hasVideo={ongoingCall.hasVideo}
           user={ongoingCall.user}
           chatId={ongoingCall.chatId}
+          msgId={ongoingCall.msgId}
         ></OngoingCallDialog>
       )}
     </div>

@@ -51,7 +51,12 @@ const ChatHeader = ({
 
   //handlers
   const handleMakeCall = async (isVideoCall: boolean) => {
-    const msgId = await makeCall({ variables: { chatId: chat?.id, hasVideo: isVideoCall } });
+    const { data } = await makeCall({
+      variables: { chatId: chat?.id, hasVideo: isVideoCall },
+    });
+
+    const msgId = data.makeCall;
+
     window.open(
       `/call?has_video=${isVideoCall}&initialize_video=${isVideoCall}&room_id=${chat?.id}&msg_id=${msgId}`,
       "_blank",

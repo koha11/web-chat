@@ -2,6 +2,7 @@ import { Phone, Video, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { IUser } from "../../interfaces/user.interface";
+import { useHandleCall } from "@/hooks/chat.hook";
 
 const OngoingCallDialog = ({
   isOpen,
@@ -9,13 +10,17 @@ const OngoingCallDialog = ({
   user,
   hasVideo,
   chatId,
+  msgId,
 }: {
   isOpen: boolean;
   setOpen: Function;
   user: IUser;
   hasVideo: boolean;
   chatId: string;
+  msgId: string;
 }) => {
+  const [handleCall] = useHandleCall();
+
   return (
     <Dialog open={isOpen}>
       <DialogContent className="w-[240px] min-h-[240px]">
@@ -38,6 +43,13 @@ const OngoingCallDialog = ({
               className="rounded-full cursor-pointer"
               onClick={() => {
                 setOpen(null);
+                handleCall({
+                  variables: {
+                    chatId,
+                    isAccepted: false,
+                    msgId,
+                  },
+                });
               }}
             >
               <X></X>
@@ -46,8 +58,15 @@ const OngoingCallDialog = ({
               className="rounded-full cursor-pointer bg-green-700"
               onClick={() => {
                 setOpen(null);
+                handleCall({
+                  variables: {
+                    chatId,
+                    isAccepted: true,
+                    msgId,
+                  },
+                });
                 window.open(
-                  `/call?has_video=${hasVideo}&initialize_video=${hasVideo}&room_id=${chatId}`,
+                  `/call?has_video=${hasVideo}&initialize_video=${hasVideo}&room_id=${chatId}&msg_id=${msgId}`,
                   "_blank",
                   "width=1300,height=600,location=no,toolbar=no"
                 );

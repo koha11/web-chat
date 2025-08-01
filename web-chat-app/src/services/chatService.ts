@@ -137,6 +137,12 @@ export const MAKE_CALL = gql`
   }
 `;
 
+export const HANDLE_CALL = gql`
+  mutation HandleCall($chatId: ID!, $isAccepted: Boolean!, $msgId: ID!) {
+    handleCall(chatId: $chatId, isAccepted: $isAccepted, msgId: $msgId)
+  }
+`;
+
 export const HANGUP_CALL = gql`
   mutation HangupCall($chatId: ID!, $msgId: ID!) {
     hangupCall(chatId: $chatId, msgId: $msgId)
@@ -174,6 +180,7 @@ export const CHAT_ONGOING_CALL_SUB = gql`
       }
       hasVideo
       chatId
+      msgId
     }
   }
 `;

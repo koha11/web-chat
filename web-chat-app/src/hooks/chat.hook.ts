@@ -5,6 +5,7 @@ import {
   CHANGE_NICKNAME,
   GET_CHAT,
   GET_CHATS,
+  HANDLE_CALL,
   HANGUP_CALL,
   MAKE_CALL,
   POST_CHAT,
@@ -152,6 +153,10 @@ export const useChangeChatName = () => {
 
 export const useMakeCall = () => {
   return useMutation(MAKE_CALL);
+};
+
+export const useHandleCall = () => {
+  return useMutation(HANDLE_CALL);
 };
 
 export const useHangupCall = () => {
