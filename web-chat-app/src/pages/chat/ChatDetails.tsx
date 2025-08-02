@@ -247,6 +247,8 @@ const ChatDetails = ({
     }
   };
 
+  console.log(messages);
+
   return (
     <section
       className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
@@ -320,6 +322,40 @@ const ChatDetails = ({
           chat={chat}
           isReplyMsgOpen={isReplyMsgOpen}
           setReplyMsgOpen={setReplyMsgOpen}
+          setMessages={(msg: IMessage) => {
+            setMessages((prev) => {
+              const time = new Date(msg.createdAt!);
+              const last = prev ? prev[0] : undefined;
+
+              console.log(last);
+
+              if (
+                prev &&
+                last &&
+                getTimeDiff({
+                  firstTime: new Date(last.timeString),
+                  secondTime: time,
+                  option: TimeTypeOption.MINUTES,
+                }) < 20
+              ) {
+                return [
+                  {
+                    messages: [msg, ...last.messages],
+                    timeString: last.timeString,
+                  },
+                  ...prev.slice(1),
+                ];
+              } else {
+                return [
+                  ...(prev ?? []),
+                  {
+                    timeString: time.toISOString(),
+                    messages: [msg],
+                  },
+                ];
+              }
+            });
+          }}
         ></ChatInput>
       )}
     </section>

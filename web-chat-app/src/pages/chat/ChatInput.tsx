@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import MessageType from "@/enums/MessageType.enum";
 import {
   usePostMessage,
   usePostMediaMessage,
@@ -10,6 +11,7 @@ import {
 import { IChat } from "@/interfaces/chat.interface";
 import { IMessage } from "@/interfaces/messages/message.interface";
 import { IUser } from "@/interfaces/user.interface";
+import { randomInt } from "crypto";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import Cookies from "js-cookie";
 import {
@@ -34,6 +36,7 @@ const ChatInput = ({
   isReplyMsgOpen,
   setReplyMsgOpen,
   form: { watch, register, setValue, resetField, handleSubmit },
+  setMessages,
 }: {
   chat: IChat;
   isReplyMsgOpen: boolean;
@@ -42,6 +45,7 @@ const ChatInput = ({
     msg: IMessage;
     files?: FileList;
   }>;
+  setMessages: (msg: IMessage) => void;
 }) => {
   const userId = Cookies.get("userId");
 
@@ -276,14 +280,25 @@ const ChatInput = ({
             !isSendingMsg &&
             !isSendingMedia
           ) {
-            await handleSendMessage({
+            console.log("submit");
+            setMessages({
+              ...msg,
+              createdAt: new Date(),
+              chat: chat.id,
+              id: msg.msgBody!,
+              type: MessageType.TEXT,
+              user: userId!,
+              seenList: {},
+            });
+
+            const data = {
               msgBody: msg.msgBody,
               chatId: chat.id,
               replyForMsg: msg.replyForMsg
                 ? (msg.replyForMsg as IMessage).id
                 : undefined,
               files: files?.length == 0 ? undefined : files,
-            });
+            };
 
             resetField("msg.msgBody");
             resetField("msg.replyForMsg");
@@ -291,6 +306,8 @@ const ChatInput = ({
 
             setAudioRecording(false);
             setReplyMsgOpen(false);
+
+            await handleSendMessage(data);
           }
         })}
       >
