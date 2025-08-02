@@ -23,7 +23,7 @@ export interface IMessage {
   isHiddenFor?: Types.ObjectId[];
   unsentAt?: Date;
   editedAt?: Date;
-  endedCalldAt?: Date;
+  endedCallAt?: Date;
   isForwarded?: Boolean;
   reactions?: Map<string, { unified: string; reactTime: Date; emoji: string }>;
 

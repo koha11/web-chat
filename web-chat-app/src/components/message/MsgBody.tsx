@@ -11,9 +11,6 @@ import ReactPlayer from "react-player";
 import MarkdownMessage from "./MarkdownMessage";
 
 const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
-  const isUpdated =
-    new Date(msg.createdAt!).getTime() == new Date(msg.updatedAt!).getTime();
-
   switch (msg.type) {
     case MessageType.AUDIO:
       return MyTooltip(
@@ -65,16 +62,17 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <div>
             <div className="font-bold">Video call</div>
             <div>
-              {isUpdated
-                ? (
-                    new Date(msg.updatedAt!).getTime() -
-                    new Date(msg.createdAt!).getTime()
-                  ).toLocaleString()
+              {msg.endedCallAt
+                ? getTimeDiff({
+                    firstTime: msg.endedCallAt!,
+                    secondTime: msg.createdAt!,
+                    option: TimeTypeOption.SECONDS,
+                  })
                 : "Canceled"}
             </div>
           </div>
         </div>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[100%]"
       );
     case MessageType.AUDIO_CALL:

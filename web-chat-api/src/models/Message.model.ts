@@ -21,7 +21,7 @@ const MessageSchema = new Schema<IMessage>(
       type: { type: String },
     },
     editedAt: { type: Date },
-    endedCalldAt: { type: Date },
+    endedCallAt: { type: Date },
     unsentAt: { type: Date },
     isForwarded: { type: Boolean, default: false },
     reactions: { type: Map, of: Object },

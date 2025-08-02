@@ -154,7 +154,7 @@ export const chatResolvers: IResolvers = {
       if (
         new Date(msg.createdAt!).getTime() != new Date(msg.updatedAt!).getTime()
       ) {
-        msg.endedCalldAt = new Date();
+        msg.endedCallAt = new Date();
         await msg.save();
       }
 

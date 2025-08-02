@@ -20,7 +20,7 @@ export interface IMessage {
   isHiddenFor?: string;
   unsentAt?: Date;
   editedAt?: Date;
-  endedCalldAt?: Date;
+  endedCallAt?: Date;
   isForwarded?: boolean;
   reactions?: {
     [userId: string]: { unified: string; reactTime: Date; emoji: string };

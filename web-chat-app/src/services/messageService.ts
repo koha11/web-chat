@@ -14,6 +14,7 @@ export const GET_MESSAGES = gql`
           isHiddenFor
           unsentAt
           editedAt
+          endedCallAt
           isForwarded
           type
           file
@@ -79,6 +80,7 @@ export const POST_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      endedCallAt
       isForwarded
       reactions
     }
@@ -118,6 +120,7 @@ export const POST_MEDIA_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      endedCallAt
       isForwarded
       type
       file
@@ -148,6 +151,7 @@ export const UNSEND_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      endedCallAt
       isForwarded
       type
       file
@@ -178,6 +182,7 @@ export const REMOVE_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      endedCallAt
       isForwarded
       type
       file
@@ -208,6 +213,7 @@ export const REACT_MESSAGE = gql`
       isHiddenFor
       unsentAt
       editedAt
+      endedCallAt
       isForwarded
       type
       file
@@ -246,6 +252,7 @@ export const MESSAGE_ADDED_SUB = gql`
         isHiddenFor
         unsentAt
         editedAt
+        endedCallAt
         isForwarded
         type
         file
@@ -277,6 +284,7 @@ export const MESSAGE_CHANGED_SUB = gql`
         isHiddenFor
         unsentAt
         editedAt
+        endedCallAt
         isForwarded
         type
         file

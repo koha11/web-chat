@@ -26,7 +26,7 @@ export const messageTypeDefs = gql`
     type: String
     file: JSONObject
     reactions: JSONObject
-    endedCalldAt: Date
+    endedCallAt: Date
 
     createdAt: Date
     updatedAt: Date

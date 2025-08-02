@@ -272,7 +272,9 @@ const Call = () => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData) return prev;
 
-        setHangup(true);
+        const isAccepted = subscriptionData.data.responseCall;
+
+        if (!isAccepted) setHangup(true);
       },
     });
 
@@ -376,7 +378,7 @@ const Call = () => {
           </>
         ))}
 
-        {/* CALL ACTIONS  */}
+      {/* CALL ACTIONS  */}
       <div className="flex items-center justify-center gap-6 absolute bottom-4 z-20">
         {isHangup ? (
           <>
