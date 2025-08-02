@@ -197,7 +197,7 @@ const SingleMsg = ({
                     style={{ backgroundImage: `url(${user.avatar})` }}
                   ></div>,
                   user.fullname +
-                    " seen at " +
+                    "seen at " +
                     getDisplaySendMsgTime(new Date(msg.seenList[user.id]))
                 )
               )))}

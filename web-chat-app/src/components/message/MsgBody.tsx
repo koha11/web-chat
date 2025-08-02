@@ -4,6 +4,7 @@ import { MyTooltip } from "../ui/my-tooltip";
 import {
   getDisplaySendMsgTime,
   getTimeDiff,
+  getUnroundTimeDiff,
   TimeTypeOption,
 } from "@/utils/messageTime.helper";
 import { FileText, Mic, Video } from "lucide-react";
@@ -61,12 +62,11 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <Video />
           <div>
             <div className="font-bold">Video call</div>
-            <div>
+            <div className="text-[0.7rem] text-left">
               {msg.endedCallAt
-                ? getTimeDiff({
+                ? getUnroundTimeDiff({
                     firstTime: msg.endedCallAt!,
                     secondTime: msg.createdAt!,
-                    option: TimeTypeOption.SECONDS,
                   })
                 : "Canceled"}
             </div>
@@ -79,7 +79,17 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
       return MyTooltip(
         <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl">
           <Mic />
-          <div>{msg.id}</div>
+          <div>
+            <div className="font-bold">Audio call</div>
+            <div className="text-[0.7rem] text-left">
+              {msg.endedCallAt
+                ? getUnroundTimeDiff({
+                    firstTime: msg.endedCallAt!,
+                    secondTime: msg.createdAt!,
+                  })
+                : "Canceled"}
+            </div>
+          </div>
         </div>,
         getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[100%]"

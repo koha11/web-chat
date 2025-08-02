@@ -84,6 +84,56 @@ export const getTimeDiff = ({
   }
 };
 
+export const getUnroundTimeDiff = ({
+  firstTime,
+  secondTime,
+}: {
+  firstTime: Date;
+  secondTime: Date;
+}) => {
+  firstTime = new Date(firstTime);
+  secondTime = new Date(secondTime);
+
+  let diffTime = Math.round(
+    (firstTime.getTime() - secondTime.getTime()) / 1000
+  );
+
+  console.log(diffTime);
+
+  let timeString = "";
+  let flag = true;
+
+  let n = diffTime / (60 * 60 * 24);
+
+  if (n >= 1) {
+    timeString += `${n} days, `;
+    diffTime -= n * 60 * 60 * 24;
+    flag = false;
+  }
+
+  n = diffTime / (60 * 60);
+
+  if (n >= 1) {
+    timeString += `${n} hours, `;
+    diffTime -= n * 60 * 60;
+    flag = false;
+  }
+
+  n = diffTime / 60;
+
+  if (n >= 1) {
+    timeString += `${n} minutes, `;
+    diffTime -= n * 60;
+    flag = false;
+  }
+
+  if (n >= 1) timeString += `${n} seconds`;
+
+  if (flag) timeString += `${diffTime} seconds`;
+
+  return timeString;
+};
+
 export enum TimeTypeOption {
   SECONDS,
   MINUTES,
