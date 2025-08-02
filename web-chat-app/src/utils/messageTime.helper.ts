@@ -1,4 +1,6 @@
 export const getDisplaySendMsgTime = (sendTime: Date) => {
+  sendTime = new Date(sendTime);
+
   let timeString = "";
 
   // Hiệu giữa thời gian hiện tại với thời gian của tin nhắn
@@ -33,6 +35,8 @@ export const getDisplaySendMsgTime = (sendTime: Date) => {
 };
 
 export const getDisplayTimeDiff = (sendTime: Date) => {
+  sendTime = new Date(sendTime);
+
   const diffTime = new Date().getTime() - sendTime.getTime();
 
   const minutes = Math.round(diffTime / (1000 * 60));
@@ -52,11 +56,18 @@ export const getDisplayTimeDiff = (sendTime: Date) => {
   return weeks + " Weeks";
 };
 
-export const getTimeDiff = (
-  firstTime: Date,
-  secondTime: Date,
-  option: TimeTypeOption
-) => {
+export const getTimeDiff = ({
+  firstTime,
+  option,
+  secondTime,
+}: {
+  firstTime: Date;
+  secondTime: Date;
+  option: TimeTypeOption;
+}) => {
+  firstTime = new Date(firstTime);
+  secondTime = new Date(secondTime);
+
   const diffTime = firstTime.getTime() - secondTime.getTime();
 
   switch (option) {

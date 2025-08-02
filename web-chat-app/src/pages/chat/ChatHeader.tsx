@@ -36,15 +36,15 @@ const ChatHeader = ({
         )
         .sort(
           (a, b) =>
-            new Date(b.lastLogined ?? "").getTime() -
-            new Date(a.lastLogined ?? "").getTime()
+            new Date(b.lastLogined!).getTime() -
+            new Date(a.lastLogined!).getTime()
         );
 
       const lastLoginedUser = usersSortAscByLastLogined[0];
 
       if (lastLoginedUser && !lastLoginedUser.isOnline)
         setLastLogined(
-          getDisplayTimeDiff(new Date(lastLoginedUser.lastLogined ?? ""))
+          getDisplayTimeDiff(lastLoginedUser.lastLogined!)
         );
     }
   }, [chat]);

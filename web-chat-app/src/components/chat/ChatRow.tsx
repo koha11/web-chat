@@ -100,11 +100,9 @@ const ChatRow = ({
               {lastMsg && <Dot size={12}></Dot>}
               {lastMsg &&
                 getDisplayTimeDiff(
-                  new Date(
-                    lastMsg.status == MessageStatus.UNSEND
-                      ? lastMsg.unsentAt!
-                      : lastMsg.createdAt!
-                  )
+                  lastMsg.status == MessageStatus.UNSEND
+                    ? lastMsg.unsentAt!
+                    : lastMsg.createdAt!
                 )}
             </div>
           </div>

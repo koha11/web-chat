@@ -46,11 +46,11 @@ const GroupMsg = ({
 
           const isLongGap =
             index < messages.length - 1 &&
-            getTimeDiff(
-              new Date(msg.createdAt!),
-              new Date(messages[index + 1].createdAt!),
-              TimeTypeOption.MINUTES
-            ) > 4;
+            getTimeDiff({
+              firstTime: msg.createdAt!,
+              secondTime: messages[index + 1].createdAt!,
+              option: TimeTypeOption.MINUTES,
+            }) > 4;
 
           let msgSenderAvatar;
 
@@ -64,7 +64,7 @@ const GroupMsg = ({
 
           return (
             <SingleMsg
-              key={msg.id}  
+              key={msg.id}
               msg={msg}
               isSentMsg={msg.user == userId}
               userId={userId}

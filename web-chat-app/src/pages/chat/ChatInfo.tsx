@@ -44,13 +44,11 @@ const ChatInfo = ({
         Object.values(receivers).some((receiver) => receiver.isOnline)
           ? "Online"
           : `Online ${getDisplayTimeDiff(
-              new Date(
-                Object.values(receivers).sort(
-                  (a, b) =>
-                    new Date(b.lastLogined ?? "").getTime() -
-                    new Date(a.lastLogined ?? "").getTime()
-                )[0].lastLogined ?? ""
-              )
+              Object.values(receivers).sort(
+                (a, b) =>
+                  new Date(b.lastLogined ?? "").getTime() -
+                  new Date(a.lastLogined ?? "").getTime()
+              )[0].lastLogined!
             )} ago`}
       </div>
 
@@ -65,7 +63,9 @@ const ChatInfo = ({
 
       <CollapsibleChatInfo></CollapsibleChatInfo>
       <CollapsibleChatConfig chat={chat}></CollapsibleChatConfig>
-      {isGroupChat && <CollapsibleChatMembers chat={chat}></CollapsibleChatMembers>}
+      {isGroupChat && (
+        <CollapsibleChatMembers chat={chat}></CollapsibleChatMembers>
+      )}
       <CollapsibleChatMedia></CollapsibleChatMedia>
       <CollapsibleChatPrivacy></CollapsibleChatPrivacy>
     </section>

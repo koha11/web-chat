@@ -19,7 +19,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           className={`rounded-3xl object-contain`}
           controls
         ></audio>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "max-w-[70%]"
       );
     case MessageType.FILE:
@@ -33,7 +33,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <FileText />
           <div>{msg.file?.filename}</div>
         </a>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[100%]"
       );
     case MessageType.IMAGE:
@@ -42,7 +42,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           className="rounded-3xl bg-contain bg-no-repeat bg-center w-48 h-48"
           style={{ backgroundImage: `url(${msg.file?.url})` }}
         ></div>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[30%]"
       );
     case MessageType.VIDEO:
@@ -52,7 +52,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           className={`rounded-3xl`}
           controls
         ></ReactPlayer>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[100%]"
       );
     case MessageType.VIDEO_CALL:
@@ -81,7 +81,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <Mic />
           <div>{msg.id}</div>
         </div>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "order-2 max-w-[100%]"
       );
     default:
@@ -93,7 +93,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
         >
           <MarkdownMessage text={msg.msgBody!}></MarkdownMessage>
         </div>,
-        getDisplaySendMsgTime(new Date(msg.createdAt!)),
+        getDisplaySendMsgTime(msg.createdAt!),
         "text-center"
       );
   }

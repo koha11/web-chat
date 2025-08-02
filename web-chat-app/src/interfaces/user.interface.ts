@@ -6,7 +6,7 @@ export interface IUser {
   fullname: string;
   avatar?: string;
   isOnline: boolean;
-  lastLogined?: string;
+  lastLogined?: Date;
   userType: UserType;
 
   deleted?: boolean;

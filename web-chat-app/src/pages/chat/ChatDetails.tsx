@@ -88,11 +88,11 @@ const ChatDetails = ({
 
           if (
             last &&
-            getTimeDiff(
-              new Date(last.timeString),
-              time,
-              TimeTypeOption.MINUTES
-            ) < 20
+            getTimeDiff({
+              firstTime: new Date(last.timeString),
+              secondTime: time,
+              option: TimeTypeOption.MINUTES,
+            }) < 20
           ) {
             last.messages.push(msg);
           } else {

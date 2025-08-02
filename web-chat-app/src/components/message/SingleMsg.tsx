@@ -148,8 +148,8 @@ const SingleMsg = ({
                   : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
                 unsend a message
               </span>,
-              `Send at ${getDisplaySendMsgTime(new Date(msg.createdAt!))}
-              Unsend at ${getDisplaySendMsgTime(new Date(msg.unsentAt!))}`,
+              `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
+              Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
               "order-2"
             )
           ) : (
@@ -180,13 +180,13 @@ const SingleMsg = ({
           ((msg.status == MessageStatus.SENT && (
             <span className="text-[0.7rem] mr-1 italic text-gray-600">
               Sent{" "}
-              {getTimeDiff(
-                new Date(),
-                new Date(msg.createdAt!),
-                TimeTypeOption.MINUTES
-              ) == 0
+              {getTimeDiff({
+                firstTime: new Date(),
+                secondTime: msg.createdAt!,
+                option: TimeTypeOption.MINUTES,
+              }) == 0
                 ? ""
-                : getDisplayTimeDiff(new Date(msg.createdAt!)) + " ago"}
+                : getDisplayTimeDiff(msg.createdAt!) + " ago"}
             </span>
           )) ||
             (msg.status == MessageStatus.SEEN &&
