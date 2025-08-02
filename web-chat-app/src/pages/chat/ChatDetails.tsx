@@ -117,7 +117,6 @@ const ChatDetails = ({
           const messageChanged = subscriptionData.data
             .messageChanged as Edge<IMessage>;
           const prevMessages = prev.messages as IModelConnection<IMessage>;
-          console.log(messageChanged);
 
           return {
             ...prev,

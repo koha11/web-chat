@@ -57,8 +57,12 @@ const ChatInput = ({
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
   // mutations
-  const [postMessage] = usePostMessage({ first: 20 });
-  const [postMediaMessage] = usePostMediaMessage({ first: 20 });
+  const [postMessage, { loading: isSendingMsg }] = usePostMessage({
+    first: 20,
+  });
+  const [postMediaMessage, { loading: isSendingMedia }] = usePostMediaMessage({
+    first: 20,
+  });
   const [typeMessage] = useTypeMessage();
 
   // hooks
@@ -85,7 +89,7 @@ const ChatInput = ({
             url: URL.createObjectURL(file),
             type: file.type,
           });
-      }      
+      }
 
       setFileBlobUrls(myFileBlobUrls);
     } else setFileBlobUrls([]);
@@ -268,7 +272,9 @@ const ChatInput = ({
 
           if (
             chat != undefined &&
-            (msg.msgBody != "" || (files && files.length))
+            (msg.msgBody != "" || (files && files.length)) &&
+            !isSendingMsg &&
+            !isSendingMedia
           ) {
             await handleSendMessage({
               msgBody: msg.msgBody,
@@ -395,7 +401,7 @@ const ChatInput = ({
                 });
               }}
             ></Input>
-            
+
             <Button
               className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
               variant={"no_style"}

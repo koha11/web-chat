@@ -12,6 +12,7 @@ import {
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import { IMessage } from "../interfaces/messages/message.interface";
+import { updateMsgCache } from "@/utils/updateCache.helper";
 
 export const useGetMessages = ({
   chatId,
@@ -63,37 +64,7 @@ export const usePostMessage = ({ first = 20 }: { first?: number }) => {
   return useMutation(POST_MESSAGE, {
     update(cache, { data }) {
       const addedMsg = data.postMessage;
-
-      const existing = cache.readQuery<{
-        messages: IModelConnection<IMessage>;
-      }>({
-        query: GET_MESSAGES,
-        variables: { chatId: addedMsg.chat, first },
-      });
-
-      if (existing) {
-        cache.writeQuery({
-          query: GET_MESSAGES,
-          variables: { chatId: addedMsg.chat, first },
-          data: {
-            messages: {
-              ...existing.messages,
-              edges: [
-                {
-                  __typename: "MessageEdge",
-                  cursor: addedMsg.id,
-                  node: addedMsg,
-                },
-                ...existing.messages.edges,
-              ],
-              pageInfo: {
-                ...existing.messages.pageInfo,
-                startCursor: addedMsg.id,
-              },
-            } as IModelConnection<IMessage>,
-          },
-        });
-      }
+      updateMsgCache({ cache, option: "ADD", newMsg: addedMsg, first });
     },
   });
 };
