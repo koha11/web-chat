@@ -25,7 +25,7 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-  const [mediaViewer, setMediaViewer] = useState("");
+  const [mediaViewerIndex, setMediaViewerIndex] = useState(-1);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -59,7 +59,7 @@ const Chat = () => {
           }
           userId={userId}
           open={chatInfoOpen}
-          setMediaViewer={setMediaViewer}
+          setMediaViewerIndex={setMediaViewerIndex}
         ></ChatInfo>
       </div>
       {ongoingCall && (
@@ -72,10 +72,10 @@ const Chat = () => {
           msgId={ongoingCall.msgId}
         ></OngoingCallDialog>
       )}
-      {mediaViewer != "" && (
+      {mediaViewerIndex != -1 && (
         <ChatMediaViewer
-          mediaViewer={mediaViewer}
-          setMediaViewer={setMediaViewer}
+          mediaViewerIndex={mediaViewerIndex}
+          setMediaViewerIndex={setMediaViewerIndex}
         ></ChatMediaViewer>
       )}
     </div>
