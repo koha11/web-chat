@@ -8,6 +8,7 @@ import CollapsibleChatConfig from "../../components/chat/CollapsibleChatConfig";
 import CollapsibleChatMembers from "../../components/chat/CollapsibleChatMembers";
 import CollapsibleChatMedia from "../../components/chat/CollapsibleChatMedia";
 import CollapsibleChatPrivacy from "../../components/chat/CollapsibleChatPrivacy";
+import ChatFileDiaglog from "@/components/chat/ChatFileDiaglog";
 
 const ChatInfo = ({
   chat,
