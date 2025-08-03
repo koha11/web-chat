@@ -40,7 +40,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
     case MessageType.IMAGE:
       return MyTooltip(
         <div
-          className="rounded-3xl bg-contain bg-no-repeat bg-center w-48 h-48"
+          className="rounded-3xl bg-contain bg-no-repeat bg-center w-48 h-48 cursor-pointer"
           style={{ backgroundImage: `url(${msg.file?.url})` }}
         ></div>,
         getDisplaySendMsgTime(msg.createdAt!),
@@ -50,7 +50,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
       return MyTooltip(
         <ReactPlayer
           src={msg.file?.url}
-          className={`rounded-3xl`}
+          className={`rounded-3xl cursor-pointer`}
           controls
         ></ReactPlayer>,
         getDisplaySendMsgTime(msg.createdAt!),

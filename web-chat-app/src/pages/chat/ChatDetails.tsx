@@ -23,6 +23,8 @@ import IModelConnection, {
 import { TypingIndicator } from "../../components/ui/typing-indicator";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
+import { Button } from "@/components/ui/button";
+import { ArrowDown } from "lucide-react";
 
 const ChatDetails = ({
   chat,
@@ -209,6 +211,8 @@ const ChatDetails = ({
         return { ...old, [chatId]: true };
       });
     }
+
+    msgsContainerRef.current?.scrollTo(0, 0);
   }, [chatId]);
 
   // HANDLERs
@@ -273,6 +277,15 @@ const ChatDetails = ({
           }
         }}
       >
+        <Button
+          className="fixed rounded-full cursor-pointer opacity-50 left-[50%] translate-x-[-50%]"
+          variant={"outline"}
+          onClick={() => {
+            msgsContainerRef.current?.scrollTo(0, 0);
+          }}
+        >
+          <ArrowDown></ArrowDown>
+        </Button>
         {typingUsers && typingUsers?.length > 0 && (
           <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div
@@ -324,8 +337,6 @@ const ChatDetails = ({
             setMessages((prev) => {
               const time = new Date(msg.createdAt!);
               const last = prev ? prev[0] : undefined;
-
-              console.log(last);
 
               if (
                 prev &&
