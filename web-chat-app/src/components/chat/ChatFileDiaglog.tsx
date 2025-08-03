@@ -1,4 +1,4 @@
-import { PlayCircle, Search } from "lucide-react";
+import { File, PlayCircle, Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
@@ -8,23 +8,35 @@ import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 import Loading from "../ui/loading";
 import MessageType from "@/enums/MessageType.enum";
+import { strimMessageBody } from "@/utils/messageText.helper";
+import { useEffect } from "react";
+import { getDisplayFileSize } from "@/utils/file.helper";
 
 const ChatFileDiaglog = ({
   isOpen,
   setOpen,
   value,
+  setValue,
 }: {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
   value: "media-files" | "files";
+  setValue: Function;
 }) => {
   const { id } = useParams();
 
-  const { data: fileMessageConnection, loading: isFilesLoading } =
-    useGetFileMessages({
-      chatId: id!,
-      isMediaFile: value == "media-files",
-    });
+  const {
+    data: fileMessageConnection,
+    loading: isFilesLoading,
+    refetch,
+  } = useGetFileMessages({
+    chatId: id!,
+    isMediaFile: value == "media-files",
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [value]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -34,7 +46,7 @@ const ChatFileDiaglog = ({
             Media files and files
           </DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue={value}>
+        <Tabs defaultValue={value} onValueChange={(value) => setValue(value)}>
           <TabsList>
             <TabsTrigger
               value="media-files"
@@ -83,7 +95,33 @@ const ChatFileDiaglog = ({
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="files">Change your password here.</TabsContent>
+            <TabsContent value="files">
+              <div className="space-y-2">
+                {isFilesLoading && <Loading></Loading>}
+                {fileMessageConnection &&
+                  fileMessageConnection.edges.map((edge) => {
+                    const msg = edge.node;
+                    const file = msg.file!;
+
+                    return (
+                      <div
+                        className="flex gap-2 items-center border-b-2 border-gray-200 py-2 cursor-pointer"
+                        onClick={() => {
+                          window.open(file.url, "_blank");
+                        }}
+                      >
+                        <div className="flex justify-center items-center bg-gray-200 p-4 rounded-xl">
+                          <File></File>
+                        </div>
+                        <div className="space-y-1">
+                          <div>{file.filename}</div>
+                          <div>{getDisplayFileSize(file.size)}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </TabsContent>
           </div>
         </Tabs>
       </DialogContent>

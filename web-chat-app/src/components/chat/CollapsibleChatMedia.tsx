@@ -43,6 +43,7 @@ const CollapsibleChatMedia = ({}: {}) => {
         isOpen={isOpen}
         setOpen={setOpen}
         value={value}
+        setValue={setValue}
       ></ChatFileDiaglog>
     </>
   );
