@@ -74,17 +74,6 @@ const MessageActions = ({
       }`}
     >
       {/* emoji btn  */}
-      {/* <Button
-        size={"sm"}
-        variant="link"
-        className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
-          isUnsendMsg && "hidden"
-        }`}
-        onClick={(e) => {}}
-      >
-        <SmileIcon></SmileIcon>
-      </Button> */}
-
       <DropdownMenu open={isReactionOpen} onOpenChange={setReactionOpen}>
         <DropdownMenuTrigger
           asChild

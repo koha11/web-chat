@@ -35,7 +35,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           <div>{msg.file?.filename}</div>
         </a>,
         getDisplaySendMsgTime(msg.createdAt!),
-        "order-2 max-w-[100%]"
+        "max-w-[100%]"
       );
     case MessageType.IMAGE:
       return MyTooltip(
@@ -44,7 +44,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           style={{ backgroundImage: `url(${msg.file?.url})` }}
         ></div>,
         getDisplaySendMsgTime(msg.createdAt!),
-        "order-2 max-w-[30%]"
+        "max-w-[30%]"
       );
     case MessageType.VIDEO:
       return MyTooltip(
@@ -54,7 +54,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           controls
         ></ReactPlayer>,
         getDisplaySendMsgTime(msg.createdAt!),
-        "order-2 max-w-[100%]"
+        "max-w-[100%]"
       );
     case MessageType.VIDEO_CALL:
       return MyTooltip(
@@ -73,7 +73,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           </div>
         </div>,
         getDisplaySendMsgTime(msg.createdAt!),
-        "order-2 max-w-[100%]"
+        "max-w-[100%]"
       );
     case MessageType.AUDIO_CALL:
       return MyTooltip(
@@ -92,12 +92,12 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           </div>
         </div>,
         getDisplaySendMsgTime(msg.createdAt!),
-        "order-2 max-w-[100%]"
+        "max-w-[100%]"
       );
     default:
       return MyTooltip(
         <div
-          className={`py-2 px-3 text-xl text-[1rem] rounded-2xl order-2 text-justify   ${
+          className={`py-2 px-3 text-xl text-[1rem] rounded-2xl text-justify ${
             isSentMsg ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >

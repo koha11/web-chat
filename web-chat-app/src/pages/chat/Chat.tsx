@@ -7,6 +7,7 @@ import ChatIndex from "./ChatIndex";
 import Cookies from "js-cookie";
 import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
+import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
 
 const Chat = () => {
   const { id } = useParams();
@@ -24,6 +25,7 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
+  const [mediaViewer, setMediaViewer] = useState("");
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -57,6 +59,7 @@ const Chat = () => {
           }
           userId={userId}
           open={chatInfoOpen}
+          setMediaViewer={setMediaViewer}
         ></ChatInfo>
       </div>
       {ongoingCall && (
@@ -68,6 +71,12 @@ const Chat = () => {
           chatId={ongoingCall.chatId}
           msgId={ongoingCall.msgId}
         ></OngoingCallDialog>
+      )}
+      {mediaViewer != "" && (
+        <ChatMediaViewer
+          mediaViewer={mediaViewer}
+          setMediaViewer={setMediaViewer}
+        ></ChatMediaViewer>
       )}
     </div>
   );

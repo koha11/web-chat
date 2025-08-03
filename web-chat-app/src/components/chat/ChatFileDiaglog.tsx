@@ -17,11 +17,13 @@ const ChatFileDiaglog = ({
   setOpen,
   value,
   setValue,
+  setMediaViewer,
 }: {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
   value: "media-files" | "files";
   setValue: Function;
+  setMediaViewer: (msgId: string) => void;
 }) => {
   const { id } = useParams();
 
@@ -69,7 +71,13 @@ const ChatFileDiaglog = ({
                       const msg = edge.node;
                       if (msg.type == MessageType.VIDEO)
                         return (
-                          <div className="relative cursor-pointer">
+                          <div
+                            className="relative cursor-pointer"
+                            onClick={() => {
+                              setOpen(false);
+                              setMediaViewer(msg.id);
+                            }}
+                          >
                             <video
                               className="aspect-square object-cover object-center"
                               src={msg.file?.url}
@@ -87,6 +95,10 @@ const ChatFileDiaglog = ({
 
                       return (
                         <div
+                          onClick={() => {
+                            setOpen(false);
+                            setMediaViewer(msg.id);
+                          }}
                           className="aspect-square cursor-pointer bg-cover bg-center"
                           style={{ backgroundImage: `url(${msg.file?.url})` }}
                         ></div>

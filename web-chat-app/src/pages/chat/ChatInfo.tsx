@@ -14,10 +14,12 @@ const ChatInfo = ({
   chat,
   userId,
   open,
+  setMediaViewer
 }: {
   chat: IChat;
   userId: string;
   open: boolean;
+  setMediaViewer: (msgId: string) => void;
 }) => {
   if (!chat) return <></>;
 
@@ -67,7 +69,7 @@ const ChatInfo = ({
       {isGroupChat && (
         <CollapsibleChatMembers chat={chat}></CollapsibleChatMembers>
       )}
-      <CollapsibleChatMedia></CollapsibleChatMedia>
+      <CollapsibleChatMedia setMediaViewer={setMediaViewer}></CollapsibleChatMedia>
       <CollapsibleChatPrivacy></CollapsibleChatPrivacy>
     </section>
   );

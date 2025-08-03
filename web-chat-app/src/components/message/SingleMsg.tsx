@@ -134,7 +134,7 @@ const SingleMsg = ({
           ></MessageActions>
         )}
 
-        <div className="relative order-2">
+        <div className="relative order-2 w-fit">
           {/* Hien thi noi dung tin nhan  */}
           {msg.status == MessageStatus.UNSEND ? (
             MyTooltip(
