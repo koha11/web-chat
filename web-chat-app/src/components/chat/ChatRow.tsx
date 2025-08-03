@@ -5,7 +5,7 @@ import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { getDisplayTimeDiff } from "../../utils/messageTime.helper";
 import { Skeleton } from "../ui/skeleton";
-import { strimMessageBody } from "../../utils/messageText.helper";
+import { strimText } from "../../utils/text.helper";
 import { Button } from "../ui/button";
 import MessageStatus from "../../enums/MessageStatus.enum";
 import {
@@ -89,8 +89,8 @@ const ChatRow = ({
                 <div className="">
                   {lastMsg.user == userId && "You:"}{" "}
                   {lastMsg.type == MessageType.TEXT
-                    ? lastMsg.msgBody!.length > 12
-                      ? strimMessageBody(lastMsg.msgBody!, 12)
+                    ? lastMsg.msgBody!.length > 25
+                      ? strimText(lastMsg.msgBody!, 25)
                       : lastMsg.msgBody
                     : `${name} have sent you a media`}
                 </div>

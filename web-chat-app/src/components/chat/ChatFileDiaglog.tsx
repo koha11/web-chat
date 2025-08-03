@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 import Loading from "../ui/loading";
 import MessageType from "@/enums/MessageType.enum";
-import { strimMessageBody } from "@/utils/messageText.helper";
+import { strimText } from "@/utils/text.helper";
 import { useEffect } from "react";
 import { getDisplayFileSize } from "@/utils/file.helper";
 
@@ -114,7 +114,7 @@ const ChatFileDiaglog = ({
                           <File></File>
                         </div>
                         <div className="space-y-1">
-                          <div>{file.filename}</div>
+                          <div>{strimText(file.filename, 30)}</div>
                           <div>{getDisplayFileSize(file.size)}</div>
                         </div>
                       </div>
