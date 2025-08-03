@@ -72,6 +72,35 @@ export const messageResolvers: IResolvers = {
 
       return result;
     },
+
+    fileMessages: async (
+      _p: any,
+      { chatId, after, first, isMediaFile },
+      { user, pubsub }: IMyContext
+    ) => {
+      const filter = isMediaFile
+        ? {
+            type: {
+              $in: [MessageType.IMAGE, MessageType.VIDEO],
+            },
+          }
+        : {
+            type: MessageType.FILE,
+          };
+
+      const result = await messageService.getMessages({
+        chatId,
+        first,
+        after,
+        filter,
+      });
+
+      const isNotEmpty = result.edges.length > 0;
+
+      console.log(result);
+
+      return result;
+    },
   },
 
   Mutation: {

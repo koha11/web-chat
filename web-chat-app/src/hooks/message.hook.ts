@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
+  GET_FILE_MESSAGES,
   GET_LAST_MESSAGES,
   GET_MESSAGES,
   POST_MEDIA_MESSAGE,
@@ -57,6 +58,31 @@ export const useGetLastMessages = ({
     refetch: myQuery.refetch,
     subscribeToMore: myQuery.subscribeToMore,
     fetchMore: myQuery.refetch,
+  };
+};
+
+export const useGetFileMessages = ({
+  chatId,
+  after,
+  first,
+  isMediaFile,
+}: {
+  chatId: string;
+  first?: number;
+  after?: string;
+  isMediaFile: boolean;
+}): IMyQueryResult<IModelConnection<IMessage>> => {
+  const myQuery = useQuery(GET_FILE_MESSAGES, {
+    variables: { chatId, first, after, isMediaFile },
+    skip: !chatId,
+  });
+
+  return {
+    data: myQuery.data == undefined ? undefined : myQuery.data.fileMessages,
+    loading: myQuery.loading,
+    subscribeToMore: myQuery.subscribeToMore,
+    refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
   };
 };
 

@@ -48,6 +48,13 @@ export const messageTypeDefs = gql`
     ): MessageConnection!
 
     lastMessages(userId: ID!): JSONObject
+
+    fileMessages(
+      chatId: ID!
+      first: Int = 10
+      after: ID
+      isMediaFile: Boolean!
+    ): MessageConnection!
   }
 
   extend type Mutation {

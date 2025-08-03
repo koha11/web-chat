@@ -39,6 +39,38 @@ export const GET_MESSAGES = gql`
   }
 `;
 
+export const GET_FILE_MESSAGES = gql`
+  query GetFileMessages(
+    $chatId: ID!
+    $first: Int
+    $after: ID
+    $isMediaFile: Boolean!
+  ) {
+    fileMessages(
+      chatId: $chatId
+      first: $first
+      after: $after
+      isMediaFile: $isMediaFile
+    ) {
+      edges {
+        node {
+          id
+          createdAt
+          isHiddenFor
+          type
+          file
+        }
+        cursor
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 export const GET_LAST_MESSAGES = gql`
   query GetLastMessages($userId: ID!) {
     lastMessages(userId: $userId)

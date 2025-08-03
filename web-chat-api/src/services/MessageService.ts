@@ -9,20 +9,26 @@ class MessageService {
     chatId,
     first = 10,
     after,
+    filter,
   }: {
     chatId: string;
     sort?: any;
     first?: number;
     after?: string;
+    filter?: any;
   }): Promise<IModelConnection<IMessage>> => {
-    const filter = { chat: chatId } as any;
+    let myFilter = { chat: chatId } as any;
 
     if (after) {
       // decode cursor into ObjectId timestamp or full id
-      filter._id = { $lt: toObjectId(after) };
+      myFilter._id = { $lt: toObjectId(after) };
     }
 
-    const docs = await Message.find(filter)
+    if (filter) {
+      myFilter = { ...myFilter, ...filter };
+    }
+
+    const docs = await Message.find(myFilter)
       .populate("replyForMsg")
       .sort({ _id: -1 })
       .limit(first + 1);
