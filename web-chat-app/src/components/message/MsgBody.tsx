@@ -11,7 +11,15 @@ import { FileText, Mic, Video } from "lucide-react";
 import ReactPlayer from "react-player";
 import MarkdownMessage from "./MarkdownMessage";
 
-const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
+const MsgBody = ({
+  msg,
+  isSentMsg,
+  setMediaId,
+}: {
+  msg: IMessage;
+  isSentMsg: boolean;
+  setMediaId: (msgId: string) => void;
+}) => {
   switch (msg.type) {
     case MessageType.AUDIO:
       return MyTooltip(
@@ -42,6 +50,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
         <div
           className="rounded-3xl bg-contain bg-no-repeat bg-center w-48 h-48 cursor-pointer"
           style={{ backgroundImage: `url(${msg.file?.url})` }}
+          onClick={() => setMediaId(msg.id)}
         ></div>,
         getDisplaySendMsgTime(msg.createdAt!),
         "max-w-[30%]"
@@ -52,6 +61,7 @@ const MsgBody = ({ msg, isSentMsg }: { msg: IMessage; isSentMsg: boolean }) => {
           src={msg.file?.url}
           className={`rounded-3xl cursor-pointer`}
           controls
+          onClick={() => setMediaId(msg.id)}
         ></ReactPlayer>,
         getDisplaySendMsgTime(msg.createdAt!),
         "max-w-[100%]"

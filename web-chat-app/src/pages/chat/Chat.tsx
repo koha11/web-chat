@@ -51,6 +51,7 @@ const Chat = () => {
             hasUpdated={updatedChatMap[id] ?? true}
             setUpdatedChatMap={setUpdatedChatMap}
             setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
+            setMediaId={setMediaId}
           ></ChatDetails>
         )}
         <ChatInfo

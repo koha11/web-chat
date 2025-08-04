@@ -25,6 +25,7 @@ const SingleMsg = ({
   seenList,
   handleReplyMsg,
   usersMap,
+  setMediaId,
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
@@ -35,6 +36,7 @@ const SingleMsg = ({
   seenList: IUser[];
   usersMap: { [userId: string]: IUser };
   handleReplyMsg: (msg: IMessage) => void;
+  setMediaId: (msgId: string) => void;
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -153,7 +155,11 @@ const SingleMsg = ({
               "order-2"
             )
           ) : (
-            <MsgBody isSentMsg={isSentMsg} msg={msg}></MsgBody>
+            <MsgBody
+              isSentMsg={isSentMsg}
+              msg={msg}
+              setMediaId={setMediaId}
+            ></MsgBody>
           )}
 
           {/* hien thi reactions  */}

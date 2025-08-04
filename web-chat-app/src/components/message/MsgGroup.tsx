@@ -14,6 +14,7 @@ const GroupMsg = ({
   usersMap,
   isFirstGroup,
   handleReplyMsg,
+  setMediaId,
 }: {
   userId: string;
   messages: IMessage[];
@@ -21,6 +22,7 @@ const GroupMsg = ({
   usersMap: { [userId: string]: IUser };
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
+  setMediaId: (msgId: string) => void;
 }) => {
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0;
@@ -74,6 +76,7 @@ const GroupMsg = ({
               seenList={seenList}
               usersMap={usersMap}
               handleReplyMsg={handleReplyMsg}
+              setMediaId={setMediaId}
             ></SingleMsg>
           );
         })}

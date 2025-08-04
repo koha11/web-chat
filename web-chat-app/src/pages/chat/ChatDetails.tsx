@@ -33,6 +33,7 @@ const ChatDetails = ({
   hasUpdated,
   setUpdatedChatMap,
   setChatInfoOpen,
+  setMediaId,
 }: {
   userId: string;
   chat: IChat | undefined;
@@ -40,6 +41,7 @@ const ChatDetails = ({
   hasUpdated: boolean;
   setUpdatedChatMap: Function;
   setChatInfoOpen: Function;
+  setMediaId: (msgId: string) => void;
 }) => {
   // states
   const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser } | null>(
@@ -307,6 +309,7 @@ const ChatDetails = ({
                   usersMap={usersMap}
                   isFirstGroup={index == 0}
                   handleReplyMsg={handleReplyMsg}
+                  setMediaId={setMediaId}
                 ></GroupMsg>
               );
             })
