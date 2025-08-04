@@ -16,11 +16,11 @@ import { IMessage } from "@/interfaces/messages/message.interface";
 import MessageType from "@/enums/MessageType.enum";
 
 const ChatMediaViewer = ({
-  mediaViewerIndex,
-  setMediaViewerIndex,
+  mediaId,
+  setMediaId,
 }: {
-  mediaViewerIndex: number;
-  setMediaViewerIndex: (msgId: number) => void;
+  mediaId: string;
+  setMediaId: (msgId: string) => void;
 }) => {
   const { id } = useParams();
 
@@ -34,17 +34,26 @@ const ChatMediaViewer = ({
     undefined
   );
 
+  const [mediaIndex, setMediaIndex] = useState(-1);
+
+  useEffect(() => {
+    if (fileMessageConnection && mediaIndex >= 0)
+      setChoosenMedia(fileMessageConnection?.edges[mediaIndex].node);
+  }, [mediaIndex]);
+
   useEffect(() => {
     if (fileMessageConnection)
-      setChoosenMedia(fileMessageConnection?.edges[mediaViewerIndex].node);
-  }, [mediaViewerIndex]);
+      setMediaIndex(
+        fileMessageConnection.edges.findIndex((edge) => edge.cursor == mediaId)
+      );
+  }, [fileMessageConnection]);
 
   if (isFilesLoading) return <Loading />;
 
   return (
     <div
       className="fixed h-screen w-screen bg-[rgba(0,0,0,0.8)] z-[9999999] flex justify-center"
-      onClick={() => setMediaViewerIndex(-1)}
+      onClick={() => setMediaId("")}
     >
       <div className="relative w-full flex justify-between items-center px-2">
         {/* HEADER  */}
@@ -70,7 +79,7 @@ const ChatMediaViewer = ({
             className="cursor-pointer text-white rounded-full p-2 bg-[rgba(0,0,0,0.2)] hover:opacity-80"
             variant={"no_style"}
             size={"no_style"}
-            onClick={() => setMediaViewerIndex(-1)}
+            onClick={() => setMediaId("")}
           >
             <X></X>
           </Button>
@@ -78,12 +87,12 @@ const ChatMediaViewer = ({
 
         <Button
           className={`rounded-full cursor-pointer p-4 ${
-            mediaViewerIndex == 0 && "cursor-not-allowed"
+            mediaIndex == 0 && "cursor-not-allowed"
           }`}
           size={"no_style"}
           onClick={(e) => {
             e.stopPropagation();
-            if (mediaViewerIndex > 0) setMediaViewerIndex(mediaViewerIndex - 1);
+            if (mediaIndex > 0) setMediaIndex(mediaIndex - 1);
           }}
         >
           <ArrowLeft></ArrowLeft>
@@ -115,14 +124,14 @@ const ChatMediaViewer = ({
             {fileMessageConnection?.edges.map((edge, index) => {
               const file = edge.node.file!;
 
-              const isChoosen = mediaViewerIndex == index;
+              const isChoosen = mediaIndex == index;
 
               if (file.type.startsWith("video"))
                 return (
                   <div
                     className="relative cursor-pointer"
                     onClick={() => {
-                      setMediaViewerIndex(index);
+                      setMediaIndex(index);
                     }}
                   >
                     <video
@@ -148,7 +157,7 @@ const ChatMediaViewer = ({
                     isChoosen ? "opacity-100" : "hover:opacity-80 opacity-50"
                   }`}
                   onClick={() => {
-                    setMediaViewerIndex(index);
+                    setMediaIndex(index);
                   }}
                 ></img>
               );
@@ -158,14 +167,14 @@ const ChatMediaViewer = ({
 
         <Button
           className={`rounded-full cursor-pointer p-4 ${
-            mediaViewerIndex == fileMessageConnection!.edges.length - 1 &&
+            mediaIndex == fileMessageConnection!.edges.length - 1 &&
             "cursor-not-allowed"
           }`}
           size={"no_style"}
           onClick={(e) => {
             e.stopPropagation();
-            if (mediaViewerIndex < fileMessageConnection!.edges.length - 1)
-              setMediaViewerIndex(mediaViewerIndex + 1);
+            if (mediaIndex < fileMessageConnection!.edges.length - 1)
+              setMediaIndex(mediaIndex + 1);
           }}
         >
           <ArrowRight></ArrowRight>

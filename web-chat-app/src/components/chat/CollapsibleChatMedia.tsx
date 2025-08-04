@@ -4,9 +4,9 @@ import ChatFileDiaglog from "./ChatFileDiaglog";
 import { useState } from "react";
 
 const CollapsibleChatMedia = ({
-  setMediaViewerIndex,
+  setMediaId,
 }: {
-  setMediaViewerIndex: (index: number) => void;
+  setMediaId: (msgId: string) => void;
 }) => {
   const [isOpen, setOpen] = useState(false);
   const [value, setValue] = useState<"media-files" | "files">("media-files");
@@ -48,7 +48,7 @@ const CollapsibleChatMedia = ({
         setOpen={setOpen}
         value={value}
         setValue={setValue}
-        setMediaViewerIndex={setMediaViewerIndex}
+        setMediaId={setMediaId}
       ></ChatFileDiaglog>
     </>
   );
