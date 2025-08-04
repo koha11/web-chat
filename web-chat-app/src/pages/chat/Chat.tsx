@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useOutletContext, useParams } from "react-router-dom";
+import { useLocation, useOutletContext, useParams } from "react-router-dom";
 import ChatDetails from "./ChatDetails";
 import ChatList from "./ChatList";
 import ChatIndex from "./ChatIndex";
@@ -8,9 +8,12 @@ import Cookies from "js-cookie";
 import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
+import ChatInit from "./ChatInit";
 
 const Chat = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const isNewChat = location.pathname.includes("new");
   const userId = Cookies.get("userId") ?? "";
 
   const {
@@ -37,9 +40,12 @@ const Chat = () => {
           isChatsLoading={isChatsLoading}
           isLastMsgLoading={isLastMsgLoading}
           userId={userId!}
+          isNewChat={isNewChat}
         ></ChatList>
 
-        {id == undefined ? (
+        {isNewChat ? (
+          <ChatInit></ChatInit>
+        ) : id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
@@ -54,6 +60,7 @@ const Chat = () => {
             setMediaId={setMediaId}
           ></ChatDetails>
         )}
+
         <ChatInfo
           chat={
             chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
@@ -63,6 +70,8 @@ const Chat = () => {
           setMediaId={setMediaId}
         ></ChatInfo>
       </div>
+
+      {/* Ongoing call  */}
       {ongoingCall && (
         <OngoingCallDialog
           isOpen={true}
@@ -73,6 +82,8 @@ const Chat = () => {
           msgId={ongoingCall.msgId}
         ></OngoingCallDialog>
       )}
+
+      {/* Media Viewer  */}
       {mediaId != "" && (
         <ChatMediaViewer
           mediaId={mediaId}

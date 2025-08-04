@@ -1,4 +1,14 @@
-import { User, LogOut, Contact, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Contact,
+  ChevronDown,
+  ChevronUp,
+  MailPlus,
+  FolderPlus,
+  MessageCirclePlus,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import Cookies from "js-cookie";
@@ -13,6 +23,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import EmblaCarousel from "@/components/carousel/EmblaCarousel";
+import { Button } from "@/components/ui/button";
 
 const ChatList = ({
   chatList,
@@ -21,6 +32,7 @@ const ChatList = ({
   currChatId,
   isChatsLoading,
   isLastMsgLoading,
+  isNewChat,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
@@ -30,6 +42,7 @@ const ChatList = ({
   currChatId: string;
   isChatsLoading: boolean;
   isLastMsgLoading: boolean;
+  isNewChat: boolean;
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isOpen, setOpen] = useState(false);
@@ -40,14 +53,20 @@ const ChatList = ({
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="flex justify-between items-center py-2 px-2">
-        <h1 className="text-xl font-bold">Đoạn chat</h1>
+        <h1 className="text-xl font-bold">My Chat</h1>
         <div className="flex items-center gap-2">
+          <Link
+            to="/m/new"
+            className="p-2 rounded-full bg-gray-200 hover:opacity-50"
+          >
+            <MessageCirclePlus></MessageCirclePlus>
+          </Link>
           <Link
             to="/me"
             className="p-2 rounded-full bg-gray-200 hover:opacity-50"
           >
             <User></User>
-          </Link>          
+          </Link>
           <Link
             to="/contact"
             className="p-2 rounded-full bg-gray-200 hover:opacity-50"
@@ -94,6 +113,29 @@ const ChatList = ({
         id="chat-box-list"
         className="overflow-y-scroll flex flex-col gap-6 h-[70%]"
       >
+        {isNewChat && (
+          <div className="chat-box w-full h-18 relative">
+            <div
+              className={`flex items-center gap-4 px-2 py-4 rounded-2xl bg-gray-400 cursor-default relative`}
+            >
+              <div
+                className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
+                style={{
+                  backgroundImage: `url(/assets/images/google-logo.png)`,
+                }}
+              ></div>
+              <div className="font-bold">New message</div>
+              {!isChatsLoading && (
+                <Link
+                  to={`/m/${chatList![0].id}`}
+                  className="rounded-full absolute right-4 top-[50%] translate-y-[-50%] cursor-pointer opacity-30 bg-gray-200 p-1 hover:opacity-40"
+                >
+                  <X size={16}></X>
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
         {isChatsLoading
           ? [1, 2, 3, 4, 5, 6].map((index) => (
               <div

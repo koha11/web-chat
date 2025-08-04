@@ -120,6 +120,14 @@ const router = createBrowserRouter([
                 ),
               },
               {
+                path: "/m/new",
+                element: (
+                  <Suspense fallback={<Loading></Loading>}>
+                    <Chat />
+                  </Suspense>
+                ),
+              },
+              {
                 path: "/m/:id",
                 element: (
                   <Suspense fallback={<Loading></Loading>}>

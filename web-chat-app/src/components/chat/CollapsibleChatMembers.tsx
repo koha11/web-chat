@@ -2,6 +2,8 @@ import MyCollapsible from "../ui/my-collapsible";
 import { IChat } from "@/interfaces/chat.interface";
 import { IUser } from "@/interfaces/user.interface";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
+import { UserPlus } from "lucide-react";
 
 const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
   const navigate = useNavigate();
@@ -19,6 +21,16 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
       ),
       onClick: () => {},
     };
+  });
+
+  members.push({
+    content: (
+      <>
+        <UserPlus></UserPlus>
+        <span>Add member</span>
+      </>
+    ),
+    onClick: () => {},
   });
 
   return (
