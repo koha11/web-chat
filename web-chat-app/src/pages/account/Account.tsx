@@ -1,5 +1,12 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { ArrowLeftCircle, Settings, ShieldAlert, UserIcon } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  LogOut,
+  Settings,
+  ShieldAlert,
+  UserIcon,
+} from "lucide-react";
+import Cookies from "js-cookie";
 
 const Account = () => {
   return (
@@ -57,6 +64,27 @@ const Account = () => {
               <div className="flex gap-4 items-center">
                 <Settings></Settings>
                 <div className="font-bold">Settings</div>
+              </div>
+            </NavLink>
+            <NavLink
+              to={"/login"}
+              onClick={() => {
+                const token = Cookies.get("accessToken");
+
+                if (token) {
+                  Cookies.remove("accessToken");
+                  Cookies.remove("userId");
+                }
+              }}
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-xl py-2 px-4  ${
+                  isActive ? "cursor-default bg-gray-300" : "hover:bg-gray-300"
+                }`
+              }
+            >
+              <div className="flex gap-4 items-center">
+                <LogOut></LogOut>
+                <div className="font-bold">LogOut</div>
               </div>
             </NavLink>
           </nav>

@@ -298,7 +298,7 @@ const ChatDetails = ({
           </div>
         )}
 
-        {chat && usersMap && messages
+        {chat && usersMap && Object.keys(usersMap).length > 0 && messages
           ? messages.map((msg, index) => {
               return (
                 <GroupMsg

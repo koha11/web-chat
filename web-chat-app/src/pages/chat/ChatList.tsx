@@ -47,21 +47,7 @@ const ChatList = ({
             className="p-2 rounded-full bg-gray-200 hover:opacity-50"
           >
             <User></User>
-          </Link>
-          <Link
-            to={"/login"}
-            onClick={() => {
-              const token = Cookies.get("accessToken");
-
-              if (token) {
-                Cookies.remove("accessToken");
-                Cookies.remove("userId");
-              }
-            }}
-            className="p-2 rounded-full bg-gray-200 hover:opacity-50"
-          >
-            <LogOut></LogOut>
-          </Link>
+          </Link>          
           <Link
             to="/contact"
             className="p-2 rounded-full bg-gray-200 hover:opacity-50"
