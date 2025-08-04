@@ -42,10 +42,30 @@ const ChatMediaViewer = ({
   }, [mediaIndex]);
 
   useEffect(() => {
-    if (fileMessageConnection)
+    if (fileMessageConnection) {
       setMediaIndex(
         fileMessageConnection.edges.findIndex((edge) => edge.cursor == mediaId)
       );
+
+      window.onkeydown = (e) => {
+        console.log(e.key);
+        switch (e.key) {
+          case "ArrowLeft":
+            setMediaIndex((index) => (index == 0 ? index : index - 1));
+            break;
+          case "ArrowRight":
+            setMediaIndex((index) =>
+              index == fileMessageConnection.edges.length - 1
+                ? index
+                : index + 1
+            );
+            break;
+          case "Escape":
+            setMediaId("");
+            break;
+        }
+      };
+    }
   }, [fileMessageConnection]);
 
   if (isFilesLoading) return <Loading />;
