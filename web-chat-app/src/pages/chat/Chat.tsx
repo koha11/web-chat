@@ -9,6 +9,7 @@ import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
 import ChatInit from "./ChatInit";
+import { IUser } from "@/interfaces/user.interface";
 
 const Chat = () => {
   const { id } = useParams();
@@ -29,6 +30,7 @@ const Chat = () => {
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
   const [mediaId, setMediaId] = useState("");
+  const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -41,10 +43,14 @@ const Chat = () => {
           isLastMsgLoading={isLastMsgLoading}
           userId={userId!}
           isNewChat={isNewChat}
+          choosenUsers={choosenUsers}
         ></ChatList>
 
         {isNewChat ? (
-          <ChatInit></ChatInit>
+          <ChatInit
+            choosenUsers={choosenUsers}
+            setChoosenUsers={setChoosenUsers}
+          ></ChatInit>
         ) : id == undefined ? (
           <ChatIndex></ChatIndex>
         ) : (

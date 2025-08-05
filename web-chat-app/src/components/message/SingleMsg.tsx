@@ -43,7 +43,7 @@ const SingleMsg = ({
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
-  
+
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}

@@ -24,6 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import EmblaCarousel from "@/components/carousel/EmblaCarousel";
 import { Button } from "@/components/ui/button";
+import { IUser } from "@/interfaces/user.interface";
+import { strimText } from "@/utils/text.helper";
 
 const ChatList = ({
   chatList,
@@ -33,6 +35,7 @@ const ChatList = ({
   isChatsLoading,
   isLastMsgLoading,
   isNewChat,
+  choosenUsers,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
@@ -43,6 +46,7 @@ const ChatList = ({
   isChatsLoading: boolean;
   isLastMsgLoading: boolean;
   isNewChat: boolean;
+  choosenUsers: IUser[];
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isOpen, setOpen] = useState(false);
@@ -52,6 +56,7 @@ const ChatList = ({
       className="flex-2 h-full p-2 bg-white rounded-2xl space-y-2"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
+      {/* HEADER  */}
       <div className="flex justify-between items-center py-2 px-2">
         <h1 className="text-xl font-bold">My Chat</h1>
         <div className="flex items-center gap-2">
@@ -113,6 +118,7 @@ const ChatList = ({
         id="chat-box-list"
         className="overflow-y-scroll flex flex-col gap-6 h-[70%]"
       >
+        {/* create new chat display */}
         {isNewChat && (
           <div className="chat-box w-full h-18 relative">
             <div
@@ -121,10 +127,26 @@ const ChatList = ({
               <div
                 className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
                 style={{
-                  backgroundImage: `url(/assets/images/google-logo.png)`,
+                  backgroundImage: `url(${
+                    choosenUsers.length == 0
+                      ? "/assets/images/default-user.png"
+                      : choosenUsers[0].avatar
+                  })`,
                 }}
               ></div>
-              <div className="font-bold">New message</div>
+
+              <div className="font-bold">
+                {strimText(
+                  `New message
+                ${
+                  choosenUsers.length > 0
+                    ? `to ${choosenUsers.map((user) => user.fullname)}`
+                    : ``
+                }`,
+                  45
+                )}
+              </div>
+
               {!isChatsLoading && (
                 <Link
                   to={`/m/${chatList![0].id}`}

@@ -12,18 +12,21 @@ import { Input } from "@/components/ui/input";
 import Loading from "@/components/ui/loading";
 import { useGetContacts } from "@/hooks/contact.hook";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { IUser } from "@/interfaces/user.interface";
 
-const ChatInit = () => {
+const ChatInit = ({
+  choosenUsers,
+  setChoosenUsers,
+}: {
+  choosenUsers: IUser[];
+  setChoosenUsers: Function;
+}) => {
   const userId = Cookies.get("userId");
 
-  const dropdownMenuTriggerRef = useRef<HTMLButtonElement>(null);
-
   const [isOpen, setOpen] = useState(true);
-  const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
 
   const { register } = useForm<{ search: string }>();
 
@@ -52,7 +55,7 @@ const ChatInit = () => {
               size={"no_style"}
               className="hover:bg-gray-200 hover:opacity-50 cursor-pointer p-1 rounded-full"
               onClick={() =>
-                setChoosenUsers((prev) =>
+                setChoosenUsers((prev: IUser[]) =>
                   prev.filter((myUser) => myUser.id != user.id)
                 )
               }
@@ -67,9 +70,12 @@ const ChatInit = () => {
             className="border-0"
             {...register("search")}
             onFocus={() => setOpen(true)}
+            autoComplete="false"
           ></Input>
           <div
-            hidden={!isOpen}
+            hidden={
+              !isOpen || choosenUsers.length == contactConnection?.edges.length
+            }
             className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 space-y-2"
           >
             <div className="font-semibold">Your contacts</div>
@@ -88,7 +94,7 @@ const ChatInit = () => {
                   <div
                     className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
                     onClick={() => {
-                      setChoosenUsers((prev) => [...prev, contact]);
+                      setChoosenUsers((prev: IUser[]) => [...prev, contact]);
                     }}
                   >
                     <div
