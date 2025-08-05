@@ -488,12 +488,13 @@ const ChatDetails = ({
         )}
       </div>
 
-      {myChat && (
+      {isNewChat && choosenUsers.length > 0 ? (
         <ChatInput
           form={msgForm}
           chat={myChat}
           isReplyMsgOpen={isReplyMsgOpen}
           setReplyMsgOpen={setReplyMsgOpen}
+          choosenUsers={choosenUsers}
           setMessages={(msg: IMessage) => {
             setMessages((prev) => {
               const time = new Date(msg.createdAt!);
@@ -527,6 +528,8 @@ const ChatDetails = ({
             });
           }}
         ></ChatInput>
+      ) : (
+        <div className="container h-[10%] flex items-center flex-col py-2"></div>
       )}
     </section>
   );

@@ -37,8 +37,9 @@ const ChatInput = ({
   setReplyMsgOpen,
   form: { watch, register, setValue, resetField, handleSubmit },
   setMessages,
+  choosenUsers,
 }: {
-  chat: IChat;
+  chat?: IChat;
   isReplyMsgOpen: boolean;
   setReplyMsgOpen: (open: boolean) => void;
   form: UseFormReturn<{
@@ -46,6 +47,7 @@ const ChatInput = ({
     files?: FileList;
   }>;
   setMessages: (msg: IMessage) => void;
+  choosenUsers: IUser[];
 }) => {
   const userId = Cookies.get("userId");
 
@@ -104,9 +106,13 @@ const ChatInput = ({
       fetch(mediaBlobUrl!)
         .then((res) => res.blob())
         .then((blob) => {
-          const file = new File([blob], `${userId}.voice.${chat.id}`, {
-            type: blob.type,
-          });
+          const file = new File(
+            [blob],
+            `${userId}-voice-${new Date().toISOString()}`,
+            {
+              type: blob.type,
+            }
+          );
 
           const dataTransfer = new DataTransfer();
 
@@ -156,7 +162,7 @@ const ChatInput = ({
 
   return (
     <div className="container min-h-[5%] flex items-center flex-col py-2">
-      {watch("msg.replyForMsg") != undefined && (
+      {watch("msg.replyForMsg") != undefined && chat && (
         <Collapsible
           open={isReplyMsgOpen}
           onOpenChange={setReplyMsgOpen}
@@ -275,16 +281,20 @@ const ChatInput = ({
           }
 
           if (
-            chat != undefined &&
             (msg.msgBody != "" || (files && files.length)) &&
             !isSendingMsg &&
             !isSendingMedia
           ) {
-            console.log("submit");
+            let chatId = chat?.id
+
+            if(!chatId) {
+              chatId = ""
+            }
+
             setMessages({
               ...msg,
               createdAt: new Date(),
-              chat: chat.id,
+              chat: chatId,
               id: msg.msgBody!,
               type: MessageType.TEXT,
               user: userId!,
@@ -293,7 +303,7 @@ const ChatInput = ({
 
             const data = {
               msgBody: msg.msgBody,
-              chatId: chat.id,
+              chatId: chatId,
               replyForMsg: msg.replyForMsg
                 ? (msg.replyForMsg as IMessage).id
                 : undefined,
@@ -365,9 +375,13 @@ const ChatInput = ({
                     res.blob()
                   );
 
-                  const file = new File([blob], `${userId}.voice.${chat.id}`, {
-                    type: blob.type,
-                  });
+                  const file = new File(
+                    [blob],
+                    `${userId}-voice-${new Date().toISOString()}`,
+                    {
+                      type: blob.type,
+                    }
+                  );
 
                   const dataTransfer = new DataTransfer();
 
@@ -410,12 +424,16 @@ const ChatInput = ({
               className="rounded-3xl w-full bg-gray-200 px-4 py-2 text-gray-500"
               placeholder="Aa"
               onFocus={() => {
-                typeMessage({ variables: { chatId: chat.id, isTyping: true } });
+                if (chat)
+                  typeMessage({
+                    variables: { chatId: chat.id, isTyping: true },
+                  });
               }}
               onBlur={() => {
-                typeMessage({
-                  variables: { chatId: chat.id, isTyping: false },
-                });
+                if (chat)
+                  typeMessage({
+                    variables: { chatId: chat.id, isTyping: false },
+                  });
               }}
             ></Input>
 
