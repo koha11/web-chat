@@ -3,6 +3,7 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MessageType from "@/enums/MessageType.enum";
+import { usePostChat } from "@/hooks/chat.hook";
 import {
   usePostMessage,
   usePostMediaMessage,
@@ -30,6 +31,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useReactMediaRecorder } from "react-media-recorder";
+import { useNavigate, useNavigation } from "react-router-dom";
 
 const ChatInput = ({
   chat,
@@ -50,6 +52,7 @@ const ChatInput = ({
   choosenUsers: IUser[];
 }) => {
   const userId = Cookies.get("userId");
+  const navigate = useNavigate();
 
   // refs
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -70,6 +73,7 @@ const ChatInput = ({
     first: 20,
   });
   const [typeMessage] = useTypeMessage();
+  const [postChat] = usePostChat();
 
   // hooks
   const {
@@ -285,16 +289,24 @@ const ChatInput = ({
             !isSendingMsg &&
             !isSendingMedia
           ) {
-            let chatId = chat?.id
+            let chatId = chat?.id;
 
-            if(!chatId) {
-              chatId = ""
+            if (!chatId) {
+              if (choosenUsers.length == 0) return;
+
+              const users = [...choosenUsers.map((user) => user.id), userId];
+
+              const { data: newChat } = await postChat({
+                variables: { users },
+              });
+
+              chatId = newChat.postChat.id;
             }
 
             setMessages({
               ...msg,
               createdAt: new Date(),
-              chat: chatId,
+              chat: chatId!,
               id: msg.msgBody!,
               type: MessageType.TEXT,
               user: userId!,
@@ -303,7 +315,7 @@ const ChatInput = ({
 
             const data = {
               msgBody: msg.msgBody,
-              chatId: chatId,
+              chatId: chatId!,
               replyForMsg: msg.replyForMsg
                 ? (msg.replyForMsg as IMessage).id
                 : undefined,
@@ -318,6 +330,8 @@ const ChatInput = ({
             setReplyMsgOpen(false);
 
             await handleSendMessage(data);
+
+            if (!chat && choosenUsers.length > 0) navigate(`/m/${chatId}`);
           }
         })}
       >

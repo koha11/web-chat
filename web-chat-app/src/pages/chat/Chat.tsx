@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { useLocation, useOutletContext, useParams } from "react-router-dom";
 import ChatDetails from "./ChatDetails";
@@ -30,6 +30,10 @@ const Chat = () => {
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
   const [mediaId, setMediaId] = useState("");
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
+
+  useEffect(() => {
+    setChoosenUsers([]);
+  }, [id]);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">

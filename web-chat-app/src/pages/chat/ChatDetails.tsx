@@ -31,6 +31,7 @@ import { arraysEqualUnordered } from "@/utils/array.helper";
 import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { usePostChat } from "@/hooks/chat.hook";
 
 const ChatDetails = ({
   chat,
@@ -242,7 +243,7 @@ const ChatDetails = ({
   }, [chat]);
 
   useEffect(() => {
-    if (chatList) {
+    if (chatList && !chat) {
       const newUserIds = choosenUsers.map((user) => user.id);
 
       const myChat = chatList.find((chat) => {
@@ -344,9 +345,11 @@ const ChatDetails = ({
                 !isContactListOpen ||
                 choosenUsers.length == contactConnection?.edges.length
               }
-              className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 space-y-2"
+              className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 z-20"
+              onMouseEnter={(e) => e.stopPropagation()}
+              onMouseLeave={(e) => e.stopPropagation()}
             >
-              <div className="font-semibold">Your contacts</div>
+              <div className="font-semibold mb-2">Your contacts</div>
 
               {isContactsLoading ? (
                 <Loading></Loading>
@@ -364,7 +367,6 @@ const ChatDetails = ({
                       className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
                       onClick={() => {
                         const newUsers = [...choosenUsers, contact];
-
                         setChoosenUsers(newUsers);
                       }}
                     >
@@ -374,7 +376,7 @@ const ChatDetails = ({
                           backgroundImage: `url(${contact.avatar})`,
                         }}
                       ></div>
-                      <div className="">{contact.fullname}</div>
+                      <div>{contact.fullname}</div>
                     </div>
                   );
                 })
@@ -452,34 +454,35 @@ const ChatDetails = ({
                 </div>
               )))}
 
-        {isNewChat && choosenUsers.length == 0
-          ? ""
-          : myChat == undefined
-          ? ""
-          : usersMap && Object.keys(usersMap).length > 0 && messages
-          ? messages.map((msg, index) => {
-              return (
-                <GroupMsg
-                  userId={userId}
-                  key={msg.timeString}
-                  messages={msg.messages}
-                  timeString={msg.timeString}
-                  usersMap={usersMap}
-                  isFirstGroup={index == 0}
-                  handleReplyMsg={handleReplyMsg}
-                  setMediaId={setMediaId}
-                ></GroupMsg>
-              );
-            })
-          : [1, 2, 3, 4, 5].map((index) => (
-              <div
-                key={index}
-                className="space-y-2 flex flex-col items-end my-2"
-              >
-                <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
-                <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
-              </div>
-            ))}
+        {isNewChat &&
+          (choosenUsers.length == 0
+            ? ""
+            : myChat == undefined
+            ? ""
+            : usersMap && Object.keys(usersMap).length > 0 && messages
+            ? messages.map((msg, index) => {
+                return (
+                  <GroupMsg
+                    userId={userId}
+                    key={msg.timeString}
+                    messages={msg.messages}
+                    timeString={msg.timeString}
+                    usersMap={usersMap}
+                    isFirstGroup={index == 0}
+                    handleReplyMsg={handleReplyMsg}
+                    setMediaId={setMediaId}
+                  ></GroupMsg>
+                );
+              })
+            : [1, 2, 3, 4, 5].map((index) => (
+                <div
+                  key={index}
+                  className="space-y-2 flex flex-col items-end my-2"
+                >
+                  <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
+                  <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
+                </div>
+              )))}
 
         {isFetchMore && (
           <div className="flex justify-center items-center py-6">
@@ -488,7 +491,7 @@ const ChatDetails = ({
         )}
       </div>
 
-      {isNewChat && choosenUsers.length > 0 ? (
+      {choosenUsers.length > 0 || !isNewChat ? (
         <ChatInput
           form={msgForm}
           chat={myChat}
