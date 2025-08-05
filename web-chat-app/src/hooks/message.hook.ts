@@ -20,7 +20,7 @@ export const useGetMessages = ({
   after,
   first,
 }: {
-  chatId: string;
+  chatId?: string;
   first?: number;
   after?: string;
 }): IMyQueryResult<IModelConnection<IMessage>> => {
@@ -28,6 +28,7 @@ export const useGetMessages = ({
     variables: { chatId, first, after },
     skip: !chatId,
   });
+
 
   return {
     data: myQuery.data == undefined ? undefined : myQuery.data.messages,

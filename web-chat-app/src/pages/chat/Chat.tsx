@@ -8,7 +8,6 @@ import Cookies from "js-cookie";
 import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
-import ChatInit from "./ChatInit";
 import { IUser } from "@/interfaces/user.interface";
 
 const Chat = () => {
@@ -46,24 +45,21 @@ const Chat = () => {
           choosenUsers={choosenUsers}
         ></ChatList>
 
-        {isNewChat ? (
-          <ChatInit
-            choosenUsers={choosenUsers}
-            setChoosenUsers={setChoosenUsers}
-          ></ChatInit>
-        ) : id == undefined ? (
+        {id == undefined && !isNewChat ? (
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
-            userId={userId}
             chat={
               chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
             }
-            chatId={id}
-            hasUpdated={updatedChatMap[id] ?? true}
+            hasUpdated={false}
             setUpdatedChatMap={setUpdatedChatMap}
             setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
             setMediaId={setMediaId}
+            choosenUsers={choosenUsers}
+            setChoosenUsers={setChoosenUsers}
+            chatList={chats && chats.edges.map((edge: any) => edge.node)}
+            isNewChat={isNewChat}
           ></ChatDetails>
         )}
 

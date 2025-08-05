@@ -24,25 +24,37 @@ import { TypingIndicator } from "../../components/ui/typing-indicator";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, X } from "lucide-react";
+import Cookies from "js-cookie";
+import { useGetContacts } from "@/hooks/contact.hook";
+import { arraysEqualUnordered } from "@/utils/array.helper";
+import Loading from "@/components/ui/loading";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 const ChatDetails = ({
   chat,
-  userId,
-  chatId,
   hasUpdated,
   setUpdatedChatMap,
   setChatInfoOpen,
   setMediaId,
+  chatList,
+  choosenUsers,
+  setChoosenUsers,
+  isNewChat,
 }: {
-  userId: string;
   chat: IChat | undefined;
-  chatId: string;
   hasUpdated: boolean;
   setUpdatedChatMap: Function;
   setChatInfoOpen: Function;
   setMediaId: (msgId: string) => void;
+  choosenUsers: IUser[];
+  setChoosenUsers: Function;
+  chatList: IChat[];
+  isNewChat: boolean;
 }) => {
+  const userId = Cookies.get("userId")!;
+
   // states
   const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser } | null>(
     null
@@ -52,6 +64,12 @@ const ChatDetails = ({
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
 
+  const [isContactListOpen, setContactListOpen] = useState(true);
+  const [myChat, setMyChat] = useState<IChat | undefined>(chat);
+
+  const { data: contactConnection, loading: isContactsLoading } =
+    useGetContacts({});
+
   const {
     data: messagesConnection,
     loading: isMsgLoading,
@@ -59,7 +77,7 @@ const ChatDetails = ({
     subscribeToMore,
     fetchMore,
   } = useGetMessages({
-    chatId: chatId,
+    chatId: myChat?.id,
     first: 20,
     after: undefined,
   });
@@ -75,6 +93,8 @@ const ChatDetails = ({
       },
     },
   });
+
+  const { register } = useForm<{ search: string }>();
 
   const msgsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +134,7 @@ const ChatDetails = ({
       // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_CHANGED_SUB,
-        variables: { chatId: chatId },
+        variables: { chatId: myChat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -139,7 +159,7 @@ const ChatDetails = ({
       // lang msg dc gui den
       const unsubscribeMsgAdded = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
-        variables: { chatId: chatId },
+        variables: { chatId: myChat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -162,7 +182,7 @@ const ChatDetails = ({
       // lang nghe hanh vi nhap tin nhan
       const unsubscribeMsgTyping = subscribeToMore({
         document: MESSAGE_TYPING_SUB,
-        variables: { chatId: chatId },
+        variables: { chatId: myChat?.id },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -192,8 +212,8 @@ const ChatDetails = ({
 
   // set usersMap
   useEffect(() => {
-    if (chat) {
-      const users = chat.users as IUser[];
+    if (myChat) {
+      const users = myChat.users as IUser[];
 
       let myMap = {} as { [userId: string]: IUser };
 
@@ -203,19 +223,47 @@ const ChatDetails = ({
 
       setUsersMap(myMap);
     }
-  }, [chat]);
+  }, [myChat]);
 
   // refetch lai msg neu can thiet
   useEffect(() => {
-    if (hasUpdated) {
+    if (hasUpdated && myChat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
-        return { ...old, [chatId]: true };
+        return { ...old, [myChat.id]: true };
       });
     }
 
     msgsContainerRef.current?.scrollTo(0, 0);
-  }, [chatId]);
+  }, [myChat]);
+
+  useEffect(() => {
+    setMyChat(chat);
+  }, [chat]);
+
+  useEffect(() => {
+    if (chatList) {
+      const newUserIds = choosenUsers.map((user) => user.id);
+
+      const myChat = chatList.find((chat) => {
+        const chatUserIds = (chat.users as IUser[])
+          .filter((user) => user.id != userId)
+          .map((user) => user.id);
+
+        return arraysEqualUnordered(chatUserIds, newUserIds);
+      });
+
+      if (myChat) {
+        setMyChat(myChat);
+      } else {
+        setMyChat(undefined);
+      }
+    }
+  }, [choosenUsers]);
+
+  useEffect(() => {
+    window.onclick = () => setContactListOpen(false);
+  }, []);
 
   // HANDLERs
   const handleReplyMsg = (msg: IMessage) => {
@@ -258,11 +306,89 @@ const ChatDetails = ({
       className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
-      <ChatHeader
-        chat={chat}
-        isMsgLoading={isMsgLoading}
-        setChatInfoOpen={setChatInfoOpen}
-      ></ChatHeader>
+      {isNewChat ? (
+        <div className="container flex items-center justify-between h-[10%] border-b-2 border-black gap-4">
+          <div>To: </div>
+          {choosenUsers.map((user) => (
+            <Badge
+              variant={"outline"}
+              className="bg-blue-200 font-semibold text-blue-400"
+            >
+              <span>{user.fullname}</span>
+
+              <Button
+                variant={"no_style"}
+                size={"no_style"}
+                className="hover:bg-gray-200 hover:opacity-50 cursor-pointer p-1 rounded-full"
+                onClick={() =>
+                  setChoosenUsers((prev: IUser[]) =>
+                    prev.filter((myUser) => myUser.id != user.id)
+                  )
+                }
+              >
+                <X></X>
+              </Button>
+            </Badge>
+          ))}
+
+          <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
+            <Input
+              className="border-0"
+              {...register("search")}
+              onFocus={() => setContactListOpen(true)}
+              autoComplete="false"
+            ></Input>
+
+            <div
+              hidden={
+                !isContactListOpen ||
+                choosenUsers.length == contactConnection?.edges.length
+              }
+              className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 space-y-2"
+            >
+              <div className="font-semibold">Your contacts</div>
+
+              {isContactsLoading ? (
+                <Loading></Loading>
+              ) : (
+                contactConnection?.edges.map((edge) => {
+                  const contact = edge.node.users.filter(
+                    (user) => user.id != userId
+                  )[0];
+
+                  if (choosenUsers.find((user) => user.id == contact.id))
+                    return <></>;
+
+                  return (
+                    <div
+                      className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
+                      onClick={() => {
+                        const newUsers = [...choosenUsers, contact];
+
+                        setChoosenUsers(newUsers);
+                      }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
+                        style={{
+                          backgroundImage: `url(${contact.avatar})`,
+                        }}
+                      ></div>
+                      <div className="">{contact.fullname}</div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <ChatHeader
+          chat={myChat}
+          isMsgLoading={isMsgLoading}
+          setChatInfoOpen={setChatInfoOpen}
+        ></ChatHeader>
+      )}
 
       <div
         className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
@@ -298,7 +424,39 @@ const ChatDetails = ({
           </div>
         )}
 
-        {chat && usersMap && Object.keys(usersMap).length > 0 && messages
+        {!isNewChat &&
+          (myChat == undefined
+            ? ""
+            : usersMap && Object.keys(usersMap).length > 0 && messages
+            ? messages.map((msg, index) => {
+                return (
+                  <GroupMsg
+                    userId={userId}
+                    key={msg.timeString}
+                    messages={msg.messages}
+                    timeString={msg.timeString}
+                    usersMap={usersMap}
+                    isFirstGroup={index == 0}
+                    handleReplyMsg={handleReplyMsg}
+                    setMediaId={setMediaId}
+                  ></GroupMsg>
+                );
+              })
+            : [1, 2, 3, 4, 5].map((index) => (
+                <div
+                  key={index}
+                  className="space-y-2 flex flex-col items-end my-2"
+                >
+                  <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
+                  <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
+                </div>
+              )))}
+
+        {isNewChat && choosenUsers.length == 0
+          ? ""
+          : myChat == undefined
+          ? ""
+          : usersMap && Object.keys(usersMap).length > 0 && messages
           ? messages.map((msg, index) => {
               return (
                 <GroupMsg
@@ -330,10 +488,10 @@ const ChatDetails = ({
         )}
       </div>
 
-      {chat && (
+      {myChat && (
         <ChatInput
           form={msgForm}
-          chat={chat}
+          chat={myChat}
           isReplyMsgOpen={isReplyMsgOpen}
           setReplyMsgOpen={setReplyMsgOpen}
           setMessages={(msg: IMessage) => {
