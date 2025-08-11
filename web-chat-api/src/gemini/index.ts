@@ -22,16 +22,21 @@ export const gemini_promp_process = async (
     functionDeclarations: [weatherFunctionDeclaration],
   };
 
+  const groundingTool = {
+    googleSearch: {},
+  };
+
   // Cấu hình cho mô hình
   const config: GenerateContentConfig = {
-    tools: [functionDeclarationTool],
+    // tools: [functionDeclarationTool],
     // Buộc mô hình gọi 'any' hàm, thay vì trò chuyện.
-    toolConfig: {
-      functionCallingConfig: {
-        mode: FunctionCallingConfigMode.AUTO,
-      },
-    },
-    systemInstruction: "You are a cute Chat bot. Your name is Meo Meo.",
+    // toolConfig: {
+    //   functionCallingConfig: {
+    //     mode: FunctionCallingConfigMode.AUTO,
+    //   },
+    // },
+    tools: [groundingTool],
+    systemInstruction: "You are a cute Chat bot. Your name is Gemini AI.",
     // thinkingConfig: { thinkingBudget: 0 },
   };
 
