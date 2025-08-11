@@ -71,45 +71,49 @@ const ChatRow = ({
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full  text-nowrap">
-            {isLastMsgLoading && (
-              <Skeleton className="w-[180px] h-4"></Skeleton>
+            {isLastMsgLoading ? (
+              <Skeleton className="w-[200px] h-4"></Skeleton>
+            ) : (
+              lastMsg && (
+                <>
+                  {lastMsg.status == MessageStatus.UNSEND ? (
+                    <div className="">
+                      {lastMsg.user == userId
+                        ? "You"
+                        : (chat.users as IUser[])
+                            .find((user) => user.id == lastMsg.user)
+                            ?.fullname.split(" ")[0]}
+                      {" deleted a message"}
+                    </div>
+                  ) : (
+                    <div className="">
+                      {lastMsg.user == userId && "You:"}{" "}
+                      {lastMsg.type == MessageType.TEXT
+                        ? lastMsg.msgBody!.length > 25
+                          ? strimText(lastMsg.msgBody!, 25)
+                          : lastMsg.msgBody
+                        : `${name} have sent you a media`}
+                    </div>
+                  )}
+
+                  <div className="flex items-center">
+                    {lastMsg && <Dot size={12}></Dot>}
+                    {lastMsg &&
+                      getDisplayTimeDiff(
+                        lastMsg.status == MessageStatus.UNSEND
+                          ? lastMsg.unsentAt!
+                          : lastMsg.createdAt!
+                      )}
+                  </div>
+                </>
+              )
             )}
-
-            {lastMsg &&
-              (lastMsg.status == MessageStatus.UNSEND ? (
-                <div className="">
-                  {lastMsg.user == userId
-                    ? "You"
-                    : (chat.users as IUser[])
-                        .find((user) => user.id == lastMsg.user)
-                        ?.fullname.split(" ")[0]}
-                  {" deleted a message"}
-                </div>
-              ) : (
-                <div className="">
-                  {lastMsg.user == userId && "You:"}{" "}
-                  {lastMsg.type == MessageType.TEXT
-                    ? lastMsg.msgBody!.length > 25
-                      ? strimText(lastMsg.msgBody!, 25)
-                      : lastMsg.msgBody
-                    : `${name} have sent you a media`}
-                </div>
-              ))}
-
-            <div className="flex items-center">
-              {lastMsg && <Dot size={12}></Dot>}
-              {lastMsg &&
-                getDisplayTimeDiff(
-                  lastMsg.status == MessageStatus.UNSEND
-                    ? lastMsg.unsentAt!
-                    : lastMsg.createdAt!
-                )}
-            </div>
           </div>
         </div>
 
         {/* Hien thi avatar nhung nguoi da seen tin nhan  */}
-        {lastMsg &&
+        {!isLastMsgLoading &&
+          lastMsg &&
           lastMsg.user == userId &&
           lastMsg.status == MessageStatus.SEEN &&
           users &&
