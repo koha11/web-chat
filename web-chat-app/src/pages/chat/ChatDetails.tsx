@@ -407,7 +407,7 @@ const ChatDetails = ({
           }
         }}
       >
-        <Button
+        {/* <Button
           className="fixed rounded-full cursor-pointer opacity-50 left-[50%] translate-x-[-50%]"
           variant={"outline"}
           onClick={() => {
@@ -415,7 +415,7 @@ const ChatDetails = ({
           }}
         >
           <ArrowDown></ArrowDown>
-        </Button>
+        </Button> */}
         {typingUsers && typingUsers?.length > 0 && (
           <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div

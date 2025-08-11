@@ -9,11 +9,13 @@ import IContact from "../interfaces/contact.interface";
 import IModelConnection from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import {
+  GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
   GET_SENT_CONNECT_REQUESTS,
 } from "@/services/userService";
 import { IUser } from "@/interfaces/user.interface";
 import Cookies from "js-cookie";
+import ContactRelationship from "@/enums/ContactRelationship.enum";
 
 export const useGetContacts = ({
   after,
@@ -79,15 +81,19 @@ export const useSendRequest = ({ first = 10 }: { first?: number }) => {
 };
 
 export const useHandleRequest = ({
+  userId,
   first = 10,
   after,
 }: {
+  userId: string;
   first?: number;
   after?: string;
 }) => {
   return useMutation(HANDLE_REQUEST, {
     update(cache, { data }) {
       const handleRequest = data.handleRequest as IContact;
+
+      console.log("handleRequest", handleRequest);
 
       const existingSentConnectRequests = cache.readQuery<{
         sentConnectRequests: IModelConnection<IUser>;
@@ -154,35 +160,85 @@ export const useHandleRequest = ({
         });
       }
 
-      const existingContacts = cache.readQuery<{
-        contacts: IModelConnection<IContact>;
-      }>({
-        query: GET_CONTACTS,
-        variables: { first, after },
-      });
-
-      if (existingContacts) {
-        cache.writeQuery({
+      if (
+        Object.values(handleRequest.relationships).includes(
+          ContactRelationship.connected
+        )
+      ) {
+        const existingContacts = cache.readQuery<{
+          contacts: IModelConnection<IContact>;
+        }>({
           query: GET_CONTACTS,
           variables: { first, after },
-          data: {
-            contacts: {
-              ...existingContacts.contacts,
-              edges: [
-                ...existingContacts.contacts.edges,
-                {
-                  __typename: "ContactEdge",
-                  cursor: handleRequest.id,
-                  node: handleRequest,
-                },
-              ],
-              pageInfo: {
-                ...existingContacts.contacts.pageInfo,
-                endCursor: handleRequest.id,
-              },
-            } as IModelConnection<IContact>,
-          },
         });
+
+        if (existingContacts) {
+          cache.writeQuery({
+            query: GET_CONTACTS,
+            variables: { first, after },
+            data: {
+              contacts: {
+                ...existingContacts.contacts,
+                edges: [
+                  ...existingContacts.contacts.edges,
+                  {
+                    __typename: "ContactEdge",
+                    cursor: handleRequest.id,
+                    node: handleRequest,
+                  },
+                ],
+                pageInfo: {
+                  ...existingContacts.contacts.pageInfo,
+                  endCursor: handleRequest.id,
+                },
+              } as IModelConnection<IContact>,
+            },
+          });
+        }
+      } else {
+        const existingConnectableUsers = cache.readQuery<{
+          connectableUsers: IModelConnection<IUser>;
+        }>({
+          query: GET_CONNECTABLE_USERS,
+          variables: { userId, first, after },
+        });
+
+        console.log("existingConnectableUsers", existingConnectableUsers);
+
+        if (existingConnectableUsers) {
+          const user = handleRequest.users.filter(
+            (user) => user.id != userId
+          )[0];
+
+          if (
+            existingConnectableUsers.connectableUsers.edges.some(
+              (edge) => edge.cursor === user.id
+            )
+          )
+            return;
+
+          cache.writeQuery({
+            query: GET_CONNECTABLE_USERS,
+            variables: { userId, first, after },
+            data: {
+              connectableUsers: {
+                ...existingConnectableUsers.connectableUsers,
+                edges: [
+                  ...existingConnectableUsers.connectableUsers.edges,
+                  {
+                    __typename: "UserEdge",
+                    cursor: user.id,
+                    node: user,
+                  },
+                ],
+                pageInfo: {
+                  ...existingConnectableUsers.connectableUsers.pageInfo,
+                  endCursor: user.id,
+                },
+              } as IModelConnection<IUser>,
+            },
+          });
+        }
       }
     },
   });

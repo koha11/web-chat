@@ -10,8 +10,11 @@ import {
 } from "@/hooks/user.hook";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const ContactActionBar = () => {
+  const userId = Cookies.get("userId")!;
+
   const {
     data: receivedConnectRequests,
     loading: isReceivedConnectRequestsLoading,
@@ -20,7 +23,7 @@ const ContactActionBar = () => {
   const { data: sentConnectRequests, loading: isSentConnectRequests } =
     useGetSentConnectRequests({});
 
-  const [handleRequest] = useHandleRequest({});
+  const [handleRequest] = useHandleRequest({ userId });
 
   const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const [isReceivedRequestDialogOpen, setReceivedRequestDialogOpen] =
@@ -70,12 +73,14 @@ const ContactActionBar = () => {
         isOpen={isAddDialogOpen}
         setOpen={setAddDialogOpen}
       ></AddContactDialog>
+
       <ReceivedConnectRequestDialog
         isOpen={isReceivedRequestDialogOpen}
         setOpen={setReceivedRequestDialogOpen}
         handleRequest={handleRequest}
         receivedConnectRequests={receivedConnectRequests!}
       ></ReceivedConnectRequestDialog>
+
       <SentConnectRequestDialog
         isOpen={isSentRequestDialogOpen}
         setOpen={setSentRequestDialogOpen}

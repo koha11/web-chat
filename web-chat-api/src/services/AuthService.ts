@@ -12,6 +12,7 @@ import { IAccount } from "../interfaces/account.interface.js";
 import { createTransport } from "nodemailer";
 
 class AuthService {
+  
   async login({ username, password }: ILoginRequest): Promise<{
     accessToken: string;
     userId: string;
