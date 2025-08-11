@@ -33,6 +33,7 @@ class UserService {
 
     const userContacts = await Contact.find({
       [`relationships.${userId}`]: { $ne: ContactRelationship.stranger },
+      users: userId,
     }).populate("users");
 
     const connectedUserIds = userContacts.map(
@@ -123,7 +124,7 @@ class UserService {
     _id,
     username,
     ggid,
-    avatar
+    avatar,
   }: {
     _id?: Types.ObjectId;
     username: string;

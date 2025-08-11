@@ -52,7 +52,6 @@ const Mainlayout = () => {
           if (!subscriptionData) return prev;
 
           const chatChanged = subscriptionData.data.chatChanged as IChat;
-          console.log("Chat changed:", chatChanged);
 
           setUpdatedChatMap((old) => {
             return {
