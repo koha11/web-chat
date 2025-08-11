@@ -4,20 +4,16 @@ import { ArrowLeftCircle, Link } from "lucide-react";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useApolloClient } from "@apollo/client";
 
 const ActiveList = () => {
-  const userId = Cookies.get("userId") ?? "";
+  const userId = Cookies.get("userId")!;
   const navigate = useNavigate();
+  const client = useApolloClient();
 
   const { data: contacts, loading: isContactsLoading } = useGetContacts({});
 
-  const [postChat, { data: createdChat }] = usePostChat();
-
-  useEffect(() => {
-    if (createdChat) {
-      navigate("/m/" + createdChat.postChat.id);
-    }
-  }, [createdChat]);
+  const [postChat] = usePostChat({ userId });
 
   return (
     <section
@@ -42,14 +38,16 @@ const ActiveList = () => {
           return (
             <NavLink
               to={"/m/" + edge.node.chatId}
-              onClick={(e) => {
+              onClick={async (e) => {
                 if (!edge.node.chatId) {
                   e.preventDefault();
-                  postChat({
+                  const createdChat = await postChat({
                     variables: {
                       users: edge.node.users.map((user) => user.id),
                     },
                   });
+                  client.refetchQueries({ include: ["GetChats"] });
+                  navigate("/m/" + createdChat.data.postChat.id);
                 }
               }}
               className="flex items-center justify-between rounded-xl py-2 px-4 hover:bg-gray-300"

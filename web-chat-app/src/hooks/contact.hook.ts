@@ -93,8 +93,6 @@ export const useHandleRequest = ({
     update(cache, { data }) {
       const handleRequest = data.handleRequest as IContact;
 
-      console.log("handleRequest", handleRequest);
-
       const existingSentConnectRequests = cache.readQuery<{
         sentConnectRequests: IModelConnection<IUser>;
       }>({
@@ -202,8 +200,6 @@ export const useHandleRequest = ({
           query: GET_CONNECTABLE_USERS,
           variables: { userId, first, after },
         });
-
-        console.log("existingConnectableUsers", existingConnectableUsers);
 
         if (existingConnectableUsers) {
           const user = handleRequest.users.filter(

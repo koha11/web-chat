@@ -51,7 +51,7 @@ const ChatInput = ({
   setMessages: (msg: IMessage) => void;
   choosenUsers: IUser[];
 }) => {
-  const userId = Cookies.get("userId");
+  const userId = Cookies.get("userId")!;
   const navigate = useNavigate();
 
   // refs
@@ -73,7 +73,7 @@ const ChatInput = ({
     first: 20,
   });
   const [typeMessage] = useTypeMessage();
-  const [postChat] = usePostChat();
+  const [postChat] = usePostChat({ userId });
 
   // hooks
   const {

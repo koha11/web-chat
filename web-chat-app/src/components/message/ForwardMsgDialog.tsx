@@ -28,7 +28,7 @@ const ForwardMsgDialog = ({
     {}
   );
 
-  const [postChat, { data: createdChat }] = usePostChat();
+  const [postChat, { data: createdChat }] = usePostChat({ userId });
 
   useEffect(() => {
     if (createdChat) handleSendMsg(createdChat.postChat.id);

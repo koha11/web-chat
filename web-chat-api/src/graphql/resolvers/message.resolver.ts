@@ -32,29 +32,31 @@ export const messageResolvers: IResolvers = {
       const result = await messageService.getMessages({ chatId, first, after });
       const chat = await Chat.findById(chatId).populate("users");
 
-      const isNotEmpty = result.edges.length > 0;
+      if (chat) {
+        const isNotEmpty = result.edges.length > 0;
 
-      const isNotSeenBefore =
-        isNotEmpty &&
-        chat?.lastMsgSeen?.get(user.id.toString()) !=
-          result.edges[0].node.id.toString();
+        const isNotSeenBefore =
+          isNotEmpty &&
+          chat.lastMsgSeen?.get(user.id.toString()) !=
+            result.edges[0].node.id.toString();
 
-      // update seenList cho tung msg
-      const isUpdateSeenList = await messageService.updateSeenList({
-        chatId,
-        userId: user.id.toString(),
-        lastSeenMsgId: chat!.lastMsgSeen?.get(user.id.toString()) ?? "",
-      });
+        // update seenList cho tung msg
+        const isUpdateSeenList = await messageService.updateSeenList({
+          chatId,
+          userId: user.id.toString(),
+          lastSeenMsgId: chat!.lastMsgSeen?.get(user.id.toString()) ?? "",
+        });
 
-      if (isNotSeenBefore) {
-        chat?.lastMsgSeen.set(user.id.toString(), result.edges[0].cursor);
-        await chat?.save({ timestamps: false });
-      }
+        if (isNotSeenBefore) {
+          chat.lastMsgSeen.set(user.id.toString(), result.edges[0].cursor);
+          await chat.save({ timestamps: false });
+        }
 
-      if (isUpdateSeenList) {
-        pubsub.publish(SocketEvent.chatChanged, {
-          chatChanged: chat,
-        } as PubsubEvents[SocketEvent.chatChanged]);
+        if (isUpdateSeenList) {
+          pubsub.publish(SocketEvent.chatChanged, {
+            chatChanged: chat,
+          } as PubsubEvents[SocketEvent.chatChanged]);
+        }
       }
 
       return result;

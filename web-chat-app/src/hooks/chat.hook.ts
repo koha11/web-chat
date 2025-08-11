@@ -135,8 +135,19 @@ export const useGetChat = ({
   };
 };
 
-export const usePostChat = () => {
-  return useMutation(POST_CHAT);
+export const usePostChat = ({
+  userId,
+  after,
+  first = 10,
+}: {
+  userId: string;
+  after?: string;
+  first?: number;
+}) => {
+  return useMutation(POST_CHAT, {
+    refetchQueries: [{ query: GET_CHATS, variables: { userId, first, after } }],
+    awaitRefetchQueries: true,
+  });
 };
 
 export const useChangeNickname = () => {
