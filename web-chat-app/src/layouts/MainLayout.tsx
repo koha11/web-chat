@@ -52,6 +52,7 @@ const Mainlayout = () => {
           if (!subscriptionData) return prev;
 
           const chatChanged = subscriptionData.data.chatChanged as IChat;
+          console.log("Chat changed:", chatChanged);
 
           setUpdatedChatMap((old) => {
             return {
@@ -62,13 +63,21 @@ const Mainlayout = () => {
 
           const edges = prev.chats.edges.filter(
             (edge: Edge<IChat>) => edge.cursor != chatChanged.id
+          ) as Edge<IChat>[];
+
+          edges.push({ node: chatChanged, cursor: chatChanged.id });
+
+          edges.sort(
+            (a, b) =>
+              new Date(b.node.updatedAt!).getTime() -
+              new Date(a.node.updatedAt!).getTime()
           );
 
           return {
             ...prev,
             chats: {
               ...prev.chats,
-              edges: [{ node: chatChanged, cursor: chatChanged.id }, ...edges],
+              edges,
               pageInfo: {
                 ...prev.chats.pageInfo,
                 startCursor: chatChanged.id,
@@ -93,7 +102,7 @@ const Mainlayout = () => {
           if (!subscriptionData) return prev;
 
           const responseCall = subscriptionData.data.responseCall;
-          console.log(responseCall);
+
           if (!responseCall) setOngoingCall(null);
         },
       });
