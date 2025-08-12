@@ -45,6 +45,7 @@ export const chatTypeDefs = gql`
     makeCall(chatId: ID!, hasVideo: Boolean!): String!
     handleCall(chatId: ID!, isAccepted: Boolean!, msgId: ID!): Boolean
     hangupCall(chatId: ID!, msgId: ID!): Boolean
+    leaveChat(chatId: ID!): Boolean
   }
 
   extend type Subscription {

@@ -14,6 +14,7 @@ import { IMessage } from "../../interfaces/messages/message.interface";
 import { usePostMessage } from "../../hooks/message.hook";
 import ReactionMsgDialog from "./ReactionMsgDialog";
 import MsgBody from "./MsgBody";
+import MessageType from "@/enums/MessageType.enum";
 
 const SingleMsg = ({
   isLongGap,
@@ -90,98 +91,109 @@ const SingleMsg = ({
       )}
 
       {/* Phan chinh  */}
-      <div
-        className={`relative flex items-center gap-2 z-10 ${
-          isSentMsg ? "justify-end" : "justify-baseline"
-        }`}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        {/* Hien thi avatar neu co  */}
-        {msgSenderAvatar == "" ? (
-          <div
-            className={`w-8 h-8 order-1`}
-            style={{ backgroundImage: `url(${msgSenderAvatar})` }}
-          ></div>
-        ) : (
-          MyTooltip(
+      {msg.type == MessageType.SYSTEM ? (
+        <div className={`text-center text-[0.75rem] text-gray-500`}>
+          {`${
+            userId == msg.user.toString()
+              ? "You"
+              : usersMap[msg.user.toString()].fullname.split(" ")[0]
+          } ${msg.msgBody}`}
+        </div>
+      ) : (
+        <div
+          className={`relative flex items-center gap-2 z-10 ${
+            isSentMsg ? "justify-end" : "justify-baseline"
+          }`}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          {/* Hien thi avatar neu co  */}
+          {msgSenderAvatar == "" ? (
             <div
-              className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
+              className={`w-8 h-8 order-1`}
               style={{ backgroundImage: `url(${msgSenderAvatar})` }}
-            ></div>,
-            usersMap[msg.user.toString()].fullname,
-            "order-1"
-          )
-        )}
-
-        {/* Hien action  */}
-        {(isHover || isOpen) && (
-          <MessageActions
-            isUnsendMsg={msg.status == MessageStatus.UNSEND}
-            msgId={msg.id}
-            isSentMsg={isSentMsg}
-            isOpen={isOpen}
-            setOpen={setOpen}
-            handleReplyMsg={() => handleReplyMsg(msg)}
-            handleSendMsg={(chatId: string) => {
-              postMessage({
-                variables: {
-                  user: userId,
-                  msgBody: msg.msgBody,
-                  isForwarded: true,
-                  chatId,
-                },
-              });
-            }}
-          ></MessageActions>
-        )}
-
-        <div className="relative order-2 w-fit">
-          {/* Hien thi noi dung tin nhan  */}
-          {msg.status == MessageStatus.UNSEND ? (
-            MyTooltip(
-              <span
-                className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                  isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                } ${msg.isForwarded ? "" : ""}`}
-              >
-                {isSentMsg
-                  ? "You"
-                  : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
-                unsend a message
-              </span>,
-              `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
-              Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
-              "order-2"
-            )
+            ></div>
           ) : (
-            <MsgBody
-              isSentMsg={isSentMsg}
-              msg={msg}
-              setMediaId={setMediaId}
-            ></MsgBody>
+            MyTooltip(
+              <div
+                className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
+                style={{ backgroundImage: `url(${msgSenderAvatar})` }}
+              ></div>,
+              usersMap[msg.user.toString()].fullname,
+              "order-1"
+            )
           )}
 
-          {/* hien thi reactions  */}
-          {msg.reactions &&
-            Object.keys(msg.reactions).map((userId) => {
-              const reaction = msg.reactions![userId];
-              const fullname = usersMap[userId].fullname;
+          {/* Hien action  */}
+          {(isHover || isOpen) && (
+            <MessageActions
+              isUnsendMsg={msg.status == MessageStatus.UNSEND}
+              msgId={msg.id}
+              isSentMsg={isSentMsg}
+              isOpen={isOpen}
+              setOpen={setOpen}
+              handleReplyMsg={() => handleReplyMsg(msg)}
+              handleSendMsg={(chatId: string) => {
+                postMessage({
+                  variables: {
+                    user: userId,
+                    msgBody: msg.msgBody,
+                    isForwarded: true,
+                    chatId,
+                  },
+                });
+              }}
+            ></MessageActions>
+          )}
 
-              return MyTooltip(
-                <span onClick={() => setReactionDialogOpen(true)}>
-                  {reaction.emoji}
+          <div className="relative order-2 w-fit">
+            {/* Hien thi noi dung tin nhan  */}
+            {msg.status == MessageStatus.UNSEND ? (
+              MyTooltip(
+                <span
+                  className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                    isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+                  } ${msg.isForwarded ? "" : ""}`}
+                >
+                  {isSentMsg
+                    ? "You"
+                    : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
+                  unsend a message
                 </span>,
-                fullname,
-                "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
-              );
-            })}
+                `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
+              Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
+                "order-2"
+              )
+            ) : (
+              <MsgBody
+                isSentMsg={isSentMsg}
+                msg={msg}
+                setMediaId={setMediaId}
+              ></MsgBody>
+            )}
+
+            {/* hien thi reactions  */}
+            {msg.reactions &&
+              Object.keys(msg.reactions).map((userId) => {
+                const reaction = msg.reactions![userId];
+                const fullname = usersMap[userId].fullname;
+
+                return MyTooltip(
+                  <span onClick={() => setReactionDialogOpen(true)}>
+                    {reaction.emoji}
+                  </span>,
+                  fullname,
+                  "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
+                );
+              })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Hien thi trang thai cua tin nhan */}
       <div className="flex items-center justify-end">
-        {isSentMsg &&
+        {msg.type != MessageType.SYSTEM &&
+          isSentMsg &&
           isFirstMsg &&
           ((msg.status == MessageStatus.SENT && (
             <span className="text-[0.7rem] mr-1 italic text-gray-600">

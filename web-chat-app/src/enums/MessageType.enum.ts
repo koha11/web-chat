@@ -6,6 +6,7 @@ enum MessageType {
   AUDIO = "AUDIO",
   AUDIO_CALL = "AUDIO_CALL",
   VIDEO_CALL = "VIDEO_CALL",
+  SYSTEM = "SYSTEM",
 }
 
 export default MessageType;

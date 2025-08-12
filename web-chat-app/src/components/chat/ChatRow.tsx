@@ -70,6 +70,8 @@ const ChatRow = ({
         ></div>
         <div className="flex-auto px-2 flex flex-col items-baseline space-y-1">
           <div className="font-bold">{chat.chatName}</div>
+
+          {/* noi dung tin nhan  */}
           <div className="text-gray-500 text-[0.75rem] flex items-center w-full  text-nowrap">
             {isLastMsgLoading ? (
               <Skeleton className="w-[200px] h-4"></Skeleton>
@@ -84,6 +86,33 @@ const ChatRow = ({
                             .find((user) => user.id == lastMsg.user)
                             ?.fullname.split(" ")[0]}
                       {" deleted a message"}
+                    </div>
+                  ) : lastMsg.type == MessageType.SYSTEM ? (
+                    <div className="">
+                      {`${
+                        userId == lastMsg.user.toString()
+                          ? "You"
+                          : (chat.users as IUser[])
+                              .find((user) => user.id == lastMsg.user)
+                              ?.fullname.split(" ")[0]
+                      } ${lastMsg.msgBody!}`.length > 25
+                        ? strimText(
+                            `${
+                              userId == lastMsg.user.toString()
+                                ? "You"
+                                : (chat.users as IUser[])
+                                    .find((user) => user.id == lastMsg.user)
+                                    ?.fullname.split(" ")[0]
+                            } ${lastMsg.msgBody!}`,
+                            25
+                          )
+                        : `${
+                            userId == lastMsg.user.toString()
+                              ? "You"
+                              : (chat.users as IUser[])
+                                  .find((user) => user.id == lastMsg.user)
+                                  ?.fullname.split(" ")[0]
+                          } ${lastMsg.msgBody!}`}
                     </div>
                   ) : (
                     <div className="">
@@ -138,6 +167,7 @@ const ChatRow = ({
             <div className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center bg-blue-600"></div>
           )}
       </div>
+
       {/* {isHover && (
         <DropdownMenu>
           <DropdownMenuTrigger>
