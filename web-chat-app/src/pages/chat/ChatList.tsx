@@ -97,9 +97,9 @@ const ChatList = ({
               ></Input>
             </form>
           </div>
-          <div className="flex-1 flex justify-center items-center py-2">
+          {/* <div className="flex-1 flex justify-center items-center py-2">
             {isOpen ? <ChevronUp></ChevronUp> : <ChevronDown></ChevronDown>}
-          </div>
+          </div> */}
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2">
           <EmblaCarousel

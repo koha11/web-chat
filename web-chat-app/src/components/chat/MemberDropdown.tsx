@@ -10,10 +10,25 @@ import {
 import { IUser } from "@/interfaces/user.interface";
 import { Link } from "react-router-dom";
 
-const MemberDropdown = ({ user, role }: { user: IUser; role: string }) => {
+const MemberDropdown = ({
+  userId,
+  userRole,
+  user,
+  role,
+}: {
+  userId: string;
+  userRole: "member" | "creator" | "leader";
+  user: IUser;
+  role: "member" | "creator" | "leader";
+}) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex gap-4 cursor-pointer items-center justify-baseline w-full">
+      <DropdownMenuTrigger
+        className={`flex gap-4 items-center justify-baseline w-full ${
+          userId == user.id ? "" : "cursor-pointer"
+        }`}
+        disabled={userId == user.id}
+      >
         <div
           className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
           style={{ backgroundImage: `url(${user.avatar})` }}
@@ -27,12 +42,16 @@ const MemberDropdown = ({ user, role }: { user: IUser; role: string }) => {
         <DropdownMenuItem className="cursor-pointer font-bold">
           <Link to={`/m`}>Chat with {user.fullname.split(" ")[0]}</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer font-bold">
-          Remove from group
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer font-bold">
-          bổ nhiệm làm nhóm trưởng
-        </DropdownMenuItem>
+        {userRole != "member" && (
+          <>
+            <DropdownMenuItem className="cursor-pointer font-bold">
+              bổ nhiệm làm nhóm trưởng
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer font-bold">
+              Remove from group
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
