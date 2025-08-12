@@ -190,8 +190,8 @@ const ChatInput = ({
               variant={"outline"}
               className="h-6 w-4 rounded-full cursor-pointer border-0"
               onClick={() => {
+                setValue("msg.replyForMsg", undefined);
                 setReplyMsgOpen(false);
-                resetField("msg.replyForMsg");
               }}
             >
               <X></X>
