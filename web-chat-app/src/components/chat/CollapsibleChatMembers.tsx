@@ -4,21 +4,14 @@ import { IUser } from "@/interfaces/user.interface";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
+import MemberDropdown from "./MemberDropdown";
 
 const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
   const navigate = useNavigate();
 
   const members = (chat.users as IUser[]).map((user) => {
     return {
-      content: (
-        <>
-          <div
-            className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: `url(${user.avatar})` }}
-          ></div>
-          <span>{user.fullname}</span>
-        </>
-      ),
+      content: <MemberDropdown user={user} key={user.id}></MemberDropdown>,
       onClick: () => {},
     };
   });
@@ -37,7 +30,7 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
     <MyCollapsible
       data={members}
       title="Chat Members"
-      className="space-y-2"
+      className="space-y-2 mt-2"
     ></MyCollapsible>
   );
 };

@@ -36,7 +36,7 @@ const MyCollapsible = ({
           return (
             <>
               <Button
-                className="hover:bg-gray-200 flex items-center justify-baseline gap-4 w-full rounded-md cursor-pointer px-2 py-1 font-bold bg-white text-black outline-0 shadow-none"
+                className="hover:bg-gray-200 flex items-center justify-baseline gap-4 w-full rounded-md cursor-pointer px-2 py-6 font-bold bg-white text-black outline-0 shadow-none"
                 onClick={() => row.onClick()}
               >
                 {row.content}
