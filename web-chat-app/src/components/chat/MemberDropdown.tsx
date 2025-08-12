@@ -10,7 +10,7 @@ import {
 import { IUser } from "@/interfaces/user.interface";
 import { Link } from "react-router-dom";
 
-const MemberDropdown = ({ user }: { user: IUser }) => {
+const MemberDropdown = ({ user, role }: { user: IUser; role: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex gap-4 cursor-pointer items-center justify-baseline w-full">
@@ -20,7 +20,7 @@ const MemberDropdown = ({ user }: { user: IUser }) => {
         ></div>
         <div className="flex flex-col items-baseline">
           <div>{user.fullname}</div>
-          <div className="font-light">nguoi tao nhom</div>
+          <div className="font-light capitalize">{role}</div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="top" className="p-2 space-y-1">

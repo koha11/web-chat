@@ -8,7 +8,7 @@ export const GET_CHATS = gql`
           id
           chatName
           chatAvatar
-          nicknames
+          usersInfo
           updatedAt
           lastMsgSeen
           users {
@@ -37,7 +37,7 @@ export const GET_CHAT = gql`
       id
       chatName
       chatAvatar
-      nicknames
+      usersInfo
       updatedAt
       lastMsgSeen
       users {
@@ -74,7 +74,7 @@ export const CHANGE_NICKNAME = gql`
       id
       chatName
       chatAvatar
-      nicknames
+      usersInfo
       updatedAt
       lastMsgSeen
       users {
@@ -95,7 +95,7 @@ export const CHANGE_CHAT_AVATAR = gql`
       id
       chatName
       chatAvatar
-      nicknames
+      usersInfo
       updatedAt
       lastMsgSeen
       users {
@@ -116,7 +116,7 @@ export const CHANGE_CHAT_NAME = gql`
       id
       chatName
       chatAvatar
-      nicknames
+      usersInfo
       updatedAt
       lastMsgSeen
       users {
@@ -155,7 +155,7 @@ export const CHAT_CHANGED_SUB = gql`
       id
       chatName
       chatAvatar
-      nicknames
+      usersInfo
       updatedAt
       lastMsgSeen
       users {

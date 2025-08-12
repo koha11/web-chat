@@ -45,16 +45,38 @@ class ChatService {
     };
   };
 
-  createChat = async (users: string[]) => {
-    const nicknames = new Map<string, string>();
+  createChat = async (users: string[], addBy?: string) => {
+    
+    // init usersInfo
+    const usersInfo = new Map<
+      string,
+      {
+        nickname: string;
+        addBy?: string;
+        role?: "CREATOR" | "MEMBER" | "LEADER";
+        joinAt?: Date;
+      }
+    >();
 
     for (let userId of users) {
       const user = await User.findById(userId);
 
-      if (user) nicknames.set(userId, user.fullname);
+      if (!user) throw new Error(`Ko ton tai user voi id = ${userId}`);
+
+      if (users.length == 2)
+        usersInfo.set(userId, {
+          nickname: user.fullname,
+        });
+      else
+        usersInfo.set(userId, {
+          addBy: userId == addBy! ? "" : addBy!,
+          joinAt: new Date(),
+          nickname: user.fullname,
+          role: userId == addBy ? "CREATOR" : "MEMBER",
+        });
     }
 
-    const chat = await Chat.create({ users, nicknames });
+    const chat = await Chat.create({ users, usersInfo });
 
     if (users.length == 2)
       await Contact.findOneAndUpdate({ users }, { chatId: chat.id });

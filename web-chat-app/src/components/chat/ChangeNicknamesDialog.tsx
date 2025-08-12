@@ -46,8 +46,8 @@ const ChangeNicknamesDialog = ({
         <div className="flex gap-6 flex-col py-2">
           {(chat.users as IUser[]).map((user) => {
             const isEdit = isEditNickname == user.id;
-            const hasNickname = chat.nicknames[user.id] != user.fullname;
-            const nickname = chat.nicknames[user.id];
+            const hasNickname = chat.usersInfo[user.id].nickname != user.fullname;
+            const nickname = chat.usersInfo[user.id].nickname;
 
             return (
               <div

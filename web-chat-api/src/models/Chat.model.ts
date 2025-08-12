@@ -9,7 +9,7 @@ import mongooseDelete, {
 const ChatSchema = new Schema<IChat>(
   {
     users: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    nicknames: { type: Map, of: String, default: {} },
+    usersInfo: { type: Map, of: Object, default: {} },
     chatName: { type: String, default: "" },
     chatAvatar: { type: String, default: "" },
     lastMsgSeen: { type: Map, of: String, default: {} },

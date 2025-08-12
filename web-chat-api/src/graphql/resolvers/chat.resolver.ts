@@ -46,7 +46,14 @@ export const chatResolvers: IResolvers = {
 
       if (!chat) throw new Error("this chat is not existed");
 
-      chat.nicknames.set(changedUserId, nickname);
+      const userInfo = chat.usersInfo.get(changedUserId);
+
+      if (!userInfo)
+        throw new Error(
+          `ko ton tai usersInfo cho id=${changedUserId} trong doan chat ${chatId}`
+        );
+
+      chat.usersInfo.set(changedUserId, { ...userInfo, nickname });
 
       await chat.save();
 

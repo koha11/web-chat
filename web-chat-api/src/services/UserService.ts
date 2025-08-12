@@ -157,9 +157,13 @@ class UserService {
 
     const chat = await Chat.create({
       users: [user.id, chatbot?.id],
-      nicknames: {
-        [user.id]: user.fullname,
-        [chatbot?.id]: chatbot?.fullname,
+      usersInfo: {
+        [user.id]: {
+          nickname: user.fullname,
+        },
+        [chatbot?.id]: {
+          nickname: chatbot?.fullname,
+        },
       },
     });
 

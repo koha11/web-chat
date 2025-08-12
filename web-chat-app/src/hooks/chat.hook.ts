@@ -41,17 +41,17 @@ export const useGetChats = ({
         const isGroupChat = chat.users.length > 2;
 
         const defaultChatAvatar =
-          users.find((user) => user.id != userId)?.avatar ?? "";
+          users.find((user) => user.id != userId)?.avatar ?? "";        
 
         const defaultChatName =
-          chat.nicknames[users.find((user) => user.id != userId)!.id];
+          chat.usersInfo[users.find((user) => user.id != userId)!.id].nickname;
 
         const defaultGroupChatName = users.reduce<String>((acc, user) => {
           if (user.id == userId) return acc;
 
           return acc == ""
-            ? acc + chat.nicknames[user.id].split(" ")[0]
-            : acc + ", " + chat.nicknames[user.id].split(" ")[0];
+            ? acc + chat.usersInfo[user.id].nickname.split(" ")[0]
+            : acc + ", " + chat.usersInfo[user.id].nickname.split(" ")[0];
         }, "");
 
         return {

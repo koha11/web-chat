@@ -11,7 +11,13 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
 
   const members = (chat.users as IUser[]).map((user) => {
     return {
-      content: <MemberDropdown user={user} key={user.id}></MemberDropdown>,
+      content: (
+        <MemberDropdown
+          user={user}
+          key={user.id}
+          role={chat.usersInfo[user.id].role!.toLowerCase()}
+        ></MemberDropdown>
+      ),
       onClick: () => {},
     };
   });
