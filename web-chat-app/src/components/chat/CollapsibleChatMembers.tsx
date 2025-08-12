@@ -1,13 +1,12 @@
 import MyCollapsible from "../ui/my-collapsible";
 import { IChat } from "@/interfaces/chat.interface";
 import { IUser } from "@/interfaces/user.interface";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
 import MemberDropdown from "./MemberDropdown";
+import Cookies from "js-cookie";
 
 const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
-  const navigate = useNavigate();
+  const userId = Cookies.get("userId")!;
 
   const members = (chat.users as IUser[]).map((user) => {
     return {
@@ -15,7 +14,9 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
         <MemberDropdown
           user={user}
           key={user.id}
-          role={chat.usersInfo[user.id].role!.toLowerCase()}
+          role={chat.usersInfo[user.id].role!.toLowerCase() as any}
+          userRole={chat.usersInfo[userId].role!.toLowerCase() as any}
+          userId={userId}
         ></MemberDropdown>
       ),
       onClick: () => {},
