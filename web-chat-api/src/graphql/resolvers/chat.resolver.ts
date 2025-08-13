@@ -57,6 +57,17 @@ export const chatResolvers: IResolvers = {
 
       await chat.save();
 
+      await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "nickname",
+          value: nickname,
+          targetUserId: changedUserId,
+        },
+      });
+
       pubsub.publish(SocketEvent.chatChanged, {
         chatChanged: chat,
       } as PubsubEvents[SocketEvent.chatChanged]);
@@ -84,6 +95,15 @@ export const chatResolvers: IResolvers = {
 
       await chat.save();
 
+      await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "avatar",
+        },
+      });
+
       pubsub.publish(SocketEvent.chatChanged, {
         chatChanged: chat,
       } as PubsubEvents[SocketEvent.chatChanged]);
@@ -103,6 +123,16 @@ export const chatResolvers: IResolvers = {
       chat.chatName = chatName;
 
       await chat.save();
+
+      await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "chatname",
+          value: chatName,
+        },
+      });
 
       pubsub.publish(SocketEvent.chatChanged, {
         chatChanged: chat,

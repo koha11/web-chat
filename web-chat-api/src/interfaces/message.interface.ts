@@ -29,7 +29,7 @@ export interface IMessage {
       | "create"
       | "appoint";
     targetUserId?: string;
-    value: string;
+    value?: string;
   };
   seenList: Map<string, string>;
   replyForMsg?: IMessage | Types.ObjectId;

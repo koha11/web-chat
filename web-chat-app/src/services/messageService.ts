@@ -18,6 +18,8 @@ export const GET_MESSAGES = gql`
           isForwarded
           type
           file
+          systemLog
+          systemLog
           reactions
           replyForMsg {
             id
@@ -59,6 +61,7 @@ export const GET_FILE_MESSAGES = gql`
           isHiddenFor
           type
           file
+          systemLog
         }
         cursor
       }
@@ -97,11 +100,13 @@ export const POST_MESSAGE = gql`
       status
       type
       file
+      systemLog
       replyForMsg {
         id
         user
         type
         file
+        systemLog
         msgBody
         status
         seenList
@@ -145,6 +150,7 @@ export const POST_MEDIA_MESSAGE = gql`
         seenList
         type
         file
+        systemLog
         createdAt
       }
       seenList
@@ -156,6 +162,7 @@ export const POST_MEDIA_MESSAGE = gql`
       isForwarded
       type
       file
+      systemLog
       reactions
     }
   }
@@ -177,6 +184,7 @@ export const UNSEND_MESSAGE = gql`
         createdAt
         type
         file
+        systemLog
       }
       seenList
       createdAt
@@ -187,6 +195,7 @@ export const UNSEND_MESSAGE = gql`
       isForwarded
       type
       file
+      systemLog
       reactions
     }
   }
@@ -208,6 +217,7 @@ export const REMOVE_MESSAGE = gql`
         createdAt
         type
         file
+        systemLog
       }
       seenList
       createdAt
@@ -218,6 +228,7 @@ export const REMOVE_MESSAGE = gql`
       isForwarded
       type
       file
+      systemLog
       reactions
     }
   }
@@ -239,6 +250,7 @@ export const REACT_MESSAGE = gql`
         createdAt
         type
         file
+        systemLog
       }
       seenList
       createdAt
@@ -249,6 +261,7 @@ export const REACT_MESSAGE = gql`
       isForwarded
       type
       file
+      systemLog
       reactions
     }
   }
@@ -288,6 +301,7 @@ export const MESSAGE_ADDED_SUB = gql`
         isForwarded
         type
         file
+        systemLog
         reactions
       }
     }
@@ -320,6 +334,7 @@ export const MESSAGE_CHANGED_SUB = gql`
         isForwarded
         type
         file
+        systemLog
         reactions
       }
     }

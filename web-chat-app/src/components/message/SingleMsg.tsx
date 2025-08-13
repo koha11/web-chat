@@ -44,7 +44,7 @@ const SingleMsg = ({
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
-
+  if (msg.systemLog) console.log(msg.systemLog);
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
@@ -97,7 +97,10 @@ const SingleMsg = ({
             userId == msg.user.toString()
               ? "You"
               : usersMap[msg.user.toString()].fullname.split(" ")[0]
-          } ${msg.msgBody}`}
+          } ${
+            msg.systemLog?.type == "chatname" &&
+            `change chat name to ${msg.systemLog.value}`
+          }`}
         </div>
       ) : (
         <div

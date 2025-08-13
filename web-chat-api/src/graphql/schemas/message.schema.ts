@@ -25,7 +25,7 @@ export const messageTypeDefs = gql`
     isForwarded: Boolean
     type: String
     file: JSONObject
-    systemLog: JSONOBject
+    systemLog: JSONObject
     reactions: JSONObject
     endedCallAt: Date
 
