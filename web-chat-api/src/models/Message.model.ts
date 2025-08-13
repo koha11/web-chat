@@ -20,6 +20,11 @@ const MessageSchema = new Schema<IMessage>(
       size: { type: Number },
       type: { type: String },
     },
+    systemLog: {
+      type: { type: String },
+      targetUserId: { type: String },
+      value: { type: String },
+    },
     editedAt: { type: Date },
     endedCallAt: { type: Date },
     unsentAt: { type: Date },

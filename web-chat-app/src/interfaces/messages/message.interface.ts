@@ -15,6 +15,19 @@ export interface IMessage {
     url: string;
     size: number;
   };
+  systemLog?: {
+    type:
+      | "chatname"
+      | "nickname"
+      | "avatar"
+      | "add"
+      | "leave"
+      | "remove"
+      | "create"
+      | "appoint";
+    targetUserId?: string;
+    value?: string;
+  };
   seenList: { [userId: string]: string };
   replyForMsg?: IMessage | String;
   isHiddenFor?: string;

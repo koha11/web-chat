@@ -18,6 +18,19 @@ export interface IMessage {
     url: string;
     size: number;
   };
+  systemLog?: {
+    type:
+      | "chatname"
+      | "nickname"
+      | "avatar"
+      | "add"
+      | "leave"
+      | "remove"
+      | "create"
+      | "appoint";
+    targetUserId?: string;
+    value: string;
+  };
   seenList: Map<string, string>;
   replyForMsg?: IMessage | Types.ObjectId;
   isHiddenFor?: Types.ObjectId[];
