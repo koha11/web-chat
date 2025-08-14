@@ -34,6 +34,7 @@ const GroupMsg = ({
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
+
       <div className="flex flex-col-reverse gap-2">
         {messages.map((msg, index) => {
           const isRemovedMsg = msg.isHiddenFor?.includes(userId);
@@ -58,10 +59,12 @@ const GroupMsg = ({
 
           if (
             msg.user != userId &&
-            user &&
-            ((index > 0 && messages[index - 1].user != user.id) || index == 0)
+            ((index > 0 && messages[index - 1].user != msg.user.toString()) ||
+              index == 0)
           )
-            msgSenderAvatar = user.avatar ?? "";
+            msgSenderAvatar = user
+              ? user.avatar ?? "/assets/images/default-user.png"
+              : "/assets/images/default-user.png";
           else msgSenderAvatar = "";
 
           return (

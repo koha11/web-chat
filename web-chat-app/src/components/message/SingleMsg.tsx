@@ -45,7 +45,10 @@ const SingleMsg = ({
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
-  
+
+  const user = usersMap[msg.user.toString()];
+  const fullname = user ? user.fullname : "undefined user";
+
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
@@ -58,8 +61,7 @@ const SingleMsg = ({
           }`}
         >
           <div className={`flex gap-2 mb-7`}>
-            <Reply size={"14"}></Reply>{" "}
-            {isSentMsg ? "You" : usersMap[msg.user.toString()].fullname} replied
+            <Reply size={"14"}></Reply> {isSentMsg ? "You" : fullname} replied
             to{" "}
             {usersMap[(msg.replyForMsg as IMessage).user.toString()] !=
             undefined
@@ -85,8 +87,7 @@ const SingleMsg = ({
         >
           <div className={`flex gap-2 mb-1`}>
             <Reply size={"14"}></Reply>
-            {!isSentMsg ? usersMap[msg.user.toString()].fullname : "You"}{" "}
-            forwarded a message
+            {!isSentMsg ? fullname : "You"} forwarded a message
           </div>
         </div>
       )}
@@ -119,7 +120,7 @@ const SingleMsg = ({
                 className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
                 style={{ backgroundImage: `url(${msgSenderAvatar})` }}
               ></div>,
-              usersMap[msg.user.toString()].fullname,
+              fullname,
               "order-1"
             )
           )}
@@ -155,10 +156,7 @@ const SingleMsg = ({
                     isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
                   } ${msg.isForwarded ? "" : ""}`}
                 >
-                  {isSentMsg
-                    ? "You"
-                    : usersMap[msg.user.toString()].fullname.split(" ")[0]}{" "}
-                  unsend a message
+                  {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message
                 </span>,
                 `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
               Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
@@ -176,7 +174,8 @@ const SingleMsg = ({
             {msg.reactions &&
               Object.keys(msg.reactions).map((userId) => {
                 const reaction = msg.reactions![userId];
-                const fullname = usersMap[userId].fullname;
+                const user = usersMap[userId];
+                const fullname = user ? user.fullname : "undefined user";
 
                 return MyTooltip(
                   <span onClick={() => setReactionDialogOpen(true)}>

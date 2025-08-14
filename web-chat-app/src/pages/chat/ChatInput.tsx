@@ -176,11 +176,14 @@ const ChatInput = ({
             <div className="py-1 space-y-2">
               <div className="font-semibold">
                 Replying to{" "}
-                {(chat.users as IUser[]).find(
-                  (user) =>
-                    user.id ==
-                    (watch("msg.replyForMsg") as IMessage).user.toString()
-                )?.fullname ?? "yourself"}
+                {userId ==
+                (watch("msg.replyForMsg") as IMessage).user.toString()
+                  ? "yourself"
+                  : (chat.users as IUser[]).find(
+                      (user) =>
+                        user.id ==
+                        (watch("msg.replyForMsg") as IMessage).user.toString()
+                    )?.fullname ?? "undefined user"}
               </div>
               <div className="text-[0.7rem]">
                 {(watch("msg.replyForMsg") as IMessage).msgBody}

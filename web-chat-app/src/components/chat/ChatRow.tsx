@@ -151,13 +151,14 @@ const ChatRow = ({
               (receiver) => receiver.id == receiverId
             );
 
-            return (
-              <div
-                className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-                style={{ backgroundImage: `url(${receiver!.avatar})` }}
-                key={receiver?.id}
-              ></div>
-            );
+            if (receiver)
+              return (
+                <div
+                  className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+                  style={{ backgroundImage: `url(${receiver.avatar})` }}
+                  key={receiver.id}
+                ></div>
+              );
           })}
 
         {/* Hien thi thong bao chua doc tin nhan */}
