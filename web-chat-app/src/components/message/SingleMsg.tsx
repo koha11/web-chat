@@ -15,6 +15,7 @@ import { usePostMessage } from "../../hooks/message.hook";
 import ReactionMsgDialog from "./ReactionMsgDialog";
 import MsgBody from "./MsgBody";
 import MessageType from "@/enums/MessageType.enum";
+import SystemMsg from "./SystemMsg";
 
 const SingleMsg = ({
   isLongGap,
@@ -44,7 +45,7 @@ const SingleMsg = ({
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
-  if (msg.systemLog) console.log(msg.systemLog);
+  
   return (
     <div
       className={`flex flex-col gap-1 px-2 single-msg ${isLongGap && "mt-2"}`}
@@ -92,16 +93,12 @@ const SingleMsg = ({
 
       {/* Phan chinh  */}
       {msg.type == MessageType.SYSTEM ? (
-        <div className={`text-center text-[0.75rem] text-gray-500`}>
-          {`${
-            userId == msg.user.toString()
-              ? "You"
-              : usersMap[msg.user.toString()].fullname.split(" ")[0]
-          } ${
-            msg.systemLog?.type == "chatname" &&
-            `change chat name to ${msg.systemLog.value}`
-          }`}
-        </div>
+        <SystemMsg
+          msg={msg}
+          userId={userId}
+          usersMap={usersMap}
+          key={msg.id}
+        ></SystemMsg>
       ) : (
         <div
           className={`relative flex items-center gap-2 z-10 ${
