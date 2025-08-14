@@ -415,9 +415,10 @@ export const messageResolvers: IResolvers = {
             toObjectId(user.id.toString())
           );
 
-          const isNotSender = !(
-            messageAdded.node.user as Types.ObjectId
-          ).equals(user.id);
+          const isNotSender =
+            !(messageAdded.node.user as Types.ObjectId).equals(user.id) ||
+            messageAdded.node.type == MessageType.SYSTEM;
+          // neu no la tin nhan he thong thi gui cho tat ca user
 
           const isCorrectChat = chatId == subChatId;
 

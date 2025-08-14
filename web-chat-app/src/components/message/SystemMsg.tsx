@@ -18,6 +18,7 @@ const SystemMsg = ({
     ? usersMap[msg.systemLog.targetUserId].fullname.split(" ")[0]
     : "";
   const isCurrentUser = userId == msg.user.toString();
+  const isCurrentTargetUser = msg.systemLog.targetUserId == msg.user.toString();
 
   switch (logType) {
     case "chatname":
@@ -33,7 +34,7 @@ const SystemMsg = ({
       return (
         <div className={`text-center text-[0.75rem] text-gray-500`}>
           {`${isCurrentUser ? "You" : userName} change ${
-            isCurrentUser ? "your" : targetName
+            isCurrentTargetUser ? "your" : targetName
           } nickname to ${msg.systemLog.value}`}
         </div>
       );
