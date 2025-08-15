@@ -13,11 +13,15 @@ const SystemMsg = ({
   if (!msg.systemLog) throw new Error("msg nay ko co system log");
 
   const logType = msg.systemLog.type;
-  const userName = usersMap[msg.user.toString()].fullname.split(" ")[0];
+  const userName = usersMap[msg.user.toString()]
+    ? usersMap[msg.user.toString()].fullname.split(" ")[0]
+    : "undefined user";
   const myTargetName = msg.systemLog.targetUserId
     ? msg.systemLog.targetUserId
         .split(",")
-        .map((id) => usersMap[id].fullname.split(" ")[0])
+        .map((id) =>
+          usersMap[id] ? usersMap[id].fullname.split(" ")[0] : "undefined user"
+        )
         .join(",")
     : ""; // targetUserId co the o dang id1,id2,id3,...
   const targetName = msg.systemLog.targetUserId ? myTargetName : "";
@@ -61,6 +65,13 @@ const SystemMsg = ({
       return (
         <div className={`text-center text-[0.75rem] text-gray-500`}>
           {`${isCurrentUser ? "You" : userName} add ${targetName} into chat`}
+        </div>
+      );
+
+    case "leave":
+      return (
+        <div className={`text-center text-[0.75rem] text-gray-500`}>
+          {`${isCurrentUser ? "You" : userName} leave group`}
         </div>
       );
   }
