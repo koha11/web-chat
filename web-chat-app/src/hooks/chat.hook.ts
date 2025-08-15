@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
+  ADD_MEMBERS,
   CHANGE_CHAT_AVATAR,
   CHANGE_CHAT_NAME,
   CHANGE_NICKNAME,
@@ -41,7 +42,7 @@ export const useGetChats = ({
         const isGroupChat = chat.users.length > 2;
 
         const defaultChatAvatar =
-          users.find((user) => user.id != userId)?.avatar ?? "";        
+          users.find((user) => user.id != userId)?.avatar ?? "";
 
         const defaultChatName =
           chat.usersInfo[users.find((user) => user.id != userId)!.id].nickname;
@@ -148,6 +149,10 @@ export const usePostChat = ({
     refetchQueries: [{ query: GET_CHATS, variables: { userId, first, after } }],
     awaitRefetchQueries: true,
   });
+};
+
+export const useAddMembers = () => {
+  return useMutation(ADD_MEMBERS);
 };
 
 export const useChangeNickname = () => {

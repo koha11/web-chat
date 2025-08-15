@@ -12,6 +12,7 @@ import { FileUpload } from "graphql-upload/processRequest.mjs";
 import Message from "../../models/Message.model.js";
 import MessageType from "../../enums/MessageType.enum.js";
 import { Types } from "mongoose";
+import { IUser } from "../../interfaces/user.interface.js";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -35,6 +36,62 @@ export const chatResolvers: IResolvers = {
       const result = await chatService.createChat(users);
 
       return result;
+    },
+
+    addMembers: async (
+      _p: any,
+      { userIds, chatId },
+      { user, pubsub }: IMyContext
+    ) => {
+      const chat = await Chat.findById(chatId).populate("users");
+
+      if (!chat) throw new Error("this chat is not existed");
+
+      const chatUserIds = (chat.users as IUser[]).map((u) => u.id.toString());
+
+      if (chatUserIds.some((id) => userIds.includes(id)))
+        throw new Error("some users are already in the chat");
+
+      chat.users.push(...userIds);
+
+      for (let myUserId of userIds) {
+        const myUser = await User.findById(myUserId);
+
+        if (!myUser) throw new Error(`User with id ${myUserId} does not exist`);
+
+        chat.usersInfo.set(myUserId, {
+          nickname: myUser.fullname,
+          addBy: user.id.toString(),
+          joinAt: new Date(),
+          role: "MEMBER",
+        });
+      }
+
+      await chat.save();
+
+      const msg = await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "add",
+          targetUserId: userIds.join(","),
+        },
+      });
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      pubsub.publish(SocketEvent.messageAdded, {
+        chatId,
+        messageAdded: {
+          cursor: msg.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageAdded]);
+
+      return chat;
     },
 
     changeNickname: async (

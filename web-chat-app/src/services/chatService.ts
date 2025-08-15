@@ -60,6 +60,14 @@ export const POST_CHAT = gql`
   }
 `;
 
+export const ADD_MEMBERS = gql`
+  mutation AddMembers($chatId: ID!, $userIds: [ID!]!) {
+    addMembers(chatId: $chatId, userIds: $userIds) {
+      id
+    }
+  }
+`;
+
 export const CHANGE_NICKNAME = gql`
   mutation ChangeNickname(
     $chatId: ID!

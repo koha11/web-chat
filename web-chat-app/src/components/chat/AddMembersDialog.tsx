@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { Form } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { IUser } from "@/interfaces/user.interface";
+import { useAddMembers } from "@/hooks/chat.hook";
 
 const AddMembersDialog = ({
   isOpen,
@@ -41,6 +42,8 @@ const AddMembersDialog = ({
   });
 
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>();
+
+  const [addMembers, { loading: isAddingMembers }] = useAddMembers();
 
   if (isChatAddableUsersLoading) return <Loading></Loading>;
 
@@ -165,12 +168,21 @@ const AddMembersDialog = ({
             </Button>
             <Button
               className="cursor-pointer bg-green-700"
-              onClick={() => {
-                setChoosenUsers(undefined);
-                setOpen(false);
+              disabled={choosenUsers == undefined || choosenUsers.length == 0}
+              onClick={async () => {
+                if (!isAddingMembers) {
+                  await addMembers({
+                    variables: {
+                      chatId,
+                      userIds: choosenUsers!.map((user) => user.id),
+                    },
+                  });
+                  setChoosenUsers(undefined);
+                  setOpen(false);
+                }
               }}
             >
-              Submit
+              Confirm
             </Button>
           </DialogFooter>
         </Form>

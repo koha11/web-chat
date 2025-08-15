@@ -14,9 +14,13 @@ const SystemMsg = ({
 
   const logType = msg.systemLog.type;
   const userName = usersMap[msg.user.toString()].fullname.split(" ")[0];
-  const targetName = msg.systemLog.targetUserId
-    ? usersMap[msg.systemLog.targetUserId].fullname.split(" ")[0]
-    : "";
+  const myTargetName = msg.systemLog.targetUserId
+    ? msg.systemLog.targetUserId
+        .split(",")
+        .map((id) => usersMap[id].fullname.split(" ")[0])
+        .join(",")
+    : ""; // targetUserId co the o dang id1,id2,id3,...
+  const targetName = msg.systemLog.targetUserId ? myTargetName : "";
   const isCurrentUser = userId == msg.user.toString();
   const isCurrentTargetUser = msg.systemLog.targetUserId == msg.user.toString();
 
@@ -56,7 +60,7 @@ const SystemMsg = ({
     case "add":
       return (
         <div className={`text-center text-[0.75rem] text-gray-500`}>
-          {`${isCurrentUser ? "You" : userName} create chat`}
+          {`${isCurrentUser ? "You" : userName} add ${targetName} into chat`}
         </div>
       );
   }
