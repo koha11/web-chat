@@ -12,9 +12,13 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { useState } from "react";
+import { useLeaveChat } from "@/hooks/chat.hook";
 
-const CollapsibleChatPrivacy = ({}: {}) => {
+const CollapsibleChatPrivacy = ({ chatId }: { chatId: string }) => {
   const [isLeaveGroupDialogOpen, setLeaveGroupDialogOpen] = useState(false);
+
+  const [leaveChat, { loading: isLeavingChat }] = useLeaveChat();
+
   return (
     <MyCollapsible
       data={[
@@ -55,8 +59,10 @@ const CollapsibleChatPrivacy = ({}: {}) => {
                   </AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-red-600 cursor-pointer"
-                    onClick={() => {
-                      console.log("leave group");
+                    onClick={async () => {
+                      if (!isLeavingChat) {
+                        await leaveChat({ variables: { chatId } });
+                      }
                     }}
                   >
                     Continue

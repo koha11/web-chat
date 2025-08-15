@@ -68,6 +68,14 @@ export const ADD_MEMBERS = gql`
   }
 `;
 
+export const LEAVE_CHAT = gql`
+  mutation LeaveChat($chatId: ID!) {
+    leaveChat(chatId: $chatId) {
+      id
+    }
+  }
+`;
+
 export const CHANGE_NICKNAME = gql`
   mutation ChangeNickname(
     $chatId: ID!

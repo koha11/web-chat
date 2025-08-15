@@ -70,7 +70,7 @@ const ChatInfo = ({
         <CollapsibleChatMembers chat={chat}></CollapsibleChatMembers>
       )}
       <CollapsibleChatMedia setMediaId={setMediaId}></CollapsibleChatMedia>
-      <CollapsibleChatPrivacy></CollapsibleChatPrivacy>
+      <CollapsibleChatPrivacy chatId={chat.id}></CollapsibleChatPrivacy>
     </section>
   );
 };

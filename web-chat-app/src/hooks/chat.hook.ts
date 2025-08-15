@@ -8,6 +8,7 @@ import {
   GET_CHATS,
   HANDLE_CALL,
   HANGUP_CALL,
+  LEAVE_CHAT,
   MAKE_CALL,
   POST_CHAT,
 } from "../services/chatService";
@@ -153,6 +154,10 @@ export const usePostChat = ({
 
 export const useAddMembers = () => {
   return useMutation(ADD_MEMBERS);
+};
+
+export const useLeaveChat = () => {
+  return useMutation(LEAVE_CHAT);
 };
 
 export const useChangeNickname = () => {

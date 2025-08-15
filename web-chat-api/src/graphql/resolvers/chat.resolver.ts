@@ -94,6 +94,41 @@ export const chatResolvers: IResolvers = {
       return chat;
     },
 
+    leaveChat: async (_p: any, { chatId }, { user, pubsub }: IMyContext) => {
+      const chat = await Chat.findById(chatId).populate("users");
+
+      if (!chat) throw new Error("this chat is not existed");
+
+      chat.users = (chat.users as IUser[]).filter(
+        (u) => u.id.toString() !== user.id.toString()
+      );
+
+      await chat.save();
+
+      const msg = await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "leave",
+        },
+      });
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      pubsub.publish(SocketEvent.messageAdded, {
+        chatId,
+        messageAdded: {
+          cursor: msg.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageAdded]);
+
+      return chat;
+    },
+
     changeNickname: async (
       _p: any,
       { chatId, changedUserId, nickname },
