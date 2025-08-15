@@ -1,8 +1,6 @@
 import React from "react";
 import { EmblaOptionsType } from "embla-carousel";
-import {
-  usePrevNextButtons,
-} from "./EmblaCarouselArrowButtons";
+import { usePrevNextButtons } from "./EmblaCarouselArrowButtons";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { Button } from "../ui/button";

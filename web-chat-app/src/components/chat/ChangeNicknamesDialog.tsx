@@ -3,9 +3,7 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 
-import {
-  useChangeNickname,
-} from "../../hooks/chat.hook";
+import { useChangeNickname } from "../../hooks/chat.hook";
 import { useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
@@ -46,7 +44,8 @@ const ChangeNicknamesDialog = ({
         <div className="flex gap-6 flex-col py-2">
           {(chat.users as IUser[]).map((user) => {
             const isEdit = isEditNickname == user.id;
-            const hasNickname = chat.usersInfo[user.id].nickname != user.fullname;
+            const hasNickname =
+              chat.usersInfo[user.id].nickname != user.fullname;
             const nickname = chat.usersInfo[user.id].nickname;
 
             return (

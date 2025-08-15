@@ -27,5 +27,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "src/components/ui/button.tsx",
+    "src/components/ui/alert-dialog.tsx"
+  ]
 }
