@@ -20,6 +20,11 @@ export const userResolvers: IResolvers = {
 
       return data;
     },
+    chatAddableUsers: async (_p: any, { userId, chatId }) => {
+      const data = await userService.getChatAddableUsers({ userId, chatId });
+
+      return data;
+    },
     receivedConnectRequests: async (_p: any, {}, { user }: IMyContext) => {
       const data = await userService.getUsersByRelationship({
         userId: user.id.toString(),

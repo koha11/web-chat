@@ -1,12 +1,16 @@
+import { chat } from "googleapis/build/src/apis/chat/index.js";
 import ContactRelationship from "../enums/ContactRelationship.enum.js";
 import UserType from "../enums/UserType.enum.js";
-import IModelConnection from "../interfaces/modelConnection.interface.js";
+import IModelConnection, {
+  Edge,
+} from "../interfaces/modelConnection.interface.js";
 import { IUser } from "../interfaces/user.interface.js";
 import Chat from "../models/Chat.model.js";
 import Contact from "../models/Contact.model.js";
 import User from "../models/User.model.js";
 import { toObjectId } from "../utils/mongoose.js";
 import { Types } from "mongoose";
+import { after } from "node:test";
 
 class UserService {
   getConnectableUsers = async ({
@@ -106,6 +110,76 @@ class UserService {
       cursor: doc.contactId,
       node: doc.user,
     }));
+
+    const isNotEmpty = edges.length > 0;
+
+    return {
+      edges,
+      pageInfo: {
+        startCursor: isNotEmpty ? edges[0].cursor : null,
+        hasNextPage,
+        endCursor: isNotEmpty ? edges[edges.length - 1].cursor : null,
+      },
+    };
+  };
+
+  getChatAddableUsers = async ({
+    userId,
+    chatId,
+    first = 10,
+    after,
+  }: {
+    userId: string;
+    chatId: string;
+    first?: number;
+    after?: string;
+  }): Promise<IModelConnection<IUser>> => {
+    const filter = {
+      users: userId,
+    } as any;
+
+    if (after) {
+      // decode cursor into ObjectId timestamp or full id
+      filter._id = { $lt: toObjectId(after) };
+    }
+
+    const contacts = await Contact.find(filter)
+      .sort({ _id: -1 })
+      .populate("users");
+
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+
+    const addableUsersContact = contacts.filter((contact) => {
+      const otherUser = contact.users.find(
+        (user) => user.id.toString() !== userId
+      );
+
+      if (!otherUser) throw new Error("Other user not found in contact");
+
+      return !(chat.users as Types.ObjectId[]).includes(
+        otherUser.id as Types.ObjectId
+      );
+    });
+
+    const docs = addableUsersContact.slice(0, first + 1);
+
+    const hasNextPage = docs.length > first;
+    const sliced = hasNextPage ? docs.slice(0, first) : docs;
+
+    const edges = sliced.map((doc) => {
+      const otherUser = doc.users.find((user) => user.id.toString() !== userId);
+
+      if (!otherUser) throw new Error("Other user not found in contact");
+
+      return {
+        cursor: doc.id,
+        node: otherUser as IUser,
+      };
+    });
 
     const isNotEmpty = edges.length > 0;
 

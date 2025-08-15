@@ -4,9 +4,13 @@ import { IUser } from "@/interfaces/user.interface";
 import { UserPlus } from "lucide-react";
 import MemberDropdown from "./MemberDropdown";
 import Cookies from "js-cookie";
+import { ReactNode, useState } from "react";
+import AddMembersDialog from "./AddMembersDialog";
 
 const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
   const userId = Cookies.get("userId")!;
+
+  const [isOpen, setOpen] = useState(false);
 
   const members = (chat.users as IUser[]).map((user) => {
     return {
@@ -21,7 +25,13 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
       ),
       onClick: () => {},
     };
-  });
+  }) as {
+    content: ReactNode;
+    onClick: Function;
+    dialog?: ReactNode;
+    hidden?: boolean;
+  }[];
+  [];
 
   members.push({
     content: (
@@ -30,7 +40,16 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
         <span>Add member</span>
       </>
     ),
-    onClick: () => {},
+    onClick: () => {
+      setOpen(true);
+    },
+    dialog: (
+      <AddMembersDialog
+        isOpen={isOpen}
+        setOpen={setOpen}
+        chatId={chat.id}
+      ></AddMembersDialog>
+    ),
   });
 
   return (

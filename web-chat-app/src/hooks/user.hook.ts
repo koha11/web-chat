@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
+  GET_CHAT_ADDABLE_USERS,
   GET_CONNECTABLE_USERS,
   GET_RECEIVED_CONNECT_REQUESTS,
   GET_SENT_CONNECT_REQUESTS,
@@ -45,6 +46,31 @@ export const useGetConnectableUsers = ({
 
   return {
     data: myQuery.data == undefined ? undefined : myQuery.data.connectableUsers,
+    loading: myQuery.loading,
+    subscribeToMore: myQuery.subscribeToMore,
+    refetch: myQuery.refetch,
+    fetchMore: myQuery.fetchMore,
+  };
+};
+
+export const useGetChatAddableUsers = ({
+  userId,
+  chatId,
+  first = 10,
+  after,
+}: {
+  userId: string;
+  chatId: string;
+  first?: number;
+  after?: string;
+}): IMyQueryResult<IModelConnection<IUser>> => {
+  const myQuery = useQuery(GET_CHAT_ADDABLE_USERS, {
+    variables: { userId, chatId, first, after },
+    skip: !userId,
+  });
+
+  return {
+    data: myQuery.data == undefined ? undefined : myQuery.data.chatAddableUsers,
     loading: myQuery.loading,
     subscribeToMore: myQuery.subscribeToMore,
     refetch: myQuery.refetch,

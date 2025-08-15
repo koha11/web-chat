@@ -14,7 +14,7 @@ const ChatInfo = ({
   chat,
   userId,
   open,
-  setMediaId
+  setMediaId,
 }: {
   chat: IChat;
   userId: string;
@@ -24,7 +24,7 @@ const ChatInfo = ({
   if (!chat) return <></>;
 
   const receivers = (chat.users as IUser[]).filter((user) => user.id != userId);
-  const isGroupChat = chat.users.length > 2;
+  const isGroupChat = true;
 
   return (
     <section
