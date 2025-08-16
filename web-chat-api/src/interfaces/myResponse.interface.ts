@@ -1,5 +1,4 @@
-export interface IMyResponse {
-  isValid: boolean;
-  data?: object;
-  message?: string;
+export interface IAuthResponse {
+  accessToken: string;
+  userId: string;
 }

@@ -1,7 +1,7 @@
 import { DEFAULT_URL, JWT_SECRET } from "../config/env.js";
 import { IRegisterRequest } from "../interfaces/auth/registerRequest.interface.js";
 import { ITokenPayload } from "../interfaces/auth/tokenPayload.interface.js";
-import { IMyResponse } from "../interfaces/myResponse.interface.js";
+import { IAuthResponse } from "../interfaces/myResponse.interface.js";
 import Account from "../models/Account.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -12,11 +12,7 @@ import { IAccount } from "../interfaces/account.interface.js";
 import { createTransport } from "nodemailer";
 
 class AuthService {
-  
-  async login({ username, password }: ILoginRequest): Promise<{
-    accessToken: string;
-    userId: string;
-  }> {
+  async login({ username, password }: ILoginRequest): Promise<IAuthResponse> {
     const account = await Account.findOne({ username });
 
     if (!account) throw new Error("Username is not existed");
@@ -49,7 +45,7 @@ class AuthService {
     fullname,
     password,
     username,
-  }: IRegisterRequest): Promise<IMyResponse> {
+  }: IRegisterRequest): Promise<IAuthResponse> {
     const isUsernameExists = await Account.findOne({
       username,
     });
@@ -77,12 +73,8 @@ class AuthService {
     });
 
     return {
-      isValid: true,
-      data: {
-        accessToken: token,
-        userId: account.id,
-      },
-      message: "register success",
+      accessToken: token,
+      userId: account.id,
     };
   }
 
