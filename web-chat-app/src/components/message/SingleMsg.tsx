@@ -16,6 +16,7 @@ import ReactionMsgDialog from "./ReactionMsgDialog";
 import MsgBody from "./MsgBody";
 import MessageType from "@/enums/MessageType.enum";
 import SystemMsg from "./SystemMsg";
+import { IChatUsersInfo } from "@/interfaces/chat.interface";
 
 const SingleMsg = ({
   isLongGap,
@@ -35,8 +36,8 @@ const SingleMsg = ({
   userId: string;
   msg: IMessage;
   isFirstMsg: boolean;
-  seenList: IUser[];
-  usersMap: { [userId: string]: IUser };
+  seenList: string[];
+  usersMap: { [userId: string]: IChatUsersInfo };
   handleReplyMsg: (msg: IMessage) => void;
   setMediaId: (msgId: string) => void;
 }) => {
@@ -207,15 +208,17 @@ const SingleMsg = ({
             </span>
           )) ||
             (msg.status == MessageStatus.SEEN &&
-              seenList.map((user) =>
+              seenList.map((userId) =>
                 MyTooltip(
                   <div
                     className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-                    style={{ backgroundImage: `url(${user.avatar})` }}
+                    style={{
+                      backgroundImage: `url(${usersMap[userId].avatar})`,
+                    }}
                   ></div>,
-                  user.fullname +
+                  usersMap[userId].fullname +
                     "seen at " +
-                    getDisplaySendMsgTime(new Date(msg.seenList[user.id]))
+                    getDisplaySendMsgTime(new Date(msg.seenList[userId]))
                 )
               )))}
       </div>

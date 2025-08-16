@@ -28,7 +28,7 @@ export interface IMessage {
     targetUserId?: string;
     value?: string;
   };
-  seenList: { [userId: string]: string };
+  seenList: { [userId: string]: string }; // userId: seen date
   replyForMsg?: IMessage | String;
   isHiddenFor?: string;
   unsentAt?: Date;

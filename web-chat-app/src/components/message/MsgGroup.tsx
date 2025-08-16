@@ -1,3 +1,4 @@
+import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import { IUser } from "../../interfaces/user.interface";
 import {
@@ -19,7 +20,7 @@ const GroupMsg = ({
   userId: string;
   messages: IMessage[];
   timeString: string;
-  usersMap: { [userId: string]: IUser };
+  usersMap: { [userId: string]: IChatUsersInfo };
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
   setMediaId: (msgId: string) => void;
@@ -43,8 +44,8 @@ const GroupMsg = ({
 
           const user = usersMap[msg.user.toString()];
 
-          const seenList = Object.values(usersMap).filter((user) =>
-            Object.keys(msg.seenList).includes(user.id)
+          const seenList = Object.keys(usersMap).filter((userId) =>
+            Object.keys(msg.seenList).includes(userId)
           );
 
           const isLongGap =

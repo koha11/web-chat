@@ -57,9 +57,6 @@ const ChatDetails = ({
   const userId = Cookies.get("userId")!;
 
   // states
-  const [usersMap, setUsersMap] = useState<{ [userId: string]: IUser } | null>(
-    null
-  );
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
@@ -210,21 +207,6 @@ const ChatDetails = ({
       };
     }
   }, [messagesConnection, subscribeToMore]);
-
-  // set usersMap
-  useEffect(() => {
-    if (myChat) {
-      const users = myChat.users as IUser[];
-
-      let myMap = {} as { [userId: string]: IUser };
-
-      users.forEach((user) => {
-        myMap[user.id] = user;
-      });
-
-      setUsersMap(myMap);
-    }
-  }, [myChat]);
 
   // refetch lai msg neu can thiet
   useEffect(() => {
@@ -429,7 +411,7 @@ const ChatDetails = ({
         {!isNewChat &&
           (myChat == undefined
             ? ""
-            : usersMap && Object.keys(usersMap).length > 0 && messages
+            : messages
             ? messages.map((msg, index) => {
                 return (
                   <GroupMsg
@@ -437,7 +419,7 @@ const ChatDetails = ({
                     key={msg.timeString}
                     messages={msg.messages}
                     timeString={msg.timeString}
-                    usersMap={usersMap}
+                    usersMap={myChat.usersInfo}
                     isFirstGroup={index == 0}
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}
@@ -459,7 +441,7 @@ const ChatDetails = ({
             ? ""
             : myChat == undefined
             ? ""
-            : usersMap && Object.keys(usersMap).length > 0 && messages
+            : myChat && messages
             ? messages.map((msg, index) => {
                 return (
                   <GroupMsg
@@ -467,7 +449,7 @@ const ChatDetails = ({
                     key={msg.timeString}
                     messages={msg.messages}
                     timeString={msg.timeString}
-                    usersMap={usersMap}
+                    usersMap={myChat.usersInfo}
                     isFirstGroup={index == 0}
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}

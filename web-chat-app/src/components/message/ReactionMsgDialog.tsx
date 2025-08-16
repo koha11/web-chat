@@ -1,6 +1,7 @@
 import { IUser } from "@/interfaces/user.interface";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { IChatUsersInfo } from "@/interfaces/chat.interface";
 
 const ReactionMsgDialog = ({
   isOpen,
@@ -13,7 +14,7 @@ const ReactionMsgDialog = ({
   reactions: {
     [userId: string]: { unified: string; reactTime: Date; emoji: string };
   };
-  usersMap: { [userId: string]: IUser };
+  usersMap: { [userId: string]: IChatUsersInfo };
 }) => {
   const emojiMap = {} as any;
   const reactionListMap = {} as any;

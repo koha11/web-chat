@@ -1,3 +1,4 @@
+import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { IMessage } from "@/interfaces/messages/message.interface";
 import { IUser } from "@/interfaces/user.interface";
 
@@ -6,7 +7,7 @@ const SystemMsg = ({
   userId,
   usersMap,
 }: {
-  usersMap: { [userId: string]: IUser };
+  usersMap: { [userId: string]: IChatUsersInfo };
   msg: IMessage;
   userId: string;
 }) => {
