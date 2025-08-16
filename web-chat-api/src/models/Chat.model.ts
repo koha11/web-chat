@@ -12,6 +12,7 @@ const ChatSchema = new Schema<IChat>(
     usersInfo: { type: Map, of: Object, default: {} },
     chatName: { type: String, default: "" },
     chatAvatar: { type: String, default: "" },
+    chatType: { type: String, enum: ["GROUP", "PRIVATE"], default: "PRIVATE" },
     lastMsgSeen: { type: Map, of: String, default: {} },
   },
   { timestamps: true }

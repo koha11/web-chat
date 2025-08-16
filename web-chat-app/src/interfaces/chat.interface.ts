@@ -13,6 +13,7 @@ export interface IChat {
       joinAt?: Date;
     };
   };
+  chatType: "GROUP" | "PRIVATE";
   chatName: string;
   chatAvatar: string;
   lastMsgSeen?: { [userId: string]: [msgId: string] }; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon

@@ -15,6 +15,7 @@ export interface IChat {
     }
   >; // [userId]: Object -> lay ra dc nickname, role trong doan chat
   chatName: string;
+  chatType: "GROUP" | "PRIVATE";
   chatAvatar: string;
   lastMsgSeen: Map<string, string>; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon
 
