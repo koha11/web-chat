@@ -9,9 +9,13 @@ export interface IChat {
     string,
     {
       nickname: string;
+      avatar: string;
+      fullname: string;
       addBy?: string;
       role?: "CREATOR" | "MEMBER" | "LEADER";
       joinAt?: Date;
+      leaveMsgId?: string;
+      lastMsgSeen?: string;
     }
   >; // [userId]: Object -> lay ra dc nickname, role trong doan chat
   chatName: string;

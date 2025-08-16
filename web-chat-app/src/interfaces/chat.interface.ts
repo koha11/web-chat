@@ -8,9 +8,13 @@ export interface IChat {
   usersInfo: {
     [id: string]: {
       nickname: string;
+      avatar: string;
+      fullname: string;
       addBy?: string;
       role?: "CREATOR" | "MEMBER" | "LEADER";
       joinAt?: Date;
+      leaveMsgId?: string;
+      lastMsgSeen?: string; //msgId
     };
   };
   chatType: "GROUP" | "PRIVATE";
