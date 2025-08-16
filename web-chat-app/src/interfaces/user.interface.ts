@@ -4,7 +4,7 @@ export interface IUser {
   id: string;
   username: string;
   fullname: string;
-  avatar?: string;
+  avatar: string;
   isOnline: boolean;
   lastLogined?: Date;
   userType: UserType;

@@ -64,7 +64,7 @@ const GroupMsg = ({
               index == 0)
           )
             msgSenderAvatar = user
-              ? user.avatar ?? "/assets/images/default-user.png"
+              ? user.avatar
               : "/assets/images/default-user.png";
           else msgSenderAvatar = "";
 

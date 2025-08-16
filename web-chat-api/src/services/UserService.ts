@@ -199,7 +199,7 @@ class UserService {
     _id,
     username,
     ggid,
-    avatar = "assets/images/default-user.png",
+    avatar = "/assets/images/default-user.png",
   }: {
     _id?: Types.ObjectId;
     username: string;
