@@ -25,6 +25,7 @@ const ChatInfo = ({
 
   const receivers = (chat.users as IUser[]).filter((user) => user.id != userId);
   const isGroupChat = chat.chatType == "GROUP";
+  console.log(chat);
 
   return (
     <section

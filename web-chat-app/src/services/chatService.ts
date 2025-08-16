@@ -11,6 +11,7 @@ export const GET_CHATS = gql`
           usersInfo
           updatedAt
           lastMsgSeen
+          chatType
           users {
             id
             fullname
@@ -40,6 +41,7 @@ export const GET_CHAT = gql`
       usersInfo
       updatedAt
       lastMsgSeen
+      chatType
       users {
         id
         fullname
@@ -114,6 +116,7 @@ export const CHANGE_CHAT_AVATAR = gql`
       usersInfo
       updatedAt
       lastMsgSeen
+      chatType
       users {
         id
         fullname
@@ -135,6 +138,7 @@ export const CHANGE_CHAT_NAME = gql`
       usersInfo
       updatedAt
       lastMsgSeen
+      chatType
       users {
         id
         fullname
@@ -174,6 +178,7 @@ export const CHAT_CHANGED_SUB = gql`
       usersInfo
       updatedAt
       lastMsgSeen
+      chatType
       users {
         id
         fullname

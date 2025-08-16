@@ -8,6 +8,7 @@ export const chatTypeDefs = gql`
     chatAvatar: String
     usersInfo: JSONObject
     lastMsgSeen: JSONObject
+    chatType: String!
 
     createdAt: Date
     updatedAt: Date

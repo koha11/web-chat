@@ -71,7 +71,11 @@ class ChatService {
         });
     }
 
-    const chat = await Chat.create({ users, usersInfo });
+    const chat = await Chat.create({
+      users,
+      usersInfo,
+      chatType: users.length == 2 ? "PRIVATE" : "GROUP",
+    });
 
     if (users.length == 2)
       await Contact.findOneAndUpdate({ users }, { chatId: chat.id });
