@@ -330,7 +330,7 @@ const ChatDetails = ({
               className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 z-20"
               onMouseEnter={(e) => e.stopPropagation()}
               onMouseLeave={(e) => e.stopPropagation()}
-            > 
+            >
               <div className="font-semibold mb-2">Your contacts</div>
 
               {isContactsLoading ? (

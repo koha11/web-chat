@@ -1,4 +1,4 @@
-import { IChat } from "../interfaces/chat.interface.js";
+import { IChat, IChatUsersInfo } from "../interfaces/chat.interface.js";
 import IModelConnection from "../interfaces/modelConnection.interface.js";
 import Chat from "../models/Chat.model.js";
 import Contact from "../models/Contact.model.js";
@@ -46,17 +46,8 @@ class ChatService {
   };
 
   createChat = async (users: string[], addBy?: string) => {
-    
     // init usersInfo
-    const usersInfo = new Map<
-      string,
-      {
-        nickname: string;
-        addBy?: string;
-        role?: "CREATOR" | "MEMBER" | "LEADER";
-        joinAt?: Date;
-      }
-    >();
+    const usersInfo = new Map<string, IChatUsersInfo>();
 
     for (let userId of users) {
       const user = await User.findById(userId);
@@ -66,6 +57,8 @@ class ChatService {
       if (users.length == 2)
         usersInfo.set(userId, {
           nickname: user.fullname,
+          avatar: user.avatar,
+          fullname: user.fullname,
         });
       else
         usersInfo.set(userId, {
@@ -73,6 +66,8 @@ class ChatService {
           joinAt: new Date(),
           nickname: user.fullname,
           role: userId == addBy ? "CREATOR" : "MEMBER",
+          avatar: user.avatar,
+          fullname: user.fullname,
         });
     }
 

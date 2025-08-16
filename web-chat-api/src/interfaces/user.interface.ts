@@ -7,7 +7,7 @@ export interface IUser {
   ggid: string;
   username: string;
   fullname: string;
-  avatar?: string;
+  avatar: string;
   isOnline: boolean;
   lastLogined?: string;
   userType: UserType;

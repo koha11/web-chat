@@ -43,9 +43,7 @@ const ChatHeader = ({
       const lastLoginedUser = usersSortAscByLastLogined[0];
 
       if (lastLoginedUser && !lastLoginedUser.isOnline)
-        setLastLogined(
-          getDisplayTimeDiff(lastLoginedUser.lastLogined!)
-        );
+        setLastLogined(getDisplayTimeDiff(lastLoginedUser.lastLogined!));
     }
   }, [chat]);
 

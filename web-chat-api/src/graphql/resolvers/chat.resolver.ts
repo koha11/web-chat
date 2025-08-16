@@ -64,6 +64,8 @@ export const chatResolvers: IResolvers = {
           addBy: user.id.toString(),
           joinAt: new Date(),
           role: "MEMBER",
+          avatar: myUser.avatar,
+          fullname: myUser.fullname,
         });
       }
 
