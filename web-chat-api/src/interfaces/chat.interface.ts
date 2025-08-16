@@ -5,19 +5,7 @@ import { IUser } from "./user.interface.js";
 export interface IChat {
   id: Types.ObjectId;
   users: IUser[] | Types.ObjectId[];
-  usersInfo: Map<
-    string,
-    {
-      nickname: string;
-      avatar: string;
-      fullname: string;
-      addBy?: string;
-      role?: "CREATOR" | "MEMBER" | "LEADER";
-      joinAt?: Date;
-      leaveMsgId?: string;
-      lastMsgSeen?: string;
-    }
-  >; // [userId]: Object -> lay ra dc nickname, role trong doan chat
+  usersInfo: Map<string, IChatUsersInfo>; // [userId]: Object -> lay ra dc nickname, role trong doan chat
   chatName: string;
   chatType: "GROUP" | "PRIVATE";
   chatAvatar: string;
@@ -27,4 +15,15 @@ export interface IChat {
   updatedAt?: Date;
   deleted?: boolean;
   deletedAt?: Date;
+}
+
+export interface IChatUsersInfo {
+  nickname: string;
+  avatar: string;
+  fullname: string;
+  addBy?: string;
+  role?: "CREATOR" | "MEMBER" | "LEADER";
+  joinAt?: Date;
+  leaveMsgId?: string;
+  lastMsgSeen?: string;
 }

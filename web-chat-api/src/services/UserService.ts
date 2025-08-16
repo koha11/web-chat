@@ -11,6 +11,7 @@ import User from "../models/User.model.js";
 import { toObjectId } from "../utils/mongoose.js";
 import { Types } from "mongoose";
 import { after } from "node:test";
+import { IChatUsersInfo } from "../interfaces/chat.interface.js";
 
 class UserService {
   getConnectableUsers = async ({
@@ -198,7 +199,7 @@ class UserService {
     _id,
     username,
     ggid,
-    avatar,
+    avatar = "assets/images/default-user.png",
   }: {
     _id?: Types.ObjectId;
     username: string;
@@ -229,16 +230,22 @@ class UserService {
     // Tao chat voi gemini api
     const chatbot = await User.findOne({ userType: UserType.CHATBOT });
 
+    if (!chatbot) throw new Error("Chatbot not found");
+
     const chat = await Chat.create({
       users: [user.id, chatbot?.id],
       usersInfo: {
         [user.id]: {
           nickname: user.fullname,
+          fullname: user.fullname,
+          avatar: user.avatar,
         },
-        [chatbot?.id]: {
-          nickname: chatbot?.fullname,
+        [chatbot.id]: {
+          nickname: chatbot.fullname,
+          fullname: chatbot.fullname,
+          avatar: chatbot.avatar,
         },
-      },
+      } as { [userId: string]: IChatUsersInfo },
     });
 
     return user;
