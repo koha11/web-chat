@@ -43,7 +43,7 @@ const AddMembersDialog = ({
 
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>();
 
-  const [addMembers, { loading: isAddingMembers }] = useAddMembers();
+  const [addMembers, { loading: isAddingMembers }] = useAddMembers({ userId });
 
   if (isChatAddableUsersLoading) return <Loading></Loading>;
 

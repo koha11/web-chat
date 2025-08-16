@@ -152,7 +152,61 @@ export const usePostChat = ({
   });
 };
 
-export const useAddMembers = () => {
+export const useAddMembers = ({
+  userId,
+  after,
+  first = 10,
+}: {
+  userId: string;
+  after?: string;
+  first?: number;
+}) => {
+  return useMutation(ADD_MEMBERS, {
+    update: (cache, { data }) => {
+      const changedChat = data.addMembers as IChat;
+
+      const existing = cache.readQuery<{
+        chats: IModelConnection<IChat>;
+      }>({
+        query: GET_CHATS,
+        variables: { userId, first, after },
+      });
+
+      console.log("existing", existing);
+
+      if (existing)
+        cache.writeQuery({
+          query: GET_CHATS,
+          variables: { userId, first, after },
+          data: {
+            chats: {
+              ...existing.chats,
+              edges: existing.chats.edges.map((edge) => {
+                if (edge.cursor == changedChat.id)
+                  return {
+                    __typename: "ChatEdge",
+                    cursor: changedChat.id,
+                    node: changedChat,
+                  };
+
+                return edge;
+              }),
+            } as IModelConnection<IChat>,
+          },
+        });
+    },
+  });
+};
+
+export const useRemoveMembers = ({
+  userId,
+  after,
+  first = 10,
+}: {
+  userId: string;
+  after?: string;
+  first?: number;
+}) => {
   return useMutation(ADD_MEMBERS);
 };
 
