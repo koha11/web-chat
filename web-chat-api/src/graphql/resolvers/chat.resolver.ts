@@ -32,8 +32,8 @@ export const chatResolvers: IResolvers = {
     },
   },
   Mutation: {
-    postChat: async (_p: any, { users }, { user }: IMyContext) => {
-      const result = await chatService.createChat(users);
+    postChat: async (_p: any, { users, addBy }, { user }: IMyContext) => {
+      const result = await chatService.createChat(users, user.id.toString());
 
       return result;
     },
