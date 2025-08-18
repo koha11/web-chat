@@ -43,7 +43,9 @@ const LastMsgBody = ({
         break;
 
       case MessageType.TEXT:
-        content = name + ": " + lastMsg.msgBody;
+        content = `${
+          chat.chatType == "GROUP" || name == "You" ? `${name}: ` : ""
+        } ${lastMsg.msgBody}`;
         break;
 
       case MessageType.FILE:
