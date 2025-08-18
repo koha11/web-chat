@@ -3,9 +3,7 @@ import MessageType from "@/enums/MessageType.enum";
 import { IChat } from "@/interfaces/chat.interface";
 import { IMessage } from "@/interfaces/messages/message.interface";
 import { IUser } from "@/interfaces/user.interface";
-import { getDisplayTimeDiff } from "@/utils/messageTime.helper";
 import { strimText } from "@/utils/text.helper";
-import { Dot } from "lucide-react";
 
 const LastMsgBody = ({
   chat,

@@ -11,6 +11,7 @@ import {
   LEAVE_CHAT,
   MAKE_CALL,
   POST_CHAT,
+  REMOVE_FROM_CHAT,
 } from "../services/chatService";
 import { IChat } from "../interfaces/chat.interface";
 import IModelConnection, {
@@ -172,8 +173,6 @@ export const useAddMembers = ({
         variables: { userId, first, after },
       });
 
-      console.log("existing", existing);
-
       if (existing)
         cache.writeQuery({
           query: GET_CHATS,
@@ -198,7 +197,7 @@ export const useAddMembers = ({
   });
 };
 
-export const useRemoveMembers = ({
+export const useRemoveMember = ({
   userId,
   after,
   first = 10,
@@ -207,7 +206,7 @@ export const useRemoveMembers = ({
   after?: string;
   first?: number;
 }) => {
-  return useMutation(ADD_MEMBERS);
+  return useMutation(REMOVE_FROM_CHAT);
 };
 
 export const useLeaveChat = () => {

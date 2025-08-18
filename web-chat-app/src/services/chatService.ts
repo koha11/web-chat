@@ -78,6 +78,14 @@ export const LEAVE_CHAT = gql`
   }
 `;
 
+export const REMOVE_FROM_CHAT = gql`
+  mutation RemoveFromChat($chatId: ID!, $removedUserId: ID!) {
+    removeFromChat(chatId: $chatId, removedUserId: $removedUserId) {
+      id
+    }
+  }
+`;
+
 export const CHANGE_NICKNAME = gql`
   mutation ChangeNickname(
     $chatId: ID!

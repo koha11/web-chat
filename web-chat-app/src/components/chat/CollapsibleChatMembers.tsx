@@ -16,6 +16,7 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
     return {
       content: (
         <MemberDropdown
+          chatId={chat.id}
           user={user}
           key={user.id}
           role={chat.usersInfo[user.id].role!.toLowerCase() as any}
@@ -31,7 +32,6 @@ const CollapsibleChatMembers = ({ chat }: { chat: IChat }) => {
     dialog?: ReactNode;
     hidden?: boolean;
   }[];
-  [];
 
   members.push({
     content: (

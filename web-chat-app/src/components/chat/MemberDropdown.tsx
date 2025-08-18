@@ -9,18 +9,22 @@ import {
 } from "../ui/dropdown-menu";
 import { IUser } from "@/interfaces/user.interface";
 import { Link } from "react-router-dom";
+import { useRemoveMember } from "@/hooks/chat.hook";
 
 const MemberDropdown = ({
   userId,
   userRole,
   user,
   role,
+  chatId,
 }: {
   userId: string;
   userRole: "member" | "creator" | "leader";
   user: IUser;
   role: "member" | "creator" | "leader";
+  chatId: string;
 }) => {
+  const [removeMember, { loading: isRemoving }] = useRemoveMember({ userId });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -47,7 +51,18 @@ const MemberDropdown = ({
             <DropdownMenuItem className="cursor-pointer font-bold">
               bổ nhiệm làm nhóm trưởng
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer font-bold">
+            <DropdownMenuItem
+              className="cursor-pointer font-bold"
+              onClick={async () => {
+                if (!isRemoving)
+                  await removeMember({
+                    variables: {
+                      chatId,
+                      removedUserId: user.id,
+                    },
+                  });
+              }}
+            >
               Remove from group
             </DropdownMenuItem>
           </>
