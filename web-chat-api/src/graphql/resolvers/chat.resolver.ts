@@ -32,10 +32,29 @@ export const chatResolvers: IResolvers = {
     },
   },
   Mutation: {
-    postChat: async (_p: any, { users, addBy }, { user }: IMyContext) => {
-      const result = await chatService.createChat(users, user.id.toString());
+    postChat: async (_p: any, { users }, { user, pubsub }: IMyContext) => {
+      const chat = await chatService.createChat(users, user.id.toString());
 
-      return result;
+      if (chat.chatType == "GROUP") {
+        const msg = await Message.create({
+          chat: chat.id,
+          type: MessageType.SYSTEM,
+          user: user.id,
+          systemLog: {
+            type: "create",
+          },
+        });
+
+        pubsub.publish(SocketEvent.messageAdded, {
+          chatId: chat.id,
+          messageAdded: {
+            cursor: msg.id,
+            node: msg,
+          },
+        } as PubsubEvents[SocketEvent.messageAdded]);
+      }
+
+      return chat;
     },
 
     addMembers: async (

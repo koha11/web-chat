@@ -17,6 +17,7 @@ import {
 } from "../ui/dropdown-menu";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import MessageType from "@/enums/MessageType.enum";
+import LastMsgBody from "./LastMsgBody";
 
 const ChatRow = ({
   userId,
@@ -34,14 +35,6 @@ const ChatRow = ({
   const [users, setUsers] = useState<IUser[]>();
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
-
-  const name =
-    lastMsg &&
-    (lastMsg.user == userId
-      ? "You"
-      : (chat.users as IUser[])
-          .find((user) => user.id == lastMsg.user)
-          ?.fullname.split(" ")[0]);
 
   useEffect(() => {
     if (chat != undefined && !isLastMsgLoading) {
@@ -78,53 +71,12 @@ const ChatRow = ({
             ) : (
               lastMsg && (
                 <>
-                  {lastMsg.status == MessageStatus.UNSEND ? (
-                    <div className="">
-                      {lastMsg.user == userId
-                        ? "You"
-                        : (chat.users as IUser[])
-                            .find((user) => user.id == lastMsg.user)
-                            ?.fullname.split(" ")[0]}
-                      {" deleted a message"}
-                    </div>
-                  ) : lastMsg.type == MessageType.SYSTEM ? (
-                    <div className="">
-                      {`${
-                        userId == lastMsg.user.toString()
-                          ? "You"
-                          : (chat.users as IUser[])
-                              .find((user) => user.id == lastMsg.user)
-                              ?.fullname.split(" ")[0]
-                      } ${lastMsg.msgBody!}`.length > 25
-                        ? strimText(
-                            `${
-                              userId == lastMsg.user.toString()
-                                ? "You"
-                                : (chat.users as IUser[])
-                                    .find((user) => user.id == lastMsg.user)
-                                    ?.fullname.split(" ")[0]
-                            } ${lastMsg.msgBody!}`,
-                            25
-                          )
-                        : `${
-                            userId == lastMsg.user.toString()
-                              ? "You"
-                              : (chat.users as IUser[])
-                                  .find((user) => user.id == lastMsg.user)
-                                  ?.fullname.split(" ")[0]
-                          } ${lastMsg.msgBody!}`}
-                    </div>
-                  ) : (
-                    <div className="">
-                      {lastMsg.user == userId && "You:"}{" "}
-                      {lastMsg.type == MessageType.TEXT
-                        ? lastMsg.msgBody!.length > 25
-                          ? strimText(lastMsg.msgBody!, 25)
-                          : lastMsg.msgBody
-                        : `${name} have sent you a media`}
-                    </div>
-                  )}
-
+                  <LastMsgBody
+                    chat={chat}
+                    lastMsg={lastMsg}
+                    userId={userId}
+                    key={chat.id}
+                  ></LastMsgBody>
                   <div className="flex items-center">
                     {lastMsg && <Dot size={12}></Dot>}
                     {lastMsg &&
