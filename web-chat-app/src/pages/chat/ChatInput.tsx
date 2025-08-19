@@ -12,6 +12,7 @@ import {
 import { IChat } from "@/interfaces/chat.interface";
 import { IMessage } from "@/interfaces/messages/message.interface";
 import { IUser } from "@/interfaces/user.interface";
+import { strimText } from "@/utils/text.helper";
 import { randomInt } from "crypto";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import Cookies from "js-cookie";
@@ -27,6 +28,7 @@ import {
   Send,
   Hand,
   Image,
+  FileTextIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -61,7 +63,7 @@ const ChatInput = ({
   const [isAudioRecording, setAudioRecording] = useState(false);
   const [isAudioPlayed, setAudioPlayed] = useState(false);
   const [fileBlobUrls, setFileBlobUrls] = useState<
-    { url: string; type: string }[]
+    { url: string; type: string; filename: string }[]
   >([]);
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
@@ -98,6 +100,7 @@ const ChatInput = ({
           myFileBlobUrls.push({
             url: URL.createObjectURL(file),
             type: file.type,
+            filename: file.name,
           });
       }
 
@@ -126,6 +129,17 @@ const ChatInput = ({
         });
     }
   }, [audioStatus]);
+
+  useEffect(() => {
+    if (isSendingMedia || isSendingMsg) {
+      resetField("msg.msgBody");
+      resetField("msg.replyForMsg");
+
+      setAudioRecording(false);
+      setReplyMsgOpen(false);
+      resetField("files");
+    }
+  }, [isSendingMedia, isSendingMsg]);
 
   // Handlers
   const handleSendMessage = async ({
@@ -209,7 +223,7 @@ const ChatInput = ({
             <ImagePlus></ImagePlus>
           </div>
 
-          {fileBlobUrls.map(({ url, type }, index) => {
+          {fileBlobUrls.map(({ url, type, filename }, index) => {
             let myComponent;
 
             if (type.startsWith("image"))
@@ -231,9 +245,9 @@ const ChatInput = ({
 
             if (type.startsWith("application"))
               myComponent = (
-                <div className="py-2 px-3 flex gap-4 items-center bg-gray-400 rounded-3xl text-sm">
-                  <FileText></FileText>
-                  <div>{url}</div>
+                <div className="py-2 px-3 flex gap-2 items-center bg-gray-400 rounded-md text-sm w-full">
+                  <FileTextIcon></FileTextIcon>
+                  <div>{strimText(filename, 15)}</div>
                 </div>
               );
 
@@ -243,7 +257,7 @@ const ChatInput = ({
               <div
                 key={index}
                 className={`relative h-12 shrink-0 ${
-                  type.startsWith("application") ? "w-24" : "w-12"
+                  type.startsWith("application") ? "w-fit" : "w-12"
                 }`}
               >
                 {myComponent}
@@ -283,6 +297,8 @@ const ChatInput = ({
         className="relative w-full flex items-center justify-between gap-4"
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {
+          console.log(files);
+          console.log(files?.length);
           if (files?.length) {
             for (let file of files) if (file.size > 10_000_000) return;
           }
@@ -294,6 +310,7 @@ const ChatInput = ({
           ) {
             let chatId = chat?.id;
 
+            // neu chat chua ton tai thi tao chat trc
             if (!chatId) {
               if (choosenUsers.length == 0) return;
 
@@ -325,14 +342,7 @@ const ChatInput = ({
               files: files?.length == 0 ? undefined : files,
             };
 
-            resetField("msg.msgBody");
-            resetField("msg.replyForMsg");
-            resetField("files");
-
-            setAudioRecording(false);
-            setReplyMsgOpen(false);
-
-            await handleSendMessage(data);
+            await handleSendMessage({ ...data, files });
 
             if (!chat && choosenUsers.length > 0) navigate(`/m/${chatId}`);
           }
@@ -342,6 +352,7 @@ const ChatInput = ({
           <Image></Image>
         </Label>
 
+        {/* AUDIO  */}
         {isAudioRecording ? (
           <Button
             className="rounded-full cursor-pointer"

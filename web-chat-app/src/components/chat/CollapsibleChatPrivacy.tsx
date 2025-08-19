@@ -14,7 +14,13 @@ import {
 import { useState } from "react";
 import { useLeaveChat } from "@/hooks/chat.hook";
 
-const CollapsibleChatPrivacy = ({ chatId }: { chatId: string }) => {
+const CollapsibleChatPrivacy = ({
+  chatId,
+  isGroupChat,
+}: {
+  chatId: string;
+  isGroupChat: boolean;
+}) => {
   const [isLeaveGroupDialogOpen, setLeaveGroupDialogOpen] = useState(false);
 
   const [leaveChat, { loading: isLeavingChat }] = useLeaveChat();
@@ -32,6 +38,7 @@ const CollapsibleChatPrivacy = ({ chatId }: { chatId: string }) => {
           onClick: () => {},
         },
         {
+          hidden: !isGroupChat,
           content: (
             <>
               <LogOut></LogOut>

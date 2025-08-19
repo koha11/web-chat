@@ -21,6 +21,7 @@ import { IUser } from "../../interfaces/user.interface.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import MessageType from "../../enums/MessageType.enum.js";
 import { uploadMedia } from "../../utils/cloudinary.js";
+import { th } from "zod/v4/locales";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -197,6 +198,10 @@ export const messageResolvers: IResolvers = {
     ) => {
       const myFiles = (await Promise.all(files)) as FileUpload[];
 
+      console.log(myFiles);
+
+      if (myFiles.length == 0) throw new Error("No files uploaded");
+
       let messages: IMessage[] = [];
 
       for (let file of myFiles) {
@@ -210,8 +215,6 @@ export const messageResolvers: IResolvers = {
         if (mimeType.startsWith("audio")) type = MessageType.AUDIO;
 
         if (mimeType.startsWith("application")) type = MessageType.FILE;
-
-        console.log(file);
 
         const { secure_url, bytes } = await uploadMedia({
           file,
