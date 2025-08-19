@@ -298,7 +298,6 @@ const ChatInput = ({
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {
           console.log(files);
-          console.log(files?.length);
           if (files?.length) {
             for (let file of files) if (file.size > 10_000_000) return;
           }
@@ -403,13 +402,19 @@ const ChatInput = ({
                     res.blob()
                   );
 
+                  console.log(blob);
+
                   const file = new File(
                     [blob],
-                    `${userId}-voice-${new Date().toISOString()}`,
+                    `${userId}-voice-${new Date()
+                      .toISOString()
+                      .replace(/[:.]/g, "-")}.mp3`,
                     {
-                      type: blob.type,
+                      type: "audio/webm",
                     }
                   );
+
+                  console.log(file);
 
                   const dataTransfer = new DataTransfer();
 
