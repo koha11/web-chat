@@ -124,8 +124,6 @@ const ChatInput = ({
             }
           );
 
-          console.log(file);
-
           const dataTransfer = new DataTransfer();
 
           dataTransfer.items.add(file);
@@ -302,7 +300,6 @@ const ChatInput = ({
         className="relative w-full flex items-center justify-between gap-4"
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {
-          console.log(files);
           if (files?.length) {
             for (let file of files) if (file.size > 10_000_000) return;
           }
@@ -400,43 +397,7 @@ const ChatInput = ({
             {audioStatus != "stopped" ? (
               <Button
                 type="button"
-                onClick={() => {
-                  stopRecording();
-
-                  // const blob = await fetch(mediaBlobUrl!).then((res) =>
-                  //   res.blob()
-                  // );
-
-                  // const mime = blob.type || "audio/webm";
-
-                  // const extMap: Record<string, string> = {
-                  //   "audio/webm": "webm",
-                  //   "audio/ogg": "ogg",
-                  //   "audio/wav": "wav",
-                  //   "audio/mpeg": "mp3",
-                  //   "audio/mp4": "m4a",
-                  // };
-
-                  // const ext = extMap[mime] || "webm";
-
-                  // const file = new File(
-                  //   [blob],
-                  //   `${userId}-voice-${new Date()
-                  //     .toISOString()
-                  //     .replace(/[:.]/g, "-")}.${ext}`,
-                  //   {
-                  //     type: mime,
-                  //   }
-                  // );
-
-                  // console.log(file);
-
-                  // const dataTransfer = new DataTransfer();
-
-                  // dataTransfer.items.add(file);
-
-                  // setValue("files", dataTransfer.files);
-                }}
+                onClick={() => stopRecording()}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
               >
                 <Square />
