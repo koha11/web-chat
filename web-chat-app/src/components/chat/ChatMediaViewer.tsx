@@ -48,7 +48,6 @@ const ChatMediaViewer = ({
       );
 
       window.onkeydown = (e) => {
-        console.log(e.key);
         switch (e.key) {
           case "ArrowLeft":
             setMediaIndex((index) => (index == 0 ? index : index - 1));

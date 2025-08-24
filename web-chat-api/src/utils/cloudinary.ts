@@ -16,13 +16,6 @@ export const uploadMedia = async ({
 }): Promise<UploadApiResponse> => {
   const { createReadStream } = file;
 
-  // const resource_type =
-  //   type == MessageType.IMAGE
-  //     ? "image"
-  //     : type == MessageType.VIDEO
-  //     ? "video"
-  //     : "raw";
-
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {

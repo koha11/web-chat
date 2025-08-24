@@ -402,15 +402,25 @@ const ChatInput = ({
                     res.blob()
                   );
 
-                  console.log(blob);
+                  const mime = blob.type || "audio/webm";
+
+                  const extMap: Record<string, string> = {
+                    "audio/webm": "webm",
+                    "audio/ogg": "ogg",
+                    "audio/wav": "wav",
+                    "audio/mpeg": "mp3",
+                    "audio/mp4": "m4a",
+                  };
+
+                  const ext = extMap[mime] || "webm";
 
                   const file = new File(
                     [blob],
                     `${userId}-voice-${new Date()
                       .toISOString()
-                      .replace(/[:.]/g, "-")}.mp3`,
+                      .replace(/[:.]/g, "-")}.${ext}`,
                     {
-                      type: "audio/wav",
+                      type: mime,
                     }
                   );
 
