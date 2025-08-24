@@ -410,7 +410,7 @@ const ChatInput = ({
                       .toISOString()
                       .replace(/[:.]/g, "-")}.mp3`,
                     {
-                      type: "audio/webm",
+                      type: "audio/wav",
                     }
                   );
 
