@@ -15,7 +15,7 @@ A real-time web chat application built with modern technologies for seamless com
 
 - **Frontend:** ReactJS, TypeScript
 - **Backend:** NodeJS, GraphQL, Gemini API
-- **Real-time:** WebSocket, WebRTC
+- **Real-time:** WebSocket
 - **Database:** MongoDB
 
 ## Getting Started
