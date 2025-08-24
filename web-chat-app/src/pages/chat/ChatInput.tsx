@@ -160,7 +160,7 @@ const ChatInput = ({
   }) => {
     const fileArr = files ? Array.from(files) : undefined;
 
-    if (fileArr)
+    if (fileArr && fileArr.length > 0)
       await postMediaMessage({
         variables: {
           chatId,

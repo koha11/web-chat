@@ -20,7 +20,7 @@ import {
 } from "../../components/ui/collapsible";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useGetChat, useHangupCall } from "../../hooks/chat.hook";
+import { useCall, useGetChat, useHangupCall } from "../../hooks/chat.hook";
 import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
 import { IUser } from "../../interfaces/user.interface";
@@ -54,7 +54,7 @@ const Call = () => {
   const [isCameraOpen, setCameraOpen] = useState(initializeVideo);
   const [isMicroOpen, setMicroOpen] = useState(true);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoveStream] = useState<MediaStream | null>(null);
+  // const [remoteStream, setRemoveStream] = useState<MediaStream | null>(null);
   const [isHover, setHover] = useState(false);
   const [isHangup, setHangup] = useState(false);
 
@@ -71,156 +71,159 @@ const Call = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
-  useEffect(() => {
-    ws.current = new WebSocket(
-      IS_DEV_ENV
-        ? `ws://${SERVER_HOST}:${SERVER_PORT}/rtc-signal`
-        : `wss://${SERVER_HOST}/rtc-signal`
-    );
-    const signaling = ws.current;
-    const pendingSignals: any[] = [];
-    // Setup peer connection
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-    pcRef.current = pc;
+  const { remoteStream } = useCall(roomId);
 
-    // Remote track handler
-    pc.ontrack = ({ streams }) => {
-      const myRemoteStream = streams[0];
-      setRemoveStream(myRemoteStream);
-      setRemoteMediaState(() => [
-        {
-          isCameraOpen:
-            myRemoteStream.getVideoTracks().length == 0
-              ? false
-              : myRemoteStream.getVideoTracks()[0].enabled,
-          isMicroOpen:
-            myRemoteStream.getAudioTracks().length == 0
-              ? false
-              : myRemoteStream.getAudioTracks()[0].enabled,
-        },
-      ]);
+  // useEffect(() => {
+  //   ws.current = new WebSocket(
+  //     IS_DEV_ENV
+  //       ? `ws://${SERVER_HOST}:${SERVER_PORT}/rtc-signal`
+  //       : `wss://${SERVER_HOST}/rtc-signal`
+  //   );
 
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = myRemoteStream;
-      }
-    };
+  //   const signaling = ws.current;
+  //   const pendingSignals: any[] = [];
+  //   // Setup peer connection
+  //   const pc = new RTCPeerConnection({
+  //     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  //   });
+  //   pcRef.current = pc;
 
-    // ICE candidate handler
-    pc.onicecandidate = ({ candidate }) => {
-      if (!candidate) return;
+  //   // Remote track handler
+  //   pc.ontrack = ({ streams }) => {
+  //     const myRemoteStream = streams[0];
+  //     setRemoveStream(myRemoteStream);
+  //     setRemoteMediaState(() => [
+  //       {
+  //         isCameraOpen:
+  //           myRemoteStream.getVideoTracks().length == 0
+  //             ? false
+  //             : myRemoteStream.getVideoTracks()[0].enabled,
+  //         isMicroOpen:
+  //           myRemoteStream.getAudioTracks().length == 0
+  //             ? false
+  //             : myRemoteStream.getAudioTracks()[0].enabled,
+  //       },
+  //     ]);
 
-      if (signaling.readyState === WebSocket.OPEN) {
-        signaling.send(JSON.stringify({ type: "candidate", candidate }));
-      } else {
-        // buffer or defer
-        pendingSignals.push({ type: "candidate", candidate });
-      }
-    };
+  //     if (remoteVideoRef.current) {
+  //       remoteVideoRef.current.srcObject = myRemoteStream;
+  //     }
+  //   };
 
-    // Fires when the browser thinks you need to renegotiate your session
-    pc.onicegatheringstatechange = () => {
-      console.log(pc.iceGatheringState);
+  //   // ICE candidate handler
+  //   pc.onicecandidate = ({ candidate }) => {
+  //     if (!candidate) return;
 
-      if (pc.iceGatheringState == "complete") setConnected(true);
-    };
+  //     if (signaling.readyState === WebSocket.OPEN) {
+  //       signaling.send(JSON.stringify({ type: "candidate", candidate }));
+  //     } else {
+  //       // buffer or defer
+  //       pendingSignals.push({ type: "candidate", candidate });
+  //     }
+  //   };
 
-    //
-    pc.onnegotiationneeded = async () => {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      const msg = { type: "offer", sdp: pc.localDescription };
-      if (signaling.readyState === WebSocket.OPEN) {
-        signaling.send(JSON.stringify(msg));
-      } else {
-        pendingSignals.push(msg);
-      }
-    };
+  //   // Fires when the browser thinks you need to renegotiate your session
+  //   pc.onicegatheringstatechange = () => {
+  //     console.log(pc.iceGatheringState);
 
-    signaling.onopen = () => {
-      console.log("RTC WS open");
+  //     if (pc.iceGatheringState == "complete") setConnected(true);
+  //   };
 
-      for (const msg of pendingSignals) {
-        console.log(msg);
-        signaling.send(JSON.stringify(msg));
-      }
-      pendingSignals.length = 0;
+  //   //
+  //   pc.onnegotiationneeded = async () => {
+  //     const offer = await pc.createOffer();
+  //     await pc.setLocalDescription(offer);
+  //     const msg = { type: "offer", sdp: pc.localDescription };
+  //     if (signaling.readyState === WebSocket.OPEN) {
+  //       signaling.send(JSON.stringify(msg));
+  //     } else {
+  //       pendingSignals.push(msg);
+  //     }
+  //   };
 
-      // Get media and add to connection
-      navigator.mediaDevices
-        .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
-        .then((stream) => {
-          setLocalStream(stream);
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-          }
+  //   signaling.onopen = () => {
+  //     console.log("RTC WS open");
 
-          stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-        });
-    };
+  //     for (const msg of pendingSignals) {
+  //       console.log(msg);
+  //       signaling.send(JSON.stringify(msg));
+  //     }
+  //     pendingSignals.length = 0;
 
-    // Incoming signaling messages
-    signaling.onmessage = async (msg) => {
-      const data = JSON.parse(msg.data);
+  //     // Get media and add to connection
+  //     navigator.mediaDevices
+  //       .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
+  //       .then((stream) => {
+  //         setLocalStream(stream);
+  //         if (localVideoRef.current) {
+  //           localVideoRef.current.srcObject = stream;
+  //         }
 
-      if (!pcRef.current) return;
+  //         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+  //       });
+  //   };
 
-      switch (data.type) {
-        case "offer":
-          await pcRef.current.setRemoteDescription(
-            new RTCSessionDescription(data.sdp)
-          );
-          const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
+  //   // Incoming signaling messages
+  //   signaling.onmessage = async (msg) => {
+  //     const data = JSON.parse(msg.data);
 
-          signaling.send(
-            JSON.stringify({
-              type: "answer",
-              sdp: pcRef.current.localDescription,
-            })
-          );
-          break;
-        case "answer":
-          await pcRef.current.setRemoteDescription(
-            new RTCSessionDescription(data.sdp)
-          );
-          break;
-        case "candidate":
-          await pcRef.current.addIceCandidate(
-            new RTCIceCandidate(data.candidate)
-          );
-          break;
-        case "media-status":
-          setRemoteMediaState((olds) => {
-            const old = olds[0];
+  //     if (!pcRef.current) return;
 
-            return [
-              {
-                isCameraOpen:
-                  data.kind == "video" ? data.enabled : old.isCameraOpen,
-                isMicroOpen:
-                  data.kind == "audio" ? data.enabled : old.isMicroOpen,
-              },
-            ];
-          });
+  //     switch (data.type) {
+  //       case "offer":
+  //         await pcRef.current.setRemoteDescription(
+  //           new RTCSessionDescription(data.sdp)
+  //         );
+  //         const answer = await pcRef.current.createAnswer();
+  //         await pcRef.current.setLocalDescription(answer);
 
-          break;
-      }
-    };
+  //         signaling.send(
+  //           JSON.stringify({
+  //             type: "answer",
+  //             sdp: pcRef.current.localDescription,
+  //           })
+  //         );
+  //         break;
+  //       case "answer":
+  //         await pcRef.current.setRemoteDescription(
+  //           new RTCSessionDescription(data.sdp)
+  //         );
+  //         break;
+  //       case "candidate":
+  //         await pcRef.current.addIceCandidate(
+  //           new RTCIceCandidate(data.candidate)
+  //         );
+  //         break;
+  //       case "media-status":
+  //         setRemoteMediaState((olds) => {
+  //           const old = olds[0];
 
-    signaling.onerror = console.error;
-    signaling.onclose = (e) => console.log("WS closed", e);
+  //           return [
+  //             {
+  //               isCameraOpen:
+  //                 data.kind == "video" ? data.enabled : old.isCameraOpen,
+  //               isMicroOpen:
+  //                 data.kind == "audio" ? data.enabled : old.isMicroOpen,
+  //             },
+  //           ];
+  //         });
 
-    return () => {
-      // Close WebSocket
-      signaling.close();
-      // Close peer connection
-      pcRef.current?.close();
-      // Stop all local tracks
-      localStream?.getTracks().forEach((t) => t.stop());
-    };
-  }, []);
+  //         break;
+  //     }
+  //   };
+
+  //   signaling.onerror = console.error;
+  //   signaling.onclose = (e) => console.log("WS closed", e);
+
+  //   return () => {
+  //     // Close WebSocket
+  //     signaling.close();
+  //     // Close peer connection
+  //     pcRef.current?.close();
+  //     // Stop all local tracks
+  //     localStream?.getTracks().forEach((t) => t.stop());
+  //   };
+  // }, []);
 
   // hanlde toggle camera and micro
   useEffect(() => {

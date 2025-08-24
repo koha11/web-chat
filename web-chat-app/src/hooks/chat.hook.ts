@@ -19,6 +19,8 @@ import IModelConnection, {
 } from "../interfaces/modelConnection.interface";
 import IMyQueryResult from "../interfaces/myQueryResult.interface";
 import { IUser } from "../interfaces/user.interface";
+import { useState, useRef, useEffect } from "react";
+import { pusher } from "@/pusher";
 
 export const useGetChats = ({
   userId,
@@ -235,4 +237,132 @@ export const useHandleCall = () => {
 
 export const useHangupCall = () => {
   return useMutation(HANGUP_CALL);
+};
+
+export const useCall = (roomId: string) => {
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const pcRef = useRef<RTCPeerConnection | null>(null);
+  const me = useRef(crypto.randomUUID());
+
+  useEffect(() => {
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: ["stun:stun.l.google.com:19302"] },
+        // Add your TURN here for reliability:
+        // { urls: 'turn:YOUR_TURN_HOST:3478', username: 'u', credential: 'p' }
+      ],
+    });
+    pcRef.current = pc;
+
+    const channelName = `presence-call.${roomId}`;
+    const ch = pusher.subscribe(channelName);
+
+    // Receive remote track
+    const remote = new MediaStream();
+    setRemoteStream(remote);
+    
+    pc.ontrack = (e) =>
+      e.streams[0] &&
+      e.streams[0].getTracks().forEach((t) => remote.addTrack(t));
+
+    // Send ICE to peers
+    pc.onicecandidate = (e) => {
+      if (e.candidate)
+        ch.trigger("client-ice", {
+          candidate: e.candidate.toJSON(),
+          from: me.current,
+        });
+    };
+
+    // Handle signaling
+    ch.bind(
+      "client-offer",
+      async ({
+        sdp,
+        from,
+      }: {
+        sdp: RTCSessionDescriptionInit;
+        from: string;
+      }) => {
+        if (from === me.current) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        ch.trigger("client-answer", {
+          sdp: pc.localDescription,
+          from: me.current,
+        });
+      }
+    );
+
+    ch.bind(
+      "client-answer",
+      async ({
+        sdp,
+        from,
+      }: {
+        sdp: RTCSessionDescriptionInit;
+        from: string;
+      }) => {
+        if (from === me.current) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      }
+    );
+
+    ch.bind(
+      "client-ice",
+      async ({
+        candidate,
+        from,
+      }: {
+        candidate: RTCIceCandidateInit;
+        from: string;
+      }) => {
+        if (from === me.current) return;
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch {}
+      }
+    );
+
+    // Start local media and send an offer when another member is present
+    let stopped = false;
+
+    (async () => {
+
+      const local = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      local.getTracks().forEach((t) => pc.addTrack(t, local));
+
+      // When a second member joins, make an offer
+      ch.bind("pusher:subscription_succeeded", (_: any) => {
+        // no-op
+      });
+
+      ch.bind("pusher:member_added", async () => {
+        if (stopped) return;
+        const offer = await pc.createOffer({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
+        });
+
+        await pc.setLocalDescription(offer);
+
+        ch.trigger("client-offer", {
+          sdp: pc.localDescription,
+          from: me.current,
+        });
+      });
+    })();
+
+    return () => {
+      stopped = true;
+      pusher.unsubscribe(channelName);
+      pc.close();
+    };
+  }, [roomId]);
+
+  return { remoteStream };
 };
