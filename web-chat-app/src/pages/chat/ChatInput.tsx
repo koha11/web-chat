@@ -113,13 +113,18 @@ const ChatInput = ({
       fetch(mediaBlobUrl!)
         .then((res) => res.blob())
         .then((blob) => {
+          const ext = blob.type.startsWith("audio") ? "mp3" : "mp4";
           const file = new File(
             [blob],
-            `${userId}-voice-${new Date().toISOString()}`,
+            `${userId}-voice-${new Date()
+              .toISOString()
+              .replace(/[:.]/g, "-")}.${ext}`,
             {
               type: blob.type,
             }
           );
+
+          console.log(file);
 
           const dataTransfer = new DataTransfer();
 
@@ -395,42 +400,42 @@ const ChatInput = ({
             {audioStatus != "stopped" ? (
               <Button
                 type="button"
-                onClick={async () => {
+                onClick={() => {
                   stopRecording();
 
-                  const blob = await fetch(mediaBlobUrl!).then((res) =>
-                    res.blob()
-                  );
+                  // const blob = await fetch(mediaBlobUrl!).then((res) =>
+                  //   res.blob()
+                  // );
 
-                  const mime = blob.type || "audio/webm";
+                  // const mime = blob.type || "audio/webm";
 
-                  const extMap: Record<string, string> = {
-                    "audio/webm": "webm",
-                    "audio/ogg": "ogg",
-                    "audio/wav": "wav",
-                    "audio/mpeg": "mp3",
-                    "audio/mp4": "m4a",
-                  };
+                  // const extMap: Record<string, string> = {
+                  //   "audio/webm": "webm",
+                  //   "audio/ogg": "ogg",
+                  //   "audio/wav": "wav",
+                  //   "audio/mpeg": "mp3",
+                  //   "audio/mp4": "m4a",
+                  // };
 
-                  const ext = extMap[mime] || "webm";
+                  // const ext = extMap[mime] || "webm";
 
-                  const file = new File(
-                    [blob],
-                    `${userId}-voice-${new Date()
-                      .toISOString()
-                      .replace(/[:.]/g, "-")}.${ext}`,
-                    {
-                      type: mime,
-                    }
-                  );
+                  // const file = new File(
+                  //   [blob],
+                  //   `${userId}-voice-${new Date()
+                  //     .toISOString()
+                  //     .replace(/[:.]/g, "-")}.${ext}`,
+                  //   {
+                  //     type: mime,
+                  //   }
+                  // );
 
-                  console.log(file);
+                  // console.log(file);
 
-                  const dataTransfer = new DataTransfer();
+                  // const dataTransfer = new DataTransfer();
 
-                  dataTransfer.items.add(file);
+                  // dataTransfer.items.add(file);
 
-                  setValue("files", dataTransfer.files);
+                  // setValue("files", dataTransfer.files);
                 }}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
               >
