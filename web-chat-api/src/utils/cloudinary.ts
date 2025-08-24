@@ -21,7 +21,7 @@ export const uploadMedia = async ({
       {
         folder,
         filename_override: filename_override ?? file.filename,
-        resource_type: "auto",
+        resource_type: "video",
       },
       async (error, result) => {
         if (error) reject(error);
