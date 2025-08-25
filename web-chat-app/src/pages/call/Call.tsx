@@ -26,6 +26,8 @@ import Loading from "../../components/ui/loading";
 import { IUser } from "../../interfaces/user.interface";
 import { CHAT_RESPONSE_CALL_SUB } from "../../services/chatService";
 import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
+import { pusher } from "@/pusher";
+import { Channel } from "pusher-js";
 
 const Call = () => {
   const location = useLocation();
@@ -54,7 +56,7 @@ const Call = () => {
   const [isCameraOpen, setCameraOpen] = useState(initializeVideo);
   const [isMicroOpen, setMicroOpen] = useState(true);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  // const [remoteStream, setRemoveStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoveStream] = useState<MediaStream | null>(null);
   const [isHover, setHover] = useState(false);
   const [isHangup, setHangup] = useState(false);
 
@@ -64,168 +66,178 @@ const Call = () => {
       isMicroOpen: boolean;
     }[]
   >([]);
-  const [isConnected, setConnected] = useState(false);
+  const [isConnected, setConnected] = useState(true);
 
   const ws = useRef<WebSocket>(null);
+  const ch = useRef<Channel>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
 
-  const { remoteStream } = useCall(roomId);
+  // const { remoteStream, localStream } = useCall({ roomId, userId });
 
-  // useEffect(() => {
-  //   ws.current = new WebSocket(
-  //     IS_DEV_ENV
-  //       ? `ws://${SERVER_HOST}:${SERVER_PORT}/rtc-signal`
-  //       : `wss://${SERVER_HOST}/rtc-signal`
-  //   );
+  useEffect(() => {
+    const channelName = `call.${roomId}`;
+    ch.current = pusher.subscribe(channelName);
 
-  //   const signaling = ws.current;
-  //   const pendingSignals: any[] = [];
-  //   // Setup peer connection
-  //   const pc = new RTCPeerConnection({
-  //     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-  //   });
-  //   pcRef.current = pc;
+    const signaling = ch.current;
+    const pendingSignals: any[] = [];
 
-  //   // Remote track handler
-  //   pc.ontrack = ({ streams }) => {
-  //     const myRemoteStream = streams[0];
-  //     setRemoveStream(myRemoteStream);
-  //     setRemoteMediaState(() => [
-  //       {
-  //         isCameraOpen:
-  //           myRemoteStream.getVideoTracks().length == 0
-  //             ? false
-  //             : myRemoteStream.getVideoTracks()[0].enabled,
-  //         isMicroOpen:
-  //           myRemoteStream.getAudioTracks().length == 0
-  //             ? false
-  //             : myRemoteStream.getAudioTracks()[0].enabled,
-  //       },
-  //     ]);
+    // Setup peer connection
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
+    pcRef.current = pc;
 
-  //     if (remoteVideoRef.current) {
-  //       remoteVideoRef.current.srcObject = myRemoteStream;
-  //     }
-  //   };
+    // Remote track handler
+    pc.ontrack = ({ streams }) => {
+      const myRemoteStream = streams[0];
+      console.log(myRemoteStream);
+      setRemoveStream(myRemoteStream);
+      setRemoteMediaState(() => [
+        {
+          isCameraOpen:
+            myRemoteStream.getVideoTracks().length == 0
+              ? false
+              : myRemoteStream.getVideoTracks()[0].enabled,
+          isMicroOpen:
+            myRemoteStream.getAudioTracks().length == 0
+              ? false
+              : myRemoteStream.getAudioTracks()[0].enabled,
+        },
+      ]);
 
-  //   // ICE candidate handler
-  //   pc.onicecandidate = ({ candidate }) => {
-  //     if (!candidate) return;
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = myRemoteStream;
+      }
+    };
 
-  //     if (signaling.readyState === WebSocket.OPEN) {
-  //       signaling.send(JSON.stringify({ type: "candidate", candidate }));
-  //     } else {
-  //       // buffer or defer
-  //       pendingSignals.push({ type: "candidate", candidate });
-  //     }
-  //   };
+    // ICE candidate handler
+    pc.onicecandidate = ({ candidate }) => {
+      console.log("onicecandidate", candidate);
+      if (!candidate) return;
+      const msg = { type: "candidate", candidate };
 
-  //   // Fires when the browser thinks you need to renegotiate your session
-  //   pc.onicegatheringstatechange = () => {
-  //     console.log(pc.iceGatheringState);
+      // if (signaling.subscribed) {
+      signaling.trigger("client-message", JSON.stringify(msg));
+      // } else {
+      // buffer or defer
+      // pendingSignals.push(msg);
+      // }
+    };
 
-  //     if (pc.iceGatheringState == "complete") setConnected(true);
-  //   };
+    // Fires when the browser thinks you need to renegotiate your session
+    pc.onicegatheringstatechange = () => {
+      console.log(pc.iceGatheringState);
 
-  //   //
-  //   pc.onnegotiationneeded = async () => {
-  //     const offer = await pc.createOffer();
-  //     await pc.setLocalDescription(offer);
-  //     const msg = { type: "offer", sdp: pc.localDescription };
-  //     if (signaling.readyState === WebSocket.OPEN) {
-  //       signaling.send(JSON.stringify(msg));
-  //     } else {
-  //       pendingSignals.push(msg);
-  //     }
-  //   };
+      if (pc.iceGatheringState == "complete") setConnected(true);
+    };    
 
-  //   signaling.onopen = () => {
-  //     console.log("RTC WS open");
+    //
+    pc.onnegotiationneeded = async () => {
+      console.log("onnegotiationneeded");
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const msg = { type: "offer", sdp: pc.localDescription };
 
-  //     for (const msg of pendingSignals) {
-  //       console.log(msg);
-  //       signaling.send(JSON.stringify(msg));
-  //     }
-  //     pendingSignals.length = 0;
+      // if (signaling.subscribed) {
+        signaling.trigger("client-message", JSON.stringify(msg));
+      // } else {
+      // pendingSignals.push(msg);
+      // }
+    };
 
-  //     // Get media and add to connection
-  //     navigator.mediaDevices
-  //       .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
-  //       .then((stream) => {
-  //         setLocalStream(stream);
-  //         if (localVideoRef.current) {
-  //           localVideoRef.current.srcObject = stream;
-  //         }
+    signaling.bind("pusher:subscription_succeeded", () => {
+      console.log("subscription succeeded ");
 
-  //         stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-  //       });
-  //   };
+      for (const msg of pendingSignals) {
+        console.log(msg);
+        signaling.trigger("client-message", JSON.stringify(msg));
+      }
 
-  //   // Incoming signaling messages
-  //   signaling.onmessage = async (msg) => {
-  //     const data = JSON.parse(msg.data);
+      pendingSignals.length = 0;
 
-  //     if (!pcRef.current) return;
+      // Get media and add to connection
+      navigator.mediaDevices
+        .getUserMedia({ video: isCameraOpen, audio: isMicroOpen })
+        .then((stream) => {
+          setLocalStream(stream);
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+          }
 
-  //     switch (data.type) {
-  //       case "offer":
-  //         await pcRef.current.setRemoteDescription(
-  //           new RTCSessionDescription(data.sdp)
-  //         );
-  //         const answer = await pcRef.current.createAnswer();
-  //         await pcRef.current.setLocalDescription(answer);
+          stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+        });
+    });
 
-  //         signaling.send(
-  //           JSON.stringify({
-  //             type: "answer",
-  //             sdp: pcRef.current.localDescription,
-  //           })
-  //         );
-  //         break;
-  //       case "answer":
-  //         await pcRef.current.setRemoteDescription(
-  //           new RTCSessionDescription(data.sdp)
-  //         );
-  //         break;
-  //       case "candidate":
-  //         await pcRef.current.addIceCandidate(
-  //           new RTCIceCandidate(data.candidate)
-  //         );
-  //         break;
-  //       case "media-status":
-  //         setRemoteMediaState((olds) => {
-  //           const old = olds[0];
+    // Incoming signaling messages
+    signaling.bind("client-message", async (msg: any) => {
+      console.log(msg);
+      const data = JSON.parse(msg.data);
+      console.log(data);
 
-  //           return [
-  //             {
-  //               isCameraOpen:
-  //                 data.kind == "video" ? data.enabled : old.isCameraOpen,
-  //               isMicroOpen:
-  //                 data.kind == "audio" ? data.enabled : old.isMicroOpen,
-  //             },
-  //           ];
-  //         });
+      if (!pcRef.current) return;
 
-  //         break;
-  //     }
-  //   };
+      switch (data.type) {
+        case "offer":
+          await pcRef.current.setRemoteDescription(
+            new RTCSessionDescription(data.sdp)
+          );
+          const answer = await pcRef.current.createAnswer();
+          await pcRef.current.setLocalDescription(answer);
 
-  //   signaling.onerror = console.error;
-  //   signaling.onclose = (e) => console.log("WS closed", e);
+          signaling.trigger(
+            "client-message",
+            JSON.stringify({
+              type: "answer",
+              sdp: pcRef.current.localDescription,
+            })
+          );
+          break;
+        case "answer":
+          await pcRef.current.setRemoteDescription(
+            new RTCSessionDescription(data.sdp)
+          );
+          break;
+        case "candidate":
+          await pcRef.current.addIceCandidate(
+            new RTCIceCandidate(data.candidate)
+          );
+          break;
+        case "media-status":
+          setRemoteMediaState((olds) => {
+            const old = olds[0];
 
-  //   return () => {
-  //     // Close WebSocket
-  //     signaling.close();
-  //     // Close peer connection
-  //     pcRef.current?.close();
-  //     // Stop all local tracks
-  //     localStream?.getTracks().forEach((t) => t.stop());
-  //   };
-  // }, []);
+            return [
+              {
+                isCameraOpen:
+                  data.kind == "video" ? data.enabled : old.isCameraOpen,
+                isMicroOpen:
+                  data.kind == "audio" ? data.enabled : old.isMicroOpen,
+              },
+            ];
+          });
+
+          break;
+      }
+    });
+
+    signaling.bind("pusher:subscription_error", (error: any) => {
+      console.error("Subscription error", error);
+    }); // fires on auth/subscribe failure
+
+    return () => {
+      // Close WebSocket
+      signaling.disconnect();
+      // Close peer connection
+      pcRef.current?.close();
+      // Stop all local tracks
+      localStream?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
 
   // hanlde toggle camera and micro
+
   useEffect(() => {
     let hasChanged = false;
     let kind = "";
@@ -249,14 +261,14 @@ const Call = () => {
       }
     });
 
-    if (ws.current && isConnected && hasChanged)
-      ws.current.send(
-        JSON.stringify({
-          type: "media-status",
-          kind, // or "audio"
-          enabled: kind == "video" ? isCameraOpen : isMicroOpen,
-        })
-      );
+    // if (ws.current && isConnected && hasChanged)
+    //   ws.current.send(
+    //     JSON.stringify({
+    //       type: "media-status",
+    //       kind, // or "audio"
+    //       enabled: kind == "video" ? isCameraOpen : isMicroOpen,
+    //     })
+    //   );
 
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
@@ -349,7 +361,7 @@ const Call = () => {
 
       {remoteMediaState.length > 0 &&
         !isHangup &&
-        (remoteMediaState[0].isCameraOpen ? (
+        (remoteMediaState[0].isCameraOpen || true ? (
           <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
             <video
               className="scale-x-[-1] h-screen w-auto mx-auto object-contain"

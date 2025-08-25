@@ -109,14 +109,14 @@ export const useGetChat = ({
       users.find((user) => user.id != userId)?.avatar ?? "";
 
     const defaultChatName =
-      chat.nicknames[users.find((user) => user.id != userId)!.id];
+      chat.usersInfo[users.find((user) => user.id != userId)!.id].nickname;
 
     const defaultGroupChatName = users.reduce<String>((acc, user) => {
       if (user.id == userId) return acc;
 
       return acc == ""
-        ? acc + chat.nicknames[user.id].split(" ")[0]
-        : acc + ", " + chat.nicknames[user.id].split(" ")[0];
+        ? acc + chat.usersInfo[user.id].nickname.split(" ")[0]
+        : acc + ", " + chat.usersInfo[user.id].nickname.split(" ")[0];
     }, "");
 
     data = {
@@ -239,10 +239,16 @@ export const useHangupCall = () => {
   return useMutation(HANGUP_CALL);
 };
 
-export const useCall = (roomId: string) => {
+export const useCall = ({
+  roomId,
+  userId,
+}: {
+  roomId: string;
+  userId: string;
+}) => {
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
-  const me = useRef(crypto.randomUUID());
 
   useEffect(() => {
     const pc = new RTCPeerConnection({
@@ -254,23 +260,27 @@ export const useCall = (roomId: string) => {
     });
     pcRef.current = pc;
 
-    const channelName = `presence-call.${roomId}`;
+    const channelName = `call.${roomId}`;
     const ch = pusher.subscribe(channelName);
+
+    console.log(ch);
 
     // Receive remote track
     const remote = new MediaStream();
     setRemoteStream(remote);
-    
-    pc.ontrack = (e) =>
-      e.streams[0] &&
-      e.streams[0].getTracks().forEach((t) => remote.addTrack(t));
+
+    pc.ontrack = ({ streams }) => {
+      console.log(streams);
+      streams[0] && streams[0].getTracks().forEach((t) => remote.addTrack(t));
+    };
 
     // Send ICE to peers
-    pc.onicecandidate = (e) => {
-      if (e.candidate)
+    pc.onicecandidate = ({ candidate }) => {
+      console.log("onicecandidate", candidate);
+      if (candidate)
         ch.trigger("client-ice", {
-          candidate: e.candidate.toJSON(),
-          from: me.current,
+          candidate: candidate.toJSON(),
+          from: userId,
         });
     };
 
@@ -284,13 +294,15 @@ export const useCall = (roomId: string) => {
         sdp: RTCSessionDescriptionInit;
         from: string;
       }) => {
-        if (from === me.current) return;
+        console.log("client-offer", { sdp, from });
+        if (from === userId) return;
         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
+
         ch.trigger("client-answer", {
           sdp: pc.localDescription,
-          from: me.current,
+          from: userId,
         });
       }
     );
@@ -304,7 +316,8 @@ export const useCall = (roomId: string) => {
         sdp: RTCSessionDescriptionInit;
         from: string;
       }) => {
-        if (from === me.current) return;
+        console.log("client-answer", { sdp, from });
+        if (from === userId) return;
         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
       }
     );
@@ -318,7 +331,8 @@ export const useCall = (roomId: string) => {
         candidate: RTCIceCandidateInit;
         from: string;
       }) => {
-        if (from === me.current) return;
+        console.log("client-ice", { candidate, from });
+        if (from === userId) return;
         try {
           await pc.addIceCandidate(new RTCIceCandidate(candidate));
         } catch {}
@@ -328,20 +342,26 @@ export const useCall = (roomId: string) => {
     // Start local media and send an offer when another member is present
     let stopped = false;
 
-    (async () => {
+    ch.bind("pusher:subscription_error", (error: any) => {
+      console.error("Subscription error", error);
+    }); // fires on auth/subscribe failure
 
+    // When a second member joins, make an offer
+    ch.bind("pusher:subscription_succeeded", (_: any) => {
+      console.log("Subscription succeeded");
+      // no-op
+    });
+
+    (async () => {
       const local = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: true,
       });
       local.getTracks().forEach((t) => pc.addTrack(t, local));
-
-      // When a second member joins, make an offer
-      ch.bind("pusher:subscription_succeeded", (_: any) => {
-        // no-op
-      });
+      setLocalStream(local);
 
       ch.bind("pusher:member_added", async () => {
+        console.log("Member added");
         if (stopped) return;
         const offer = await pc.createOffer({
           offerToReceiveAudio: true,
@@ -352,7 +372,7 @@ export const useCall = (roomId: string) => {
 
         ch.trigger("client-offer", {
           sdp: pc.localDescription,
-          from: me.current,
+          from: userId,
         });
       });
     })();
@@ -364,5 +384,5 @@ export const useCall = (roomId: string) => {
     };
   }, [roomId]);
 
-  return { remoteStream };
+  return { remoteStream, localStream };
 };
