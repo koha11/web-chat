@@ -21,10 +21,6 @@ const Contact = () => {
   const userId = Cookies.get("userId") ?? "";
 
   const [searchValue, setSearchValue] = useState("");
-  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
-  const [isReceivedRequestDialogOpen, setReceivedRequestDialogOpen] =
-    useState(false);
-  const [isSentRequestDialogOpen, setSentRequestDialogOpen] = useState(false);
 
   const { data: contacts, loading: isContactsLoading } = useGetContacts({});
 
