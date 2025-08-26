@@ -1182,6 +1182,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-fetch@npm:^2.5.7":
+  version: 2.6.13
+  resolution: "@types/node-fetch@npm:2.6.13"
+  dependencies:
+    "@types/node": "npm:*"
+    form-data: "npm:^4.0.4"
+  checksum: 10c0/6313c89f62c50bd0513a6839cdff0a06727ac5495ccbb2eeda51bb2bbbc4f3c0a76c0393a491b7610af703d3d2deb6cf60e37e59c81ceeca803ffde745dbf309
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.6.1":
   version: 2.6.12
   resolution: "@types/node-fetch@npm:2.6.12"
@@ -1192,7 +1202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:^24.0.1":
+"@types/node@npm:*, @types/node@npm:>=10.0.0":
   version: 24.0.1
   resolution: "@types/node@npm:24.0.1"
   dependencies:
@@ -1205,6 +1215,15 @@ __metadata:
   version: 10.17.60
   resolution: "@types/node@npm:10.17.60"
   checksum: 10c0/0742294912a6e79786cdee9ed77cff6ee8ff007b55d8e21170fc3e5994ad3a8101fea741898091876f8dc32b0a5ae3d64537b7176799e92da56346028d2cbcd2
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.3.0":
+  version: 24.3.0
+  resolution: "@types/node@npm:24.3.0"
+  dependencies:
+    undici-types: "npm:~7.10.0"
+  checksum: 10c0/96bdeca01f690338957c2dcc92cb9f76c262c10398f8d91860865464412b0f9d309c24d9b03d0bdd26dd47fa7ee3f8227893d5c89bc2009d919a525a22512030
   languageName: node
   linkType: hard
 
@@ -1340,6 +1359,15 @@ __metadata:
   version: 3.0.1
   resolution: "abbrev@npm:3.0.1"
   checksum: 10c0/21ba8f574ea57a3106d6d35623f2c4a9111d9ee3e9a5be47baed46ec2457d2eac46e07a5c4a60186f88cb98abbe3e24f2d4cca70bc2b12f1692523e2209a9ccf
+  languageName: node
+  linkType: hard
+
+"abort-controller@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "abort-controller@npm:3.0.0"
+  dependencies:
+    event-target-shim: "npm:^5.0.0"
+  checksum: 10c0/90ccc50f010250152509a344eb2e71977fbf8db0ab8f1061197e3275ddf6c61a41a6edfd7b9409c664513131dd96e962065415325ef23efa5db931b382d24ca5
   languageName: node
   linkType: hard
 
@@ -2319,6 +2347,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"event-target-shim@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "event-target-shim@npm:5.0.1"
+  checksum: 10c0/0255d9f936215fd206156fd4caa9e8d35e62075d720dc7d847e89b417e5e62cf1ce6c9b4e0a1633a9256de0efefaf9f8d26924b1f3c8620cffb9db78e7d3076b
+  languageName: node
+  linkType: hard
+
 "eventsource-parser@npm:^3.0.0, eventsource-parser@npm:^3.0.1":
   version: 3.0.3
   resolution: "eventsource-parser@npm:3.0.3"
@@ -2536,6 +2571,19 @@ __metadata:
     hasown: "npm:^2.0.2"
     mime-types: "npm:^2.1.12"
   checksum: 10c0/f0cf45873d600110b5fadf5804478377694f73a1ed97aaa370a74c90cebd7fe6e845a081171668a5476477d0d55a73a4e03d6682968fa8661eac2a81d651fcdb
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "form-data@npm:4.0.4"
+  dependencies:
+    asynckit: "npm:^0.4.0"
+    combined-stream: "npm:^1.0.8"
+    es-set-tostringtag: "npm:^2.1.0"
+    hasown: "npm:^2.0.2"
+    mime-types: "npm:^2.1.12"
+  checksum: 10c0/373525a9a034b9d57073e55eab79e501a714ffac02e7a9b01be1c820780652b16e4101819785e1e18f8d98f0aee866cc654d660a435c378e16a72f2e7cac9695
   languageName: node
   linkType: hard
 
@@ -3052,6 +3100,16 @@ __metadata:
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
   checksum: 10c0/0486e775047971d3fdb5fb4f063829bac45af299ae0b82dcf3afa2145338e08290563a2a70f34b732d795ecc8311902e541a8530eeb30d75860a78ff4e94ce2a
+  languageName: node
+  linkType: hard
+
+"is-base64@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "is-base64@npm:1.1.0"
+  bin:
+    is-base64: bin/is-base64
+    is_base64: bin/is-base64
+  checksum: 10c0/d9f73739a7d0af48403b0f9091822a2596665e5c9e1e428ba2cef00133c1bccf97cf6fcc07e0b39950e47c3a434fb19c42d2f39578d34f5eb9e66e074bc8449f
   languageName: node
   linkType: hard
 
@@ -3763,7 +3821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -4035,6 +4093,20 @@ __metadata:
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10c0/14f76a8206bc3464f794fb2e3d3cc665ae416c01893ad7a02b23766eb07159144ee612ad67af5e84fa4479ccfe67678c4feb126b0485651b302babf66f04f9e9
+  languageName: node
+  linkType: hard
+
+"pusher@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "pusher@npm:5.2.0"
+  dependencies:
+    "@types/node-fetch": "npm:^2.5.7"
+    abort-controller: "npm:^3.0.0"
+    is-base64: "npm:^1.1.0"
+    node-fetch: "npm:^2.6.1"
+    tweetnacl: "npm:^1.0.0"
+    tweetnacl-util: "npm:^0.15.0"
+  checksum: 10c0/b2fe98f485d327eb46b9cc2e0577f92d3b41e1b44709689f7093dca2048dd633a85ad37c1fbfc5a1e36842b9d27a20f1fd0c3e462854ba87fbd771217b7b0143
   languageName: node
   linkType: hard
 
@@ -4741,6 +4813,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tweetnacl-util@npm:^0.15.0":
+  version: 0.15.1
+  resolution: "tweetnacl-util@npm:0.15.1"
+  checksum: 10c0/796fad76238e40e853dff79516406a27b41549bfd6fabf4ba89d87ca31acf232122f825daf955db8c8573cc98190d7a6d39ece9ed8ae0163370878c310650a80
+  languageName: node
+  linkType: hard
+
+"tweetnacl@npm:^1.0.0":
+  version: 1.0.3
+  resolution: "tweetnacl@npm:1.0.3"
+  checksum: 10c0/069d9df51e8ad4a89fbe6f9806c68e06c65be3c7d42f0701cc43dba5f0d6064686b238bbff206c5addef8854e3ce00c643bff59432ea2f2c639feab0ee1a93f9
+  languageName: node
+  linkType: hard
+
 "type-is@npm:^1.6.18, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -4793,6 +4879,13 @@ __metadata:
   version: 0.0.4
   resolution: "uid2@npm:0.0.4"
   checksum: 10c0/c3ed69da75d117214891f4743a1d8521db823d7a2f57644c1a9ae8b3bf25f0ba666d893264bf7e22be3dbbaa292d35a23d71d06ce7283458a65e8dd137c5c362
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.10.0":
+  version: 7.10.0
+  resolution: "undici-types@npm:7.10.0"
+  checksum: 10c0/8b00ce50e235fe3cc601307f148b5e8fb427092ee3b23e8118ec0a5d7f68eca8cee468c8fc9f15cbb2cf2a3797945ebceb1cbd9732306a1d00e0a9b6afa0f635
   languageName: node
   linkType: hard
 
@@ -4925,7 +5018,7 @@ __metadata:
     "@types/mongoose": "npm:^5.11.97"
     "@types/mongoose-delete": "npm:^1.0.6"
     "@types/multer": "npm:^2"
-    "@types/node": "npm:^24.0.1"
+    "@types/node": "npm:^24.3.0"
     "@types/nodemailer": "npm:^6.4.17"
     "@types/passport": "npm:^1.0.17"
     "@types/passport-oauth2": "npm:^1"
@@ -4953,6 +5046,7 @@ __metadata:
     nodemailer: "npm:^7.0.5"
     passport: "npm:^0.7.0"
     passport-oauth2: "npm:^1.8.0"
+    pusher: "npm:^5.2.0"
     socket.io: "npm:^4.8.1"
     ts-node-dev: "npm:^2.0.0"
     tsconfig-paths: "npm:^4.2.0"

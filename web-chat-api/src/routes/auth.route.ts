@@ -4,6 +4,10 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   JWT_SECRET,
+  PUSHER_APP_ID,
+  PUSHER_CLUSTER,
+  PUSHER_KEY,
+  PUSHER_SECRET,
 } from "../config/env.js";
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
@@ -11,6 +15,7 @@ import { google } from "googleapis";
 import authService from "../services/AuthService.js";
 import User from "../models/User.model.js";
 import userService from "../services/UserService.js";
+import Pusher from "pusher";
 
 const authRouter = Router();
 
@@ -70,6 +75,40 @@ authRouter.get("/verify-email", async (req, res) => {
   await authService.verifyEmail(token as string);
 
   res.redirect(`${DEFAULT_CLIENT_URL}/me/security`);
+});
+
+authRouter.post("/pusher", (req: any, res: any) => {
+  const pusher = new Pusher({
+    appId: PUSHER_APP_ID, // e.g. "123456"
+    key: PUSHER_KEY, // e.g. "abc123..."
+    secret: PUSHER_SECRET, // keep on server only
+    cluster: PUSHER_CLUSTER, // e.g. "ap2"
+    useTLS: true,
+  });
+
+  const socketId = req.body.socket_id || req.body.socketId;
+  const channelName = req.body.channel_name || req.body.channelName;
+
+  if (!socketId || !channelName) {
+    return res.status(400).json({ error: "Missing socket_id or channel_name" });
+  }
+
+  // SIMPLE MODE (dev): allow anyone. Replace with your own user/room checks.
+  const privateData = channelName.startsWith("private-")
+    ? {
+        user_id: "guest-" + Math.random().toString(36).slice(2),
+        user_info: { name: "Guest" },
+      }
+    : undefined;
+
+  // Support both SDK method names across versions
+  const auth = (pusher as any).authorizeChannel
+    ? (pusher as any).authorizeChannel(socketId, channelName, privateData)
+    : (pusher as any).authenticate(socketId, channelName, privateData);
+
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.json(auth); // { auth, channel_data? }
 });
 
 export default authRouter;

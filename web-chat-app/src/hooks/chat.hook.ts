@@ -260,10 +260,8 @@ export const useCall = ({
     });
     pcRef.current = pc;
 
-    const channelName = `call.${roomId}`;
+    const channelName = `private-${roomId}`;
     const ch = pusher.subscribe(channelName);
-
-    console.log(ch);
 
     // Receive remote track
     const remote = new MediaStream();
@@ -282,6 +280,25 @@ export const useCall = ({
           candidate: candidate.toJSON(),
           from: userId,
         });
+    };
+
+    pc.onconnectionstatechange = () => {
+      // 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed'
+      console.log("connectionState:", pc.connectionState);
+      if (pc.connectionState === "connected") {
+        // ✅ peers have an established path
+      }
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      // 'new' | 'checking' | 'connected' | 'completed' | 'disconnected' | 'failed' | 'closed'
+      if (
+        pc.iceConnectionState === "connected" ||
+        pc.iceConnectionState === "completed"
+      ) {
+        console.log("ICE connection established");
+        // ✅ connected (completed ~= all ICE candidates done)
+      }
     };
 
     // Handle signaling

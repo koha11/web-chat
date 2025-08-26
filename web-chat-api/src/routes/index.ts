@@ -5,6 +5,6 @@ export const route = (app: Express) => {
   app.use("/auth", authRouter);
 
   app.get("/health", (req, res) => {
-    res.status(200).send();
+    res.status(200).send("Web oke ban nhe !!!");
   });
 };

@@ -77,7 +77,7 @@ const Call = () => {
   // const { remoteStream, localStream } = useCall({ roomId, userId });
 
   useEffect(() => {
-    const channelName = `call.${roomId}`;
+    const channelName = `private-${roomId}`;
     ch.current = pusher.subscribe(channelName);
 
     const signaling = ch.current;
@@ -114,16 +114,15 @@ const Call = () => {
 
     // ICE candidate handler
     pc.onicecandidate = ({ candidate }) => {
-      console.log("onicecandidate", candidate);
       if (!candidate) return;
       const msg = { type: "candidate", candidate };
 
-      // if (signaling.subscribed) {
-      signaling.trigger("client-message", JSON.stringify(msg));
-      // } else {
-      // buffer or defer
-      // pendingSignals.push(msg);
-      // }
+      const isTriggered = signaling.trigger(
+        "client-message",
+        JSON.stringify(msg)
+      );
+
+      if (!isTriggered) pendingSignals.push(msg);
     };
 
     // Fires when the browser thinks you need to renegotiate your session
@@ -131,27 +130,44 @@ const Call = () => {
       console.log(pc.iceGatheringState);
 
       if (pc.iceGatheringState == "complete") setConnected(true);
-    };    
+    };
 
-    //
+    pc.onconnectionstatechange = () => {
+      // 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed'
+      console.log("connectionState:", pc.connectionState);
+      if (pc.connectionState === "connected") {
+        // ✅ peers have an established path
+      }
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      // 'new' | 'checking' | 'connected' | 'completed' | 'disconnected' | 'failed' | 'closed'
+      if (
+        pc.iceConnectionState === "connected" ||
+        pc.iceConnectionState === "completed"
+      ) {
+        console.log("ICE connection established");
+        // ✅ connected (completed ~= all ICE candidates done)
+      }
+    };
+
     pc.onnegotiationneeded = async () => {
-      console.log("onnegotiationneeded");
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       const msg = { type: "offer", sdp: pc.localDescription };
 
-      // if (signaling.subscribed) {
-        signaling.trigger("client-message", JSON.stringify(msg));
-      // } else {
-      // pendingSignals.push(msg);
-      // }
+      const isTriggered = signaling.trigger(
+        "client-message",
+        JSON.stringify(msg)
+      );
+
+      if (!isTriggered) pendingSignals.push(msg);
     };
 
     signaling.bind("pusher:subscription_succeeded", () => {
       console.log("subscription succeeded ");
 
       for (const msg of pendingSignals) {
-        console.log(msg);
         signaling.trigger("client-message", JSON.stringify(msg));
       }
 
@@ -172,16 +188,12 @@ const Call = () => {
 
     // Incoming signaling messages
     signaling.bind("client-message", async (msg: any) => {
-      console.log(msg);
-      const data = JSON.parse(msg.data);
-      console.log(data);
-
       if (!pcRef.current) return;
 
-      switch (data.type) {
+      switch (msg.type) {
         case "offer":
           await pcRef.current.setRemoteDescription(
-            new RTCSessionDescription(data.sdp)
+            new RTCSessionDescription(msg.sdp)
           );
           const answer = await pcRef.current.createAnswer();
           await pcRef.current.setLocalDescription(answer);
@@ -196,12 +208,12 @@ const Call = () => {
           break;
         case "answer":
           await pcRef.current.setRemoteDescription(
-            new RTCSessionDescription(data.sdp)
+            new RTCSessionDescription(msg.sdp)
           );
           break;
         case "candidate":
           await pcRef.current.addIceCandidate(
-            new RTCIceCandidate(data.candidate)
+            new RTCIceCandidate(msg.candidate)
           );
           break;
         case "media-status":
@@ -211,9 +223,9 @@ const Call = () => {
             return [
               {
                 isCameraOpen:
-                  data.kind == "video" ? data.enabled : old.isCameraOpen,
+                  msg.kind == "video" ? msg.enabled : old.isCameraOpen,
                 isMicroOpen:
-                  data.kind == "audio" ? data.enabled : old.isMicroOpen,
+                  msg.kind == "audio" ? msg.enabled : old.isMicroOpen,
               },
             ];
           });
@@ -228,7 +240,7 @@ const Call = () => {
 
     return () => {
       // Close WebSocket
-      signaling.disconnect();
+      pusher.unsubscribe(channelName);
       // Close peer connection
       pcRef.current?.close();
       // Stop all local tracks
@@ -261,14 +273,15 @@ const Call = () => {
       }
     });
 
-    // if (ws.current && isConnected && hasChanged)
-    //   ws.current.send(
-    //     JSON.stringify({
-    //       type: "media-status",
-    //       kind, // or "audio"
-    //       enabled: kind == "video" ? isCameraOpen : isMicroOpen,
-    //     })
-    //   );
+    if (ch.current && isConnected && hasChanged)
+      ch.current.trigger(
+        "client-message",
+        JSON.stringify({
+          type: "media-status",
+          kind, // or "audio"
+          enabled: kind == "video" ? isCameraOpen : isMicroOpen,
+        })
+      );
 
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
@@ -361,7 +374,7 @@ const Call = () => {
 
       {remoteMediaState.length > 0 &&
         !isHangup &&
-        (remoteMediaState[0].isCameraOpen || true ? (
+        (remoteMediaState[0].isCameraOpen ? (
           <div className="flex flex-col justify-center items-center gap-2 w-full h-full">
             <video
               className="scale-x-[-1] h-screen w-auto mx-auto object-contain"

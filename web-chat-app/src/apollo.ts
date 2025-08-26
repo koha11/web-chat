@@ -10,6 +10,9 @@ export const SERVER_HOST = IS_DEV_ENV
   ? "localhost"
   : import.meta.env.VITE_API_HOST;
 export const SERVER_PORT = import.meta.env.VITE_API_PORT ?? "3000";
+export const SERVER_URL = IS_DEV_ENV
+  ? `http://${SERVER_HOST}:${SERVER_PORT}`
+  : `https://${SERVER_HOST}`;
 
 const httpLink = new HttpLink({
   uri: IS_DEV_ENV
