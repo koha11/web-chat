@@ -387,8 +387,16 @@ export const chatResolvers: IResolvers = {
       pubsub.publish(SocketEvent.chatChanged, {
         chatChanged: await Chat.findByIdAndUpdate(chatId, {
           updatedAt: chatUpdatedAt,
-        }),
+        }).populate("users"),
       } as PubsubEvents[SocketEvent.chatChanged]);
+
+      pubsub.publish(SocketEvent.messageAdded, {
+        chatId,
+        messageAdded: {
+          cursor: msg.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageAdded]);
 
       return false;
     },

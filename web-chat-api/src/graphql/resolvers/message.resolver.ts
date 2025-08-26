@@ -420,7 +420,11 @@ export const messageResolvers: IResolvers = {
 
           const isNotSender =
             !(messageAdded.node.user as Types.ObjectId).equals(user.id) ||
-            messageAdded.node.type == MessageType.SYSTEM;
+            [
+              MessageType.SYSTEM,
+              MessageType.AUDIO_CALL,
+              MessageType.VIDEO_CALL,
+            ].includes(messageAdded.node.type);
           // neu no la tin nhan he thong thi gui cho tat ca user
 
           const isCorrectChat = chatId == subChatId;
