@@ -28,6 +28,7 @@ import { CHAT_RESPONSE_CALL_SUB } from "../../services/chatService";
 import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
 import { pusher } from "@/pusher";
 import { Channel } from "pusher-js";
+import { usePageHide } from "@/hooks/usePageHide";
 
 const Call = () => {
   const location = useLocation();
@@ -238,6 +239,16 @@ const Call = () => {
       console.error("Subscription error", error);
     }); // fires on auth/subscribe failure
 
+    const onbeforeunload = async (e: any) => {
+      e.preventDefault();
+      // Most browsers ignore custom text. You must set returnValue.
+      e.returnValue = "";
+      await hangupCall({ variables: { chatId: chat!.id, msgId } });
+      return "";
+    };
+
+    window.addEventListener("beforeunload", onbeforeunload);
+
     return () => {
       // Close WebSocket
       pusher.unsubscribe(channelName);
@@ -245,6 +256,8 @@ const Call = () => {
       pcRef.current?.close();
       // Stop all local tracks
       localStream?.getTracks().forEach((t) => t.stop());
+
+      window.removeEventListener("beforeunload", onbeforeunload);
     };
   }, []);
 
