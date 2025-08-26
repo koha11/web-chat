@@ -50,6 +50,15 @@ const LastMsgBody = ({
         content = name + ": sent a file";
         break;
 
+      case MessageType.AUDIO_CALL:
+      case MessageType.VIDEO_CALL:
+        if (lastMsg.endedCallAt) content = `You and your friends have a call`;
+        else
+          content = `${name == "You" ? "Your friend" : "You"} missed ${
+            name == "You" ? "your" : name
+          } call`;
+        break;
+
       case MessageType.SYSTEM:
         const systemLog = lastMsg.systemLog!;
         const targetName = systemLog.targetUserId
