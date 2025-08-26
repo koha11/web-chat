@@ -98,8 +98,6 @@ export const getUnroundTimeDiff = ({
     (firstTime.getTime() - secondTime.getTime()) / 1000
   );
 
-  console.log(diffTime);
-
   let timeString = "";
   let flag = true;
 

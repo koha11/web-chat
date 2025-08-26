@@ -365,11 +365,16 @@ export const chatResolvers: IResolvers = {
 
       if (!msg) throw new Error("ko ton tai msg nay");
 
+      let chatUpdatedAt;
+
       if (
         new Date(msg.createdAt!).getTime() != new Date(msg.updatedAt!).getTime()
       ) {
         msg.endedCallAt = new Date();
+        chatUpdatedAt = msg.endedCallAt;
         await msg.save();
+      } else {
+        chatUpdatedAt = msg.createdAt;
       }
 
       pubsub.publish(SocketEvent.responseCall, {
@@ -378,6 +383,12 @@ export const chatResolvers: IResolvers = {
         chatId,
         msgId,
       } as PubsubEvents[SocketEvent.responseCall]);
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: await Chat.findByIdAndUpdate(chatId, {
+          updatedAt: chatUpdatedAt,
+        }),
+      } as PubsubEvents[SocketEvent.chatChanged]);
 
       return false;
     },
