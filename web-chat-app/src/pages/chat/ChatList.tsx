@@ -83,11 +83,12 @@ const ChatList = ({
             className="p-2 rounded-full bg-gray-200 hover:opacity-50 relative"
           >
             <Contact></Contact>
-            {receivedConnectRequests?.edges.length != 0 && (
-              <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
-                {receivedConnectRequests?.edges.length}
-              </div>
-            )}
+            {receivedConnectRequests?.edges.length != 0 &&
+              !isReceivedConnectRequestsLoading && (
+                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
+                  {receivedConnectRequests?.edges.length}
+                </div>
+              )}
           </Link>
         </div>
       </div>
