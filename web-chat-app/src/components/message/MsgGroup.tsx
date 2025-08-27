@@ -32,7 +32,10 @@ const GroupMsg = ({
   ) => Promise<void>;
 }) => {
   const isGroupMsgHidden =
-    messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0;
+    messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0 ||
+    messages.filter(
+      (msg) => !(msg.systemLog && msg.systemLog.type == "reaction")
+    ).length == 0;
 
   if (isGroupMsgHidden) return;
 
