@@ -47,8 +47,18 @@ const SingleMsg = ({
 
   const [postMessage] = usePostMessage({});
 
-  const user = usersMap[msg.user.toString()];
-  const fullname = user ? user.fullname : "undefined user";
+  const currUser = usersMap[msg.user];
+
+  const replyMsgUserId = msg.replyForMsg
+    ? (msg.replyForMsg as IMessage).user
+    : undefined;
+
+  const targetName = replyMsgUserId
+    ? replyMsgUserId == userId
+      ? "yourself"
+      : usersMap[replyMsgUserId].nickname.split(" ")[0]
+    : "";
+  const name = isSentMsg ? "you" : currUser.nickname.split(" ")[0];
 
   return (
     <div
@@ -61,13 +71,8 @@ const SingleMsg = ({
             isSentMsg ? "items-end" : "items-baseline"
           }`}
         >
-          <div className={`flex gap-2 mb-7`}>
-            <Reply size={"14"}></Reply> {isSentMsg ? "You" : fullname} replied
-            to{" "}
-            {usersMap[(msg.replyForMsg as IMessage).user.toString()] !=
-            undefined
-              ? usersMap[(msg.replyForMsg as IMessage).user.toString()].fullname
-              : "yourself"}
+          <div className={`flex gap-2 mb-7 capitalize`}>
+            <Reply size={"14"}></Reply> {name} replied to {targetName}
           </div>
           <div
             className={`bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute ${
@@ -86,9 +91,9 @@ const SingleMsg = ({
             isSentMsg ? "items-end" : "items-baseline"
           }`}
         >
-          <div className={`flex gap-2 mb-1`}>
+          <div className={`flex gap-2 mb-1 capitalize`}>
             <Reply size={"14"}></Reply>
-            {!isSentMsg ? fullname : "You"} forwarded a message
+            {name} forwarded a message
           </div>
         </div>
       )}
@@ -121,7 +126,7 @@ const SingleMsg = ({
                 className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
                 style={{ backgroundImage: `url(${msgSenderAvatar})` }}
               ></div>,
-              fullname,
+              name,
               "order-1"
             )
           )}
@@ -157,7 +162,7 @@ const SingleMsg = ({
                     isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
                   } ${msg.isForwarded ? "" : ""}`}
                 >
-                  {isSentMsg ? "You" : fullname.split(" ")[0]} unsend a message
+                  {name} unsend a message
                 </span>,
                 `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
               Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
@@ -223,6 +228,7 @@ const SingleMsg = ({
               )))}
       </div>
 
+      {/* hien thi reaction dialog  */}
       {msg.reactions && (
         <ReactionMsgDialog
           reactions={msg.reactions}
