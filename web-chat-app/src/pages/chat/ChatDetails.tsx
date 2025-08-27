@@ -313,9 +313,6 @@ const ChatDetails = ({
       .flat();
 
     if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
-
-    // if have, navigate to this msg
-    // if not, fetch more until this id
   };
 
   // console.log(myChat);

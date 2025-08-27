@@ -18,6 +18,8 @@ import {
   useUnsendMessage,
 } from "../../hooks/message.hook";
 import EmojiPicker from "emoji-picker-react";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 const MessageActions = ({
   isOpen,
@@ -87,17 +89,28 @@ const MessageActions = ({
             <SmileIcon></SmileIcon>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="top" sideOffset={0}>
-          <EmojiPicker
+        <DropdownMenuContent
+          side="top"
+          sideOffset={0}
+          className="reaction-popover rounded-none border-0 p-0 shadow-none"
+        >
+          <Picker
+            data={data}
+            onEmojiSelect={({ native: emoji, unified }: any) => {
+              reactMessage({ variables: { unified, emoji, msgId } });
+              setReactionOpen(false);
+            }}
+          />
+          {/* <EmojiPicker
             open={isReactionOpen}
             reactionsDefaultOpen={true}
             onReactionClick={({ emoji, unified }) => {
               reactMessage({ variables: { unified, emoji, msgId } });
               setReactionOpen(false);
             }}
-            lazyLoadEmojis={true}
+            lazyLoadEmojis={false}
             searchDisabled
-          />
+          /> */}
         </DropdownMenuContent>
       </DropdownMenu>
 

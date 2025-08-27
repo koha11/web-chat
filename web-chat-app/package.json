@@ -12,6 +12,8 @@
   "dependencies": {
     "@100mslive/react-sdk": "^0.10.35",
     "@apollo/client": "^3.13.8",
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@google/genai": "^1.8.0",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -33,6 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
+    "emoji-mart": "^5.6.0",
     "emoji-picker-react": "^4.13.2",
     "graphql": "^16.11.0",
     "graphql-ws": "^6.0.5",

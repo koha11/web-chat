@@ -29,7 +29,12 @@ export const messageResolvers: IResolvers = {
       { chatId, msgId, after, first, until },
       { user, pubsub }: IMyContext
     ) => {
-      const result = await messageService.getMessages({ chatId, first, after, until });
+      const result = await messageService.getMessages({
+        chatId,
+        first,
+        after,
+        until,
+      });
       const chat = await Chat.findById(chatId).populate("users");
 
       if (chat) {
@@ -364,7 +369,7 @@ export const messageResolvers: IResolvers = {
       if (msg) {
         if (!msg.reactions) msg.reactions = new Map();
 
-        msg.reactions?.set(user.id.toString(), {
+        msg.reactions.set(user.id.toString(), {
           emoji,
           unified,
           reactTime: new Date(),

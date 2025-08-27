@@ -34,6 +34,19 @@ body {
 .loader:after {
   left: 3.5em;
 }
+/* remove the inner rounded bubble */
+.reaction-popover .EmojiPickerReact {
+  --epr-reactions-bg-color: transparent; /* no white/blur pill */
+}
+
+/* the reactions container itself also forces a big radius; reset it */
+.reaction-popover .EmojiPickerReact .epr-reactions {
+  --epr-picker-border-radius: 0px;
+  background: transparent;
+  backdrop-filter: none;
+  border: 0;
+  box-shadow: none;
+}
 
 @keyframes bblFadInOut {
   0%,
