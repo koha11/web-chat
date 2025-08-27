@@ -43,6 +43,8 @@ const ChatDetails = ({
   choosenUsers,
   setChoosenUsers,
   isNewChat,
+  isInit,
+  setInit,
 }: {
   chat: IChat | undefined;
   hasUpdated: boolean;
@@ -53,6 +55,8 @@ const ChatDetails = ({
   setChoosenUsers: Function;
   chatList: IChat[];
   isNewChat: boolean;
+  isInit: boolean;
+  setInit: Function;
 }) => {
   const userId = Cookies.get("userId")!;
   const navigate = useNavigate();
@@ -66,6 +70,7 @@ const ChatDetails = ({
 
   const [isContactListOpen, setContactListOpen] = useState(true);
   const [myChat, setMyChat] = useState<IChat | undefined>(chat);
+  const [isReady, setReady] = useState(false);
 
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
@@ -130,6 +135,10 @@ const ChatDetails = ({
 
       setMessages(grouped);
       setFetchMore(false);
+      setReady(true);
+      console.log(messages);
+      console.log(isMsgLoading);
+      console.log(chat);
 
       // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
@@ -212,6 +221,9 @@ const ChatDetails = ({
 
   // refetch lai msg neu can thiet
   useEffect(() => {
+    console.log(messages);
+    console.log(isMsgLoading);
+    console.log(chat);
     if (hasUpdated && myChat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
@@ -224,6 +236,10 @@ const ChatDetails = ({
 
   useEffect(() => {
     setMyChat(chat);
+
+    if (!isInit) {
+      setReady(false);
+    } else setInit(false);
   }, [chat]);
 
   useEffect(() => {
@@ -449,8 +465,8 @@ const ChatDetails = ({
         {!isNewChat &&
           (myChat == undefined
             ? ""
-            : messages
-            ? messages.map((msg, index) => {
+            : isReady
+            ? messages!.map((msg, index) => {
                 return (
                   <GroupMsg
                     userId={userId}
@@ -481,7 +497,7 @@ const ChatDetails = ({
             ? ""
             : myChat == undefined
             ? ""
-            : myChat && messages
+            : myChat && messages && !isMsgLoading
             ? messages.map((msg, index) => {
                 return (
                   <GroupMsg

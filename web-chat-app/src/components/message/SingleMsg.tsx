@@ -57,8 +57,6 @@ const SingleMsg = ({
 
   const replyMsg = msg.replyForMsg ? (msg.replyForMsg as IMessage) : undefined;
 
-  // console.log(usersMap);
-
   const replyMsgUserId = replyMsg ? replyMsg.user : undefined;
 
   const targetName = replyMsgUserId

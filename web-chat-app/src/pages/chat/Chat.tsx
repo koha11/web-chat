@@ -28,6 +28,7 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
+  const [isInit, setInit] = useState(true);
   const [mediaId, setMediaId] = useState("");
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
 
@@ -64,6 +65,8 @@ const Chat = () => {
             setChoosenUsers={setChoosenUsers}
             chatList={chats && chats.edges.map((edge: any) => edge.node)}
             isNewChat={isNewChat}
+            isInit={isInit}
+            setInit={setInit}
           ></ChatDetails>
         )}
 
