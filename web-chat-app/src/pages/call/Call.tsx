@@ -67,7 +67,7 @@ const Call = () => {
       isMicroOpen: boolean;
     }[]
   >([]);
-  const [isConnected, setConnected] = useState(true);
+  const [isConnected, setConnected] = useState(false);
 
   const ws = useRef<WebSocket>(null);
   const ch = useRef<Channel>(null);

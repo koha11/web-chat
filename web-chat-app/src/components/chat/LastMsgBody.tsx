@@ -106,6 +106,11 @@ const LastMsgBody = ({
           content = name + " remove " + targetName + " from the group ";
           break;
         }
+
+        if (systemLog.type == "reaction") {
+          content = name + " react " + "your message";
+          break;
+        }
     }
 
   content = content.length > 25 ? strimText(content, 25) : content;

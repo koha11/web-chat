@@ -21,7 +21,6 @@ import { IUser } from "../../interfaces/user.interface.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import MessageType from "../../enums/MessageType.enum.js";
 import { uploadMedia } from "../../utils/cloudinary.js";
-import { th } from "zod/v4/locales";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -374,6 +373,16 @@ export const messageResolvers: IResolvers = {
         });
 
         await msg.save();
+
+        await Message.create({
+          user: user.id,
+          chat: msg.chat,
+          type: MessageType.SYSTEM,
+          systemLog: {
+            type: "reaction",
+            targetUserId: msg.user,
+          },
+        });
 
         const chatChanged = await Chat.findByIdAndUpdate(
           msg.chat,

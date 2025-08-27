@@ -65,13 +65,18 @@ class MessageService {
           await this.getMessages({
             chatId: chatId,
             first: 1,
-            after: msg ? msg?.id.toString() : undefined,
+            after: msg ? msg.id.toString() : undefined,
           })
         ).edges;
         if (msgList.length == 0) break;
 
         msg = msgList[0].node;
-      } while (msg.isHiddenFor?.includes(toObjectId(userId)));
+      } while (
+        msg.isHiddenFor?.includes(toObjectId(userId)) ||
+        (msg.systemLog &&
+          msg.systemLog.type === "reaction" &&
+          msg.user.toString() == userId)
+      );
 
       if (msgList.length != 0) result[chatId] = msg!;
     }

@@ -27,7 +27,8 @@ export interface IMessage {
       | "leave"
       | "remove"
       | "create"
-      | "appoint";
+      | "appoint"
+      | "reaction";
     targetUserId?: string;
     value?: string;
   };
