@@ -7,6 +7,7 @@ import {
   TimeTypeOption,
 } from "../../utils/messageTime.helper";
 import SingleMsg from "./SingleMsg";
+import { useNavigate } from "react-router-dom";
 
 const GroupMsg = ({
   userId,
@@ -16,6 +17,7 @@ const GroupMsg = ({
   isFirstGroup,
   handleReplyMsg,
   setMediaId,
+  handleNavigateToReplyMsg,
 }: {
   userId: string;
   messages: IMessage[];
@@ -24,6 +26,10 @@ const GroupMsg = ({
   isFirstGroup: boolean;
   handleReplyMsg: (msg: IMessage) => void;
   setMediaId: (msgId: string) => void;
+  handleNavigateToReplyMsg: (
+    e: React.MouseEvent,
+    msgId: string
+  ) => Promise<void>;
 }) => {
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0;
@@ -81,6 +87,7 @@ const GroupMsg = ({
               usersMap={usersMap}
               handleReplyMsg={handleReplyMsg}
               setMediaId={setMediaId}
+              handleNavigateToReplyMsg={handleNavigateToReplyMsg}
             ></SingleMsg>
           );
         })}

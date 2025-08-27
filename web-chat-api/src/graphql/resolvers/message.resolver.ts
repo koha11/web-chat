@@ -26,10 +26,10 @@ export const messageResolvers: IResolvers = {
   Query: {
     messages: async (
       _p: any,
-      { chatId, msgId, after, first },
+      { chatId, msgId, after, first, until },
       { user, pubsub }: IMyContext
     ) => {
-      const result = await messageService.getMessages({ chatId, first, after });
+      const result = await messageService.getMessages({ chatId, first, after, until });
       const chat = await Chat.findById(chatId).populate("users");
 
       if (chat) {

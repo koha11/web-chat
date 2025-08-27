@@ -31,6 +31,7 @@ import { arraysEqualUnordered } from "@/utils/array.helper";
 import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ChatDetails = ({
   chat,
@@ -54,6 +55,8 @@ const ChatDetails = ({
   isNewChat: boolean;
 }) => {
   const userId = Cookies.get("userId")!;
+  const navigate = useNavigate();
+  const { hash } = useLocation();
 
   // states
   const [messages, setMessages] = useState<IMessageGroup[]>();
@@ -243,6 +246,17 @@ const ChatDetails = ({
     }
   }, [choosenUsers]);
 
+  // useEffect(() => {
+  //   if (!hash) return;
+  //   console.log(hash);
+  //   const container = msgsContainerRef.current;
+
+  //   if (!container) return;
+
+  //   const el = container.querySelector(hash);
+  //   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  // }, [hash]);
+
   useEffect(() => {
     window.onclick = () => setContactListOpen(false);
   }, []);
@@ -253,13 +267,14 @@ const ChatDetails = ({
     setReplyMsgOpen(true);
   };
 
-  const handleLoadMoreMessages = () => {
+  const handleLoadMoreMessages = async ({ until }: { until?: string }) => {
     if (messagesConnection?.pageInfo.hasNextPage) {
       setFetchMore(true);
 
-      fetchMore({
+      await fetchMore({
         variables: {
           after: messagesConnection?.pageInfo.endCursor,
+          until,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prev;
@@ -282,6 +297,28 @@ const ChatDetails = ({
       });
     }
   };
+
+  const handleNavigateToReplyMsg = async (
+    e: React.MouseEvent,
+    msgId: string
+  ) => {
+    // check that msgId is in messages
+    if (!messages) {
+      e.preventDefault();
+      return;
+    }
+
+    const msgIds = messages
+      .map((msgGroup) => msgGroup.messages.map((msg) => msg.id))
+      .flat();
+
+    if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
+
+    // if have, navigate to this msg
+    // if not, fetch more until this id
+  };
+
+  // console.log(myChat);
 
   return (
     <section
@@ -386,7 +423,7 @@ const ChatDetails = ({
             el.scrollHeight + el.scrollTop <= el.clientHeight + 1;
 
           if (isBottom && !isFetchMore) {
-            handleLoadMoreMessages();
+            handleLoadMoreMessages({});
           }
         }}
       >
@@ -427,6 +464,7 @@ const ChatDetails = ({
                     isFirstGroup={index == 0}
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}
+                    handleNavigateToReplyMsg={handleNavigateToReplyMsg}
                   ></GroupMsg>
                 );
               })
@@ -458,6 +496,7 @@ const ChatDetails = ({
                     isFirstGroup={index == 0}
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}
+                    handleNavigateToReplyMsg={handleNavigateToReplyMsg}
                   ></GroupMsg>
                 );
               })

@@ -9,24 +9,23 @@ class MessageService {
     chatId,
     first = 10,
     after,
+    until,
     filter,
   }: {
     chatId: string;
     sort?: any;
     first?: number;
     after?: string;
+    until?: string;
     filter?: any;
   }): Promise<IModelConnection<IMessage>> => {
     let myFilter = { chat: chatId } as any;
 
-    if (after) {
-      // decode cursor into ObjectId timestamp or full id
-      myFilter._id = { $lt: toObjectId(after) };
-    }
+    if (after) myFilter._id = { $lt: toObjectId(after) };
 
-    if (filter) {
-      myFilter = { ...myFilter, ...filter };
-    }
+    if (until) myFilter._id = { ...myFilter._id, $gte: toObjectId(until) };
+
+    if (filter) myFilter = { ...myFilter, ...filter };
 
     const docs = await Message.find(myFilter)
       .populate("replyForMsg")
