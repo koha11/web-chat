@@ -97,8 +97,6 @@ export const messageResolvers: IResolvers = {
         filter,
       });
 
-      const isNotEmpty = result.edges.length > 0;
-
       return result;
     },
   },

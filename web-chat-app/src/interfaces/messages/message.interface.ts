@@ -4,7 +4,7 @@ import { IUser } from "../user.interface";
 
 export interface IMessage {
   id: string;
-  user: string | IUser;
+  user: string;
   chat: string;
   msgBody?: string;
   status: MessageStatus;

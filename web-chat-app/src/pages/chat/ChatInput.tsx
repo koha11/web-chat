@@ -108,6 +108,7 @@ const ChatInput = ({
     } else setFileBlobUrls([]);
   }, [watch("files")]);
 
+  // luu voice cua user
   useEffect(() => {
     if (audioStatus == "stopped") {
       fetch(mediaBlobUrl!)
@@ -133,6 +134,7 @@ const ChatInput = ({
     }
   }, [audioStatus]);
 
+  // clear msg UI
   useEffect(() => {
     if (isSendingMedia || isSendingMsg) {
       resetField("msg.msgBody");
@@ -194,18 +196,19 @@ const ChatInput = ({
               <div className="font-semibold">
                 Replying to{" "}
                 {userId ==
-                (watch("msg.replyForMsg") as IMessage).user.toString()
+                (watch("msg.replyForMsg") as IMessage).user
                   ? "yourself"
-                  : (chat.users as IUser[]).find(
-                      (user) =>
-                        user.id ==
-                        (watch("msg.replyForMsg") as IMessage).user.toString()
-                    )?.fullname ?? "undefined user"}
+                  : chat.usersInfo[
+                      (watch("msg.replyForMsg") as IMessage).user
+                    ].nickname}
               </div>
+
               <div className="text-[0.7rem]">
                 {(watch("msg.replyForMsg") as IMessage).msgBody}
               </div>
+              
             </div>
+
             <Button
               variant={"outline"}
               className="h-6 w-4 rounded-full cursor-pointer border-0"

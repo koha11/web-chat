@@ -31,7 +31,6 @@ import { arraysEqualUnordered } from "@/utils/array.helper";
 import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { usePostChat } from "@/hooks/chat.hook";
 
 const ChatDetails = ({
   chat,
@@ -289,6 +288,7 @@ const ChatDetails = ({
       className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
+      {/* header la input de them thanh vien  */}
       {isNewChat ? (
         <div className="container flex items-center justify-between h-[10%] border-b-2 border-black gap-4">
           <div>To: </div>
@@ -367,6 +367,7 @@ const ChatDetails = ({
           </div>
         </div>
       ) : (
+        // header mac dinh
         <ChatHeader
           chat={myChat}
           isMsgLoading={isMsgLoading}
@@ -398,6 +399,8 @@ const ChatDetails = ({
         >
           <ArrowDown></ArrowDown>
         </Button> */}
+
+        {/* typing user UI */}
         {typingUsers && typingUsers?.length > 0 && (
           <div className="flex justify-baseline items-center px-2 py-2 gap-4">
             <div
@@ -408,6 +411,7 @@ const ChatDetails = ({
           </div>
         )}
 
+        {/* UI Doan chat mac dinh  */}
         {!isNewChat &&
           (myChat == undefined
             ? ""
@@ -436,6 +440,7 @@ const ChatDetails = ({
                 </div>
               )))}
 
+        {/* UI doan chat khi tao chat moi  */}
         {isNewChat &&
           (choosenUsers.length == 0
             ? ""
@@ -466,6 +471,7 @@ const ChatDetails = ({
                 </div>
               )))}
 
+        {/* Hieu ung loading khi fetch them tin nhan moi  */}
         {isFetchMore && (
           <div className="flex justify-center items-center py-6">
             <div className="loader"></div>
@@ -473,6 +479,7 @@ const ChatDetails = ({
         )}
       </div>
 
+      {/* Thanh nhap tin nhan  */}
       {choosenUsers.length > 0 || !isNewChat ? (
         <ChatInput
           form={msgForm}
