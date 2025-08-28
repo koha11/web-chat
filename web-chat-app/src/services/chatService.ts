@@ -164,6 +164,29 @@ export const CHANGE_CHAT_NAME = gql`
   }
 `;
 
+export const CHANGE_CHAT_EMOJI = gql`
+  mutation ChangeChatEmoji($chatId: ID!, $emoji: String!) {
+    changeChatEmoji(chatId: $chatId, emoji: $emoji) {
+      id
+      chatName
+      chatAvatar
+      usersInfo
+      updatedAt
+      lastMsgSeen
+      chatType
+      chatEmoji
+      users {
+        id
+        fullname
+        avatar
+        isOnline
+        lastLogined
+        userType
+      }
+    }
+  }
+`;
+
 export const MAKE_CALL = gql`
   mutation MakeCall($chatId: ID!, $hasVideo: Boolean!) {
     makeCall(chatId: $chatId, hasVideo: $hasVideo)

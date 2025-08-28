@@ -18,6 +18,7 @@ export interface IMessage {
   systemLog?: {
     type:
       | "chatname"
+      | "chatEmoji"
       | "nickname"
       | "avatar"
       | "add"

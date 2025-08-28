@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import {
   ADD_MEMBERS,
   CHANGE_CHAT_AVATAR,
+  CHANGE_CHAT_EMOJI,
   CHANGE_CHAT_NAME,
   CHANGE_NICKNAME,
   GET_CHAT,
@@ -225,6 +226,10 @@ export const useChangeChatAvatar = () => {
 
 export const useChangeChatName = () => {
   return useMutation(CHANGE_CHAT_NAME);
+};
+
+export const useChangeChatEmoji = () => {
+  return useMutation(CHANGE_CHAT_EMOJI);
 };
 
 export const useMakeCall = () => {

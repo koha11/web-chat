@@ -318,6 +318,44 @@ export const chatResolvers: IResolvers = {
       return chat;
     },
 
+    changeChatEmoji: async (
+      _p: any,
+      { chatId, emoji },
+      { user, pubsub }: IMyContext
+    ) => {
+      const chat = await Chat.findById(chatId).populate("users");
+
+      if (!chat) throw new Error("this chat is not existed");
+
+      chat.chatEmoji = emoji;
+
+      await chat.save();
+
+      const msg = await Message.create({
+        chat: chatId,
+        type: MessageType.SYSTEM,
+        user: user.id,
+        systemLog: {
+          type: "chatEmoji",
+          value: emoji,
+        },
+      });
+
+      pubsub.publish(SocketEvent.chatChanged, {
+        chatChanged: chat,
+      } as PubsubEvents[SocketEvent.chatChanged]);
+
+      pubsub.publish(SocketEvent.messageAdded, {
+        chatId,
+        messageAdded: {
+          cursor: msg.id,
+          node: msg,
+        },
+      } as PubsubEvents[SocketEvent.messageAdded]);
+
+      return chat;
+    },
+
     makeCall: async (
       _p,
       { chatId, hasVideo },

@@ -17,9 +17,7 @@ import {
   useRemoveMessage,
   useUnsendMessage,
 } from "../../hooks/message.hook";
-import EmojiPicker from "emoji-picker-react";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import MyEmojiPicker from "../ui/my-emoji-picker";
 
 const MessageActions = ({
   isOpen,
@@ -94,23 +92,13 @@ const MessageActions = ({
           sideOffset={0}
           className="reaction-popover rounded-none border-0 p-0 shadow-none"
         >
-          <Picker
-            data={data}
+          <MyEmojiPicker
             onEmojiSelect={({ native: emoji, unified }: any) => {
               reactMessage({ variables: { unified, emoji, msgId } });
               setReactionOpen(false);
             }}
-          />
-          {/* <EmojiPicker
-            open={isReactionOpen}
-            reactionsDefaultOpen={true}
-            onReactionClick={({ emoji, unified }) => {
-              reactMessage({ variables: { unified, emoji, msgId } });
-              setReactionOpen(false);
-            }}
-            lazyLoadEmojis={false}
-            searchDisabled
-          /> */}
+            asChild
+          ></MyEmojiPicker>
         </DropdownMenuContent>
       </DropdownMenu>
 

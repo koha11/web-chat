@@ -34,9 +34,8 @@ import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { useNavigate, useNavigation } from "react-router-dom";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
 import MessageStatus from "@/enums/MessageStatus.enum";
+import MyEmojiPicker from "@/components/ui/my-emoji-picker";
 
 const ChatInput = ({
   chat,
@@ -474,8 +473,11 @@ const ChatInput = ({
               <Smile></Smile>
             </Button>
 
-            <div
-              hidden={!isEmojiPickerOpen}
+            <MyEmojiPicker
+              onEmojiSelect={({ native: emoji, unified }: any) => {
+                setValue("msg.msgBody", watch("msg.msgBody") + emoji);
+              }}
+              open={isEmojiPickerOpen}
               style={{
                 position: "absolute",
                 top: -410,
@@ -483,15 +485,7 @@ const ChatInput = ({
                 zIndex: 20,
               }}
               onClick={(e) => e.stopPropagation()}
-            >
-              <Picker
-                data={data}
-                onEmojiSelect={({ native: emoji, unified }: any) => {
-                  console.log(emoji);
-                  setValue("msg.msgBody", watch("msg.msgBody") + emoji);
-                }}
-              />
-            </div>
+            ></MyEmojiPicker>
 
             {/* <EmojiPicker
               open={isEmojiPickerOpen}

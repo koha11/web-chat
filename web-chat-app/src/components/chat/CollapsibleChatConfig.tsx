@@ -1,4 +1,4 @@
-import { Edit, Hand, Image } from "lucide-react";
+import { Edit, Hand, Image, SmileIcon } from "lucide-react";
 
 import { useState } from "react";
 import MyCollapsible from "../ui/my-collapsible";
@@ -6,6 +6,14 @@ import ChangeNicknamesDialog from "./ChangeNicknamesDialog";
 import { IChat } from "../../interfaces/chat.interface";
 import ChangeChatAvatarDialog from "./ChangeChatAvatarDialog";
 import ChangeChatNameDialog from "./ChangeChatNameDialog";
+import MyEmojiPicker from "../ui/my-emoji-picker";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import ChangeChatEmojiDialog from "./ChangeChatEmojiDialog";
 
 const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
   const isGroupChat = chat.users.length > 2;
@@ -13,6 +21,7 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
   const [isChangeNicknamesOpen, setChangeNicknamesOpen] = useState(false);
   const [isChangeChatAvatarOpen, setChangeChatAvatarOpen] = useState(false);
   const [isChangeChatNameOpen, setChangeChatNameOpen] = useState(false);
+  const [isChangeChatEmojiOpen, setChangeChatEmojiOpen] = useState(false);
 
   return (
     <MyCollapsible
@@ -58,11 +67,20 @@ const CollapsibleChatConfig = ({ chat }: { chat: IChat }) => {
         {
           content: (
             <>
-              <Hand></Hand>
+              <span>{chat.chatEmoji}</span>
               <span>Change emote</span>
             </>
           ),
-          onClick: () => {},
+          onClick: () => {
+            setChangeChatEmojiOpen(true);
+          },
+          dialog: (
+            <ChangeChatEmojiDialog
+              isOpen={isChangeChatEmojiOpen}
+              setOpen={setChangeChatEmojiOpen}
+              chat={chat}
+            ></ChangeChatEmojiDialog>
+          ),
         },
         {
           content: (
