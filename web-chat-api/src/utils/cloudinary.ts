@@ -2,22 +2,29 @@ import { UploadApiResponse } from "cloudinary";
 import MessageType from "../enums/MessageType.enum.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import cloudinary from "../lib/cloudinary.js";
+import mongoose, { Mongoose } from "mongoose";
+import { nanoid } from "zod/v4";
+import { ProgressStream } from "progress-stream";
 
 export const uploadMedia = async ({
   file,
   folder,
   filename_override,
   type,
+  prog,
+  handleUploadDone,
 }: {
   file: FileUpload;
   folder: string;
   filename_override?: string;
   type?: MessageType;
+  prog: ProgressStream;
+  handleUploadDone: Function;
 }): Promise<UploadApiResponse> => {
   const { createReadStream } = file;
 
   return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
+    const cldStream = cloudinary.uploader.upload_stream(
       {
         folder,
         filename_override: filename_override ?? file.filename,
@@ -25,10 +32,13 @@ export const uploadMedia = async ({
       },
       async (error, result) => {
         if (error) reject(error);
-        if (result) resolve(result);
+        if (result) {
+          handleUploadDone();
+          resolve(result);
+        }
       }
     );
 
-    createReadStream().pipe(stream);
+    createReadStream().pipe(prog).pipe(cldStream);
   });
 };

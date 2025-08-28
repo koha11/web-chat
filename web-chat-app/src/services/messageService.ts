@@ -128,43 +128,17 @@ export const POST_MEDIA_MESSAGE = gql`
   mutation PostMediaMessage(
     $chatId: ID!
     $files: [Upload!]!
+    $filesInfo: [Int]
     $replyForMsg: String
     $isForwarded: Boolean
   ) {
     postMediaMessage(
       chatId: $chatId
       files: $files
+      filesInfo: $filesInfo
       replyForMsg: $replyForMsg
       isForwarded: $isForwarded
-    ) {
-      id
-      chat
-      user
-      msgBody
-      status
-      replyForMsg {
-        id
-        user
-        msgBody
-        status
-        seenList
-        type
-        file
-        systemLog
-        createdAt
-      }
-      seenList
-      createdAt
-      isHiddenFor
-      unsentAt
-      editedAt
-      endedCallAt
-      isForwarded
-      type
-      file
-      systemLog
-      reactions
-    }
+    )
   }
 `;
 
@@ -349,6 +323,19 @@ export const MESSAGE_TYPING_SUB = gql`
         avatar
       }
       isTyping
+    }
+  }
+`;
+
+export const UPLOAD_PROGRESS_SUB = gql`
+  subscription UploadProgress($uploadId: ID!) {
+    uploadProgress(uploadId: $uploadId) {
+      id
+      phase
+      pct
+      url
+      publicId
+      error
     }
   }
 `;

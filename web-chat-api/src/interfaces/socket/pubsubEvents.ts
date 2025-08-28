@@ -19,12 +19,27 @@ export type PubsubEvents = {
     chatId: string;
   };
   [SocketEvent.ongoingCall]: {
-    ongoingCall: { user: IUser; hasVideo: boolean; chatId: string; msgId: string };
+    ongoingCall: {
+      user: IUser;
+      hasVideo: boolean;
+      chatId: string;
+      msgId: string;
+    };
   };
   [SocketEvent.responseCall]: {
     responseCall: boolean;
     chatId: string;
     userId: string;
     msgId: string;
+  };
+  [SocketEvent.uploadProgress]: {
+    uploadProgress: {
+      id: string;
+      phase: "STARTED" | "UPLOADING" | "DONE" | "ERROR";
+      pct: number;
+      url?: string;
+      publicId?: string;
+      error?: string;
+    };
   };
 };

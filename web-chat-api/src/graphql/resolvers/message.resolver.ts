@@ -21,6 +21,8 @@ import { IUser } from "../../interfaces/user.interface.js";
 import { FileUpload } from "graphql-upload/processRequest.mjs";
 import MessageType from "../../enums/MessageType.enum.js";
 import { uploadMedia } from "../../utils/cloudinary.js";
+import progress_stream from "progress-stream";
+import { nanoid } from "nanoid";
 
 export const messageResolvers: IResolvers = {
   Query: {
@@ -195,16 +197,16 @@ export const messageResolvers: IResolvers = {
 
     postMediaMessage: async (
       _p,
-      { chatId, files, replyForMsg, isForwarded },
+      { chatId, files, filesInfo, replyForMsg, isForwarded },
       { pubsub, user }: IMyContext
     ) => {
       const myFiles = (await Promise.all(files)) as FileUpload[];
 
-      console.log(myFiles);
-
       if (myFiles.length == 0) throw new Error("No files uploaded");
 
       let messages: IMessage[] = [];
+
+      let uploadIds: any[] = [];
 
       for (let file of myFiles) {
         let type = MessageType.TEXT;
@@ -218,50 +220,79 @@ export const messageResolvers: IResolvers = {
 
         if (mimeType.startsWith("application")) type = MessageType.FILE;
 
-        const { secure_url, bytes } = await uploadMedia({
-          file,
-          folder: `chats/${chatId}/${type}`,
-          type,
-        });
+        (async () => {
+          const uploadId = nanoid();
+          uploadIds.push(uploadId);
 
-        const createdMsg = await Message.create({
-          chat: chatId,
-          user: user.id,
-          file: {
-            filename: file.filename,
-            type: file.mimetype,
-            url: secure_url,
-            size: bytes,
-          },
-          replyForMsg,
-          isForwarded,
-          type,
-        });
+          // Measure progress while piping to Cloudinary
+          const prog = progress_stream({ length: filesInfo[0], time: 200 });
 
-        const message = await createdMsg.populate("replyForMsg");
+          prog.on("progress", (p) => {
+            const pct = Math.max(1, Math.min(99, Math.round(p.percentage)));
+            pubsub.publish(SocketEvent.uploadProgress, {
+              uploadProgress: { uploadId, phase: "UPLOADING", pct },
+            });
+          });
 
-        messages.push(message);
+          pubsub.publish(SocketEvent.uploadProgress, {
+            uploadProgress: { uploadId, phase: "STARTED", pct: 0 },
+          });
 
-        const chatChanged = await Chat.findByIdAndUpdate(
-          message.chat,
-          { updatedAt: new Date() },
-          { new: true }
-        ).populate("users");
+          const { secure_url, bytes } = await uploadMedia({
+            file,
+            folder: `chats/${chatId}/${type}`,
+            type,
+            prog,
+            handleUploadDone: () => {
+              pubsub.publish(SocketEvent.uploadProgress, {
+                uploadProgress: {
+                  uploadId,
+                  phase: "DONE",
+                  pct: 100,
+                },
+              });
+            },
+          });
 
-        pubsub.publish(SocketEvent.messageAdded, {
-          messageAdded: {
-            node: message,
-            cursor: message.id,
-          },
-          chatId,
-        } as PubsubEvents[SocketEvent.messageAdded]);
+          const createdMsg = await Message.create({
+            chat: chatId,
+            user: user.id,
+            file: {
+              filename: file.filename,
+              type: file.mimetype,
+              url: secure_url,
+              size: bytes,
+            },
+            replyForMsg,
+            isForwarded,
+            type,
+          });
 
-        pubsub.publish(SocketEvent.chatChanged, {
-          chatChanged,
-        } as PubsubEvents[SocketEvent.chatChanged]);
+          const message = await createdMsg.populate("replyForMsg");
+
+          messages.push(message);
+
+          const chatChanged = await Chat.findByIdAndUpdate(
+            message.chat,
+            { updatedAt: new Date() },
+            { new: true }
+          ).populate("users");
+
+          pubsub.publish(SocketEvent.messageAdded, {
+            messageAdded: {
+              node: message,
+              cursor: message.id,
+            },
+            chatId,
+          } as PubsubEvents[SocketEvent.messageAdded]);
+
+          pubsub.publish(SocketEvent.chatChanged, {
+            chatChanged,
+          } as PubsubEvents[SocketEvent.chatChanged]);
+        })();
       }
 
-      return messages;
+      return uploadIds;
     },
 
     unsendMessage: async (
@@ -507,6 +538,21 @@ export const messageResolvers: IResolvers = {
           const isCorrectChat = chatId == subChatId;
 
           return isNotSender && isUserInThisChat && isCorrectChat;
+        }
+      ),
+    },
+
+    uploadProgress: {
+      subscribe: withFilter(
+        (_p, { id }, { pubsub }) => {
+          return pubsub.asyncIterableIterator(SocketEvent.uploadProgress);
+        },
+        async (
+          { uploadProgress }: PubsubEvents[SocketEvent.uploadProgress],
+          { chatId: subChatId },
+          { user }: IMyContext
+        ) => {
+          return true;
         }
       ),
     },

@@ -40,6 +40,15 @@ export const messageTypeDefs = gql`
     typingUser: User!
   }
 
+  type UploadProgress {
+    id: ID
+    phase: String
+    pct: Int
+    url: String
+    publicId: String
+    error: String
+  }
+
   extend type Query {
     messages(
       chatId: ID!
@@ -70,9 +79,10 @@ export const messageTypeDefs = gql`
     postMediaMessage(
       chatId: ID!
       files: [Upload!]!
+      filesInfo: [Int]
       replyForMsg: String
       isForwarded: Boolean
-    ): [Message!]!
+    ): [ID!]!
 
     unsendMessage(chatId: ID!, msgId: ID!): Message!
 
@@ -87,5 +97,6 @@ export const messageTypeDefs = gql`
     messageAdded(chatId: ID!): MessageEdge!
     messageChanged(chatId: ID!): MessageEdge!
     messageTyping(chatId: ID!): TypingMessage
+    uploadProgress(uploadId: ID!): UploadProgress!
   }
 `;

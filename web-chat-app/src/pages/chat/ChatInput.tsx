@@ -37,6 +37,9 @@ import { useReactMediaRecorder } from "react-media-recorder";
 import { useNavigate, useNavigation } from "react-router-dom";
 import MessageStatus from "@/enums/MessageStatus.enum";
 import MyEmojiPicker from "@/components/ui/my-emoji-picker";
+import { useApolloClient } from "@apollo/client";
+import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
+import { size } from "zod";
 
 const ChatInput = ({
   chat,
@@ -57,16 +60,18 @@ const ChatInput = ({
   choosenUsers: IUser[];
 }) => {
   const userId = Cookies.get("userId")!;
+  const client = useApolloClient();
   const navigate = useNavigate();
 
   // refs
   const audioRef = useRef<HTMLAudioElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // states
   const [isAudioRecording, setAudioRecording] = useState(false);
   const [isAudioPlayed, setAudioPlayed] = useState(false);
   const [fileBlobUrls, setFileBlobUrls] = useState<
-    { url: string; type: string; filename: string }[]
+    { url: string; type: string; filename: string; size: number }[]
   >([]);
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
 
@@ -104,6 +109,7 @@ const ChatInput = ({
             url: URL.createObjectURL(file),
             type: file.type,
             filename: file.name,
+            size: file.size,
           });
       }
 
@@ -160,7 +166,7 @@ const ChatInput = ({
         "click",
         () => isEmojiPickerOpen && setEmojiPickerOpen(false)
       );
-  });
+  }, []);
 
   // Handlers
   const handleSendMessage = async ({
@@ -178,15 +184,43 @@ const ChatInput = ({
   }) => {
     const fileArr = files ? Array.from(files) : undefined;
 
-    if (fileArr && fileArr.length > 0)
-      await postMediaMessage({
+    if (fileArr && fileArr.length > 0) {
+      const { data } = await postMediaMessage({
         variables: {
           chatId,
           replyForMsg,
           isForwarded,
           files: fileArr,
+          filesInfo: [fileBlobUrls[0].size],
         },
       });
+
+      const uploadIds = data.postMediaMessage;
+      const uploadId = uploadIds[0];
+
+      const sub = client
+        .subscribe({ query: UPLOAD_PROGRESS_SUB, variables: { uploadId } })
+        .subscribe({
+          next: ({ data }) => {
+            const { pct, phase, url, publicId, error } = data.uploadProgress;
+            console.log(pct);
+
+            if (phase === "DONE") {
+              sub.unsubscribe();
+              // persist url/publicId to your message, etc.
+            }
+
+            if (phase === "ERROR") {
+              sub.unsubscribe();
+              // handle error
+            }
+          },
+          error: (e) => {
+            // subscription transport error
+            console.log(e);
+          },
+        });
+    }
 
     if (msgBody)
       await postMessage({
@@ -251,7 +285,9 @@ const ChatInput = ({
       <form
         className="relative w-full flex items-center justify-between gap-2"
         autoComplete="off"
+        ref={formRef}
         onSubmit={handleSubmit(async ({ msg, files }) => {
+          console.log("submit");
           if (files?.length) {
             for (let file of files) if (file.size > 10_000_000) return;
           }
@@ -466,6 +502,10 @@ const ChatInput = ({
                     typeMessage({
                       variables: { chatId: chat.id, isTyping: false },
                     });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter" && formRef.current)
+                    formRef.current.requestSubmit();
                 }}
               ></Input>
 

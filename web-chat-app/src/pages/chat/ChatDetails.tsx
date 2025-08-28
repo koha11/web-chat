@@ -11,6 +11,7 @@ import {
   MESSAGE_ADDED_SUB,
   MESSAGE_CHANGED_SUB,
   MESSAGE_TYPING_SUB,
+  UPLOAD_PROGRESS_SUB,
 } from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import IModelConnection, {
@@ -28,6 +29,7 @@ import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useApolloClient } from "@apollo/client";
 
 const ChatDetails = ({
   chat,
@@ -58,6 +60,7 @@ const ChatDetails = ({
   setFetchMap: Function;
 }) => {
   const userId = Cookies.get("userId")!;
+  const client = useApolloClient();
   const navigate = useNavigate();
   const { hash } = useLocation();
 

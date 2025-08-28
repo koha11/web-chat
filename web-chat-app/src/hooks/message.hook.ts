@@ -29,7 +29,6 @@ export const useGetMessages = ({
     skip: !chatId,
   });
 
-
   return {
     data: myQuery.data == undefined ? undefined : myQuery.data.messages,
     loading: myQuery.loading,
@@ -97,45 +96,7 @@ export const usePostMessage = ({ first = 20 }: { first?: number }) => {
 };
 
 export const usePostMediaMessage = ({ first = 20 }: { first?: number }) => {
-  return useMutation(POST_MEDIA_MESSAGE, {
-    update(cache, { data }) {
-      const addedMsgs = data.postMediaMessage as IMessage[];
-      const chatId = addedMsgs[0].chat;
-
-      const existing = cache.readQuery<{
-        messages: IModelConnection<IMessage>;
-      }>({
-        query: GET_MESSAGES,
-        variables: { chatId, first },
-      });
-
-      if (existing) {
-        cache.writeQuery({
-          query: GET_MESSAGES,
-          variables: { chatId, first },
-          data: {
-            messages: {
-              ...existing.messages,
-              edges: [
-                ...addedMsgs.reverse().map((addedMsg) => {
-                  return {
-                    __typename: "MessageEdge",
-                    cursor: addedMsg.id,
-                    node: addedMsg,
-                  };
-                }),
-                ...existing.messages.edges,
-              ],
-              pageInfo: {
-                ...existing.messages.pageInfo,
-                startCursor: addedMsgs[addedMsgs.length - 1].id,
-              },
-            } as IModelConnection<IMessage>,
-          },
-        });
-      }
-    },
-  });
+  return useMutation(POST_MEDIA_MESSAGE);
 };
 
 export const useUnsendMessage = () => {
