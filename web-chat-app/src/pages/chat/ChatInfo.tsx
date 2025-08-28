@@ -30,7 +30,7 @@ const ChatInfo = ({
     <section
       className="flex-2 h-full p-2 bg-white rounded-2xl flex flex-col items-center gap-2 overflow-y-scroll"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
-      hidden={!open}
+      hidden={!open}      
     >
       <div className="relative">
         <div

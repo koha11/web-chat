@@ -22,7 +22,7 @@ const SentConnectRequestDialog = ({
       <DialogContent>
         <DialogHeader className="border-b-2">
           <DialogTitle className="text-center text-2xl mb-2">
-            Sent Connect Requests
+            Sent Requests
           </DialogTitle>
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">

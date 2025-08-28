@@ -44,7 +44,7 @@ const Contact = () => {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
-                placeholder="Tìm kiếm liên hệ"
+                placeholder="Search Contacts"
               ></input>
               <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
             </form>
@@ -84,7 +84,7 @@ const Contact = () => {
                           removeContact({ variables: { userId: contact?.id } });
                         }}
                       >
-                        Remove connect
+                        Remove contact
                       </Button>
                     </PopoverContent>
                   </Popover>

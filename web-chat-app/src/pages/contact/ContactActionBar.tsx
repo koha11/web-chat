@@ -41,7 +41,7 @@ const ContactActionBar = () => {
           className="cursor-pointer rounded-xl relative"
           onClick={() => setReceivedRequestDialogOpen(true)}
         >
-          <span>Received Connect Request</span>
+          <span>Received Requests</span>
           {receivedConnectRequests?.edges.length != 0 && (
             <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
               {receivedConnectRequests?.edges.length}
@@ -53,7 +53,7 @@ const ContactActionBar = () => {
           className="cursor-pointer rounded-xl relative"
           onClick={() => setSentRequestDialogOpen(true)}
         >
-          <span>Sent Connect Request</span>
+          <span>Sent Requests</span>
           {sentConnectRequests?.edges.length != 0 && (
             <div className="absolute h-5 w-5 bg-gray-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
               {sentConnectRequests?.edges.length}

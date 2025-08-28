@@ -20,13 +20,13 @@ const ActiveList = () => {
       className="w-[25%] h-full p-2 bg-white rounded-2xl"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
-      <div className="flex justify-between items-center h-[10%] px-2">
+      <div className="flex justify-baseline items-center h-[10%] px-2 gap-4">
         <div className="text-xl">
           <NavLink to={"/m"}>
             <ArrowLeftCircle></ArrowLeftCircle>
           </NavLink>
         </div>
-        <h1 className="text-2xl font-bold">Danh sách hoạt động</h1>
+        <h1 className="text-2xl font-bold">Active</h1>
       </div>
 
       <nav

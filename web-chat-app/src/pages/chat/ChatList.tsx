@@ -102,7 +102,7 @@ const ChatList = ({
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
-                placeholder="Tìm kiếm đoạn chat"
+                placeholder="Search Conversations"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
