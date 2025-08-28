@@ -19,7 +19,6 @@ import SystemMsg from "./SystemMsg";
 import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const SingleMsg = ({
   isLongGap,
   isSentMsg,
@@ -133,14 +132,17 @@ const SingleMsg = ({
               style={{ backgroundImage: `url(${msgSenderAvatar})` }}
             ></div>
           ) : (
-            MyTooltip(
-              <div
-                className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
-                style={{ backgroundImage: `url(${msgSenderAvatar})` }}
-              ></div>,
-              name,
-              "order-1"
-            )
+            MyTooltip({
+              hover: (
+                <div
+                  className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center order-1`}
+                  style={{ backgroundImage: `url(${msgSenderAvatar})` }}
+                ></div>
+              ),
+              content: name,
+              className: "order-1",
+              id: msg.id + msgSenderAvatar,
+            })
           )}
 
           {/* Hien action  */}
@@ -168,18 +170,21 @@ const SingleMsg = ({
           <div className="relative order-2 w-fit">
             {/* Hien thi noi dung tin nhan  */}
             {msg.status == MessageStatus.UNSEND ? (
-              MyTooltip(
-                <span
-                  className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                    isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                  } ${msg.isForwarded ? "" : ""}`}
-                >
-                  {name} unsend a message
-                </span>,
-                `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
+              MyTooltip({
+                hover: (
+                  <span
+                    className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                      isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+                    } ${msg.isForwarded ? "" : ""}`}
+                  >
+                    {name} unsend a message
+                  </span>
+                ),
+                content: `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
               Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
-                "order-2"
-              )
+                className: "order-2",
+                id: msg.id,
+              })
             ) : (
               <MsgBody
                 isSentMsg={isSentMsg}
@@ -195,13 +200,17 @@ const SingleMsg = ({
                 const user = usersMap[userId];
                 const fullname = user ? user.fullname : "undefined user";
 
-                return MyTooltip(
-                  <span onClick={() => setReactionDialogOpen(true)}>
-                    {reaction.emoji}
-                  </span>,
-                  fullname,
-                  "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5"
-                );
+                return MyTooltip({
+                  hover: (
+                    <span onClick={() => setReactionDialogOpen(true)}>
+                      {reaction.emoji}
+                    </span>
+                  ),
+                  content: fullname,
+                  className:
+                    "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5",
+                  id: msg.id + "-reactions",
+                });
               })}
           </div>
         </div>
@@ -226,17 +235,21 @@ const SingleMsg = ({
           )) ||
             (msg.status == MessageStatus.SEEN &&
               seenList.map((userId) =>
-                MyTooltip(
-                  <div
-                    className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-                    style={{
-                      backgroundImage: `url(${usersMap[userId].avatar})`,
-                    }}
-                  ></div>,
-                  usersMap[userId].fullname +
+                MyTooltip({
+                  hover: (
+                    <div
+                      className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+                      style={{
+                        backgroundImage: `url(${usersMap[userId].avatar})`,
+                      }}
+                    ></div>
+                  ),
+                  content:
+                    usersMap[userId].fullname +
                     "seen at " +
-                    getDisplaySendMsgTime(new Date(msg.seenList[userId]))
-                )
+                    getDisplaySendMsgTime(new Date(msg.seenList[userId])),
+                  id: msg.id + "-" + userId,
+                })
               )))}
       </div>
 

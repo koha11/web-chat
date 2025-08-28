@@ -134,8 +134,6 @@ const ChatDetails = ({
       setMessages(grouped);
       setFetchMore(false);
       setFetchMap((old: any) => {
-        console.log("msg", { ...old, msg: true });
-
         return { ...old, msg: true };
       });
 
@@ -221,8 +219,6 @@ const ChatDetails = ({
   // refetch lai msg neu can thiet
   useEffect(() => {
     setFetchMap((old: any) => {
-      console.log("chat", { ...old, chat: true });
-
       return { ...old, chat: true };
     });
 
@@ -328,8 +324,6 @@ const ChatDetails = ({
 
     if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
   };
-
-  console.log(fetchMap);
 
   return (
     <section

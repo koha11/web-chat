@@ -493,6 +493,8 @@ const ChatInput = ({
           hidden
           multiple={true}
           {...register("files")}
+          // onChange={(e) => {
+          // }}
         ></Input>
 
         {/* Send & quick reaction (right side) */}

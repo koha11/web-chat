@@ -45,8 +45,6 @@ const Chat = () => {
       msg: false,
     });
 
-    console.log(id);
-
     if (chats)
       setCurrChat(
         id == undefined
