@@ -29,6 +29,7 @@ import {
   Hand,
   Image,
   FileTextIcon,
+  Plus,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -235,84 +236,8 @@ const ChatInput = ({
         </Collapsible>
       )}
 
-      {fileBlobUrls.length > 0 && (
-        <div className="flex items-center h-24 w-[50rem] px-8 py-2 gap-4 overflow-x-auto overflow-y-hidden bg-gray-200 whitespace-nowrap">
-          <div className="h-12 w-12 bg-gray-400 p-4 flex items-center justify-between">
-            <ImagePlus></ImagePlus>
-          </div>
-
-          {fileBlobUrls.map(({ url, type, filename }, index) => {
-            let myComponent;
-
-            if (type.startsWith("image"))
-              myComponent = (
-                <img
-                  src={url}
-                  className="object-cover rounded-md h-full w-full"
-                ></img>
-              );
-
-            if (type.startsWith("video"))
-              myComponent = (
-                <video
-                  src={url}
-                  className="object-cover rounded-md h-full w-full"
-                  disablePictureInPicture
-                ></video>
-              );
-
-            if (type.startsWith("application"))
-              myComponent = (
-                <div className="py-2 px-3 flex gap-2 items-center bg-gray-400 rounded-md text-sm w-full">
-                  <FileTextIcon></FileTextIcon>
-                  <div>{strimText(filename, 15)}</div>
-                </div>
-              );
-
-            if (!myComponent) return <></>;
-
-            return (
-              <div
-                key={index}
-                className={`relative h-12 shrink-0 ${
-                  type.startsWith("application") ? "w-fit" : "w-12"
-                }`}
-              >
-                {myComponent}
-                <Button
-                  className="absolute -top-1 -right-1 cursor-pointer"
-                  size={"no_style"}
-                  onClick={() => {
-                    URL.revokeObjectURL(url);
-
-                    setFileBlobUrls((old) =>
-                      old.filter(({ url: oldUrl }) => oldUrl != url)
-                    );
-
-                    const fileList = watch("files");
-
-                    if (!fileList) return;
-
-                    const dt = new DataTransfer();
-                    Array.from(fileList).forEach((file, fileIndex) => {
-                      if (fileIndex !== index) {
-                        dt.items.add(file);
-                      }
-                    });
-
-                    setValue("files", dt.files);
-                  }}
-                >
-                  <X></X>
-                </Button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
       <form
-        className="relative w-full flex items-center justify-between gap-4"
+        className="relative w-full flex items-center justify-between gap-2"
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {
           if (files?.length) {
@@ -364,49 +289,18 @@ const ChatInput = ({
           }
         })}
       >
-        <Label htmlFor="uploaded-image" className="rounded-full cursor-pointer">
-          <Image></Image>
+        {/* External blue plus (left) */}
+        <Label
+          htmlFor="uploaded-image"
+          className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
+          title="Add"
+        >
+          <Plus size={16}></Plus>
         </Label>
 
-        {/* AUDIO  */}
+        {/* AUDIO or TEXT COMPOSER BUBBLE */}
         {isAudioRecording ? (
-          <Button
-            className="rounded-full cursor-pointer"
-            variant={"outline"}
-            type="button"
-            onClick={() => {
-              stopRecording();
-              clearBlobUrl();
-              resetField("files");
-              setAudioRecording(false);
-            }}
-          >
-            <X></X>
-          </Button>
-        ) : (
-          <Button
-            className="rounded-full cursor-pointer"
-            variant={"outline"}
-            type="button"
-            onClick={() => {
-              startRecording();
-              setAudioRecording(true);
-            }}
-          >
-            <Mic></Mic>
-          </Button>
-        )}
-
-        <Input
-          id="uploaded-image"
-          type="file"
-          hidden
-          multiple={true}
-          {...register("files")}
-        ></Input>
-
-        {isAudioRecording ? (
-          <div className="rounded-3xl flex-auto bg-gray-200 px-4 py-2 text-gray-500 relative">
+          <div className="rounded-2xl flex-1 bg-zinc-800 px-4 py-2 text-zinc-100 relative">
             <audio className="w-full" ref={audioRef} src={mediaBlobUrl}></audio>
 
             {audioStatus != "stopped" ? (
@@ -414,6 +308,7 @@ const ChatInput = ({
                 type="button"
                 onClick={() => stopRecording()}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
+                variant={"ghost"}
               >
                 <Square />
               </Button>
@@ -425,6 +320,7 @@ const ChatInput = ({
                   audioRef.current?.play();
                 }}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
+                variant={"ghost"}
               >
                 <Play />
               </Button>
@@ -436,108 +332,205 @@ const ChatInput = ({
                   setAudioPlayed(false);
                 }}
                 className="absolute top-[50%] -translate-y-[50%] left-2"
+                variant={"ghost"}
               >
                 <Pause />
               </Button>
             )}
-          </div>
-        ) : (
-          <div className="flex-auto relative">
-            <Input
-              {...register("msg.msgBody")}
-              className="rounded-3xl w-full bg-gray-200 px-4 py-2 text-gray-500"
-              placeholder="Aa"
-              onFocus={() => {
-                if (chat)
-                  typeMessage({
-                    variables: { chatId: chat.id, isTyping: true },
-                  });
-              }}
-              onBlur={() => {
-                if (chat)
-                  typeMessage({
-                    variables: { chatId: chat.id, isTyping: false },
-                  });
-              }}
-            ></Input>
 
             <Button
-              className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
-              variant={"no_style"}
+              className="absolute right-2 top-2 rounded-full cursor-pointer"
+              variant={"outline"}
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setEmojiPickerOpen(!isEmojiPickerOpen);
+              onClick={() => {
+                stopRecording();
+                clearBlobUrl();
+                resetField("files");
+                setAudioRecording(false);
               }}
             >
-              <Smile></Smile>
+              <X></X>
             </Button>
+          </div>
+        ) : (
+          /* TEXT composer bubble (dark) */
+          <div className="flex-1 rounded-2xl bg-gray-300 text-black py-1 px-2">
+            {/* Inline attachments tray (only when files selected) */}
+            {fileBlobUrls.length > 0 && (
+              <div className="flex items-center gap-3 overflow-x-auto overflow-y-hidden whitespace-nowrap px-1 pb-1 min-h-[3.5rem]">
+                {/* Add tile inside tray */}
+                <Label
+                  htmlFor="uploaded-image"
+                  className="shrink-0 h-12 w-12 rounded-md bg-zinc-700 hover:bg-zinc-600 grid place-items-center text-zinc-200 cursor-pointer"
+                  title="Add more"
+                >
+                  <ImagePlus className="h-6 w-6" />
+                </Label>
 
-            <MyEmojiPicker
-              onEmojiSelect={({ native: emoji, unified }: any) => {
-                setValue("msg.msgBody", watch("msg.msgBody") + emoji);
-              }}
-              open={isEmojiPickerOpen}
-              style={{
-                position: "absolute",
-                top: -410,
-                right: 40,
-                zIndex: 20,
-              }}
-              onClick={(e) => e.stopPropagation()}
-            ></MyEmojiPicker>
+                {fileBlobUrls.map(({ url, type, filename }, index) => {
+                  let myComponent;
 
-            {/* <EmojiPicker
-              open={isEmojiPickerOpen}
-              lazyLoadEmojis={true}
-              emojiStyle={EmojiStyle.FACEBOOK}
-              height={400}
-              searchDisabled
-              onEmojiClick={(emojiData) => {
-                setValue("msg.msgBody", watch("msg.msgBody") + emojiData.emoji);
-              }}
-              style={{
-                position: "absolute",
-                top: -410,
-                right: 40,
-                zIndex: 20,
-              }}
-            /> */}
+                  if (type.startsWith("image"))
+                    myComponent = (
+                      <img
+                        src={url}
+                        className="object-cover rounded-md h-full w-full"
+                      ></img>
+                    );
+
+                  if (type.startsWith("video"))
+                    myComponent = (
+                      <video
+                        src={url}
+                        className="object-cover rounded-md h-full w-full"
+                        disablePictureInPicture
+                      ></video>
+                    );
+
+                  if (type.startsWith("application"))
+                    myComponent = (
+                      <div className="py-2 px-3 flex gap-2 items-center bg-zinc-700 rounded-md text-xs w-full">
+                        <FileTextIcon></FileTextIcon>
+                        <div>{strimText(filename, 15)}</div>
+                      </div>
+                    );
+
+                  if (!myComponent) return <></>;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`relative h-12 shrink-0 ${
+                        type.startsWith("application") ? "w-fit" : "w-12"
+                      }`}
+                    >
+                      {myComponent}
+                      <Button
+                        className="absolute -top-1 -right-1 cursor-pointer h-5 w-5 rounded-full bg-black/70 text-white p-0 grid place-items-center"
+                        size={"no_style"}
+                        onClick={() => {
+                          URL.revokeObjectURL(url);
+
+                          setFileBlobUrls((old) =>
+                            old.filter(({ url: oldUrl }) => oldUrl != url)
+                          );
+
+                          const fileList = watch("files");
+                          if (!fileList) return;
+
+                          const dt = new DataTransfer();
+                          Array.from(fileList).forEach((file, fileIndex) => {
+                            if (fileIndex !== index) {
+                              dt.items.add(file);
+                            }
+                          });
+
+                          setValue("files", dt.files);
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Input row (transparent inside dark bubble) */}
+            <div className="relative flex items-center gap-2 mt-1">
+              <Input
+                {...register("msg.msgBody")}
+                className="rounded-3xl w-full shadow-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-2 text-black placeholder:text-zinc-400"
+                placeholder="Aa"
+                onFocus={() => {
+                  if (chat)
+                    typeMessage({
+                      variables: { chatId: chat.id, isTyping: true },
+                    });
+                }}
+                onBlur={() => {
+                  if (chat)
+                    typeMessage({
+                      variables: { chatId: chat.id, isTyping: false },
+                    });
+                }}
+              ></Input>
+
+              <Button
+                className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
+                variant={"no_style"}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEmojiPickerOpen(!isEmojiPickerOpen);
+                }}
+                title="Emoji"
+              >
+                <Smile></Smile>
+              </Button>
+
+              <MyEmojiPicker
+                onEmojiSelect={({ native: emoji, unified }: any) => {
+                  setValue("msg.msgBody", watch("msg.msgBody") + emoji);
+                }}
+                open={isEmojiPickerOpen}
+                style={{
+                  position: "absolute",
+                  top: -410,
+                  right: 40,
+                  zIndex: 20,
+                }}
+                onClick={(e) => e.stopPropagation()}
+              ></MyEmojiPicker>
+            </div>
           </div>
         )}
 
-        <Button
-          className="rounded-full cursor-pointer"
-          variant={"secondary"}
-          type="submit"
-        >
-          <Send></Send>
-        </Button>
-        <Button
-          className="rounded-full cursor-pointer"
-          variant={"secondary"}
-          onClick={async () => {
-            if (chat && !isSendingMsg) {
-              setMessages({
-                createdAt: new Date(),
-                chat: chat.id,
-                id: chat.chatEmoji,
-                msgBody: chat.chatEmoji,
-                type: MessageType.TEXT,
-                user: userId!,
-                seenList: {},
-                status: MessageStatus.SENT,
-              });
+        {/* Hidden file input */}
+        <Input
+          id="uploaded-image"
+          type="file"
+          hidden
+          multiple={true}
+          {...register("files")}
+        ></Input>
 
-              await handleSendMessage({
-                chatId: chat.id,
-                msgBody: chat.chatEmoji,
-              });
-            }
-          }}
-        >
-          {chat?.chatEmoji}
-        </Button>
+        {/* Send & quick reaction (right side) */}
+        <div className="flex items-center gap-2">
+          <Button
+            className="rounded-full cursor-pointer"
+            variant={"secondary"}
+            type="submit"
+          >
+            <Send></Send>
+          </Button>
+
+          <Button
+            className="rounded-full cursor-pointer"
+            variant={"secondary"}
+            onClick={async () => {
+              if (chat && !isSendingMsg) {
+                setMessages({
+                  createdAt: new Date(),
+                  chat: chat.id,
+                  id: chat.chatEmoji,
+                  msgBody: chat.chatEmoji,
+                  type: MessageType.TEXT,
+                  user: userId!,
+                  seenList: {},
+                  status: MessageStatus.SENT,
+                });
+
+                await handleSendMessage({
+                  chatId: chat.id,
+                  msgBody: chat.chatEmoji,
+                });
+              }
+            }}
+          >
+            {chat?.chatEmoji}
+          </Button>
+        </div>
       </form>
     </div>
   );
