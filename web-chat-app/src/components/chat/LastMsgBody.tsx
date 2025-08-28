@@ -111,6 +111,11 @@ const LastMsgBody = ({
           content = name + " react " + "your message";
           break;
         }
+
+        if (systemLog.type == "chatEmoji") {
+          content = name + " change emote to " + systemLog.value;
+          break;
+        }
     }
 
   content = content.length > 25 ? strimText(content, 25) : content;

@@ -85,6 +85,15 @@ const SystemMsg = ({
           } from the group`}
         </div>
       );
+
+    case "chatEmoji":
+      return (
+        <div className={`text-center text-[0.75rem] text-gray-500`}>
+          {`${isCurrentUser ? "You" : userName} change the emote to ${
+            msg.systemLog.value
+          }`}
+        </div>
+      );
   }
 };
 
