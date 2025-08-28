@@ -299,7 +299,7 @@ const ChatInput = ({
         </div>
       )}
 
-      <form
+    <form
         className="relative w-full flex items-center justify-between gap-4"
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {

@@ -1,7 +1,9 @@
 import { PinIcon } from "lucide-react";
 import MyCollapsible from "../ui/my-collapsible";
+import { useState } from "react";
 
 const CollapsibleChatInfo = ({}: {}) => {
+  const [isOpen, setOpen] = useState(false);
   return (
     <MyCollapsible
       data={[
@@ -12,7 +14,15 @@ const CollapsibleChatInfo = ({}: {}) => {
               <span>Pinned messages</span>
             </>
           ),
-          onClick: () => {},
+          onClick: () => {
+            setOpen(true);
+          },
+          // dialog: (
+          //   <PinnedMessagesDialog
+          //     isOpen={isOpen}
+          //     setOpen={setOpen}
+          //   ></PinnedMessagesDialog>
+          // ),
         },
       ]}
       title="Chat Information"

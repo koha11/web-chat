@@ -28,12 +28,19 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-  const [isInit, setInit] = useState(true);
+  const [fetchMap, setFetchMap] = useState<{ msg: boolean; chat: boolean }>({
+    chat: false,
+    msg: false,
+  });
   const [mediaId, setMediaId] = useState("");
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
     setChoosenUsers([]);
+    setFetchMap({
+      chat: false,
+      msg: false,
+    });
   }, [id]);
 
   return (
@@ -55,7 +62,7 @@ const Chat = () => {
         ) : (
           <ChatDetails
             chat={
-              chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
+              chats && chats.edges.find((edge: any) => edge.node.id == id).node
             }
             hasUpdated={false}
             setUpdatedChatMap={setUpdatedChatMap}
@@ -65,8 +72,8 @@ const Chat = () => {
             setChoosenUsers={setChoosenUsers}
             chatList={chats && chats.edges.map((edge: any) => edge.node)}
             isNewChat={isNewChat}
-            isInit={isInit}
-            setInit={setInit}
+            fetchMap={fetchMap}
+            setFetchMap={setFetchMap}
           ></ChatDetails>
         )}
 

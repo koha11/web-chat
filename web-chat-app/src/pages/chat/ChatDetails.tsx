@@ -2,11 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { useForm } from "react-hook-form";
-import {
-  getDisplaySendMsgTime,
-  getTimeDiff,
-  TimeTypeOption,
-} from "../../utils/messageTime.helper";
+import { getTimeDiff, TimeTypeOption } from "../../utils/messageTime.helper";
 import { GroupMsg } from "../../components/message/MsgGroup";
 import IMessageGroup from "../../interfaces/messages/messageGroup.interface";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -24,7 +20,7 @@ import { TypingIndicator } from "../../components/ui/typing-indicator";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import Cookies from "js-cookie";
 import { useGetContacts } from "@/hooks/contact.hook";
 import { arraysEqualUnordered } from "@/utils/array.helper";
@@ -43,8 +39,8 @@ const ChatDetails = ({
   choosenUsers,
   setChoosenUsers,
   isNewChat,
-  isInit,
-  setInit,
+  fetchMap,
+  setFetchMap,
 }: {
   chat: IChat | undefined;
   hasUpdated: boolean;
@@ -55,8 +51,11 @@ const ChatDetails = ({
   setChoosenUsers: Function;
   chatList: IChat[];
   isNewChat: boolean;
-  isInit: boolean;
-  setInit: Function;
+  fetchMap: {
+    chat: boolean;
+    msg: boolean;
+  };
+  setFetchMap: Function;
 }) => {
   const userId = Cookies.get("userId")!;
   const navigate = useNavigate();
@@ -70,7 +69,6 @@ const ChatDetails = ({
 
   const [isContactListOpen, setContactListOpen] = useState(true);
   const [myChat, setMyChat] = useState<IChat | undefined>(chat);
-  const [isReady, setReady] = useState(false);
 
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
@@ -135,10 +133,9 @@ const ChatDetails = ({
 
       setMessages(grouped);
       setFetchMore(false);
-      setReady(true);
-      console.log(messages);
-      console.log(isMsgLoading);
-      console.log(chat);
+      setFetchMap((old: any) => {
+        return { ...old, msg: true };
+      });
 
       // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
@@ -221,9 +218,11 @@ const ChatDetails = ({
 
   // refetch lai msg neu can thiet
   useEffect(() => {
-    console.log(messages);
-    console.log(isMsgLoading);
-    console.log(chat);
+    setFetchMap((old: any) => {
+      console.log("chat", { ...old, chat: true });
+      return { ...old, chat: true };
+    });
+
     if (hasUpdated && myChat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
@@ -236,10 +235,6 @@ const ChatDetails = ({
 
   useEffect(() => {
     setMyChat(chat);
-
-    if (!isInit) {
-      setReady(false);
-    } else setInit(false);
   }, [chat]);
 
   useEffect(() => {
@@ -330,8 +325,6 @@ const ChatDetails = ({
 
     if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
   };
-
-  // console.log(myChat);
 
   return (
     <section
@@ -465,7 +458,7 @@ const ChatDetails = ({
         {!isNewChat &&
           (myChat == undefined
             ? ""
-            : isReady
+            : fetchMap.chat && fetchMap.msg
             ? messages!.map((msg, index) => {
                 return (
                   <GroupMsg
