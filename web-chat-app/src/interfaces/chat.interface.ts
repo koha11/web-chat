@@ -9,6 +9,7 @@ export interface IChat {
   chatType: "GROUP" | "PRIVATE";
   chatName: string;
   chatAvatar: string;
+  chatEmoji: string;
   lastMsgSeen?: { [userId: string]: [msgId: string] }; //[userId]: msgId -> dung de duyet seen tin nhan nhanh hon
 
   createdAt?: Date;

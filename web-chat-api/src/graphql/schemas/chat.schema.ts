@@ -9,6 +9,7 @@ export const chatTypeDefs = gql`
     usersInfo: JSONObject
     lastMsgSeen: JSONObject
     chatType: String!
+    chatEmoji: String!
 
     createdAt: Date
     updatedAt: Date

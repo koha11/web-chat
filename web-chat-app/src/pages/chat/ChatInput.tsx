@@ -36,6 +36,7 @@ import { useReactMediaRecorder } from "react-media-recorder";
 import { useNavigate, useNavigation } from "react-router-dom";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import MessageStatus from "@/enums/MessageStatus.enum";
 
 const ChatInput = ({
   chat,
@@ -486,6 +487,7 @@ const ChatInput = ({
               <Picker
                 data={data}
                 onEmojiSelect={({ native: emoji, unified }: any) => {
+                  console.log(emoji);
                   setValue("msg.msgBody", watch("msg.msgBody") + emoji);
                 }}
               />
@@ -517,8 +519,30 @@ const ChatInput = ({
         >
           <Send></Send>
         </Button>
-        <Button className="rounded-full cursor-pointer" variant={"secondary"}>
-          <Hand></Hand>
+        <Button
+          className="rounded-full cursor-pointer"
+          variant={"secondary"}
+          onClick={async () => {
+            if (chat && !isSendingMsg) {
+              setMessages({
+                createdAt: new Date(),
+                chat: chat.id,
+                id: chat.chatEmoji,
+                msgBody: chat.chatEmoji,
+                type: MessageType.TEXT,
+                user: userId!,
+                seenList: {},
+                status: MessageStatus.SENT,
+              });
+
+              await handleSendMessage({
+                chatId: chat.id,
+                msgBody: chat.chatEmoji,
+              });
+            }
+          }}
+        >
+          {chat?.chatEmoji}
         </Button>
       </form>
     </div>
