@@ -199,6 +199,18 @@ const ChatInput = ({
       });
   };
 
+  const handleUploadFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const current = watch("files"); // FileList | undefined
+    const dt = new DataTransfer();
+    const newFiles = e.target.files;
+
+    if (current) Array.from(current).forEach((f) => dt.items.add(f));
+    if (newFiles) Array.from(newFiles).forEach((f) => dt.items.add(f));
+
+    // update RHF value (triggers validation/dirty if you want)
+    setValue("files", dt.files, { shouldDirty: true, shouldValidate: true });
+  };
+
   return (
     <div className="container min-h-[5%] flex items-center flex-col py-2">
       {watch("msg.replyForMsg") != undefined && chat && (
@@ -354,7 +366,7 @@ const ChatInput = ({
           </div>
         ) : (
           /* TEXT composer bubble (dark) */
-          <div className="flex-1 rounded-2xl bg-gray-300 text-black py-1 px-2">
+          <div className="flex-1 rounded-2xl bg-gray-300 text-black py-1 px-2 overflow-x-auto overflow-y-hidden max-w-[50rem]">
             {/* Inline attachments tray (only when files selected) */}
             {fileBlobUrls.length > 0 && (
               <div className="flex items-center gap-3 overflow-x-auto overflow-y-hidden whitespace-nowrap px-1 pb-1 min-h-[3.5rem]">
@@ -408,7 +420,8 @@ const ChatInput = ({
                       <Button
                         className="absolute -top-1 -right-1 cursor-pointer h-5 w-5 rounded-full bg-black/70 text-white p-0 grid place-items-center"
                         size={"no_style"}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
                           URL.revokeObjectURL(url);
 
                           setFileBlobUrls((old) =>
@@ -493,8 +506,7 @@ const ChatInput = ({
           hidden
           multiple={true}
           {...register("files")}
-          // onChange={(e) => {
-          // }}
+          onChange={handleUploadFiles}
         ></Input>
 
         {/* Send & quick reaction (right side) */}
