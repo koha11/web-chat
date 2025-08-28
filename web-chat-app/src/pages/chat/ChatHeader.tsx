@@ -11,11 +11,9 @@ import Cookies from "js-cookie";
 
 const ChatHeader = ({
   chat,
-  isMsgLoading,
   setChatInfoOpen,
 }: {
   chat: IChat | undefined;
-  isMsgLoading: boolean;
   setChatInfoOpen: Function;
 }) => {
   // params / states
@@ -27,7 +25,7 @@ const ChatHeader = ({
 
   // useEffect
   useEffect(() => {
-    if (chat && isMsgLoading) {
+    if (chat) {
       const users = chat.users as IUser[];
 
       const usersSortAscByLastLogined = users
@@ -50,7 +48,7 @@ const ChatHeader = ({
   //handlers
   const handleMakeCall = async (isVideoCall: boolean) => {
     const { data } = await makeCall({
-      variables: { chatId: chat?.id, hasVideo: isVideoCall },
+      variables: { chatId: chat!.id, hasVideo: isVideoCall },
     });
 
     const msgId = data.makeCall;
@@ -65,7 +63,7 @@ const ChatHeader = ({
   return (
     <div className="container flex items-center justify-between h-[10%]">
       <div className="flex items-center">
-        {chat && !isMsgLoading ? (
+        {chat ? (
           <div className="relative">
             <div
               className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"
@@ -81,7 +79,7 @@ const ChatHeader = ({
           <Skeleton className="w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center"></Skeleton>
         )}
 
-        {chat && !isMsgLoading ? (
+        {chat ? (
           <div className="ml-4">
             <h1 className="font-bold">{chat.chatName}</h1>
             <div className="text-gray-500 text-[0.75rem]">

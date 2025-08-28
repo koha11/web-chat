@@ -9,12 +9,15 @@ import ChatInfo from "./ChatInfo";
 import OngoingCallDialog from "../../components/call/OngoingCallDialog";
 import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
 import { IUser } from "@/interfaces/user.interface";
+import { IChat } from "@/interfaces/chat.interface";
+import { Edge } from "@/interfaces/modelConnection.interface";
 
 const Chat = () => {
   const { id } = useParams();
   const location = useLocation();
   const isNewChat = location.pathname.includes("new");
   const userId = Cookies.get("userId") ?? "";
+  const [currChat, setCurrChat] = useState<IChat>();
 
   const {
     chats,
@@ -41,7 +44,25 @@ const Chat = () => {
       chat: false,
       msg: false,
     });
+
+    console.log(id);
+
+    if (chats)
+      setCurrChat(
+        id == undefined
+          ? undefined
+          : chats.edges.find((edge: Edge<IChat>) => edge.cursor == id).node
+      );
   }, [id]);
+
+  useEffect(() => {
+    if (chats)
+      setCurrChat(
+        id == undefined
+          ? undefined
+          : chats.edges.find((edge: Edge<IChat>) => edge.cursor == id).node
+      );
+  }, [chats]);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -61,9 +82,7 @@ const Chat = () => {
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
-            chat={
-              chats && chats.edges.find((edge: any) => edge.node.id == id).node
-            }
+            chat={currChat}
             hasUpdated={false}
             setUpdatedChatMap={setUpdatedChatMap}
             setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
