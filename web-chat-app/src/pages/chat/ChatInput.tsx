@@ -34,6 +34,8 @@ import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { useNavigate, useNavigation } from "react-router-dom";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 const ChatInput = ({
   chat,
@@ -146,6 +148,19 @@ const ChatInput = ({
     }
   }, [isSendingMedia, isSendingMsg]);
 
+  useEffect(() => {
+    window.addEventListener(
+      "click",
+      () => isEmojiPickerOpen && setEmojiPickerOpen(false)
+    );
+
+    return () =>
+      window.removeEventListener(
+        "click",
+        () => isEmojiPickerOpen && setEmojiPickerOpen(false)
+      );
+  });
+
   // Handlers
   const handleSendMessage = async ({
     chatId,
@@ -195,18 +210,15 @@ const ChatInput = ({
             <div className="py-1 space-y-2">
               <div className="font-semibold">
                 Replying to{" "}
-                {userId ==
-                (watch("msg.replyForMsg") as IMessage).user
+                {userId == (watch("msg.replyForMsg") as IMessage).user
                   ? "yourself"
-                  : chat.usersInfo[
-                      (watch("msg.replyForMsg") as IMessage).user
-                    ].nickname}
+                  : chat.usersInfo[(watch("msg.replyForMsg") as IMessage).user]
+                      .nickname}
               </div>
 
               <div className="text-[0.7rem]">
                 {(watch("msg.replyForMsg") as IMessage).msgBody}
               </div>
-              
             </div>
 
             <Button
@@ -299,7 +311,7 @@ const ChatInput = ({
         </div>
       )}
 
-    <form
+      <form
         className="relative w-full flex items-center justify-between gap-4"
         autoComplete="off"
         onSubmit={handleSubmit(async ({ msg, files }) => {
@@ -453,12 +465,33 @@ const ChatInput = ({
               className="absolute right-0 top-0 cursor-pointer hover:opacity-60"
               variant={"no_style"}
               type="button"
-              onClick={() => setEmojiPickerOpen(!isEmojiPickerOpen)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEmojiPickerOpen(!isEmojiPickerOpen);
+              }}
             >
               <Smile></Smile>
             </Button>
 
-            <EmojiPicker
+            <div
+              hidden={!isEmojiPickerOpen}
+              style={{
+                position: "absolute",
+                top: -410,
+                right: 40,
+                zIndex: 20,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Picker
+                data={data}
+                onEmojiSelect={({ native: emoji, unified }: any) => {
+                  setValue("msg.msgBody", watch("msg.msgBody") + emoji);
+                }}
+              />
+            </div>
+
+            {/* <EmojiPicker
               open={isEmojiPickerOpen}
               lazyLoadEmojis={true}
               emojiStyle={EmojiStyle.FACEBOOK}
@@ -473,7 +506,7 @@ const ChatInput = ({
                 right: 40,
                 zIndex: 20,
               }}
-            />
+            /> */}
           </div>
         )}
 

@@ -219,7 +219,6 @@ const ChatDetails = ({
   // refetch lai msg neu can thiet
   useEffect(() => {
     setFetchMap((old: any) => {
-      console.log("chat", { ...old, chat: true });
       return { ...old, chat: true };
     });
 
