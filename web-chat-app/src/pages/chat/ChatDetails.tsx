@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
+import { ChatProvider } from "@/hooks/useChatContext";
 
 const ChatDetails = ({
   chat,
@@ -338,114 +339,129 @@ const ChatDetails = ({
   };
 
   return (
-    <section
-      className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
-      style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
+    <ChatProvider
+      userId={userId}
+      usersMap={myChat ? myChat.usersInfo : {}}
+      handleReplyMsg={handleReplyMsg}
+      setMediaId={setMediaId}
+      handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+      uploadProgress={uploadProgress}
     >
-      <audio src="/assets/sounds/typing.wav" ref={typingAudioRef} loop></audio>
+      <section
+        className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
+        style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
+      >
+        <audio
+          src="/assets/sounds/typing.wav"
+          ref={typingAudioRef}
+          loop
+        ></audio>
 
-      {/* header la input de them thanh vien  */}
-      {isNewChat ? (
-        <div className="container flex items-center justify-between h-[10%] border-b-2 border-black gap-4">
-          <div>To: </div>
-          {choosenUsers.map((user) => (
-            <Badge
-              variant={"outline"}
-              className="bg-blue-200 font-semibold text-blue-400"
-            >
-              <span>{user.fullname}</span>
-
-              <Button
-                variant={"no_style"}
-                size={"no_style"}
-                className="hover:bg-gray-200 hover:opacity-50 cursor-pointer p-1 rounded-full"
-                onClick={() =>
-                  setChoosenUsers((prev: IUser[]) =>
-                    prev.filter((myUser) => myUser.id != user.id)
-                  )
-                }
+        {/* header la input de them thanh vien  */}
+        {isNewChat ? (
+          <div className="container flex items-center justify-between h-[10%] border-b-2 border-black gap-4">
+            <div>To: </div>
+            {choosenUsers.map((user) => (
+              <Badge
+                variant={"outline"}
+                className="bg-blue-200 font-semibold text-blue-400"
               >
-                <X></X>
-              </Button>
-            </Badge>
-          ))}
+                <span>{user.fullname}</span>
 
-          <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
-            <Input
-              className="border-0"
-              {...register("search")}
-              onFocus={() => setContactListOpen(true)}
-              autoComplete="false"
-            ></Input>
+                <Button
+                  variant={"no_style"}
+                  size={"no_style"}
+                  className="hover:bg-gray-200 hover:opacity-50 cursor-pointer p-1 rounded-full"
+                  onClick={() =>
+                    setChoosenUsers((prev: IUser[]) =>
+                      prev.filter((myUser) => myUser.id != user.id)
+                    )
+                  }
+                >
+                  <X></X>
+                </Button>
+              </Badge>
+            ))}
 
             <div
-              hidden={
-                !isContactListOpen ||
-                choosenUsers.length == contactConnection?.edges.length
-              }
-              className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 z-20"
-              onMouseEnter={(e) => e.stopPropagation()}
-              onMouseLeave={(e) => e.stopPropagation()}
+              className="relative flex-1"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="font-semibold mb-2">Your contacts</div>
+              <Input
+                className="border-0"
+                {...register("search")}
+                onFocus={() => setContactListOpen(true)}
+                autoComplete="false"
+              ></Input>
 
-              {isContactsLoading ? (
-                <Loading></Loading>
-              ) : (
-                contactConnection?.edges.map((edge) => {
-                  const contact = edge.node.users.filter(
-                    (user) => user.id != userId
-                  )[0];
+              <div
+                hidden={
+                  !isContactListOpen ||
+                  choosenUsers.length == contactConnection?.edges.length
+                }
+                className="absolute top-8 left-0 max-h-[20rem] overflow-y-auto w-[30%] shadow-2xl bg-white rounded-md py-2 px-2 z-20"
+                onMouseEnter={(e) => e.stopPropagation()}
+                onMouseLeave={(e) => e.stopPropagation()}
+              >
+                <div className="font-semibold mb-2">Your contacts</div>
 
-                  if (choosenUsers.find((user) => user.id == contact.id))
-                    return <></>;
+                {isContactsLoading ? (
+                  <Loading></Loading>
+                ) : (
+                  contactConnection?.edges.map((edge) => {
+                    const contact = edge.node.users.filter(
+                      (user) => user.id != userId
+                    )[0];
 
-                  return (
-                    <div
-                      className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
-                      onClick={() => {
-                        const newUsers = [...choosenUsers, contact];
-                        setChoosenUsers(newUsers);
-                      }}
-                    >
+                    if (choosenUsers.find((user) => user.id == contact.id))
+                      return <></>;
+
+                    return (
                       <div
-                        className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
-                        style={{
-                          backgroundImage: `url(${contact.avatar})`,
+                        className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
+                        onClick={() => {
+                          const newUsers = [...choosenUsers, contact];
+                          setChoosenUsers(newUsers);
                         }}
-                      ></div>
-                      <div>{contact.fullname}</div>
-                    </div>
-                  );
-                })
-              )}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center"
+                          style={{
+                            backgroundImage: `url(${contact.avatar})`,
+                          }}
+                        ></div>
+                        <div>{contact.fullname}</div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        // header mac dinh
-        <ChatHeader
-          chat={myChat}
-          setChatInfoOpen={setChatInfoOpen}
-        ></ChatHeader>
-      )}
+        ) : (
+          // header mac dinh
+          <ChatHeader
+            chat={myChat}
+            setChatInfoOpen={setChatInfoOpen}
+          ></ChatHeader>
+        )}
 
-      <div
-        className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
-        ref={msgsContainerRef}
-        onScroll={() => {
-          const el = msgsContainerRef.current;
-          if (!el) return;
+        <div
+          className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
+          ref={msgsContainerRef}
+          onScroll={() => {
+            const el = msgsContainerRef.current;
+            if (!el) return;
 
-          const isBottom =
-            el.scrollHeight + el.scrollTop <= el.clientHeight + 1;
+            const isBottom =
+              el.scrollHeight + el.scrollTop <= el.clientHeight + 1;
 
-          if (isBottom && !isFetchMore) {
-            handleLoadMoreMessages({});
-          }
-        }}
-      >
-        {/* <Button
+            if (isBottom && !isFetchMore) {
+              handleLoadMoreMessages({});
+            }
+          }}
+        >
+          {/* <Button
           className="fixed rounded-full cursor-pointer opacity-50 left-[50%] translate-x-[-50%]"
           variant={"outline"}
           onClick={() => {
@@ -455,135 +471,124 @@ const ChatDetails = ({
           <ArrowDown></ArrowDown>
         </Button> */}
 
-        {/* typing user UI */}
-        {typingUsers && typingUsers?.length > 0 && (
-          <div className="flex justify-baseline items-center px-2 py-2 gap-4">
-            <div
-              className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
-              style={{ backgroundImage: `url(${typingUsers[0].avatar})` }}
-            ></div>
-            <TypingIndicator dotColor="bg-gray-400"></TypingIndicator>
-          </div>
+          {/* typing user UI */}
+          {typingUsers && typingUsers?.length > 0 && (
+            <div className="flex justify-baseline items-center px-2 py-2 gap-4">
+              <div
+                className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
+                style={{ backgroundImage: `url(${typingUsers[0].avatar})` }}
+              ></div>
+              <TypingIndicator dotColor="bg-gray-400"></TypingIndicator>
+            </div>
+          )}
+
+          {/* UI Doan chat mac dinh  */}
+          {!isNewChat &&
+            (myChat == undefined
+              ? ""
+              : fetchMap.chat && fetchMap.msg
+              ? messages!.map((msg, index) => {
+                  return (
+                    <GroupMsg
+                      key={msg.timeString}
+                      isFirstGroup={index == 0}
+                      messages={msg.messages}
+                      timeString={msg.timeString}
+                    ></GroupMsg>
+                  );
+                })
+              : [1, 2, 3, 4, 5].map((index) => (
+                  <div
+                    key={index}
+                    className="space-y-2 flex flex-col items-end my-2"
+                  >
+                    <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
+                    <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
+                  </div>
+                )))}
+
+          {/* UI doan chat khi tao chat moi  */}
+          {isNewChat &&
+            (choosenUsers.length == 0
+              ? ""
+              : myChat == undefined
+              ? ""
+              : myChat && messages && !isMsgLoading
+              ? messages.map((msg, index) => {
+                  return (
+                    <GroupMsg
+                      key={msg.timeString}
+                      isFirstGroup={index == 0}
+                      messages={msg.messages}
+                      timeString={msg.timeString}
+                    ></GroupMsg>
+                  );
+                })
+              : [1, 2, 3, 4, 5].map((index) => (
+                  <div
+                    key={index}
+                    className="space-y-2 flex flex-col items-end my-2"
+                  >
+                    <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
+                    <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
+                  </div>
+                )))}
+
+          {/* Hieu ung loading khi fetch them tin nhan moi  */}
+          {isFetchMore && (
+            <div className="flex justify-center items-center py-6">
+              <div className="loader"></div>
+            </div>
+          )}
+        </div>
+
+        {/* Thanh nhap tin nhan  */}
+        {choosenUsers.length > 0 || !isNewChat ? (
+          <ChatInput
+            form={msgForm}
+            chat={myChat}
+            isReplyMsgOpen={isReplyMsgOpen}
+            setReplyMsgOpen={setReplyMsgOpen}
+            choosenUsers={choosenUsers}
+            setMessage={(msg: IMessage) => {
+              setMessages((prev) => {
+                const time = new Date(msg.createdAt!);
+                const last = prev ? prev[0] : undefined;
+
+                if (
+                  prev &&
+                  last &&
+                  getTimeDiff({
+                    firstTime: new Date(last.timeString),
+                    secondTime: time,
+                    option: TimeTypeOption.MINUTES,
+                  }) < 20
+                ) {
+                  return [
+                    {
+                      messages: [msg, ...last.messages],
+                      timeString: last.timeString,
+                    },
+                    ...prev.slice(1),
+                  ];
+                } else {
+                  return [
+                    ...(prev ?? []),
+                    {
+                      timeString: time.toISOString(),
+                      messages: [msg],
+                    },
+                  ];
+                }
+              });
+            }}
+            setUploadProgress={setUploadProgress}
+          ></ChatInput>
+        ) : (
+          <div className="container h-[10%] flex items-center flex-col py-2"></div>
         )}
-
-        {/* UI Doan chat mac dinh  */}
-        {!isNewChat &&
-          (myChat == undefined
-            ? ""
-            : fetchMap.chat && fetchMap.msg
-            ? messages!.map((msg, index) => {
-                return (
-                  <GroupMsg
-                    userId={userId}
-                    key={msg.timeString}
-                    messages={msg.messages}
-                    timeString={msg.timeString}
-                    usersMap={myChat.usersInfo}
-                    isFirstGroup={index == 0}
-                    handleReplyMsg={handleReplyMsg}
-                    setMediaId={setMediaId}
-                    handleNavigateToReplyMsg={handleNavigateToReplyMsg}
-                    uploadProgress={uploadProgress}
-                  ></GroupMsg>
-                );
-              })
-            : [1, 2, 3, 4, 5].map((index) => (
-                <div
-                  key={index}
-                  className="space-y-2 flex flex-col items-end my-2"
-                >
-                  <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
-                  <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
-                </div>
-              )))}
-
-        {/* UI doan chat khi tao chat moi  */}
-        {isNewChat &&
-          (choosenUsers.length == 0
-            ? ""
-            : myChat == undefined
-            ? ""
-            : myChat && messages && !isMsgLoading
-            ? messages.map((msg, index) => {
-                return (
-                  <GroupMsg
-                    userId={userId}
-                    key={msg.timeString}
-                    messages={msg.messages}
-                    timeString={msg.timeString}
-                    usersMap={myChat.usersInfo}
-                    isFirstGroup={index == 0}
-                    handleReplyMsg={handleReplyMsg}
-                    setMediaId={setMediaId}
-                    handleNavigateToReplyMsg={handleNavigateToReplyMsg}
-                    uploadProgress={uploadProgress}
-                  ></GroupMsg>
-                );
-              })
-            : [1, 2, 3, 4, 5].map((index) => (
-                <div
-                  key={index}
-                  className="space-y-2 flex flex-col items-end my-2"
-                >
-                  <Skeleton className="h-4 w-[240px] bg-black"></Skeleton>
-                  <Skeleton className="h-4 w-[80px] bg-black"></Skeleton>
-                </div>
-              )))}
-
-        {/* Hieu ung loading khi fetch them tin nhan moi  */}
-        {isFetchMore && (
-          <div className="flex justify-center items-center py-6">
-            <div className="loader"></div>
-          </div>
-        )}
-      </div>
-
-      {/* Thanh nhap tin nhan  */}
-      {choosenUsers.length > 0 || !isNewChat ? (
-        <ChatInput
-          form={msgForm}
-          chat={myChat}
-          isReplyMsgOpen={isReplyMsgOpen}
-          setReplyMsgOpen={setReplyMsgOpen}
-          choosenUsers={choosenUsers}
-          setMessage={(msg: IMessage) => {
-            setMessages((prev) => {
-              const time = new Date(msg.createdAt!);
-              const last = prev ? prev[0] : undefined;
-
-              if (
-                prev &&
-                last &&
-                getTimeDiff({
-                  firstTime: new Date(last.timeString),
-                  secondTime: time,
-                  option: TimeTypeOption.MINUTES,
-                }) < 20
-              ) {
-                return [
-                  {
-                    messages: [msg, ...last.messages],
-                    timeString: last.timeString,
-                  },
-                  ...prev.slice(1),
-                ];
-              } else {
-                return [
-                  ...(prev ?? []),
-                  {
-                    timeString: time.toISOString(),
-                    messages: [msg],
-                  },
-                ];
-              }
-            });
-          }}
-          setUploadProgress={setUploadProgress}
-        ></ChatInput>
-      ) : (
-        <div className="container h-[10%] flex items-center flex-col py-2"></div>
-      )}
-    </section>
+      </section>
+    </ChatProvider>
   );
 };
 

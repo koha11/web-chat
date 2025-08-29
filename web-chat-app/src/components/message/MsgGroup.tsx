@@ -8,31 +8,19 @@ import {
 } from "../../utils/messageTime.helper";
 import SingleMsg from "./SingleMsg";
 import { useNavigate } from "react-router-dom";
+import { useChatContext } from "@/hooks/useChatContext";
 
 const GroupMsg = ({
-  userId,
   messages,
   timeString,
-  usersMap,
   isFirstGroup,
-  handleReplyMsg,
-  setMediaId,
-  handleNavigateToReplyMsg,
-  uploadProgress,
 }: {
-  userId: string;
   messages: IMessage[];
   timeString: string;
-  usersMap: { [userId: string]: IChatUsersInfo };
   isFirstGroup: boolean;
-  handleReplyMsg: (msg: IMessage) => void;
-  setMediaId: (msgId: string) => void;
-  handleNavigateToReplyMsg: (
-    e: React.MouseEvent,
-    msgId: string
-  ) => Promise<void>;
-  uploadProgress: { [uploadId: string]: number };
 }) => {
+  const { userId, usersMap } = useChatContext();
+
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0 ||
     messages.filter(
@@ -83,17 +71,11 @@ const GroupMsg = ({
             <SingleMsg
               key={msg.id}
               msg={msg}
-              isSentMsg={msg.user == userId}
-              userId={userId}
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
-              seenList={seenList}
-              usersMap={usersMap}
-              handleReplyMsg={handleReplyMsg}
-              setMediaId={setMediaId}
-              handleNavigateToReplyMsg={handleNavigateToReplyMsg}
-              uploadProgress={uploadProgress}
+              isSentMsg={userId == msg.user}
+              seenList={Object.keys(msg.seenList)}
             ></SingleMsg>
           );
         })}

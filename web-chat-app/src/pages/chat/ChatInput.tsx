@@ -42,6 +42,7 @@ import { useApolloClient } from "@apollo/client";
 import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
 import { size } from "zod";
 import { updateMsgCache } from "@/utils/updateCache.helper";
+import UserType from "@/enums/UserType.enum";
 
 const ChatInput = ({
   chat,
@@ -365,26 +366,33 @@ const ChatInput = ({
           }
         })}
       >
-        {/* External blue plus (left) */}
-        <Label
-          htmlFor="uploaded-image"
-          className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
-          title="Add"
-        >
-          <Plus size={16}></Plus>
-        </Label>
+        {chat &&
+          !(chat.users as IUser[]).some(
+            (user) => user.userType == UserType.CHATBOT
+          ) && (
+            <>
+              {/* External blue plus (left) */}
+              <Label
+                htmlFor="uploaded-image"
+                className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
+                title="Add"
+              >
+                <Plus size={16}></Plus>
+              </Label>
 
-        <Button
-          className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
-          variant={"outline"}
-          type="button"
-          onClick={() => {
-            setAudioRecording(true);
-            startRecording();
-          }}
-        >
-          <Mic size={16}></Mic>
-        </Button>
+              <Button
+                className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
+                variant={"outline"}
+                type="button"
+                onClick={() => {
+                  setAudioRecording(true);
+                  startRecording();
+                }}
+              >
+                <Mic size={16}></Mic>
+              </Button>
+            </>
+          )}
 
         {/* AUDIO or TEXT COMPOSER BUBBLE */}
         {isAudioRecording ? (

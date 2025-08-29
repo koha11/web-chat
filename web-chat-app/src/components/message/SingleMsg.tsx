@@ -19,37 +19,32 @@ import SystemMsg from "./SystemMsg";
 import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressSpinnerSquare from "../ui/progress-spinner-square";
+import { useChatContext } from "@/hooks/useChatContext";
 
 const SingleMsg = ({
   isLongGap,
   isSentMsg,
   msgSenderAvatar,
   msg,
-  userId,
   isFirstMsg,
   seenList,
-  handleReplyMsg,
-  usersMap,
-  setMediaId,
-  handleNavigateToReplyMsg,
-  uploadProgress,
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
   isLongGap: boolean;
-  userId: string;
   msg: IMessage;
   isFirstMsg: boolean;
   seenList: string[];
-  usersMap: { [userId: string]: IChatUsersInfo };
-  handleReplyMsg: (msg: IMessage) => void;
-  setMediaId: (msgId: string) => void;
-  handleNavigateToReplyMsg: (
-    e: React.MouseEvent,
-    msgId: string
-  ) => Promise<void>;
-  uploadProgress: { [uploadId: string]: number };
 }) => {
+  const {
+    userId,
+    usersMap,
+    handleReplyMsg,
+    handleNavigateToReplyMsg,
+    setMediaId,
+    uploadProgress,
+  } = useChatContext();
+  
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
