@@ -45,14 +45,12 @@ import UserType from "@/enums/UserType.enum";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const ChatInput = ({
-  chat,
   isReplyMsgOpen,
   setReplyMsgOpen,
   form: { watch, register, setValue, resetField, handleSubmit },
   setMessage,
   choosenUsers,
 }: {
-  chat?: IChat;
   isReplyMsgOpen: boolean;
   setReplyMsgOpen: (open: boolean) => void;
   form: UseFormReturn<{
@@ -62,7 +60,7 @@ const ChatInput = ({
   setMessage: (msg: IMessage) => void;
   choosenUsers: IUser[];
 }) => {
-  const { setUploadProgress, userId } = useChatDetailContext();
+  const { setUploadProgress, userId, chat } = useChatDetailContext();
   const client = useApolloClient();
   const navigate = useNavigate();
 

@@ -62,10 +62,15 @@ const LastMsgBody = ({
       case MessageType.SYSTEM:
         const systemLog = lastMsg.systemLog!;
         const targetName = systemLog.targetUserId
-          ? systemLog.targetUserId == userId
-            ? "you"
-            : chat.usersInfo[systemLog.targetUserId].fullname.split(" ")[0]
-          : "";
+          ? systemLog.targetUserId
+              .split(",")
+              .map((id) =>
+                chat.usersInfo[id]
+                  ? chat.usersInfo[id].fullname.split(" ")[0]
+                  : "undefined user"
+              )
+              .join(",")
+          : ""; // targetUserId co the o dang id1,id2,id3,...
 
         if (systemLog.type == "add") {
           content = name + " add " + targetName + " into the group";
