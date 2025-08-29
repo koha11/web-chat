@@ -15,7 +15,7 @@ export default function VoiceMsgBody({
   className = "",
   barsPerSecond = 8, // density: bars per second of audio
   minBars = 12,
-  maxBars = 80,
+  maxBars = 60,
 }: {
   src?: string;
   file?: File;

@@ -377,6 +377,7 @@ const ChatInput = ({
         <Button
           className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
           variant={"outline"}
+          type="button"
           onClick={() => {
             setAudioRecording(true);
             startRecording();

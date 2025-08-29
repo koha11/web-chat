@@ -76,6 +76,7 @@ const ChatDetails = ({
     [uploadId: string]: number;
   }>({});
 
+  // hooks
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
 
@@ -105,7 +106,9 @@ const ChatDetails = ({
 
   const { register } = useForm<{ search: string }>();
 
+  // Ref
   const msgsContainerRef = useRef<HTMLDivElement>(null);
+  const typingAudioRef = useRef<HTMLAudioElement>(null);
 
   // useEffect
 
@@ -202,6 +205,9 @@ const ChatDetails = ({
             typingUser: IUser;
             isTyping: boolean;
           };
+
+          if (messageTyping.isTyping) typingAudioRef.current?.play();
+          else typingAudioRef.current?.pause();
 
           setTypingUsers((old) => {
             if (messageTyping.isTyping)
@@ -336,6 +342,8 @@ const ChatDetails = ({
       className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
+      <audio src="/assets/sounds/typing.wav" ref={typingAudioRef} loop></audio>
+
       {/* header la input de them thanh vien  */}
       {isNewChat ? (
         <div className="container flex items-center justify-between h-[10%] border-b-2 border-black gap-4">
