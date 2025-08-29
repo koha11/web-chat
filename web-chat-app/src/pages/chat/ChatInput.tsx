@@ -40,6 +40,7 @@ import MyEmojiPicker from "@/components/ui/my-emoji-picker";
 import { useApolloClient } from "@apollo/client";
 import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
 import { size } from "zod";
+import { updateMsgCache } from "@/utils/updateCache.helper";
 
 const ChatInput = ({
   chat,
@@ -214,8 +215,9 @@ const ChatInput = ({
           .subscribe({ query: UPLOAD_PROGRESS_SUB, variables: { uploadId } })
           .subscribe({
             next: ({ data }) => {
-              const { pct, phase, url, publicId, error } = data.uploadProgress;
-              console.log(pct, phase);
+              const { pct, phase, url, publicId, error, addedMsg } =
+                data.uploadProgress;
+
               setUploadProgress((old: { [uploadId: string]: number }) => {
                 return {
                   ...old,
@@ -224,6 +226,12 @@ const ChatInput = ({
               });
 
               if (phase === "DONE") {
+                updateMsgCache({
+                  cache: client.cache,
+                  option: "ADD",
+                  newMsg: addedMsg.node,
+                });
+
                 sub.unsubscribe();
                 // persist url/publicId to your message, etc.
               }

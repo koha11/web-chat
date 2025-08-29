@@ -47,6 +47,7 @@ export const messageTypeDefs = gql`
     url: String
     publicId: String
     error: String
+    addedMsg: MessageEdge
   }
 
   extend type Query {

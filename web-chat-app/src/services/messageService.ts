@@ -336,6 +336,35 @@ export const UPLOAD_PROGRESS_SUB = gql`
       url
       publicId
       error
+      addedMsg {
+        node {
+          id
+          user
+          msgBody
+          status
+          chat
+          replyForMsg {
+            id
+            user
+            msgBody
+            status
+            seenList
+            createdAt
+          }
+          seenList
+          createdAt
+          isHiddenFor
+          unsentAt
+          editedAt
+          endedCallAt
+          isForwarded
+          type
+          file
+          systemLog
+          reactions
+        }
+        cursor
+      }
     }
   }
 `;

@@ -37,6 +37,7 @@ export type PubsubEvents = {
       id: string;
       phase: "STARTED" | "UPLOADING" | "DONE" | "ERROR";
       pct: number;
+      addedMsg: Edge<IMessage>;
       url?: string;
       publicId?: string;
       error?: string;

@@ -243,15 +243,6 @@ export const messageResolvers: IResolvers = {
             folder: `chats/${chatId}/${type}`,
             type,
             prog,
-            handleUploadDone: () => {
-              pubsub.publish(SocketEvent.uploadProgress, {
-                uploadProgress: {
-                  uploadId,
-                  phase: "DONE",
-                  pct: 100,
-                },
-              });
-            },
           });
 
           const createdMsg = await Message.create({
@@ -289,6 +280,18 @@ export const messageResolvers: IResolvers = {
           pubsub.publish(SocketEvent.chatChanged, {
             chatChanged,
           } as PubsubEvents[SocketEvent.chatChanged]);
+
+          pubsub.publish(SocketEvent.uploadProgress, {
+            uploadProgress: {
+              id: uploadId,
+              phase: "DONE",
+              pct: 100,
+              addedMsg: {
+                node: message,
+                cursor: message.id,
+              },
+            },
+          } as PubsubEvents[SocketEvent.uploadProgress]);
         })();
       }
 
