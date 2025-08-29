@@ -17,7 +17,7 @@ export const uploadMedia = async ({
   folder: string;
   filename_override?: string;
   type?: MessageType;
-  prog: ProgressStream;
+  prog?: ProgressStream;
 }): Promise<UploadApiResponse> => {
   const { createReadStream } = file;
 
@@ -36,6 +36,7 @@ export const uploadMedia = async ({
       }
     );
 
-    createReadStream().pipe(prog).pipe(cldStream);
+    if (prog) createReadStream().pipe(prog).pipe(cldStream);
+    else createReadStream().pipe(cldStream);
   });
 };

@@ -246,6 +246,7 @@ export const chatResolvers: IResolvers = {
       const { secure_url } = await uploadMedia({
         file: chatAvatarFile,
         folder: `chats/${chatId}/avatar`,
+        
       });
 
       const chat = await Chat.findById(chatId).populate("users");

@@ -1,6 +1,12 @@
 import ContactRelationship from "../../enums/ContactRelationship.enum.js";
+import MessageType from "../../enums/MessageType.enum.js";
+import SocketEvent from "../../enums/SocketEvent.enum.js";
 import IMyContext from "../../interfaces/socket/myContext.interface.js";
+import { PubsubEvents } from "../../interfaces/socket/pubsubEvents.js";
+import Chat from "../../models/Chat.model.js";
 import Contact from "../../models/Contact.model.js";
+import Message from "../../models/Message.model.js";
+import chatService from "../../services/ChatService.js";
 import contactService from "../../services/ContactService.js";
 import { IResolvers } from "@graphql-tools/utils";
 
@@ -45,7 +51,7 @@ export const contactResolvers: IResolvers = {
     handleRequest: async (
       _p: any,
       { userId, isAccepted },
-      { user }: IMyContext
+      { user, pubsub }: IMyContext
     ) => {
       const contact = await Contact.findOne({
         users: { $all: [userId, user.id], $size: 2 },
@@ -60,6 +66,29 @@ export const contactResolvers: IResolvers = {
       // khoi tao relationsMap
       contact.relationships.set(userId, relationship);
       contact.relationships.set(user.id.toString(), relationship);
+
+      if (isAccepted && !contact.chatId) {
+        // tao doan chat neu chua ton tai
+        const chat = await chatService.createChat(
+          [userId, user.id],
+          user.id.toString()
+        );
+
+        // tao 1 system msg de thong bao j do
+        const msg = await Message.create({
+          chat: chat.id,
+          type: MessageType.SYSTEM,
+          user: user.id,
+          systemLog: {
+            type: "newChat",
+          },
+        });
+
+        // publish chat changed subscription
+        pubsub.publish(SocketEvent.chatChanged, {
+          chatChanged: chat,
+        } as PubsubEvents[SocketEvent.chatChanged]);
+      }
 
       await contact.save();
 

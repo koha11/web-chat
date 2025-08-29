@@ -69,7 +69,8 @@ const ChatRow = ({
             {isLastMsgLoading ? (
               <Skeleton className="w-[200px] h-4"></Skeleton>
             ) : (
-              lastMsg && (
+              lastMsg &&
+              lastMsg.systemLog?.type != "newChat" && (
                 <>
                   <LastMsgBody
                     chat={chat}
@@ -97,6 +98,7 @@ const ChatRow = ({
           lastMsg &&
           lastMsg.user == userId &&
           lastMsg.status == MessageStatus.SEEN &&
+          lastMsg.type != MessageType.SYSTEM &&
           users &&
           Object.keys(lastMsg.seenList).map((receiverId) => {
             const receiver = users.find(

@@ -94,6 +94,12 @@ const SystemMsg = ({
           }`}
         </div>
       );
+    case "newChat":
+      return (
+        <div className={`text-center text-[0.75rem] text-gray-500`}>
+          {`You are now connected. Let's begin the conversation.`}
+        </div>
+      );
   }
 };
 

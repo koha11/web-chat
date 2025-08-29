@@ -26,6 +26,7 @@ export interface IMessage {
       | "remove"
       | "create"
       | "appoint"
+      | "newChat"
       | "reaction";
     targetUserId?: string;
     value?: string;
