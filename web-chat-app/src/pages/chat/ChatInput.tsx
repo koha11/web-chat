@@ -30,6 +30,7 @@ import {
   Image,
   FileTextIcon,
   Plus,
+  Microchip,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -194,7 +195,7 @@ const ChatInput = ({
           replyForMsg,
           isForwarded,
           files: fileArr,
-          filesInfo: [fileBlobUrls[0].size],
+          filesInfo: [fileBlobUrls[0] ? fileBlobUrls[0].size : 5000],
         },
       });
 
@@ -372,6 +373,17 @@ const ChatInput = ({
         >
           <Plus size={16}></Plus>
         </Label>
+
+        <Button
+          className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
+          variant={"outline"}
+          onClick={() => {
+            setAudioRecording(true);
+            startRecording();
+          }}
+        >
+          <Mic size={16}></Mic>
+        </Button>
 
         {/* AUDIO or TEXT COMPOSER BUBBLE */}
         {isAudioRecording ? (

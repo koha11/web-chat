@@ -11,6 +11,7 @@ import { FileText, Mic, Video } from "lucide-react";
 import ReactPlayer from "react-player";
 import MarkdownMessage from "./MarkdownMessage";
 import ProgressSpinnerSquare from "../ui/progress-spinner-square";
+import VoiceMsgBody from "./VoiceMsgBody";
 
 const MsgBody = ({
   msg,
@@ -34,21 +35,22 @@ const MsgBody = ({
       className: "max-w-[30%]",
       id: msg.id,
     });
-    
+
   switch (msg.type) {
     case MessageType.AUDIO:
-      return MyTooltip({
-        hover: (
-          <audio
-            src={msg.file?.url}
-            className={`rounded-3xl object-contain`}
-            controls
-          ></audio>
-        ),
-        content: getDisplaySendMsgTime(msg.createdAt!),
-        className: "max-w-[70%]",
-        id: msg.id,
-      });
+      return <VoiceMsgBody src={msg.file?.url}></VoiceMsgBody>;
+    // return MyTooltip({
+    //   hover: (
+    //     <audio
+    //       src={msg.file?.url}
+    //       className={`rounded-3xl object-contain`}
+    //       controls
+    //     ></audio>
+    //   ),
+    //   content: getDisplaySendMsgTime(msg.createdAt!),
+    //   className: "max-w-[70%]",
+    //   id: msg.id,
+    // });
     case MessageType.FILE:
       return MyTooltip({
         hover: (
