@@ -525,7 +525,7 @@ const ChatInput = ({
               </div>
             )}
 
-            {/* Input row (transparent inside dark bubble) */}
+            {/* Input row  */}
             <div className="relative flex items-center gap-2 mt-1">
               <Input
                 {...register("msg.msgBody")}
@@ -561,21 +561,20 @@ const ChatInput = ({
               >
                 <Smile></Smile>
               </Button>
-
-              <MyEmojiPicker
-                onEmojiSelect={({ native: emoji, unified }: any) => {
-                  setValue("msg.msgBody", watch("msg.msgBody") + emoji);
-                }}
-                open={isEmojiPickerOpen}
-                style={{
-                  position: "absolute",
-                  top: -410,
-                  right: 40,
-                  zIndex: 20,
-                }}
-                onClick={(e) => e.stopPropagation()}
-              ></MyEmojiPicker>
             </div>
+            <MyEmojiPicker
+              onEmojiSelect={({ native: emoji, unified }: any) => {
+                setValue("msg.msgBody", watch("msg.msgBody") + emoji);
+              }}
+              open={isEmojiPickerOpen}
+              style={{
+                position: "absolute",
+                top: -410,
+                right: 120,
+                zIndex: 400,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            ></MyEmojiPicker>
           </div>
         )}
 
