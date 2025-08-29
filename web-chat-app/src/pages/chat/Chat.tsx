@@ -11,6 +11,7 @@ import ChatMediaViewer from "@/components/chat/ChatMediaViewer";
 import { IUser } from "@/interfaces/user.interface";
 import { IChat } from "@/interfaces/chat.interface";
 import { Edge } from "@/interfaces/modelConnection.interface";
+import UserType from "@/enums/UserType.enum";
 
 const Chat = () => {
   const { id } = useParams();
@@ -94,14 +95,20 @@ const Chat = () => {
           ></ChatDetails>
         )}
 
-        <ChatInfo
-          chat={
-            chats && chats.edges.find((edge: any) => edge.node.id == id)?.node
-          }
-          userId={userId}
-          open={chatInfoOpen}
-          setMediaId={setMediaId}
-        ></ChatInfo>
+        {currChat &&
+          !(currChat.users as IUser[]).some(
+            (user) => user.userType == UserType.CHATBOT
+          ) && (
+            <ChatInfo
+              chat={
+                chats &&
+                chats.edges.find((edge: any) => edge.node.id == id)?.node
+              }
+              userId={userId}
+              open={chatInfoOpen}
+              setMediaId={setMediaId}
+            ></ChatInfo>
+          )}
       </div>
 
       {/* Ongoing call  */}

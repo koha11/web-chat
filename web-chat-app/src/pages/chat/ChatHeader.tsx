@@ -8,16 +8,11 @@ import { getDisplayTimeDiff } from "@/utils/messageTime.helper";
 import { Phone, Video, MoreHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
-const ChatHeader = ({
-  chat,
-  setChatInfoOpen,
-}: {
-  chat: IChat | undefined;
-  setChatInfoOpen: Function;
-}) => {
+const ChatHeader = ({ setChatInfoOpen }: { setChatInfoOpen: Function }) => {
   // params / states
-  const userId = Cookies.get("userId");
+  const { chat, userId } = useChatDetailContext();
   const [lastLogined, setLastLogined] = useState<string>("");
 
   // mutations
@@ -93,26 +88,32 @@ const ChatHeader = ({
           </div>
         )}
       </div>
-      <div className="text-2xl flex items-center gap-4 ">
-        <Button
-          className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-          onClick={async () => await handleMakeCall(false)}
-        >
-          <Phone></Phone>
-        </Button>
-        <Button
-          className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-          onClick={async () => await handleMakeCall(true)}
-        >
-          <Video></Video>
-        </Button>
-        <Button
-          className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-          onClick={() => setChatInfoOpen()}
-        >
-          <MoreHorizontal></MoreHorizontal>
-        </Button>
-      </div>
+
+      {chat &&
+        !(chat.users as IUser[]).some(
+          (user) => user.userType == UserType.CHATBOT
+        ) && (
+          <div className="text-2xl flex items-center gap-4 ">
+            <Button
+              className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+              onClick={async () => await handleMakeCall(false)}
+            >
+              <Phone></Phone>
+            </Button>
+            <Button
+              className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+              onClick={async () => await handleMakeCall(true)}
+            >
+              <Video></Video>
+            </Button>
+            <Button
+              className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+              onClick={() => setChatInfoOpen()}
+            >
+              <MoreHorizontal></MoreHorizontal>
+            </Button>
+          </div>
+        )}
     </div>
   );
 };

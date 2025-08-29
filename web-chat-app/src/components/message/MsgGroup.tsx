@@ -8,7 +8,7 @@ import {
 } from "../../utils/messageTime.helper";
 import SingleMsg from "./SingleMsg";
 import { useNavigate } from "react-router-dom";
-import { useChatContext } from "@/hooks/useChatContext";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const GroupMsg = ({
   messages,
@@ -19,7 +19,7 @@ const GroupMsg = ({
   timeString: string;
   isFirstGroup: boolean;
 }) => {
-  const { userId, usersMap } = useChatContext();
+  const { userId, usersMap } = useChatDetailContext();
 
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0 ||
@@ -74,8 +74,6 @@ const GroupMsg = ({
               isLongGap={isLongGap}
               msgSenderAvatar={msgSenderAvatar}
               isFirstMsg={isFirstGroup && index == 0}
-              isSentMsg={userId == msg.user}
-              seenList={Object.keys(msg.seenList)}
             ></SingleMsg>
           );
         })}

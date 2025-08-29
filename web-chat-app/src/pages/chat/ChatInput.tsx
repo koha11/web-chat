@@ -40,9 +40,9 @@ import MessageStatus from "@/enums/MessageStatus.enum";
 import MyEmojiPicker from "@/components/ui/my-emoji-picker";
 import { useApolloClient } from "@apollo/client";
 import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
-import { size } from "zod";
 import { updateMsgCache } from "@/utils/updateCache.helper";
 import UserType from "@/enums/UserType.enum";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const ChatInput = ({
   chat,
@@ -51,7 +51,6 @@ const ChatInput = ({
   form: { watch, register, setValue, resetField, handleSubmit },
   setMessage,
   choosenUsers,
-  setUploadProgress,
 }: {
   chat?: IChat;
   isReplyMsgOpen: boolean;
@@ -62,9 +61,8 @@ const ChatInput = ({
   }>;
   setMessage: (msg: IMessage) => void;
   choosenUsers: IUser[];
-  setUploadProgress: Function;
 }) => {
-  const userId = Cookies.get("userId")!;
+  const { setUploadProgress, userId } = useChatDetailContext();
   const client = useApolloClient();
   const navigate = useNavigate();
 

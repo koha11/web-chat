@@ -19,22 +19,18 @@ import SystemMsg from "./SystemMsg";
 import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressSpinnerSquare from "../ui/progress-spinner-square";
-import { useChatContext } from "@/hooks/useChatContext";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const SingleMsg = ({
   isLongGap,
-  isSentMsg,
   msgSenderAvatar,
   msg,
   isFirstMsg,
-  seenList,
 }: {
-  isSentMsg: boolean;
   msgSenderAvatar: string;
   isLongGap: boolean;
   msg: IMessage;
   isFirstMsg: boolean;
-  seenList: string[];
 }) => {
   const {
     userId,
@@ -43,13 +39,15 @@ const SingleMsg = ({
     handleNavigateToReplyMsg,
     setMediaId,
     uploadProgress,
-  } = useChatContext();
-  
+  } = useChatDetailContext();
+
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isReactionDialogOpen, setReactionDialogOpen] = useState(false);
 
   const [postMessage] = usePostMessage({});
+
+  const isSentMsg = userId == msg.user;
 
   const currUser = usersMap[msg.user];
 
@@ -62,6 +60,7 @@ const SingleMsg = ({
       ? "yourself"
       : usersMap[replyMsgUserId].nickname.split(" ")[0]
     : "";
+
   const name = isSentMsg ? "you" : currUser.nickname.split(" ")[0];
 
   return (
@@ -249,7 +248,7 @@ const SingleMsg = ({
               </span>
             )) ||
               (msg.status == MessageStatus.SEEN &&
-                seenList.map((userId) =>
+                Object.keys(msg.seenList).map((userId) =>
                   MyTooltip({
                     hover: (
                       <div
@@ -275,7 +274,6 @@ const SingleMsg = ({
           reactions={msg.reactions}
           isOpen={isReactionDialogOpen}
           setOpen={setReactionDialogOpen}
-          usersMap={usersMap}
         ></ReactionMsgDialog>
       )}
     </div>

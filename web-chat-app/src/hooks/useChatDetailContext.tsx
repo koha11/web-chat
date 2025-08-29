@@ -5,7 +5,7 @@ import type { IMessage } from "@/interfaces/messages/message.interface";
 type UploadProgressMap = Record<string, number>;
 type UsersMap = Record<string, IChatUsersInfo>;
 
-export type ChatCtx = {
+export type ChatDetailCtx = {
   userId: string;
   usersMap: UsersMap;
   handleReplyMsg: (msg: IMessage) => void;
@@ -20,9 +20,9 @@ export type ChatCtx = {
   chatId: string;
 };
 
-const ChatContext = createContext<ChatCtx | undefined>(undefined);
+const ChatDetailContext = createContext<ChatDetailCtx | undefined>(undefined);
 
-type ChatProviderProps = React.PropsWithChildren<{
+type ChatDetailProviderProps = React.PropsWithChildren<{
   userId: string;
   usersMap: UsersMap;
   handleReplyMsg: (msg: IMessage) => void;
@@ -37,7 +37,7 @@ type ChatProviderProps = React.PropsWithChildren<{
   chatId: string;
 }>;
 
-export function ChatProvider({
+export function ChatDetailProvider({
   children,
   userId,
   usersMap,
@@ -48,8 +48,8 @@ export function ChatProvider({
   setUploadProgress,
   chat,
   chatId,
-}: ChatProviderProps) {
-  const value = useMemo<ChatCtx>(
+}: ChatDetailProviderProps) {
+  const value = useMemo<ChatDetailCtx>(
     () => ({
       userId,
       usersMap,
@@ -74,12 +74,18 @@ export function ChatProvider({
     ]
   );
 
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+  return (
+    <ChatDetailContext.Provider value={value}>
+      {children}
+    </ChatDetailContext.Provider>
+  );
 }
 
-export function useChatContext(): ChatCtx {
-  const ctx = useContext(ChatContext);
+export function useChatDetailContext(): ChatDetailCtx {
+  const ctx = useContext(ChatDetailContext);
   if (!ctx)
-    throw new Error("useChatContext must be used within <ChatProvider>");
+    throw new Error(
+      "useChatDetailContext must be used within <ChatDetailProvider>"
+    );
   return ctx;
 }

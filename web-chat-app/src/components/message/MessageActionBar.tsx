@@ -18,6 +18,7 @@ import {
   useUnsendMessage,
 } from "../../hooks/message.hook";
 import MyEmojiPicker from "../ui/my-emoji-picker";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const MessageActions = ({
   isOpen,
@@ -25,18 +26,18 @@ const MessageActions = ({
   isSentMsg,
   msgId,
   isUnsendMsg,
-  handleReplyMsg,
   handleSendMsg,
+  handleReplyMsg,
 }: {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
   isSentMsg: boolean;
   msgId: string;
   isUnsendMsg: boolean;
-  handleReplyMsg: () => void;
   handleSendMsg: (chatId: string) => void;
+  handleReplyMsg: () => void;
 }) => {
-  const { id } = useParams();
+  const { chatId } = useChatDetailContext();
 
   const [unsendMessage] = useUnsendMessage();
   const [removeMessage] = useRemoveMessage();
@@ -57,10 +58,10 @@ const MessageActions = ({
   // Handlers
   const handleUnsentOrRemoveMsg = ({ isUnsend }: { isUnsend: boolean }) => {
     if (isUnsend) {
-      unsendMessage({ variables: { chatId: id, msgId } });
+      unsendMessage({ variables: { chatId, msgId } });
       toast.success("Unsend successful");
     } else {
-      removeMessage({ variables: { chatId: id, msgId } });
+      removeMessage({ variables: { chatId, msgId } });
       toast.success("Remove successful");
     }
 
@@ -181,7 +182,7 @@ const MessageActions = ({
         isOpen={isConfirmDialogOpen}
         setOpen={() => setConfirmDialogOpen(!isConfirmDialogOpen)}
         onSubmit={() => {
-          removeMessage({ variables: { chatId: id, msgId } });
+          removeMessage({ variables: { chatId, msgId } });
           toast.success("Remove successful");
           setConfirmDialogOpen(false);
         }}

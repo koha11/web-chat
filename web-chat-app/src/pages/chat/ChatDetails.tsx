@@ -11,7 +11,6 @@ import {
   MESSAGE_ADDED_SUB,
   MESSAGE_CHANGED_SUB,
   MESSAGE_TYPING_SUB,
-  UPLOAD_PROGRESS_SUB,
 } from "../../services/messageService";
 import { IMessage } from "../../interfaces/messages/message.interface";
 import IModelConnection, {
@@ -28,9 +27,9 @@ import { arraysEqualUnordered } from "@/utils/array.helper";
 import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useApolloClient } from "@apollo/client";
-import { ChatProvider } from "@/hooks/useChatContext";
+import { useParams } from "react-router-dom";
+import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
+import UserType from "@/enums/UserType.enum";
 
 const ChatDetails = ({
   chat,
@@ -61,9 +60,7 @@ const ChatDetails = ({
   setFetchMap: Function;
 }) => {
   const userId = Cookies.get("userId")!;
-  const client = useApolloClient();
-  const navigate = useNavigate();
-  const { hash } = useLocation();
+  const { id } = useParams();
 
   // states
   const [messages, setMessages] = useState<IMessageGroup[]>();
@@ -339,13 +336,16 @@ const ChatDetails = ({
   };
 
   return (
-    <ChatProvider
+    <ChatDetailProvider
       userId={userId}
       usersMap={myChat ? myChat.usersInfo : {}}
       handleReplyMsg={handleReplyMsg}
       setMediaId={setMediaId}
       handleNavigateToReplyMsg={handleNavigateToReplyMsg}
       uploadProgress={uploadProgress}
+      setUploadProgress={setUploadProgress}
+      chat={myChat}
+      chatId={id!}
     >
       <section
         className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
@@ -441,8 +441,7 @@ const ChatDetails = ({
         ) : (
           // header mac dinh
           <ChatHeader
-            chat={myChat}
-            setChatInfoOpen={setChatInfoOpen}
+            setChatInfoOpen={setChatInfoOpen}           
           ></ChatHeader>
         )}
 
@@ -546,7 +545,6 @@ const ChatDetails = ({
         {choosenUsers.length > 0 || !isNewChat ? (
           <ChatInput
             form={msgForm}
-            chat={myChat}
             isReplyMsgOpen={isReplyMsgOpen}
             setReplyMsgOpen={setReplyMsgOpen}
             choosenUsers={choosenUsers}
@@ -582,13 +580,12 @@ const ChatDetails = ({
                 }
               });
             }}
-            setUploadProgress={setUploadProgress}
           ></ChatInput>
         ) : (
           <div className="container h-[10%] flex items-center flex-col py-2"></div>
         )}
       </section>
-    </ChatProvider>
+    </ChatDetailProvider>
   );
 };
 
