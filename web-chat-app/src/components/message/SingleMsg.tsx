@@ -18,6 +18,7 @@ import MessageType from "@/enums/MessageType.enum";
 import SystemMsg from "./SystemMsg";
 import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { Link, useNavigate } from "react-router-dom";
+import ProgressSpinnerSquare from "../ui/progress-spinner-square";
 
 const SingleMsg = ({
   isLongGap,
@@ -31,6 +32,7 @@ const SingleMsg = ({
   usersMap,
   setMediaId,
   handleNavigateToReplyMsg,
+  uploadProgress,
 }: {
   isSentMsg: boolean;
   msgSenderAvatar: string;
@@ -46,6 +48,7 @@ const SingleMsg = ({
     e: React.MouseEvent,
     msgId: string
   ) => Promise<void>;
+  uploadProgress: { [uploadId: string]: number };
 }) => {
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -117,6 +120,22 @@ const SingleMsg = ({
           usersMap={usersMap}
           key={msg.id}
         ></SystemMsg>
+      ) : msg.type == MessageType.FILE && !msg.file ? (
+        // loading file
+        <div className={`relative flex items-center gap-2 z-10 justify-end`}>
+          {MyTooltip({
+            hover: (
+              <ProgressSpinnerSquare
+                progress={uploadProgress[msg.id] ?? 0}
+                className=""
+                size={192}
+              ></ProgressSpinnerSquare>
+            ),
+            content: getDisplaySendMsgTime(msg.createdAt!),
+            className: "",
+            id: msg.id,
+          })}
+        </div>
       ) : (
         <div
           className={`relative flex items-center gap-2 z-10 ${
@@ -217,41 +236,43 @@ const SingleMsg = ({
       )}
 
       {/* Hien thi trang thai cua tin nhan */}
-      <div className="flex items-center justify-end">
-        {msg.type != MessageType.SYSTEM &&
-          isSentMsg &&
-          isFirstMsg &&
-          ((msg.status == MessageStatus.SENT && (
-            <span className="text-[0.7rem] mr-1 italic text-gray-600">
-              Sent{" "}
-              {getTimeDiff({
-                firstTime: new Date(),
-                secondTime: msg.createdAt!,
-                option: TimeTypeOption.MINUTES,
-              }) == 0
-                ? ""
-                : getDisplayTimeDiff(msg.createdAt!) + " ago"}
-            </span>
-          )) ||
-            (msg.status == MessageStatus.SEEN &&
-              seenList.map((userId) =>
-                MyTooltip({
-                  hover: (
-                    <div
-                      className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
-                      style={{
-                        backgroundImage: `url(${usersMap[userId].avatar})`,
-                      }}
-                    ></div>
-                  ),
-                  content:
-                    usersMap[userId].fullname +
-                    "seen at " +
-                    getDisplaySendMsgTime(new Date(msg.seenList[userId])),
-                  id: msg.id + "-" + userId,
-                })
-              )))}
-      </div>
+      {!(msg.type == MessageType.FILE && !msg.file) && (
+        <div className="flex items-center justify-end">
+          {msg.type != MessageType.SYSTEM &&
+            isSentMsg &&
+            isFirstMsg &&
+            ((msg.status == MessageStatus.SENT && (
+              <span className="text-[0.7rem] mr-1 italic text-gray-600">
+                Sent{" "}
+                {getTimeDiff({
+                  firstTime: new Date(),
+                  secondTime: msg.createdAt!,
+                  option: TimeTypeOption.MINUTES,
+                }) == 0
+                  ? ""
+                  : getDisplayTimeDiff(msg.createdAt!) + " ago"}
+              </span>
+            )) ||
+              (msg.status == MessageStatus.SEEN &&
+                seenList.map((userId) =>
+                  MyTooltip({
+                    hover: (
+                      <div
+                        className="w-4 h-4 rounded-full bg-contain bg-no-repeat bg-center"
+                        style={{
+                          backgroundImage: `url(${usersMap[userId].avatar})`,
+                        }}
+                      ></div>
+                    ),
+                    content:
+                      usersMap[userId].fullname +
+                      "seen at " +
+                      getDisplaySendMsgTime(new Date(msg.seenList[userId])),
+                    id: msg.id + "-" + userId,
+                  })
+                )))}
+        </div>
+      )}
 
       {/* hien thi reaction dialog  */}
       {msg.reactions && (

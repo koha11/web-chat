@@ -10,6 +10,7 @@ import {
 import { FileText, Mic, Video } from "lucide-react";
 import ReactPlayer from "react-player";
 import MarkdownMessage from "./MarkdownMessage";
+import ProgressSpinnerSquare from "../ui/progress-spinner-square";
 
 const MsgBody = ({
   msg,
@@ -20,6 +21,20 @@ const MsgBody = ({
   isSentMsg: boolean;
   setMediaId: (msgId: string) => void;
 }) => {
+  if (msg.type == MessageType.FILE && !msg.file)
+    return MyTooltip({
+      hover: (
+        <ProgressSpinnerSquare
+          progress={50}
+          className=""
+          size={192}
+        ></ProgressSpinnerSquare>
+      ),
+      content: getDisplaySendMsgTime(msg.createdAt!),
+      className: "max-w-[30%]",
+      id: msg.id,
+    });
+    
   switch (msg.type) {
     case MessageType.AUDIO:
       return MyTooltip({

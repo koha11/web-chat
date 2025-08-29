@@ -18,6 +18,7 @@ const GroupMsg = ({
   handleReplyMsg,
   setMediaId,
   handleNavigateToReplyMsg,
+  uploadProgress,
 }: {
   userId: string;
   messages: IMessage[];
@@ -30,6 +31,7 @@ const GroupMsg = ({
     e: React.MouseEvent,
     msgId: string
   ) => Promise<void>;
+  uploadProgress: { [uploadId: string]: number };
 }) => {
   const isGroupMsgHidden =
     messages.filter((msg) => !msg.isHiddenFor?.includes(userId)).length == 0 ||
@@ -38,7 +40,7 @@ const GroupMsg = ({
     ).length == 0;
 
   if (isGroupMsgHidden) return;
-  
+
   return (
     <div className="msg-group py-2" key={timeString}>
       <div className="msg-time text-center text-gray-400 text-[0.75rem]">
@@ -91,6 +93,7 @@ const GroupMsg = ({
               handleReplyMsg={handleReplyMsg}
               setMediaId={setMediaId}
               handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+              uploadProgress={uploadProgress}
             ></SingleMsg>
           );
         })}

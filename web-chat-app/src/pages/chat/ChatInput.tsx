@@ -46,8 +46,9 @@ const ChatInput = ({
   isReplyMsgOpen,
   setReplyMsgOpen,
   form: { watch, register, setValue, resetField, handleSubmit },
-  setMessages,
+  setMessage,
   choosenUsers,
+  setUploadProgress,
 }: {
   chat?: IChat;
   isReplyMsgOpen: boolean;
@@ -56,8 +57,9 @@ const ChatInput = ({
     msg: IMessage;
     files?: FileList;
   }>;
-  setMessages: (msg: IMessage) => void;
+  setMessage: (msg: IMessage) => void;
   choosenUsers: IUser[];
+  setUploadProgress: Function;
 }) => {
   const userId = Cookies.get("userId")!;
   const client = useApolloClient();
@@ -196,30 +198,47 @@ const ChatInput = ({
       });
 
       const uploadIds = data.postMediaMessage;
-      const uploadId = uploadIds[0];
 
-      const sub = client
-        .subscribe({ query: UPLOAD_PROGRESS_SUB, variables: { uploadId } })
-        .subscribe({
-          next: ({ data }) => {
-            const { pct, phase, url, publicId, error } = data.uploadProgress;
-            console.log(pct);
-
-            if (phase === "DONE") {
-              sub.unsubscribe();
-              // persist url/publicId to your message, etc.
-            }
-
-            if (phase === "ERROR") {
-              sub.unsubscribe();
-              // handle error
-            }
-          },
-          error: (e) => {
-            // subscription transport error
-            console.log(e);
-          },
+      for (let uploadId of uploadIds) {
+        setMessage({
+          createdAt: new Date(),
+          chat: chatId!,
+          id: uploadId,
+          type: MessageType.FILE,
+          status: MessageStatus.SENT,
+          user: userId!,
+          seenList: {},
         });
+
+        const sub = client
+          .subscribe({ query: UPLOAD_PROGRESS_SUB, variables: { uploadId } })
+          .subscribe({
+            next: ({ data }) => {
+              const { pct, phase, url, publicId, error } = data.uploadProgress;
+              console.log(pct, phase);
+              setUploadProgress((old: { [uploadId: string]: number }) => {
+                return {
+                  ...old,
+                  [uploadId]: pct,
+                };
+              });
+
+              if (phase === "DONE") {
+                sub.unsubscribe();
+                // persist url/publicId to your message, etc.
+              }
+
+              if (phase === "ERROR") {
+                sub.unsubscribe();
+                // handle error
+              }
+            },
+            error: (e) => {
+              // subscription transport error
+              console.log(e);
+            },
+          });
+      }
     }
 
     if (msgBody)
@@ -287,7 +306,6 @@ const ChatInput = ({
         autoComplete="off"
         ref={formRef}
         onSubmit={handleSubmit(async ({ msg, files }) => {
-          console.log("submit");
           if (files?.length) {
             for (let file of files) if (file.size > 10_000_000) return;
           }
@@ -312,15 +330,16 @@ const ChatInput = ({
               chatId = newChat.postChat.id;
             }
 
-            setMessages({
-              ...msg,
-              createdAt: new Date(),
-              chat: chatId!,
-              id: msg.msgBody!,
-              type: MessageType.TEXT,
-              user: userId!,
-              seenList: {},
-            });
+            if (!files || files.length == 0)
+              setMessage({
+                ...msg,
+                createdAt: new Date(),
+                chat: chatId!,
+                id: msg.msgBody!,
+                type: MessageType.TEXT,
+                user: userId!,
+                seenList: {},
+              });
 
             const data = {
               msgBody: msg.msgBody,
@@ -564,7 +583,7 @@ const ChatInput = ({
             variant={"secondary"}
             onClick={async () => {
               if (chat && !isSendingMsg) {
-                setMessages({
+                setMessage({
                   createdAt: new Date(),
                   chat: chat.id,
                   id: chat.chatEmoji,

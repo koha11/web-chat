@@ -72,6 +72,9 @@ const ChatDetails = ({
 
   const [isContactListOpen, setContactListOpen] = useState(true);
   const [myChat, setMyChat] = useState<IChat | undefined>(chat);
+  const [uploadProgress, setUploadProgress] = useState<{
+    [uploadId: string]: number;
+  }>({});
 
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
@@ -472,6 +475,7 @@ const ChatDetails = ({
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}
                     handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+                    uploadProgress={uploadProgress}
                   ></GroupMsg>
                 );
               })
@@ -504,6 +508,7 @@ const ChatDetails = ({
                     handleReplyMsg={handleReplyMsg}
                     setMediaId={setMediaId}
                     handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+                    uploadProgress={uploadProgress}
                   ></GroupMsg>
                 );
               })
@@ -533,7 +538,7 @@ const ChatDetails = ({
           isReplyMsgOpen={isReplyMsgOpen}
           setReplyMsgOpen={setReplyMsgOpen}
           choosenUsers={choosenUsers}
-          setMessages={(msg: IMessage) => {
+          setMessage={(msg: IMessage) => {
             setMessages((prev) => {
               const time = new Date(msg.createdAt!);
               const last = prev ? prev[0] : undefined;
@@ -565,6 +570,7 @@ const ChatDetails = ({
               }
             });
           }}
+          setUploadProgress={setUploadProgress}
         ></ChatInput>
       ) : (
         <div className="container h-[10%] flex items-center flex-col py-2"></div>
