@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IChat, IChatUsersInfo } from "../interfaces/chat.interface.js";
 import IModelConnection from "../interfaces/modelConnection.interface.js";
 import Chat from "../models/Chat.model.js";
@@ -24,10 +25,33 @@ class ChatService {
       filter._id = { $lt: toObjectId(after) };
     }
 
-    if (chatName) {
+    if (chatName && chatName.trim()) {
       const escapeRegExp = (s: string) =>
         s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      filter.chatName = { $regex: escapeRegExp(chatName), $options: "i" };
+      const rx = new RegExp(escapeRegExp(chatName), "i");
+
+      // 1) find user ids whose displayName matches
+      const matchedUserIds: Types.ObjectId[] = await User.find(
+        { fullname: rx }, // change to your field: name/username/displayName
+        { _id: 1 }
+      )
+        .lean()
+        .then((rows) =>
+          rows
+            .filter((row) => !row._id.equals(toObjectId(userId)))
+            .map((r) => r._id as Types.ObjectId)
+        );
+
+      console.log(matchedUserIds);
+
+      // 2) fallback logic
+      filter.$or = [
+        // chatName is non-empty -> match by chatName
+        { $and: [{ chatName: { $ne: "" } }, { chatName: rx }] },
+
+        // chatName is empty -> match by any participant name
+        { $and: [{ chatName: "" }, { users: { $in: matchedUserIds } }] },
+      ];
     }
 
     const docs = await Chat.find(filter)
