@@ -24,11 +24,14 @@ const Mainlayout = () => {
     chatId: string;
   } | null>(null);
 
+  const [chatSearch, setChatSearch] = useState("");
+
   const {
     data: chats,
     loading: isChatsLoading,
     subscribeToMore,
-  } = useGetChats({ userId });
+    refetch: chatRefetch,
+  } = useGetChats({ userId, chatName: chatSearch });
 
   const {
     data: lastMessges,
@@ -127,6 +130,8 @@ const Mainlayout = () => {
         setUpdatedChatMap,
         ongoingCall,
         setOngoingCall,
+        chatSearch,
+        setChatSearch,
       }}
     ></Outlet>
   );

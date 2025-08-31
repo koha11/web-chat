@@ -167,7 +167,7 @@ const ChatInput = ({
         "click",
         () => isEmojiPickerOpen && setEmojiPickerOpen(false)
       );
-  }, []);
+  });
 
   // Handlers
   const handleSendMessage = async ({

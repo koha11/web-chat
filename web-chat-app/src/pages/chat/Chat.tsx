@@ -29,6 +29,8 @@ const Chat = () => {
     setUpdatedChatMap,
     ongoingCall,
     setOngoingCall,
+    chatSearch,
+    setChatSearch,
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
@@ -75,6 +77,8 @@ const Chat = () => {
           userId={userId!}
           isNewChat={isNewChat}
           choosenUsers={choosenUsers}
+          chatSearch={chatSearch}
+          setChatSearch={setChatSearch}
         ></ChatList>
 
         {id == undefined && !isNewChat ? (
@@ -100,10 +104,7 @@ const Chat = () => {
             (user) => user.userType == UserType.CHATBOT
           ) && (
             <ChatInfo
-              chat={
-                chats &&
-                chats.edges.find((edge: any) => edge.node.id == id)?.node
-              }
+              chat={currChat}
               userId={userId}
               open={chatInfoOpen}
               setMediaId={setMediaId}

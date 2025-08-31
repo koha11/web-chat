@@ -16,11 +16,16 @@ import { IUser } from "../../interfaces/user.interface.js";
 
 export const chatResolvers: IResolvers = {
   Query: {
-    chats: async (_p: any, { first, after }, { user }: IMyContext) => {
+    chats: async (
+      _p: any,
+      { first, after, chatName },
+      { user }: IMyContext
+    ) => {
       const result = await chatService.getChatList({
         userId: user.id.toString(),
         after,
         first,
+        chatName,
       });
 
       return result;
@@ -246,7 +251,6 @@ export const chatResolvers: IResolvers = {
       const { secure_url } = await uploadMedia({
         file: chatAvatarFile,
         folder: `chats/${chatId}/avatar`,
-        
       });
 
       const chat = await Chat.findById(chatId).populate("users");

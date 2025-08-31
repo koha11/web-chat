@@ -10,16 +10,24 @@ class ChatService {
     userId,
     first = 10,
     after,
+    chatName,
   }: {
     userId: string;
     sort?: any;
     first?: number;
     after?: string;
+    chatName?: string;
   }): Promise<IModelConnection<IChat>> => {
     const filter = { users: userId } as any;
 
     if (after) {
       filter._id = { $lt: toObjectId(after) };
+    }
+
+    if (chatName) {
+      const escapeRegExp = (s: string) =>
+        s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.chatName = { $regex: escapeRegExp(chatName), $options: "i" };
     }
 
     const docs = await Chat.find(filter)

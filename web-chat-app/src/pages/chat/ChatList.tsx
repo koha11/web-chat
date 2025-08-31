@@ -12,7 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { IChat } from "../../interfaces/chat.interface";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatRow from "../../components/chat/ChatRow";
 import { Skeleton } from "../../components/ui/skeleton";
 import { IMessage } from "../../interfaces/messages/message.interface";
@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { IUser } from "@/interfaces/user.interface";
 import { strimText } from "@/utils/text.helper";
 import { useGetReceivedConnectRequests } from "@/hooks/user.hook";
+import { useApolloClient } from "@apollo/client";
 
 const ChatList = ({
   chatList,
@@ -37,6 +38,8 @@ const ChatList = ({
   isLastMsgLoading,
   isNewChat,
   choosenUsers,
+  chatSearch,
+  setChatSearch,
 }: {
   chatList: IChat[] | undefined;
   userId: string;
@@ -48,8 +51,9 @@ const ChatList = ({
   isLastMsgLoading: boolean;
   isNewChat: boolean;
   choosenUsers: IUser[];
+  setChatSearch: Function;
+  chatSearch: string;
 }) => {
-  const [searchValue, setSearchValue] = useState("");
   const [isOpen, setOpen] = useState(false);
 
   const {
@@ -99,8 +103,8 @@ const ChatList = ({
             <form action="" className="relative w-full">
               <Input
                 type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                value={chatSearch}
+                onChange={(e) => setChatSearch(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
                 placeholder="Search Conversations"
                 onClick={(e) => {

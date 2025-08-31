@@ -24,15 +24,19 @@ import { useState, useRef, useEffect } from "react";
 import { pusher } from "@/pusher";
 
 export const useGetChats = ({
-  userId,
   after,
   first = 10,
+  userId,
+  chatName,
 }: {
   userId: string;
   after?: string;
   first?: number;
+  chatName?: string;
 }): IMyQueryResult<IModelConnection<IChat>> => {
-  const myQuery = useQuery(GET_CHATS, { variables: { userId, after, first } });
+  const myQuery = useQuery(GET_CHATS, {
+    variables: { after, first, chatName },
+  });
 
   if (myQuery.error) throw myQuery.error;
 
