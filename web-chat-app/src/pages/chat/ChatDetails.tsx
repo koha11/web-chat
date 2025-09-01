@@ -29,7 +29,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router-dom";
 import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
-import UserType from "@/enums/UserType.enum";
 
 const ChatDetails = ({
   chat,
@@ -88,6 +87,7 @@ const ChatDetails = ({
     chatId: myChat?.id,
     first: 20,
     after: undefined,
+    // search: "e",
   });
 
   // useForm
@@ -440,9 +440,7 @@ const ChatDetails = ({
           </div>
         ) : (
           // header mac dinh
-          <ChatHeader
-            setChatInfoOpen={setChatInfoOpen}           
-          ></ChatHeader>
+          <ChatHeader setChatInfoOpen={setChatInfoOpen}></ChatHeader>
         )}
 
         <div

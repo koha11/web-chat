@@ -57,6 +57,7 @@ export const messageTypeDefs = gql`
       first: Int = 10
       after: ID
       until: ID
+      search: String
     ): MessageConnection!
 
     lastMessages(userId: ID!): JSONObject

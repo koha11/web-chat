@@ -28,12 +28,13 @@ export const messageResolvers: IResolvers = {
   Query: {
     messages: async (
       _p: any,
-      { chatId, msgId, after, first, until },
+      { chatId, msgId, after, first, until, search },
       { user, pubsub }: IMyContext
     ) => {
       const result = await messageService.getMessages({
         chatId,
         first,
+        search,
         after,
         until,
       });

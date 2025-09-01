@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_MESSAGES = gql`
-  query GetMessages($chatId: ID!, $first: Int, $after: ID) {
-    messages(chatId: $chatId, first: $first, after: $after) {
+  query GetMessages($chatId: ID!, $first: Int, $after: ID, $search: String) {
+    messages(chatId: $chatId, first: $first, after: $after, search: $search) {
       edges {
         node {
           id

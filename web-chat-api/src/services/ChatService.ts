@@ -42,8 +42,6 @@ class ChatService {
             .map((r) => r._id as Types.ObjectId)
         );
 
-      console.log(matchedUserIds);
-
       // 2) fallback logic
       filter.$or = [
         // chatName is non-empty -> match by chatName

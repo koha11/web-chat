@@ -11,6 +11,7 @@ class MessageService {
     after,
     until,
     filter,
+    search,
   }: {
     chatId: string;
     sort?: any;
@@ -18,12 +19,20 @@ class MessageService {
     after?: string;
     until?: string;
     filter?: any;
+    search?: string;
   }): Promise<IModelConnection<IMessage>> => {
     let myFilter = { chat: chatId } as any;
 
     if (after) myFilter._id = { $lt: toObjectId(after) };
 
     if (until) myFilter._id = { ...myFilter._id, $gte: toObjectId(until) };
+
+    if (search) {
+      const escapeRegExp = (s: string) =>
+        s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const rx = new RegExp(escapeRegExp(search), "i");
+      myFilter.msgBody = rx;
+    }
 
     if (filter) myFilter = { ...myFilter, ...filter };
 
