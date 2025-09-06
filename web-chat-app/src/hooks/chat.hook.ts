@@ -95,11 +95,16 @@ export const useGetChats = ({
 export const useGetChat = ({
   chatId,
   userId,
+  skip,
 }: {
   chatId: string;
   userId: string;
+  skip?: boolean;
 }): IMyQueryResult<IChat> => {
-  const myQuery = useQuery(GET_CHAT, { variables: { chatId } });
+  const myQuery = useQuery(GET_CHAT, {
+    variables: { chatId, skip: skip || !chatId },
+    skip,
+  });
 
   if (myQuery.error) throw myQuery.error;
 

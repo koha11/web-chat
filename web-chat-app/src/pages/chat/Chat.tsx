@@ -18,7 +18,6 @@ const Chat = () => {
   const location = useLocation();
   const isNewChat = location.pathname.includes("new");
   const userId = Cookies.get("userId") ?? "";
-  const [currChat, setCurrChat] = useState<IChat>();
 
   const {
     chats,
@@ -34,36 +33,16 @@ const Chat = () => {
   } = useOutletContext<any>();
 
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
-  const [fetchMap, setFetchMap] = useState<{ msg: boolean; chat: boolean }>({
-    chat: false,
-    msg: false,
-  });
+  // const [fetchMap, setFetchMap] = useState<{ msg: boolean; chat: boolean }>({
+  //   chat: false,
+  //   msg: false,
+  // });
   const [mediaId, setMediaId] = useState("");
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
 
   useEffect(() => {
     setChoosenUsers([]);
-    setFetchMap({
-      chat: false,
-      msg: false,
-    });
-
-    if (chats)
-      setCurrChat(
-        id == undefined
-          ? undefined
-          : chats.edges.find((edge: Edge<IChat>) => edge.cursor == id).node
-      );
   }, [id]);
-
-  useEffect(() => {
-    if (chats)
-      setCurrChat(
-        id == undefined
-          ? undefined
-          : chats.edges.find((edge: Edge<IChat>) => edge.cursor == id).node
-      );
-  }, [chats]);
 
   return (
     <div className="flex justify-center text-black h-[100vh]">
@@ -85,7 +64,8 @@ const Chat = () => {
           <ChatIndex></ChatIndex>
         ) : (
           <ChatDetails
-            chat={currChat}
+            userId={userId!}
+            chatId={id!}
             hasUpdated={false}
             setUpdatedChatMap={setUpdatedChatMap}
             setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
@@ -94,22 +74,17 @@ const Chat = () => {
             setChoosenUsers={setChoosenUsers}
             chatList={chats && chats.edges.map((edge: any) => edge.node)}
             isNewChat={isNewChat}
-            fetchMap={fetchMap}
-            setFetchMap={setFetchMap}
+            // fetchMap={fetchMap}
+            // setFetchMap={setFetchMap}
           ></ChatDetails>
         )}
 
-        {currChat &&
-          !(currChat.users as IUser[]).some(
-            (user) => user.userType == UserType.CHATBOT
-          ) && (
-            <ChatInfo
-              chat={currChat}
-              userId={userId}
-              open={chatInfoOpen}
-              setMediaId={setMediaId}
-            ></ChatInfo>
-          )}
+        <ChatInfo
+          chatId={id!}
+          userId={userId}
+          open={chatInfoOpen}
+          setMediaId={setMediaId}
+        ></ChatInfo>
       </div>
 
       {/* Ongoing call  */}

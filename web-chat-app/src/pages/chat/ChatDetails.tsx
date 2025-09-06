@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IChat } from "../../interfaces/chat.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { useForm } from "react-hook-form";
@@ -29,9 +29,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router-dom";
 import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
+import { useGetChat } from "@/hooks/chat.hook";
+import { set } from "mongoose";
 
 const ChatDetails = ({
-  chat,
+  chatId,
+  userId,
   hasUpdated,
   setUpdatedChatMap,
   setChatInfoOpen,
@@ -40,10 +43,9 @@ const ChatDetails = ({
   choosenUsers,
   setChoosenUsers,
   isNewChat,
-  fetchMap,
-  setFetchMap,
 }: {
-  chat: IChat | undefined;
+  chatId: string;
+  userId: string;
   hasUpdated: boolean;
   setUpdatedChatMap: Function;
   setChatInfoOpen: Function;
@@ -52,15 +54,7 @@ const ChatDetails = ({
   setChoosenUsers: Function;
   chatList: IChat[];
   isNewChat: boolean;
-  fetchMap: {
-    chat: boolean;
-    msg: boolean;
-  };
-  setFetchMap: Function;
 }) => {
-  const userId = Cookies.get("userId")!;
-  const { id } = useParams();
-
   // states
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
@@ -68,10 +62,16 @@ const ChatDetails = ({
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
 
   const [isContactListOpen, setContactListOpen] = useState(true);
-  const [myChat, setMyChat] = useState<IChat | undefined>(chat);
+  // const [chat, setMyChat] = useState<IChat | undefined>(undefined);
   const [uploadProgress, setUploadProgress] = useState<{
     [uploadId: string]: number;
   }>({});
+  const [fetchMap, setFetchMap] = useState<{ msg: boolean; chat: boolean }>({
+    chat: false,
+    msg: false,
+  });
+  const [isMsgFetching, setIsMsgFetching] = useState(false);
+  const [isChatFetching, setIsChatFetching] = useState(false);
 
   // hooks
   const { data: contactConnection, loading: isContactsLoading } =
@@ -84,10 +84,19 @@ const ChatDetails = ({
     subscribeToMore,
     fetchMore,
   } = useGetMessages({
-    chatId: myChat?.id,
+    chatId,
     first: 20,
     after: undefined,
     // search: "e",
+  });
+
+  const {
+    data: chat,
+    refetch: refetchChat,
+    loading: isChatLoading,
+  } = useGetChat({
+    chatId,
+    userId,
   });
 
   // useForm
@@ -112,6 +121,7 @@ const ChatDetails = ({
 
   // tien xu ly du lieu cho msg va lang nghe cac event socket cua msg
   useEffect(() => {
+    console.log("messagge change", messagesConnection);
     if (messagesConnection) {
       // convert tung single msg thanh 1 group theo time string
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
@@ -140,14 +150,11 @@ const ChatDetails = ({
 
       setMessages(grouped);
       setFetchMore(false);
-      setFetchMap((old: any) => {
-        return { ...old, msg: true };
-      });
 
       // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_CHANGED_SUB,
-        variables: { chatId: myChat?.id },
+        variables: { chatId },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -172,7 +179,7 @@ const ChatDetails = ({
       // lang msg dc gui den
       const unsubscribeMsgAdded = subscribeToMore({
         document: MESSAGE_ADDED_SUB,
-        variables: { chatId: myChat?.id },
+        variables: { chatId },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -195,7 +202,7 @@ const ChatDetails = ({
       // lang nghe hanh vi nhap tin nhan
       const unsubscribeMsgTyping = subscribeToMore({
         document: MESSAGE_TYPING_SUB,
-        variables: { chatId: myChat?.id },
+        variables: { chatId },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data) return prev;
 
@@ -228,29 +235,22 @@ const ChatDetails = ({
 
   // refetch lai msg neu can thiet
   useEffect(() => {
-    setFetchMap((old: any) => {
-      return { ...old, chat: true };
-    });
-
-    if (hasUpdated && myChat) {
+    console.log("chat changed", chat);
+    if (hasUpdated && chat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
-        return { ...old, [myChat.id]: true };
+        return { ...old, [chat.id]: true };
       });
     }
 
     msgsContainerRef.current?.scrollTo(0, 0);
-  }, [myChat]);
-
-  useEffect(() => {
-    setMyChat(chat);
   }, [chat]);
 
   useEffect(() => {
-    if (chatList && !chat) {
+    if (chatList && !chat && isNewChat) {
       const newUserIds = choosenUsers.map((user) => user.id);
 
-      const myChat = chatList.find((chat) => {
+      const filterChat = chatList.find((chat) => {
         const chatUserIds = (chat.users as IUser[])
           .filter((user) => user.id != userId)
           .map((user) => user.id);
@@ -258,13 +258,33 @@ const ChatDetails = ({
         return arraysEqualUnordered(chatUserIds, newUserIds);
       });
 
-      if (myChat) {
-        setMyChat(myChat);
-      } else {
-        setMyChat(undefined);
-      }
+      // if (filterChat) {
+      //   setMyChat(filterChat);
+      // } else {
+      //   setMyChat(undefined);
+      // }
     }
   }, [choosenUsers]);
+
+  useEffect(() => {
+    console.log("both change");
+
+    setIsChatFetching(true);
+    setIsMsgFetching(true);
+    if (chat && messagesConnection) {
+      console.log(
+        messagesConnection.edges.length == 0 ||
+          chat.id == messagesConnection.edges[0].node.chat
+      );
+      if (
+        messagesConnection.edges.length == 0 ||
+        chat.id == messagesConnection.edges[0].node.chat
+      ) {
+        setIsMsgFetching(false);
+        setIsChatFetching(false);
+      }
+    }
+  }, [chat, messagesConnection]);
 
   // useEffect(() => {
   //   if (!hash) return;
@@ -338,14 +358,14 @@ const ChatDetails = ({
   return (
     <ChatDetailProvider
       userId={userId}
-      usersMap={myChat ? myChat.usersInfo : {}}
+      usersMap={chat ? chat.usersInfo : {}}
       handleReplyMsg={handleReplyMsg}
       setMediaId={setMediaId}
       handleNavigateToReplyMsg={handleNavigateToReplyMsg}
       uploadProgress={uploadProgress}
       setUploadProgress={setUploadProgress}
-      chat={myChat}
-      chatId={id!}
+      chat={chat}
+      chatId={chatId}
     >
       <section
         className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
@@ -481,9 +501,9 @@ const ChatDetails = ({
 
           {/* UI Doan chat mac dinh  */}
           {!isNewChat &&
-            (myChat == undefined
+            (chat == undefined
               ? ""
-              : fetchMap.chat && fetchMap.msg
+              : !isMsgFetching && !isChatFetching
               ? messages!.map((msg, index) => {
                   return (
                     <GroupMsg
@@ -508,9 +528,9 @@ const ChatDetails = ({
           {isNewChat &&
             (choosenUsers.length == 0
               ? ""
-              : myChat == undefined
+              : chat == undefined
               ? ""
-              : myChat && messages && !isMsgLoading
+              : chat && messages && !isMsgLoading
               ? messages.map((msg, index) => {
                   return (
                     <GroupMsg

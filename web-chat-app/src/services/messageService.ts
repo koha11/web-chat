@@ -21,6 +21,7 @@ export const GET_MESSAGES = gql`
           systemLog
           systemLog
           reactions
+          chat
           replyForMsg {
             id
             user

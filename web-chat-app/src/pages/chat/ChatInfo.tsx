@@ -9,18 +9,25 @@ import CollapsibleChatMembers from "../../components/chat/CollapsibleChatMembers
 import CollapsibleChatMedia from "../../components/chat/CollapsibleChatMedia";
 import CollapsibleChatPrivacy from "../../components/chat/CollapsibleChatPrivacy";
 import ChatFileDiaglog from "@/components/chat/ChatFileDiaglog";
+import { useGetChat } from "@/hooks/chat.hook";
 
 const ChatInfo = ({
-  chat,
+  chatId,
   userId,
   open,
   setMediaId,
 }: {
-  chat: IChat;
+  chatId: string;
   userId: string;
   open: boolean;
   setMediaId: (msgId: string) => void;
 }) => {
+  const {
+    data: chat,
+    refetch: refetchChat,
+    loading: isChatLoading,
+  } = useGetChat({ chatId, userId });
+
   if (!chat) return <></>;
 
   const receivers = (chat.users as IUser[]).filter((user) => user.id != userId);
