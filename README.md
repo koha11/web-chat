@@ -20,25 +20,6 @@ A real-time web chat application built with modern technologies for seamless com
 
 ## Getting Started
 
-1. **Clone the repository**
-  ```bash
-  git clone https://github.com/yourusername/web-chat-app.git
-  cd web-chat-app
-  ```
-
-2. **Install dependencies**
-  ```bash
-  npm install
-  ```
-
-3. **Configure environment variables**
-  - Create a `.env` file based on `.env.example`.
-
-4. **Run the app**
-  ```bash
-  npm run dev
-  ```
-
 ## License
 
 MIT
