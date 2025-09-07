@@ -38,19 +38,12 @@ const MsgBody = ({
 
   switch (msg.type) {
     case MessageType.AUDIO:
-      return <VoiceMsgBody src={msg.file?.url}></VoiceMsgBody>;
-    // return MyTooltip({
-    //   hover: (
-    //     <audio
-    //       src={msg.file?.url}
-    //       className={`rounded-3xl object-contain`}
-    //       controls
-    //     ></audio>
-    //   ),
-    //   content: getDisplaySendMsgTime(msg.createdAt!),
-    //   className: "max-w-[70%]",
-    //   id: msg.id,
-    // });
+      return (
+        <VoiceMsgBody
+          audioUrl={msg.file!.url}
+          isSentMsg={isSentMsg}
+        ></VoiceMsgBody>
+      );
     case MessageType.FILE:
       return MyTooltip({
         hover: (

@@ -115,7 +115,6 @@ const ChatDetails = ({
 
   // tien xu ly du lieu cho msg va lang nghe cac event socket cua msg
   useEffect(() => {
-    console.log("messagge change", messagesConnection);
     if (messagesConnection) {
       // convert tung single msg thanh 1 group theo time string
       const grouped = messagesConnection.edges.reduce<IMessageGroup[]>(
@@ -229,8 +228,6 @@ const ChatDetails = ({
 
   // refetch lai msg neu can thiet
   useEffect(() => {
-    console.log("chat changed", chat);
-
     if (hasUpdated && chat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
@@ -467,7 +464,9 @@ const ChatDetails = ({
           {!isNewChat &&
             (chat == undefined
               ? ""
-              : (messages && messages.length > 0 && messages[0].messages[0].chat == chat.id)
+              : messages &&
+                messages.length > 0 &&
+                messages[0].messages[0].chat == chat.id
               ? messages!.map((msg, index) => {
                   return (
                     <GroupMsg
