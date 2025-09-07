@@ -20,14 +20,14 @@ import { TypingIndicator } from "../../components/ui/typing-indicator";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Variable, X } from "lucide-react";
 import Cookies from "js-cookie";
 import { useGetContacts } from "@/hooks/contact.hook";
 import { arraysEqualUnordered } from "@/utils/array.helper";
 import Loading from "@/components/ui/loading";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
 import { useGetChat } from "@/hooks/chat.hook";
 import { set } from "mongoose";
@@ -66,16 +66,19 @@ const ChatDetails = ({
   const [uploadProgress, setUploadProgress] = useState<{
     [uploadId: string]: number;
   }>({});
-  const [fetchMap, setFetchMap] = useState<{ msg: boolean; chat: boolean }>({
-    chat: false,
-    msg: false,
-  });
-  const [isMsgFetching, setIsMsgFetching] = useState(false);
-  const [isChatFetching, setIsChatFetching] = useState(false);
 
   // hooks
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
+
+  const {
+    data: chat,
+    refetch: refetchChat,
+    loading: isChatLoading,
+  } = useGetChat({
+    chatId,
+    userId,
+  });
 
   const {
     data: messagesConnection,
@@ -88,15 +91,6 @@ const ChatDetails = ({
     first: 20,
     after: undefined,
     // search: "e",
-  });
-
-  const {
-    data: chat,
-    refetch: refetchChat,
-    loading: isChatLoading,
-  } = useGetChat({
-    chatId,
-    userId,
   });
 
   // useForm
@@ -236,6 +230,7 @@ const ChatDetails = ({
   // refetch lai msg neu can thiet
   useEffect(() => {
     console.log("chat changed", chat);
+
     if (hasUpdated && chat) {
       refetchMessages();
       setUpdatedChatMap((old: any) => {
@@ -265,37 +260,6 @@ const ChatDetails = ({
       // }
     }
   }, [choosenUsers]);
-
-  useEffect(() => {
-    console.log("both change");
-
-    setIsChatFetching(true);
-    setIsMsgFetching(true);
-    if (chat && messagesConnection) {
-      console.log(
-        messagesConnection.edges.length == 0 ||
-          chat.id == messagesConnection.edges[0].node.chat
-      );
-      if (
-        messagesConnection.edges.length == 0 ||
-        chat.id == messagesConnection.edges[0].node.chat
-      ) {
-        setIsMsgFetching(false);
-        setIsChatFetching(false);
-      }
-    }
-  }, [chat, messagesConnection]);
-
-  // useEffect(() => {
-  //   if (!hash) return;
-  //   console.log(hash);
-  //   const container = msgsContainerRef.current;
-
-  //   if (!container) return;
-
-  //   const el = container.querySelector(hash);
-  //   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  // }, [hash]);
 
   useEffect(() => {
     window.onclick = () => setContactListOpen(false);
@@ -503,7 +467,7 @@ const ChatDetails = ({
           {!isNewChat &&
             (chat == undefined
               ? ""
-              : !isMsgFetching && !isChatFetching
+              : (messages && messages.length > 0 && messages[0].messages[0].chat == chat.id)
               ? messages!.map((msg, index) => {
                   return (
                     <GroupMsg
