@@ -50,7 +50,7 @@ const SearchMsg = ({
           value={searchMsg}
           onChange={(e) => setSearchMsg(e.target.value)}
           onKeyDown={async (e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && searchMsg.trim() != "") {
               // Trigger search action
               console.log("Searching for:", searchMsg);
 
@@ -65,11 +65,19 @@ const SearchMsg = ({
             }
           }}
         ></Input>
+        {searchResults && (
+          <div className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-gray-400 rounded-full py-1 px-2 text-[0.75rem] z-10">
+            {searchResults.length} results
+          </div>
+        )}
         {searchMsg && (
           <Button
             variant={"no_style"}
             size={"no_style"}
-            onClick={() => setSearchMsg("")}
+            onClick={() => {
+              setSearchMsg("");
+              setSearchResults(undefined);
+            }}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer hover:bg-gray-200 rounded-full p-1"
           >
             <X></X>
@@ -81,6 +89,10 @@ const SearchMsg = ({
         <div className="text-center text-gray-500 mt-6">
           Press "Enter" to search.
         </div>
+      )}
+
+      {searchResults?.length == 0 && (
+        <div className="text-center text-gray-500 mt-6">No results found</div>
       )}
 
       {searchResults &&
