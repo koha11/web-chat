@@ -36,7 +36,7 @@ export const chatTypeDefs = gql`
 
   extend type Query {
     chats(first: Int = 10, after: ID, chatName: String): ChatConnection!
-    chat(chatId: ID!): Chat
+    chat(chatId: ID, users: [ID]): Chat
   }
 
   extend type Mutation {

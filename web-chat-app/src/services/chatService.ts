@@ -34,8 +34,8 @@ export const GET_CHATS = gql`
 `;
 
 export const GET_CHAT = gql`
-  query GetChat($chatId: ID!) {
-    chat(chatId: $chatId) {
+  query GetChat($chatId: ID, $users: [ID]) {
+    chat(chatId: $chatId, users: $users) {
       id
       chatName
       chatAvatar

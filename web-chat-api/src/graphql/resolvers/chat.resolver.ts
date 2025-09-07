@@ -30,10 +30,27 @@ export const chatResolvers: IResolvers = {
 
       return result;
     },
-    chat: async (_p, { chatId }, {}) => {
-      const chat = await Chat.findById(chatId).populate("users");
+    chat: async (_p, { chatId, users }, { user }: IMyContext) => {
+      if (chatId) {
+        const chat = await Chat.findById(chatId).populate("users");
+        return chat;
+      }
 
-      return chat;
+      if (users && users.length > 0) {
+        const userIds = [
+          ...users.map((userId: string) => toObjectId(userId)),
+          toObjectId(user.id),
+        ];
+
+        const chat = await Chat.findOne({
+          users: { $all: userIds },
+          $expr: { $eq: [{ $size: "$users" }, userIds.length] },
+        }).populate("users");
+
+        return chat;
+      }
+
+      return undefined;
     },
   },
   Mutation: {

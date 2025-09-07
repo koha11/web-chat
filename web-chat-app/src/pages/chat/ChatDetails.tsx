@@ -71,13 +71,14 @@ const ChatDetails = ({
   const { data: contactConnection, loading: isContactsLoading } =
     useGetContacts({});
 
-  const {
-    data: chat,
-    refetch: refetchChat,
-    loading: isChatLoading,
-  } = useGetChat({
+  const { data: chat } = useGetChat({
     chatId,
     userId,
+  });
+
+  const { data: existedChat } = useGetChat({
+    userId,
+    users: choosenUsers.map((user) => user.id),
   });
 
   const {
@@ -87,7 +88,7 @@ const ChatDetails = ({
     subscribeToMore,
     fetchMore,
   } = useGetMessages({
-    chatId,
+    chatId: isNewChat ? existedChat?.id : chatId,
     first: 20,
     after: undefined,
     // search: "e",
@@ -319,7 +320,13 @@ const ChatDetails = ({
   return (
     <ChatDetailProvider
       userId={userId}
-      usersMap={chat ? chat.usersInfo : {}}
+      usersMap={
+        chat
+          ? chat.usersInfo
+          : isNewChat && existedChat
+          ? existedChat.usersInfo
+          : {}
+      }
       handleReplyMsg={handleReplyMsg}
       setMediaId={setMediaId}
       handleNavigateToReplyMsg={handleNavigateToReplyMsg}
@@ -346,6 +353,7 @@ const ChatDetails = ({
               <Badge
                 variant={"outline"}
                 className="bg-blue-200 font-semibold text-blue-400"
+                key={user.id}
               >
                 <span>{user.fullname}</span>
 
@@ -399,6 +407,7 @@ const ChatDetails = ({
 
                     return (
                       <div
+                        key={contact.id}
                         className={`flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer`}
                         onClick={() => {
                           const newUsers = [...choosenUsers, contact];
@@ -491,9 +500,12 @@ const ChatDetails = ({
           {isNewChat &&
             (choosenUsers.length == 0
               ? ""
-              : chat == undefined
+              : existedChat == undefined
               ? ""
-              : chat && messages && !isMsgLoading
+              : existedChat &&
+                messages &&
+                !isMsgLoading &&
+                messages[0].messages[0].chat == existedChat.id
               ? messages.map((msg, index) => {
                   return (
                     <GroupMsg

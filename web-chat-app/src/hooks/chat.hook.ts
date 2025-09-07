@@ -95,15 +95,17 @@ export const useGetChats = ({
 export const useGetChat = ({
   chatId,
   userId,
+  users,
   skip,
 }: {
-  chatId: string;
+  chatId?: string;
   userId: string;
+  users?: string[];
   skip?: boolean;
 }): IMyQueryResult<IChat> => {
   const myQuery = useQuery(GET_CHAT, {
-    variables: { chatId },
-    skip: skip || !chatId,    
+    variables: { chatId, users },
+    skip: skip || (!chatId && !users) || (users && users.length == 0),
   });
 
   if (myQuery.error) throw myQuery.error;
@@ -112,33 +114,35 @@ export const useGetChat = ({
 
   if (myQuery.data) {
     const chat = myQuery.data.chat;
-    const users = chat.users as IUser[];
-    const isGroupChat = chat.users.length > 2;
+    if (chat) {
+      const users = chat.users as IUser[];
+      const isGroupChat = chat.users.length > 2;
 
-    const defaultChatAvatar =
-      users.find((user) => user.id != userId)?.avatar ?? "";
+      const defaultChatAvatar =
+        users.find((user) => user.id != userId)?.avatar ?? "";
 
-    const defaultChatName =
-      chat.usersInfo[users.find((user) => user.id != userId)!.id].nickname;
+      const defaultChatName =
+        chat.usersInfo[users.find((user) => user.id != userId)!.id].nickname;
 
-    const defaultGroupChatName = users.reduce<String>((acc, user) => {
-      if (user.id == userId) return acc;
+      const defaultGroupChatName = users.reduce<String>((acc, user) => {
+        if (user.id == userId) return acc;
 
-      return acc == ""
-        ? acc + chat.usersInfo[user.id].nickname.split(" ")[0]
-        : acc + ", " + chat.usersInfo[user.id].nickname.split(" ")[0];
-    }, "");
+        return acc == ""
+          ? acc + chat.usersInfo[user.id].nickname.split(" ")[0]
+          : acc + ", " + chat.usersInfo[user.id].nickname.split(" ")[0];
+      }, "");
 
-    data = {
-      ...chat,
-      chatAvatar: chat.chatAvatar == "" ? defaultChatAvatar : chat.chatAvatar,
-      chatName:
-        chat.chatName == ""
-          ? isGroupChat
-            ? defaultGroupChatName
-            : defaultChatName
-          : chat.chatName,
-    };
+      data = {
+        ...chat,
+        chatAvatar: chat.chatAvatar == "" ? defaultChatAvatar : chat.chatAvatar,
+        chatName:
+          chat.chatName == ""
+            ? isGroupChat
+              ? defaultGroupChatName
+              : defaultChatName
+            : chat.chatName,
+      };
+    }
   }
 
   return {
