@@ -20,15 +20,17 @@ export const useGetMessages = ({
   after,
   first,
   search,
+  skip,
 }: {
   chatId?: string;
   first?: number;
   after?: string;
   search?: string;
+  skip?: boolean;
 }): IMyQueryResult<IModelConnection<IMessage>> => {
   const myQuery = useQuery(GET_MESSAGES, {
     variables: { chatId, first, after, search },
-    skip: !chatId,  
+    skip: !chatId || skip,
   });
 
   return {
