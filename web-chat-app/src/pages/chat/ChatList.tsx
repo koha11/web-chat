@@ -51,10 +51,21 @@ const ChatList = ({
   isLastMsgLoading: boolean;
   isNewChat: boolean;
   choosenUsers: IUser[];
-  setChatSearch: Function;
+  setChatSearch: (value: string) => void;
   chatSearch: string;
 }) => {
   const [isOpen, setOpen] = useState(false);
+
+  const [draft, setDraft] = useState(chatSearch);
+
+  // keep draft in sync if the external value changes
+  useEffect(() => setDraft(chatSearch), [chatSearch]);
+
+  // push to parent state after user pauses typing
+  useEffect(() => {
+    const t = setTimeout(() => setChatSearch(draft), 300);
+    return () => clearTimeout(t);
+  }, [draft, setChatSearch]);
 
   const {
     data: receivedConnectRequests,
@@ -103,8 +114,8 @@ const ChatList = ({
             <form action="" className="relative w-full">
               <Input
                 type="text"
-                value={chatSearch}
-                onChange={(e) => setChatSearch(e.target.value)}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
                 placeholder="Search Conversations"
                 onClick={(e) => {
