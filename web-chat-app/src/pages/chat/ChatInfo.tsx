@@ -18,11 +18,13 @@ const ChatInfo = ({
   userId,
   open,
   setMediaId,
+  setNavigatedReplyMsg
 }: {
   chatId: string;
   userId: string;
   open: boolean;
   setMediaId: (msgId: string) => void;
+  setNavigatedReplyMsg: (msgId: string) => void;
 }) => {
   const {
     data: chat,
@@ -97,6 +99,7 @@ const ChatInfo = ({
           setSearchingMsg={setSearchingMsg}
           chatId={chat.id}
           usersInfo={chat.usersInfo}
+          setNavigatedReplyMsg={setNavigatedReplyMsg}
         ></SearchMsg>
       )}
     </section>

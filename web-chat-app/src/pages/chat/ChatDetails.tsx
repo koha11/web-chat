@@ -39,10 +39,11 @@ const ChatDetails = ({
   setUpdatedChatMap,
   setChatInfoOpen,
   setMediaId,
-  chatList,
   choosenUsers,
   setChoosenUsers,
   isNewChat,
+  navigatedReplyMsg,
+  setNavigatedReplyMsg,
 }: {
   chatId: string;
   userId: string;
@@ -52,8 +53,9 @@ const ChatDetails = ({
   setMediaId: (msgId: string) => void;
   choosenUsers: IUser[];
   setChoosenUsers: Function;
-  chatList: IChat[];
   isNewChat: boolean;
+  navigatedReplyMsg: string;
+  setNavigatedReplyMsg: (msgId: string) => void;
 }) => {
   // states
   const [messages, setMessages] = useState<IMessageGroup[]>();
@@ -61,7 +63,6 @@ const ChatDetails = ({
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
   const [isContactListOpen, setContactListOpen] = useState(true);
-  const [navigatedReplyMsg, setNavigatedReplyMsg] = useState("");
   const [uploadProgress, setUploadProgress] = useState<{
     [uploadId: string]: number;
   }>({});
@@ -239,12 +240,16 @@ const ChatDetails = ({
     msgsContainerRef.current?.scrollTo(0, 0);
   }, [chatId]);
 
+  // useEffect(() => {
+  //   if (navigatedReplyMsg != "") {
+  //     scrollToMsg(navigatedReplyMsg);
+  //     setNavigatedReplyMsg("");
+  //   }
+  // }, [messages]);
+
   useEffect(() => {
-    if (navigatedReplyMsg != "") {
-      scrollToMsg(navigatedReplyMsg);
-      setNavigatedReplyMsg("");
-    }
-  }, [messages]);
+    if (navigatedReplyMsg != "") scrollToMsg(navigatedReplyMsg);
+  }, [navigatedReplyMsg, messages]);
 
   useEffect(() => {
     window.onclick = () => setContactListOpen(false);
@@ -259,8 +264,6 @@ const ChatDetails = ({
   const handleLoadMoreMessages = async ({ until }: { until?: string }) => {
     if (messagesConnection?.pageInfo.hasNextPage) {
       setFetchMore(true);
-
-      if (until) setNavigatedReplyMsg(until);
 
       await fetchMore({
         variables: {
@@ -304,17 +307,20 @@ const ChatDetails = ({
       .flat();
 
     if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
-    else scrollToMsg(msgId);
+
+    setNavigatedReplyMsg(msgId);
   };
 
   const scrollToMsg = (msgId: string) => {
     if (msgId != "") {
+      let isScrolled = false;
+
       const singleMsgs =
         msgsContainerRef.current?.querySelectorAll(".single-msg");
 
       singleMsgs?.forEach((msgEl) => {
         if (msgEl.id == msgId) {
-          console.log(msgEl);
+          isScrolled = true;
 
           msgEl.scrollIntoView({
             behavior: "smooth",
@@ -323,6 +329,8 @@ const ChatDetails = ({
           });
         }
       });
+
+      if (isScrolled) setNavigatedReplyMsg("");
     }
   };
 

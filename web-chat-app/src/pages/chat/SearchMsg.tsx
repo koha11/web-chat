@@ -13,10 +13,12 @@ const SearchMsg = ({
   setSearchingMsg,
   chatId,
   usersInfo,
+  setNavigatedReplyMsg,
 }: {
   setSearchingMsg: (value: boolean) => void;
   chatId: string;
   usersInfo: { [userId: string]: IChatUsersInfo };
+  setNavigatedReplyMsg: (msgId: string) => void;
 }) => {
   const client = useApolloClient();
 
@@ -51,9 +53,6 @@ const SearchMsg = ({
           onChange={(e) => setSearchMsg(e.target.value)}
           onKeyDown={async (e) => {
             if (e.key === "Enter" && searchMsg.trim() != "") {
-              // Trigger search action
-              console.log("Searching for:", searchMsg);
-
               const { data } = await client.query({
                 query: GET_MESSAGES,
                 variables: { chatId, search: searchMsg, first: 20 },
@@ -100,6 +99,9 @@ const SearchMsg = ({
           <div
             key={msg.id}
             className="flex gap-2 items-center hover:bg-gray-100  p-2 rounded-xl cursor-pointer"
+            onClick={() => {
+              setNavigatedReplyMsg(msg.id);
+            }}
           >
             <div
               className={`w-12 h-12 rounded-full bg-contain bg-no-repeat bg-center`}

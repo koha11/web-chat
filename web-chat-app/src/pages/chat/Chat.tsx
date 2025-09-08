@@ -35,9 +35,11 @@ const Chat = () => {
   const [chatInfoOpen, setChatInfoOpen] = useState(false);
   const [mediaId, setMediaId] = useState("");
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>([]);
+  const [navigatedReplyMsg, setNavigatedReplyMsg] = useState("");
 
   useEffect(() => {
     setChoosenUsers([]);
+    setChatInfoOpen(false);
   }, [id]);
 
   return (
@@ -68,8 +70,9 @@ const Chat = () => {
             setMediaId={setMediaId}
             choosenUsers={choosenUsers}
             setChoosenUsers={setChoosenUsers}
-            chatList={chats && chats.edges.map((edge: any) => edge.node)}
             isNewChat={isNewChat}
+            navigatedReplyMsg={navigatedReplyMsg}
+            setNavigatedReplyMsg={setNavigatedReplyMsg}
           ></ChatDetails>
         )}
 
@@ -78,6 +81,7 @@ const Chat = () => {
           userId={userId}
           open={chatInfoOpen}
           setMediaId={setMediaId}
+          setNavigatedReplyMsg={setNavigatedReplyMsg}
         ></ChatInfo>
       </div>
 
