@@ -20,6 +20,7 @@ import { IChatUsersInfo } from "@/interfaces/chat.interface";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressSpinnerSquare from "../ui/progress-spinner-square";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
+import ReplyMsg from "./ReplyMsg";
 
 const SingleMsg = ({
   isLongGap,
@@ -70,26 +71,14 @@ const SingleMsg = ({
     >
       {/* Hien thi noi dung tin nhan duoc phan hoi  */}
       {replyMsg && (
-        <div
-          className={`flex flex-col mt-2 text-[0.8rem] relative ${
-            isSentMsg ? "items-end" : "items-baseline"
-          }`}
-        >
-          <div className={`flex gap-2 mb-7 capitalize`}>
-            <Reply size={"14"}></Reply> {name} replied to {targetName}
-          </div>
-          <a
-            className={`bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-2 rounded-2xl absolute cursor-pointer ${
-              isSentMsg ? "top-5 right-0" : "top-5 left-10"
-            }`}
-            href={`#${replyMsg.id}`}
-            onClick={async (e) =>
-              await handleNavigateToReplyMsg(e, replyMsg.id)
-            }
-          >
-            {(msg.replyForMsg as IMessage).msgBody}
-          </a>
-        </div>
+        <ReplyMsg
+          key={"reply-" + replyMsg.id}
+          replyMsg={replyMsg}
+          handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+          isSentMsg={isSentMsg}
+          name={name}
+          targetName={targetName}
+        />
       )}
 
       {/* Hien thi dau hieu tin nhan nay duoc chuyen tiep  */}

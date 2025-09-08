@@ -19,7 +19,6 @@ export const GET_MESSAGES = gql`
           type
           file
           systemLog
-          systemLog
           reactions
           chat
           replyForMsg {
@@ -27,6 +26,8 @@ export const GET_MESSAGES = gql`
             user
             msgBody
             status
+            type
+            file
             seenList
             createdAt
           }

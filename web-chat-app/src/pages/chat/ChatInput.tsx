@@ -43,7 +43,7 @@ import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
 import { updateMsgCache } from "@/utils/updateCache.helper";
 import UserType from "@/enums/UserType.enum";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
-import ReplyMsgDisplay from "@/components/message/ReplyMsgDisplay";
+import ReplyMsgInput from "@/components/chat/ReplyMsgInput";
 
 const ChatInput = ({
   isReplyMsgOpen,
@@ -274,7 +274,7 @@ const ChatInput = ({
   return (
     <div className="container min-h-[5%] flex items-center flex-col pb-8 pt-4">
       {watch("msg.replyForMsg") != undefined && chat && (
-        <ReplyMsgDisplay
+        <ReplyMsgInput
           msg={watch("msg.replyForMsg") as IMessage}
           setReplyMsg={setValue as any}
           isReplyMsgOpen={isReplyMsgOpen}

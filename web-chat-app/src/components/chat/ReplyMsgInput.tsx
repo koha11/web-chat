@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
-const ReplyMsgDisplay = ({
+const ReplyMsgInput = ({
   msg,
   setReplyMsg,
   isReplyMsgOpen,
@@ -81,4 +81,4 @@ const ReplyMsgDisplay = ({
   );
 };
 
-export default ReplyMsgDisplay;
+export default ReplyMsgInput;
