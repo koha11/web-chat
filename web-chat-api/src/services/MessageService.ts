@@ -38,8 +38,6 @@ class MessageService {
 
     let docs;
 
-    console.log(JSON.stringify(myFilter));
-
     if (until)
       docs = await Message.find(myFilter)
         .populate("replyForMsg")

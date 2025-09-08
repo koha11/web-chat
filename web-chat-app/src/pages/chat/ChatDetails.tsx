@@ -60,8 +60,8 @@ const ChatDetails = ({
   const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
   const [isFetchMore, setFetchMore] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
-
   const [isContactListOpen, setContactListOpen] = useState(true);
+  const [navigatedReplyMsg, setNavigatedReplyMsg] = useState("");
   const [uploadProgress, setUploadProgress] = useState<{
     [uploadId: string]: number;
   }>({});
@@ -90,7 +90,7 @@ const ChatDetails = ({
     chatId: isNewChat ? existedChat?.id : chatId,
     first: 20,
     after: undefined,
-    
+    until: undefined,
     // search: "e",
   });
 
@@ -240,6 +240,13 @@ const ChatDetails = ({
   }, [chatId]);
 
   useEffect(() => {
+    if (navigatedReplyMsg != "") {
+      scrollToMsg(navigatedReplyMsg);
+      setNavigatedReplyMsg("");
+    }
+  }, [messages]);
+
+  useEffect(() => {
     window.onclick = () => setContactListOpen(false);
   }, []);
 
@@ -253,6 +260,8 @@ const ChatDetails = ({
     if (messagesConnection?.pageInfo.hasNextPage) {
       setFetchMore(true);
 
+      if (until) setNavigatedReplyMsg(until);
+
       await fetchMore({
         variables: {
           after: messagesConnection?.pageInfo.endCursor,
@@ -263,14 +272,6 @@ const ChatDetails = ({
 
           const newData = fetchMoreResult.messages;
           const previousData = prev.messages;
-
-          console.log(newData);
-
-          console.log(
-            newData.edges
-              .map((edge: any) => edge.cursor)
-              .includes("68b0202efc0afd2909c7ed0d")
-          );
 
           return {
             ...prev,
@@ -303,6 +304,26 @@ const ChatDetails = ({
       .flat();
 
     if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
+    else scrollToMsg(msgId);
+  };
+
+  const scrollToMsg = (msgId: string) => {
+    if (msgId != "") {
+      const singleMsgs =
+        msgsContainerRef.current?.querySelectorAll(".single-msg");
+
+      singleMsgs?.forEach((msgEl) => {
+        if (msgEl.id == msgId) {
+          console.log(msgEl);
+
+          msgEl.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      });
+    }
   };
 
   return (
