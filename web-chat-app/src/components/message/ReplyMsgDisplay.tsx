@@ -27,10 +27,19 @@ const ReplyMsgDisplay = ({
     case MessageType.IMAGE:
       component = (
         <div
-          className="bg-contain bg-no-repeat bg-center h-8 w-8 cursor-pointer"
+          className="bg-contain bg-no-repeat bg-center h-8 w-8"
           style={{ backgroundImage: `url(${msg.file?.url})` }}
         ></div>
       );
+      break;
+    case MessageType.VIDEO:
+      component = <video className="h-8 w-8" src={msg.file?.url}></video>;
+      break;
+    case MessageType.AUDIO:
+      component = <div className="break-words text-[0.7rem]">Audio</div>;
+      break;
+    case MessageType.FILE:
+      component = <div className="break-words text-[0.7rem]">Attachment</div>;
       break;
     default:
       component = (
@@ -46,7 +55,7 @@ const ReplyMsgDisplay = ({
       className="w-full"
     >
       <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2 w-full">
-        <div className="py-1 space-y-2">
+        <div className="py-1 space-y-1 px-2">
           <div className="font-semibold">
             Replying to{" "}
             {userId == msg.user
