@@ -41,9 +41,6 @@ const GroupMsg = ({
 
           if (isRemovedMsg) return <></>;
 
-          console.log(msg.user.toString());
-          console.log(usersMap);
-
           const user = usersMap[msg.user.toString()];
 
           const seenList = Object.keys(usersMap).filter((userId) =>

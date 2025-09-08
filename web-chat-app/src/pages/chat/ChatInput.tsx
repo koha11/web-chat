@@ -43,6 +43,7 @@ import { UPLOAD_PROGRESS_SUB } from "@/services/messageService";
 import { updateMsgCache } from "@/utils/updateCache.helper";
 import UserType from "@/enums/UserType.enum";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
+import ReplyMsgDisplay from "@/components/message/ReplyMsgDisplay";
 
 const ChatInput = ({
   isReplyMsgOpen,
@@ -271,40 +272,14 @@ const ChatInput = ({
   };
 
   return (
-    <div className="container min-h-[5%] flex items-center flex-col py-2">
+    <div className="container min-h-[5%] flex items-center flex-col py-8">
       {watch("msg.replyForMsg") != undefined && chat && (
-        <Collapsible
-          open={isReplyMsgOpen}
-          onOpenChange={setReplyMsgOpen}
-          className="w-full"
-        >
-          <CollapsibleContent className="flex flex-auto items-center justify-between border-t-2 w-full">
-            <div className="py-1 space-y-2">
-              <div className="font-semibold">
-                Replying to{" "}
-                {userId == (watch("msg.replyForMsg") as IMessage).user
-                  ? "yourself"
-                  : chat.usersInfo[(watch("msg.replyForMsg") as IMessage).user]
-                      .nickname}
-              </div>
-
-              <div className="text-[0.7rem]">
-                {(watch("msg.replyForMsg") as IMessage).msgBody}
-              </div>
-            </div>
-
-            <Button
-              variant={"outline"}
-              className="h-6 w-4 rounded-full cursor-pointer border-0"
-              onClick={() => {
-                setValue("msg.replyForMsg", undefined);
-                setReplyMsgOpen(false);
-              }}
-            >
-              <X></X>
-            </Button>
-          </CollapsibleContent>
-        </Collapsible>
+        <ReplyMsgDisplay
+          msg={watch("msg.replyForMsg") as IMessage}
+          setReplyMsg={setValue as any}
+          isReplyMsgOpen={isReplyMsgOpen}
+          setReplyMsgOpen={setReplyMsgOpen}
+        />
       )}
 
       <form

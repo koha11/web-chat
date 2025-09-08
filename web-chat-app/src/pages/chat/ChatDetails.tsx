@@ -237,27 +237,7 @@ const ChatDetails = ({
     }
 
     msgsContainerRef.current?.scrollTo(0, 0);
-  }, [chat]);
-
-  useEffect(() => {
-    if (chatList && !chat && isNewChat) {
-      const newUserIds = choosenUsers.map((user) => user.id);
-
-      const filterChat = chatList.find((chat) => {
-        const chatUserIds = (chat.users as IUser[])
-          .filter((user) => user.id != userId)
-          .map((user) => user.id);
-
-        return arraysEqualUnordered(chatUserIds, newUserIds);
-      });
-
-      // if (filterChat) {
-      //   setMyChat(filterChat);
-      // } else {
-      //   setMyChat(undefined);
-      // }
-    }
-  }, [choosenUsers]);
+  }, [chatId]);
 
   useEffect(() => {
     window.onclick = () => setContactListOpen(false);
@@ -332,11 +312,11 @@ const ChatDetails = ({
       handleNavigateToReplyMsg={handleNavigateToReplyMsg}
       uploadProgress={uploadProgress}
       setUploadProgress={setUploadProgress}
-      chat={chat}
+      chat={isNewChat ? existedChat : chat}
       chatId={chatId}
     >
       <section
-        className="flex-5 h-full p-4 bg-white rounded-2xl flex flex-col justify-center items-center"
+        className="flex-5 h-full px-2 bg-white rounded-2xl flex flex-col justify-center items-center"
         style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
       >
         <audio

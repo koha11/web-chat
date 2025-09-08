@@ -30,7 +30,7 @@ const ChatInfo = ({
     loading: isChatLoading,
   } = useGetChat({ chatId, userId });
 
-  const [isSearchingMsg, setSearchingMsg] = useState(true);
+  const [isSearchingMsg, setSearchingMsg] = useState(false);
 
   if (!chat) return <></>;
 
