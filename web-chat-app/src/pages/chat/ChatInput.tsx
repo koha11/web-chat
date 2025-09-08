@@ -51,6 +51,7 @@ const ChatInput = ({
   form: { watch, register, setValue, resetField, handleSubmit },
   setMessage,
   choosenUsers,
+  scrollToBottom,
 }: {
   isReplyMsgOpen: boolean;
   setReplyMsgOpen: (open: boolean) => void;
@@ -60,6 +61,7 @@ const ChatInput = ({
   }>;
   setMessage: (msg: IMessage) => void;
   choosenUsers: IUser[];
+  scrollToBottom: () => void;
 }) => {
   const { setUploadProgress, userId, chat } = useChatDetailContext();
   const client = useApolloClient();
@@ -184,6 +186,8 @@ const ChatInput = ({
     isForwarded?: boolean;
     files?: FileList;
   }) => {
+    scrollToBottom();
+
     const fileArr = files ? Array.from(files) : undefined;
 
     if (fileArr && fileArr.length > 0) {

@@ -62,7 +62,6 @@ const ChatDetails = ({
   const [typingUsers, setTypingUsers] = useState<IUser[]>();
 
   const [isContactListOpen, setContactListOpen] = useState(true);
-  // const [chat, setMyChat] = useState<IChat | undefined>(undefined);
   const [uploadProgress, setUploadProgress] = useState<{
     [uploadId: string]: number;
   }>({});
@@ -520,6 +519,9 @@ const ChatDetails = ({
             form={msgForm}
             isReplyMsgOpen={isReplyMsgOpen}
             setReplyMsgOpen={setReplyMsgOpen}
+            scrollToBottom={() => {
+              msgsContainerRef.current?.scrollTo(0, 0);
+            }}
             choosenUsers={choosenUsers}
             setMessage={(msg: IMessage) => {
               setMessages((prev) => {
