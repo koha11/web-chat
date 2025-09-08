@@ -272,7 +272,7 @@ const ChatInput = ({
   };
 
   return (
-    <div className="container min-h-[5%] flex items-center flex-col py-8">
+    <div className="container min-h-[5%] flex items-center flex-col pb-8 pt-4">
       {watch("msg.replyForMsg") != undefined && chat && (
         <ReplyMsgDisplay
           msg={watch("msg.replyForMsg") as IMessage}

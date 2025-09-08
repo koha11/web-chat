@@ -56,7 +56,7 @@ const ChatHeader = ({ setChatInfoOpen }: { setChatInfoOpen: Function }) => {
   };
 
   return (
-    <div className="container flex items-center justify-between h-[10%]">
+    <div className="container flex items-center justify-between h-[10%] py-2 px-2">
       <div className="flex items-center">
         {chat ? (
           <div className="relative">
