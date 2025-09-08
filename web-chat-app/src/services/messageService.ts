@@ -20,8 +20,8 @@ const MSG_FIELDS_QUERY = `
 `;
 
 export const GET_MESSAGES = gql`
-  query GetMessages($chatId: ID!, $first: Int, $after: ID, $search: String) {
-    messages(chatId: $chatId, first: $first, after: $after, search: $search) {
+  query GetMessages($chatId: ID!, $first: Int, $after: ID, $search: String, $until: ID) {
+    messages(chatId: $chatId, first: $first, after: $after, search: $search, until: $until) {
       edges {
         node {
           ${MSG_FIELDS_QUERY}

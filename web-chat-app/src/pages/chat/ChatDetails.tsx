@@ -90,6 +90,7 @@ const ChatDetails = ({
     chatId: isNewChat ? existedChat?.id : chatId,
     first: 20,
     after: undefined,
+    
     // search: "e",
   });
 
@@ -262,6 +263,14 @@ const ChatDetails = ({
 
           const newData = fetchMoreResult.messages;
           const previousData = prev.messages;
+
+          console.log(newData);
+
+          console.log(
+            newData.edges
+              .map((edge: any) => edge.cursor)
+              .includes("68b0202efc0afd2909c7ed0d")
+          );
 
           return {
             ...prev,

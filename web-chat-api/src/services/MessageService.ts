@@ -21,28 +21,37 @@ class MessageService {
     filter?: any;
     search?: string;
   }): Promise<IModelConnection<IMessage>> => {
-    let myFilter = { chat: chatId } as any;
+    let myFilter = { $and: [{ chat: chatId }] } as any;
 
-    if (after) myFilter._id = { $lt: toObjectId(after) };
+    if (after) myFilter.$and.push({ _id: { $lt: toObjectId(after) } });
 
-    if (until) myFilter._id = { ...myFilter._id, $gte: toObjectId(until) };
+    if (until) myFilter.$and.push({ _id: { $gte: toObjectId(until) } });
 
     if (search) {
       const escapeRegExp = (s: string) =>
         s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const rx = new RegExp(escapeRegExp(search), "i");
-      myFilter.msgBody = rx;
+      myFilter.$and.push({ msgBody: rx });
     }
 
     if (filter) myFilter = { ...myFilter, ...filter };
 
-    const docs = await Message.find(myFilter)
-      .populate("replyForMsg")
-      .sort({ _id: -1 })
-      .limit(first + 1);
+    let docs;
+
+    console.log(JSON.stringify(myFilter));
+
+    if (until)
+      docs = await Message.find(myFilter)
+        .populate("replyForMsg")
+        .sort({ _id: -1 });
+    else
+      docs = await Message.find(myFilter)
+        .populate("replyForMsg")
+        .sort({ _id: -1 })
+        .limit(first + 1);
 
     const hasNextPage = docs.length > first;
-    const sliced = hasNextPage ? docs.slice(0, first) : docs;
+    const sliced = hasNextPage && !until ? docs.slice(0, first) : docs;
 
     const edges = sliced.map((doc) => ({
       cursor: doc.id,
