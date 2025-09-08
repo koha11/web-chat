@@ -1,26 +1,30 @@
 import { gql } from "@apollo/client";
 
+const MSG_FIELDS_QUERY = `          
+  id
+  user
+  msgBody
+  status
+  seenList
+  createdAt
+  isHiddenFor
+  unsentAt
+  editedAt
+  endedCallAt
+  isForwarded
+  type
+  file
+  systemLog
+  reactions
+  chat
+`;
+
 export const GET_MESSAGES = gql`
   query GetMessages($chatId: ID!, $first: Int, $after: ID, $search: String) {
     messages(chatId: $chatId, first: $first, after: $after, search: $search) {
       edges {
         node {
-          id
-          user
-          msgBody
-          status
-          seenList
-          createdAt
-          isHiddenFor
-          unsentAt
-          editedAt
-          endedCallAt
-          isForwarded
-          type
-          file
-          systemLog
-          reactions
-          chat
+          ${MSG_FIELDS_QUERY}
           replyForMsg {
             id
             user
@@ -95,14 +99,7 @@ export const POST_MESSAGE = gql`
       replyForMsg: $replyForMsg
       isForwarded: $isForwarded
     ) {
-      id
-      chat
-      user
-      msgBody
-      status
-      type
-      file
-      systemLog
+      ${MSG_FIELDS_QUERY}
       replyForMsg {
         id
         user
@@ -113,15 +110,7 @@ export const POST_MESSAGE = gql`
         status
         seenList
         createdAt
-      }
-      seenList
-      createdAt
-      isHiddenFor
-      unsentAt
-      editedAt
-      endedCallAt
-      isForwarded
-      reactions
+      }     
     }
   }
 `;
@@ -147,10 +136,7 @@ export const POST_MEDIA_MESSAGE = gql`
 export const UNSEND_MESSAGE = gql`
   mutation UnsendMessage($chatId: ID!, $msgId: ID!) {
     unsendMessage(chatId: $chatId, msgId: $msgId) {
-      id
-      user
-      msgBody
-      status
+      ${MSG_FIELDS_QUERY}
       replyForMsg {
         id
         user
@@ -162,17 +148,6 @@ export const UNSEND_MESSAGE = gql`
         file
         systemLog
       }
-      seenList
-      createdAt
-      isHiddenFor
-      unsentAt
-      editedAt
-      endedCallAt
-      isForwarded
-      type
-      file
-      systemLog
-      reactions
     }
   }
 `;
@@ -180,10 +155,7 @@ export const UNSEND_MESSAGE = gql`
 export const REMOVE_MESSAGE = gql`
   mutation RemoveMessage($chatId: ID!, $msgId: ID!) {
     removeMessage(chatId: $chatId, msgId: $msgId) {
-      id
-      user
-      msgBody
-      status
+      ${MSG_FIELDS_QUERY}
       replyForMsg {
         id
         user
@@ -195,17 +167,6 @@ export const REMOVE_MESSAGE = gql`
         file
         systemLog
       }
-      seenList
-      createdAt
-      isHiddenFor
-      unsentAt
-      editedAt
-      endedCallAt
-      isForwarded
-      type
-      file
-      systemLog
-      reactions
     }
   }
 `;
@@ -213,10 +174,7 @@ export const REMOVE_MESSAGE = gql`
 export const REACT_MESSAGE = gql`
   mutation ReactMessage($msgId: ID!, $unified: String!, $emoji: String!) {
     reactMessage(unified: $unified, msgId: $msgId, emoji: $emoji) {
-      id
-      user
-      msgBody
-      status
+      ${MSG_FIELDS_QUERY}
       replyForMsg {
         id
         user
@@ -228,17 +186,6 @@ export const REACT_MESSAGE = gql`
         file
         systemLog
       }
-      seenList
-      createdAt
-      isHiddenFor
-      unsentAt
-      editedAt
-      endedCallAt
-      isForwarded
-      type
-      file
-      systemLog
-      reactions
     }
   }
 `;
@@ -256,10 +203,7 @@ export const MESSAGE_ADDED_SUB = gql`
     messageAdded(chatId: $chatId) {
       cursor
       node {
-        id
-        user
-        msgBody
-        status
+        ${MSG_FIELDS_QUERY}
         replyForMsg {
           id
           user
@@ -268,17 +212,6 @@ export const MESSAGE_ADDED_SUB = gql`
           seenList
           createdAt
         }
-        seenList
-        createdAt
-        isHiddenFor
-        unsentAt
-        editedAt
-        endedCallAt
-        isForwarded
-        type
-        file
-        systemLog
-        reactions
       }
     }
   }
@@ -289,10 +222,7 @@ export const MESSAGE_CHANGED_SUB = gql`
     messageChanged(chatId: $chatId) {
       cursor
       node {
-        id
-        user
-        msgBody
-        status
+        ${MSG_FIELDS_QUERY}
         replyForMsg {
           id
           user
@@ -301,17 +231,6 @@ export const MESSAGE_CHANGED_SUB = gql`
           seenList
           createdAt
         }
-        seenList
-        createdAt
-        isHiddenFor
-        unsentAt
-        editedAt
-        endedCallAt
-        isForwarded
-        type
-        file
-        systemLog
-        reactions
       }
     }
   }
@@ -340,11 +259,7 @@ export const UPLOAD_PROGRESS_SUB = gql`
       error
       addedMsg {
         node {
-          id
-          user
-          msgBody
-          status
-          chat
+          ${MSG_FIELDS_QUERY}
           replyForMsg {
             id
             user
@@ -352,18 +267,7 @@ export const UPLOAD_PROGRESS_SUB = gql`
             status
             seenList
             createdAt
-          }
-          seenList
-          createdAt
-          isHiddenFor
-          unsentAt
-          editedAt
-          endedCallAt
-          isForwarded
-          type
-          file
-          systemLog
-          reactions
+          }          
         }
         cursor
       }
