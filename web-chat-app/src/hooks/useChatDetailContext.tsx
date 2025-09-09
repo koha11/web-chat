@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo } from "react";
 import type { IChat, IChatUsersInfo } from "@/interfaces/chat.interface";
 import type { IMessage } from "@/interfaces/messages/message.interface";
+import { ApolloClient } from "@apollo/client";
 
 type UploadProgressMap = Record<string, number>;
 type UsersMap = Record<string, IChatUsersInfo>;
@@ -18,6 +19,7 @@ export type ChatDetailCtx = {
   setUploadProgress: Function;
   chat: IChat | undefined;
   chatId: string;
+  client: ApolloClient<any>;
 };
 
 const ChatDetailContext = createContext<ChatDetailCtx | undefined>(undefined);
@@ -35,6 +37,7 @@ type ChatDetailProviderProps = React.PropsWithChildren<{
   setUploadProgress: Function;
   chat: IChat | undefined;
   chatId: string;
+  client: ApolloClient<any>;
 }>;
 
 export function ChatDetailProvider({
@@ -48,6 +51,7 @@ export function ChatDetailProvider({
   setUploadProgress,
   chat,
   chatId,
+  client,
 }: ChatDetailProviderProps) {
   const value = useMemo<ChatDetailCtx>(
     () => ({
@@ -60,6 +64,7 @@ export function ChatDetailProvider({
       setUploadProgress,
       chat,
       chatId,
+      client,
     }),
     [
       userId,
@@ -71,6 +76,7 @@ export function ChatDetailProvider({
       setUploadProgress,
       chat,
       chatId,
+      client,
     ]
   );
 

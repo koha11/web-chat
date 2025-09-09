@@ -73,9 +73,11 @@ export const messageTypeDefs = gql`
   extend type Mutation {
     postMessage(
       chatId: ID!
-      msgBody: String!
+      msgBody: String
       replyForMsg: String
       isForwarded: Boolean
+      file: JSONObject
+      type: String
     ): Message!
 
     postMediaMessage(

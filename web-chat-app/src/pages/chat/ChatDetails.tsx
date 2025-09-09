@@ -31,6 +31,7 @@ import { data, useParams } from "react-router-dom";
 import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
 import { useGetChat } from "@/hooks/chat.hook";
 import { set } from "mongoose";
+import { useApolloClient } from "@apollo/client";
 
 const ChatDetails = ({
   chatId,
@@ -57,6 +58,8 @@ const ChatDetails = ({
   navigatedReplyMsg: string;
   setNavigatedReplyMsg: (msgId: string) => void;
 }) => {
+  const client = useApolloClient();
+
   // states
   const [messages, setMessages] = useState<IMessageGroup[]>();
   const [isReplyMsgOpen, setReplyMsgOpen] = useState(false);
@@ -240,13 +243,6 @@ const ChatDetails = ({
     msgsContainerRef.current?.scrollTo(0, 0);
   }, [chatId]);
 
-  // useEffect(() => {
-  //   if (navigatedReplyMsg != "") {
-  //     scrollToMsg(navigatedReplyMsg);
-  //     setNavigatedReplyMsg("");
-  //   }
-  // }, [messages]);
-
   useEffect(() => {
     if (navigatedReplyMsg != "") scrollToMsg(navigatedReplyMsg);
   }, [navigatedReplyMsg, messages]);
@@ -351,6 +347,7 @@ const ChatDetails = ({
       setUploadProgress={setUploadProgress}
       chat={isNewChat ? existedChat : chat}
       chatId={chatId}
+      client={client}
     >
       <section
         className="flex-5 h-full px-2 bg-white rounded-2xl flex flex-col justify-center items-center"

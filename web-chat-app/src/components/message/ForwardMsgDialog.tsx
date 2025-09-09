@@ -8,6 +8,7 @@ import { useGetChats, usePostChat } from "../../hooks/chat.hook";
 import Loading from "../ui/loading";
 import { useGetContacts } from "../../hooks/contact.hook";
 import { useEffect } from "react";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const ForwardMsgDialog = ({
   isOpen,
@@ -18,7 +19,7 @@ const ForwardMsgDialog = ({
   setOpen: (isOpen: boolean) => void;
   handleSendMsg: (chatId: string) => void;
 }) => {
-  const userId = Cookies.get("userId") ?? "";
+  const {userId } = useChatDetailContext()
 
   const { data: chatConnection, loading: isChatLoading } = useGetChats({
     userId,
@@ -83,7 +84,7 @@ const ForwardMsgDialog = ({
             <span className="font-bold">Groups</span>
             <div></div>
           </div>
-          <div className="h-[1000px]">
+          <div className="">
             <span className="font-bold">Contacts</span>
             <div className="py-2">
               {contactConnection?.edges.map((edge) => {

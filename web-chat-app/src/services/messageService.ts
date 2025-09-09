@@ -89,15 +89,19 @@ export const GET_LAST_MESSAGES = gql`
 export const POST_MESSAGE = gql`
   mutation PostMessage(
     $chatId: ID!
-    $msgBody: String!
+    $msgBody: String
     $replyForMsg: String
     $isForwarded: Boolean
+    $file: JSONObject
+    $type: String
   ) {
     postMessage(
       chatId: $chatId
       msgBody: $msgBody
       replyForMsg: $replyForMsg
       isForwarded: $isForwarded
+      file: $file
+      type: $type
     ) {
       ${MSG_FIELDS_QUERY}
       replyForMsg {

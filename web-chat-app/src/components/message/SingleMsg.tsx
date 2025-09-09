@@ -164,6 +164,8 @@ const SingleMsg = ({
                     user: userId,
                     msgBody: msg.msgBody,
                     isForwarded: true,
+                    file: msg.file,
+                    type: msg.type,
                     chatId,
                   },
                 });

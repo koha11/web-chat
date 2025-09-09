@@ -112,15 +112,20 @@ export const messageResolvers: IResolvers = {
   Mutation: {
     postMessage: async (
       _p,
-      { chatId, msgBody, replyForMsg, isForwarded },
+      { chatId, msgBody, replyForMsg, isForwarded, file, type },
       { pubsub, user }: IMyContext
     ) => {
+      if (!msgBody && !file)
+        throw new Error("Message body or file must be provided");
+
       const createdMsg = await Message.create({
         chat: chatId,
         user: user.id,
         msgBody,
         replyForMsg,
         isForwarded,
+        file,
+        type,
       });
 
       const message = await createdMsg.populate("replyForMsg");
