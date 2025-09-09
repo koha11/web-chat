@@ -153,6 +153,10 @@ const SingleMsg = ({
           {(isHover || isOpen) && (
             <MessageActions
               isUnsendMsg={msg.status == MessageStatus.UNSEND}
+              isCallMsg={
+                msg.type == MessageType.AUDIO_CALL ||
+                msg.type == MessageType.VIDEO_CALL
+              }
               msgId={msg.id}
               isSentMsg={isSentMsg}
               isOpen={isOpen}

@@ -26,6 +26,7 @@ const MessageActions = ({
   isSentMsg,
   msgId,
   isUnsendMsg,
+  isCallMsg = false,
   handleSendMsg,
   handleReplyMsg,
 }: {
@@ -34,6 +35,7 @@ const MessageActions = ({
   isSentMsg: boolean;
   msgId: string;
   isUnsendMsg: boolean;
+  isCallMsg?: boolean;
   handleSendMsg: (chatId: string) => void;
   handleReplyMsg: () => void;
 }) => {
@@ -74,47 +76,52 @@ const MessageActions = ({
         isSentMsg ? "order-1 flex-row-reverse" : "order-3"
       }`}
     >
-      {/* emoji btn  */}
-      <DropdownMenu open={isReactionOpen} onOpenChange={setReactionOpen}>
-        <DropdownMenuTrigger
-          asChild
-          onClick={() => setReactionOpen(!isReactionOpen)}
-        >
+      {!isCallMsg && (
+        <>
+          {/* emoji btn  */}
+          <DropdownMenu open={isReactionOpen} onOpenChange={setReactionOpen}>
+            <DropdownMenuTrigger
+              asChild
+              onClick={() => setReactionOpen(!isReactionOpen)}
+            >
+              <Button
+                size={"sm"}
+                variant="link"
+                className="hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full"
+              >
+                <SmileIcon></SmileIcon>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              sideOffset={0}
+              className="reaction-popover rounded-none border-0 p-0 shadow-none"
+            >
+              <MyEmojiPicker
+                onEmojiSelect={({ native: emoji, unified }: any) => {
+                  reactMessage({ variables: { unified, emoji, msgId } });
+                  setReactionOpen(false);
+                }}
+                asChild
+              ></MyEmojiPicker>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* reply BTN  */}
           <Button
             size={"sm"}
             variant="link"
-            className="hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full"
+            className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
+              isUnsendMsg && "hidden"
+            }`}
+            onClick={handleReplyMsg}
           >
-            <SmileIcon></SmileIcon>
+            <Reply></Reply>
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          side="top"
-          sideOffset={0}
-          className="reaction-popover rounded-none border-0 p-0 shadow-none"
-        >
-          <MyEmojiPicker
-            onEmojiSelect={({ native: emoji, unified }: any) => {
-              reactMessage({ variables: { unified, emoji, msgId } });
-              setReactionOpen(false);
-            }}
-            asChild
-          ></MyEmojiPicker>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </>
+      )}
 
-      {/* reply BTN  */}
-      <Button
-        size={"sm"}
-        variant="link"
-        className={`hover:opacity-80 hover:bg-gray-300 cursor-pointer rounded-full ${
-          isUnsendMsg && "hidden"
-        }`}
-        onClick={handleReplyMsg}
-      >
-        <Reply></Reply>
-      </Button>
-
+      {/* more btn  */}
       <DropdownMenu
         open={isMoreDropdownOpen}
         onOpenChange={setMoreDropdownOpen}
@@ -131,7 +138,7 @@ const MessageActions = ({
         <DropdownMenuContent side="top" className="p-2">
           <DropdownMenuItem
             className={`cursor-pointer font-bold ${
-              isSentMsg && !isUnsendMsg && "hidden"
+              isSentMsg && !isUnsendMsg && !isCallMsg ? "hidden" : ""
             }`}
             onClick={() => setConfirmDialogOpen(true)}
           >
@@ -140,7 +147,7 @@ const MessageActions = ({
 
           <DropdownMenuItem
             className={`cursor-pointer font-bold ${
-              (!isSentMsg || isUnsendMsg) && "hidden"
+              !isSentMsg || isUnsendMsg || isCallMsg ? "hidden" : ""
             }`}
             onClick={() => setRadioDialogOpen(true)}
           >
@@ -148,7 +155,9 @@ const MessageActions = ({
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            className={`cursor-pointer font-bold ${isUnsendMsg && "hidden"}`}
+            className={`cursor-pointer font-bold ${
+              isUnsendMsg || isCallMsg ? "hidden" : ""
+            }`}
             onClick={() => setForwardDialogOpen(true)}
           >
             Forward
@@ -156,25 +165,31 @@ const MessageActions = ({
 
           <DropdownMenuItem
             className={`cursor-pointer font-bold ${
-              (!isSentMsg || isUnsendMsg) && "hidden"
+              !isSentMsg || isUnsendMsg || isCallMsg ? "hidden" : ""
             }`}
           >
             Edit
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            className={`cursor-pointer font-bold ${isUnsendMsg && "hidden"}`}
+            className={`cursor-pointer font-bold ${
+              isUnsendMsg || isCallMsg ? "hidden" : ""
+            }`}
           >
             Pin
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            className={`cursor-pointer font-bold ${isSentMsg && "hidden"}`}
+            className={`cursor-pointer font-bold ${
+              isSentMsg || isCallMsg ? "hidden" : ""
+            }`}
           >
             Report
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Dialogs  */}
 
       <MyConfirmDialog
         title="Remove only for you"
