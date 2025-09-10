@@ -60,7 +60,9 @@ const GroupMsg = ({
           if (
             msg.user != userId &&
             ((index > 0 && messages[index - 1].user != msg.user.toString()) ||
-              index == 0)
+              index == 0 ||
+              msg.isForwarded ||
+              msg.replyForMsg)
           )
             msgSenderAvatar = user
               ? user.avatar

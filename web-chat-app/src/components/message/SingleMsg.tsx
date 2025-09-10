@@ -130,7 +130,7 @@ const SingleMsg = ({
         </div>
       ) : (
         <div
-          className={`relative flex items-center gap-2 z-10 ${
+          className={`relative flex items-end gap-2 z-10 ${
             isSentMsg ? "justify-end" : "justify-baseline"
           }`}
           onMouseEnter={() => setHover(true)}
@@ -192,13 +192,13 @@ const SingleMsg = ({
                   <span
                     className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
                       isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                    } ${msg.isForwarded ? "" : ""}`}
+                    }`}
                   >
                     {name} unsend a message
                   </span>
                 ),
                 content: `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
-              Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
+                Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
                 className: "order-2",
                 id: msg.id,
               })
