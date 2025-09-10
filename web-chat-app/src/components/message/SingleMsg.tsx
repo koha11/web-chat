@@ -1,4 +1,4 @@
-import { Reply } from "lucide-react";
+import { Forward, Repeat, Reply, ReplyIcon } from "lucide-react";
 import { MyTooltip } from "../ui/my-tooltip";
 import { useState } from "react";
 import MessageActions from "./MessageActionBar";
@@ -86,14 +86,21 @@ const SingleMsg = ({
       {/* Hien thi dau hieu tin nhan nay duoc chuyen tiep  */}
       {msg.isForwarded && (
         <div
-          className={`flex flex-col mt-2 text-[0.8rem] relative ${
-            isSentMsg ? "items-end" : "items-baseline"
+          className={`flex text-[0.8rem] gap-2 items-center ${
+            isSentMsg ? "justify-end" : "justify-baseline"
           }`}
         >
-          <div className={`flex gap-2 mb-1 capitalize`}>
-            <Reply size={"14"}></Reply>
+          <div className={`w-8 h-8 ${isSentMsg ? "order-1" : "order-1"}`}></div>
+
+          {isSentMsg ? (
+            <Reply size={"14"} className="order-2"></Reply>
+          ) : (
+            <Forward size={"14"} className="order-3"></Forward>
+          )}
+
+          <span className={`${isSentMsg ? "order-3" : "order-2"}`}>
             {name} forwarded a message
-          </div>
+          </span>
         </div>
       )}
 
