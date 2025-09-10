@@ -90,7 +90,7 @@ const SingleMsg = ({
             isSentMsg ? "justify-end" : "justify-baseline"
           }`}
         >
-          <div className={`w-8 h-8 ${isSentMsg ? "order-1" : "order-1"}`}></div>
+          <div className={`w-8 h-8`}></div>
 
           {isSentMsg ? (
             <Reply size={"14"} className="order-2"></Reply>

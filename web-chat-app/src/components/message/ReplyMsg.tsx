@@ -1,6 +1,6 @@
 import MessageType from "@/enums/MessageType.enum";
 import { IMessage } from "@/interfaces/messages/message.interface";
-import { Image, Link, Reply, Video } from "lucide-react";
+import { Forward, Image, Link, Reply, Video } from "lucide-react";
 
 const ReplyMsg = ({
   replyMsg,
@@ -62,11 +62,19 @@ const ReplyMsg = ({
         isSentMsg ? "items-end" : "items-baseline"
       }`}
     >
-      <div className={`flex gap-2 mb-7 capitalize`}>
-        <Reply size={"14"}></Reply> {name} replied to {targetName}
+      <div className={`flex gap-2 mb-7`}>
+        <div className={`w-8 h-4`}></div>
+        {isSentMsg ? (
+          <Reply size={"14"} className="order-2"></Reply>
+        ) : (
+          <Forward size={"14"} className="order-3"></Forward>
+        )}
+        <span>
+          {name} replied to {targetName}
+        </span>
       </div>
       <div
-        className={`bg-[rgba(0,0,0,0.1)] pt-1 pb-5 px-3 rounded-2xl absolute cursor-pointer flex items-center gap-2 ${
+        className={`bg-gray-100 pt-1 pb-4 px-3 rounded-2xl absolute cursor-pointer flex items-center gap-2 ${
           isSentMsg ? "top-5 right-0" : "top-5 left-10"
         }`}
         onClick={async (e) => await handleNavigateToReplyMsg(e, replyMsg.id)}
