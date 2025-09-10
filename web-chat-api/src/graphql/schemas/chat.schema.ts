@@ -34,6 +34,11 @@ export const chatTypeDefs = gql`
     msgId: ID!
   }
 
+  type ChatChanged {
+    chat: Chat!
+    publisherId: ID!
+  }
+
   extend type Query {
     chats(first: Int = 10, after: ID, chatName: String): ChatConnection!
     chat(chatId: ID, users: [ID]): Chat
@@ -54,7 +59,7 @@ export const chatTypeDefs = gql`
   }
 
   extend type Subscription {
-    chatChanged(userId: ID!): Chat!
+    chatChanged(userId: ID!): ChatChanged!
     ongoingCall: CallUser!
     responseCall: Boolean
   }

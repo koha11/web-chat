@@ -12,12 +12,16 @@ import { IResolvers } from "@graphql-tools/utils";
 
 export const contactResolvers: IResolvers = {
   Query: {
-    contacts: async (_p: any, { first, after, search }, { user }: IMyContext) => {
+    contacts: async (
+      _p: any,
+      { first, after, search },
+      { user }: IMyContext
+    ) => {
       const result = await contactService.getContacts({
         userId: user.id.toString(),
         after,
         first,
-        search
+        search,
       });
 
       return result;
@@ -87,7 +91,10 @@ export const contactResolvers: IResolvers = {
 
         // publish chat changed subscription
         pubsub.publish(SocketEvent.chatChanged, {
-          chatChanged: chat,
+          chatChanged: {
+            chat,
+            publisherId: user.id.toString(),
+          },
         } as PubsubEvents[SocketEvent.chatChanged]);
       }
 

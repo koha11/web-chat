@@ -1,5 +1,5 @@
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useGetChats } from "../hooks/chat.hook";
 import { useGetLastMessages } from "../hooks/message.hook";
@@ -43,6 +43,8 @@ const Mainlayout = () => {
     [chatId: string]: boolean;
   }>({});
 
+  const incomingMsgAudioRef = useRef<HTMLAudioElement>(null);
+
   loadErrorMessages();
   loadDevMessages();
 
@@ -54,7 +56,15 @@ const Mainlayout = () => {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData) return prev;
 
-          const chatChanged = subscriptionData.data.chatChanged as IChat;
+          const chatChanged = subscriptionData.data.chatChanged.chat as IChat;
+          const publisherId = subscriptionData.data.chatChanged
+            .publisherId as string;
+
+          console.log("chatChanged", subscriptionData.data.chatChanged);
+
+          if (publisherId !== userId) {
+            incomingMsgAudioRef.current?.play();
+          }
 
           setUpdatedChatMap((old) => {
             return {
@@ -120,20 +130,26 @@ const Mainlayout = () => {
   }, [chats, subscribeToMore]);
 
   return (
-    <Outlet
-      context={{
-        chats,
-        isChatsLoading,
-        lastMessges,
-        isLastMsgLoading,
-        updatedChatMap,
-        setUpdatedChatMap,
-        ongoingCall,
-        setOngoingCall,
-        chatSearch,
-        setChatSearch,
-      }}
-    ></Outlet>
+    <>
+      <audio
+        src="/assets/sounds/incoming-msg.wav"
+        ref={incomingMsgAudioRef}
+      ></audio>
+      <Outlet
+        context={{
+          chats,
+          isChatsLoading,
+          lastMessges,
+          isLastMsgLoading,
+          updatedChatMap,
+          setUpdatedChatMap,
+          ongoingCall,
+          setOngoingCall,
+          chatSearch,
+          setChatSearch,
+        }}
+      ></Outlet>
+    </>
   );
 };
 

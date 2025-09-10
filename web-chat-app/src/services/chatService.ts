@@ -208,22 +208,25 @@ export const HANGUP_CALL = gql`
 export const CHAT_CHANGED_SUB = gql`
   subscription ChatChanged($userId: ID!) {
     chatChanged(userId: $userId) {
-      id
-      chatName
-      chatAvatar
-      usersInfo
-      updatedAt
-      lastMsgSeen
-      chatType
-      chatEmoji
-      users {
+      chat {
         id
-        fullname
-        avatar
-        isOnline
-        lastLogined
-        userType
+        chatName
+        chatAvatar
+        usersInfo
+        updatedAt
+        lastMsgSeen
+        chatType
+        chatEmoji
+        users {
+          id
+          fullname
+          avatar
+          isOnline
+          lastLogined
+          userType
+        }
       }
+      publisherId
     }
   }
 `;

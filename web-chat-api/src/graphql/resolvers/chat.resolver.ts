@@ -13,6 +13,7 @@ import Message from "../../models/Message.model.js";
 import MessageType from "../../enums/MessageType.enum.js";
 import { Types } from "mongoose";
 import { IUser } from "../../interfaces/user.interface.js";
+import { chat } from "googleapis/build/src/apis/chat/index.js";
 
 export const chatResolvers: IResolvers = {
   Query: {
@@ -123,7 +124,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -158,7 +162,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -198,7 +205,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -244,7 +254,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -288,7 +301,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -326,7 +342,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -364,7 +383,10 @@ export const chatResolvers: IResolvers = {
       });
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: chat,
+        chatChanged: {
+          chat,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -445,9 +467,12 @@ export const chatResolvers: IResolvers = {
       } as PubsubEvents[SocketEvent.responseCall]);
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged: await Chat.findByIdAndUpdate(chatId, {
-          updatedAt: chatUpdatedAt,
-        }).populate("users"),
+        chatChanged: {
+          chat: await Chat.findByIdAndUpdate(chatId, {
+            updatedAt: chatUpdatedAt,
+          }).populate("users"),
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       pubsub.publish(SocketEvent.messageAdded, {
@@ -471,7 +496,7 @@ export const chatResolvers: IResolvers = {
           variables,
           { user }: IMyContext
         ) => {
-          const isUserInThisChat = chatChanged?.users
+          const isUserInThisChat = chatChanged.chat.users
             .map((user) => user.id)
             .includes(toObjectId(user.id.toString()));
 

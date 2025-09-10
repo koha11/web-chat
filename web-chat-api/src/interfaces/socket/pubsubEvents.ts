@@ -6,7 +6,9 @@ import { IUser } from "../user.interface.js";
 
 export type PubsubEvents = {
   [SocketEvent.messageAdded]: { messageAdded: Edge<IMessage>; chatId: string };
-  [SocketEvent.chatChanged]: { chatChanged: IChat };
+  [SocketEvent.chatChanged]: {
+    chatChanged: { chat: IChat; publisherId: string };
+  };
   [SocketEvent.messageChanged]: {
     messageChanged: Edge<IMessage>;
     userChangedId: string;

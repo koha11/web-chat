@@ -62,7 +62,10 @@ export const messageResolvers: IResolvers = {
 
         if (isUpdateSeenList) {
           pubsub.publish(SocketEvent.chatChanged, {
-            chatChanged: chat,
+            chatChanged: {
+              chat,
+              publisherId: user.id.toString(),
+            },
           } as PubsubEvents[SocketEvent.chatChanged]);
         }
       }
@@ -171,7 +174,10 @@ export const messageResolvers: IResolvers = {
           } as PubsubEvents[SocketEvent.messageAdded]);
 
           pubsub.publish(SocketEvent.chatChanged, {
-            chatChanged,
+            chatChanged: {
+              chat: chatChanged,
+              publisherId: user.id.toString(),
+            },
           } as PubsubEvents[SocketEvent.chatChanged]);
 
           pubsub.publish(SocketEvent.messageTyping, {
@@ -195,7 +201,10 @@ export const messageResolvers: IResolvers = {
       } as PubsubEvents[SocketEvent.messageAdded]);
 
       pubsub.publish(SocketEvent.chatChanged, {
-        chatChanged,
+        chatChanged: {
+          chat: chatChanged,
+          publisherId: user.id.toString(),
+        },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
       return message;
@@ -284,7 +293,10 @@ export const messageResolvers: IResolvers = {
           } as PubsubEvents[SocketEvent.messageAdded]);
 
           pubsub.publish(SocketEvent.chatChanged, {
-            chatChanged,
+            chatChanged: {
+              chat: chatChanged,
+              publisherId: user.id.toString(),
+            },
           } as PubsubEvents[SocketEvent.chatChanged]);
 
           pubsub.publish(SocketEvent.uploadProgress, {
@@ -338,7 +350,10 @@ export const messageResolvers: IResolvers = {
           ).populate("users");
 
           pubsub.publish(SocketEvent.chatChanged, {
-            chatChanged,
+            chatChanged: {
+              chat: chatChanged,
+              publisherId: user.id.toString(),
+            },
           } as PubsubEvents[SocketEvent.chatChanged]);
         }
       }
@@ -379,7 +394,10 @@ export const messageResolvers: IResolvers = {
         );
 
         pubsub.publish(SocketEvent.chatChanged, {
-          chatChanged,
+          chatChanged: {
+            chat: chatChanged,
+            publisherId: user.id.toString(),
+          },
         } as PubsubEvents[SocketEvent.chatChanged]);
       }
 
@@ -438,7 +456,10 @@ export const messageResolvers: IResolvers = {
         );
 
         pubsub.publish(SocketEvent.chatChanged, {
-          chatChanged,
+          chatChanged: {
+            chat: chatChanged,
+            publisherId: user.id.toString(),
+          },
         } as PubsubEvents[SocketEvent.chatChanged]);
 
         pubsub.publish(SocketEvent.messageChanged, {
