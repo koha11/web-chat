@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useGetContacts, useRemoveConnect } from "../../hooks/contact.hook";
 import Cookies from "js-cookie";
 import Loading from "../../components/ui/loading";
-import { ArrowLeftCircle, MoreHorizontal, Plus } from "lucide-react";
+import { ArrowLeftCircle, MoreHorizontal, Plus, Search, X } from "lucide-react";
 import { usePostChat } from "../../hooks/chat.hook";
 import { Button } from "../../components/ui/button";
 import AddContactDialog from "../../components/contact/AddContactDialog";
@@ -54,7 +54,19 @@ const Contact = () => {
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
                 placeholder="Search Contacts"
               ></Input>
-              <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
+              <Search
+                className="absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"
+                size={16}
+              ></Search>
+              {searchValue && (
+                <Button
+                  className="absolute right-3 top-[50%] translate-y-[-50%] cursor-pointer hover:opacity-50"
+                  size={"no_style"}
+                  onClick={() => setSearchValue("")}
+                >
+                  <X size={16}></X>
+                </Button>
+              )}
             </form>
           </div>
 

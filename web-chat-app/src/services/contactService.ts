@@ -11,6 +11,7 @@ export const GET_CONTACTS = gql`
             id
             avatar
             fullname
+            username
           }
           chatId
           relationships

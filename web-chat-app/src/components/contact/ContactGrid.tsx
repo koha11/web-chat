@@ -31,6 +31,9 @@ const ContactGrid = ({ contacts }: { contacts?: IContact[] }) => {
       </div>
     );
 
+  if (contacts.length === 0)
+    return <div className="flex justify-center mt-8">No contacts found</div>;
+
   return (
     <div className="h-[80%] grid grid-cols-2 gap-4 auto-rows-min px-2">
       {contacts.map((contact) => {
@@ -52,7 +55,9 @@ const ContactGrid = ({ contacts }: { contacts?: IContact[] }) => {
 
             <div className="flex-auto px-4">
               <div className="font-bold">{contactUser.fullname}</div>
-              <div className="">{contactUser.username}</div>
+              <div className="italic text-[0.75rem] text-gray-400">
+                @{contactUser.username}
+              </div>
             </div>
 
             <Popover>
