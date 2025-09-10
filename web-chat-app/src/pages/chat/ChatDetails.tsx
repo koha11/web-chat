@@ -292,8 +292,6 @@ const ChatDetails = ({
     e: React.MouseEvent,
     msgId: string
   ) => {
-    clearMsgBodyHighlight();
-
     if (!messages) {
       e.preventDefault();
       return;
@@ -310,6 +308,8 @@ const ChatDetails = ({
 
   const scrollToMsg = (msgId: string) => {
     if (msgId != "") {
+      clearMsgBodyHighlight();
+
       let isScrolled = false;
 
       const singleMsgs =
@@ -318,8 +318,6 @@ const ChatDetails = ({
       singleMsgs?.forEach((msgEl) => {
         if (msgEl.id == msgId) {
           isScrolled = true;
-
-          console.log("scroll to msg", msgEl);
 
           msgEl.scrollIntoView({
             behavior: "smooth",
