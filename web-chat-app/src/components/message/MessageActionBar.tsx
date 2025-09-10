@@ -73,7 +73,7 @@ const MessageActions = ({
   return (
     <div
       className={`relative flex ${
-        isSentMsg ? "order-1 flex-row-reverse" : "order-3"
+        isSentMsg ? "order-1 flex-row-reverse" : "order-2"
       }`}
     >
       {!isCallMsg && (

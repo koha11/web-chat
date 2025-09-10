@@ -156,79 +156,83 @@ const SingleMsg = ({
             })
           )}
 
-          {/* Hien action  */}
-          {(isHover || isOpen) && (
-            <MessageActions
-              isUnsendMsg={msg.status == MessageStatus.UNSEND}
-              isCallMsg={
-                msg.type == MessageType.AUDIO_CALL ||
-                msg.type == MessageType.VIDEO_CALL
-              }
-              msgId={msg.id}
-              isSentMsg={isSentMsg}
-              isOpen={isOpen}
-              setOpen={setOpen}
-              handleReplyMsg={() => handleReplyMsg(msg)}
-              handleSendMsg={(chatId: string) => {
-                postMessage({
-                  variables: {
-                    user: userId,
-                    msgBody: msg.msgBody,
-                    isForwarded: true,
-                    file: msg.file,
-                    type: msg.type,
-                    chatId,
-                  },
-                });
-              }}
-            ></MessageActions>
-          )}
-
-          <div className="relative order-2 w-fit">
-            {/* Hien thi noi dung tin nhan  */}
-            {msg.status == MessageStatus.UNSEND ? (
-              MyTooltip({
-                hover: (
-                  <span
-                    className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
-                      isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    {name} unsend a message
-                  </span>
-                ),
-                content: `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
-                Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
-                className: "order-2",
-                id: msg.id,
-              })
-            ) : (
-              <MsgBody
+          <div className="order-2 flex items-center gap-2">
+            {/* Hien action  */}
+            {(isHover || isOpen) && (
+              <MessageActions
+                isUnsendMsg={msg.status == MessageStatus.UNSEND}
+                isCallMsg={
+                  msg.type == MessageType.AUDIO_CALL ||
+                  msg.type == MessageType.VIDEO_CALL
+                }
+                msgId={msg.id}
                 isSentMsg={isSentMsg}
-                msg={msg}
-                setMediaId={setMediaId}
-              ></MsgBody>
+                isOpen={isOpen}
+                setOpen={setOpen}
+                handleReplyMsg={() => handleReplyMsg(msg)}
+                handleSendMsg={(chatId: string) => {
+                  postMessage({
+                    variables: {
+                      user: userId,
+                      msgBody: msg.msgBody,
+                      isForwarded: true,
+                      file: msg.file,
+                      type: msg.type,
+                      chatId,
+                    },
+                  });
+                }}
+              ></MessageActions>
             )}
 
-            {/* hien thi reactions  */}
-            {msg.reactions &&
-              Object.keys(msg.reactions).map((userId) => {
-                const reaction = msg.reactions![userId];
-                const user = usersMap[userId];
-                const fullname = user ? user.fullname : "undefined user";
-
-                return MyTooltip({
+            <div
+              className={`relative w-fit ${isSentMsg ? "order-2" : "order-1"}`}
+            >
+              {/* Hien thi noi dung tin nhan  */}
+              {msg.status == MessageStatus.UNSEND ? (
+                MyTooltip({
                   hover: (
-                    <span onClick={() => setReactionDialogOpen(true)}>
-                      {reaction.emoji}
+                    <span
+                      className={`py-2 px-3 text-xl text-[0.9rem] rounded-xl text-gray-200 italic ${
+                        isSentMsg ? "bg-blue-500" : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
+                      {name} unsend a message
                     </span>
                   ),
-                  content: fullname,
-                  className:
-                    "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5",
-                  id: msg.id + "-reactions",
-                });
-              })}
+                  content: `Send at ${getDisplaySendMsgTime(msg.createdAt!)}
+                Unsend at ${getDisplaySendMsgTime(msg.unsentAt!)}`,
+                  className: "order-2",
+                  id: msg.id,
+                })
+              ) : (
+                <MsgBody
+                  isSentMsg={isSentMsg}
+                  msg={msg}
+                  setMediaId={setMediaId}
+                ></MsgBody>
+              )}
+
+              {/* hien thi reactions  */}
+              {msg.reactions &&
+                Object.keys(msg.reactions).map((userId) => {
+                  const reaction = msg.reactions![userId];
+                  const user = usersMap[userId];
+                  const fullname = user ? user.fullname : "undefined user";
+
+                  return MyTooltip({
+                    hover: (
+                      <span onClick={() => setReactionDialogOpen(true)}>
+                        {reaction.emoji}
+                      </span>
+                    ),
+                    content: fullname,
+                    className:
+                      "absolute z-20 -bottom-2 -right-2 rounded-full bg-gray-400 text-[0.8rem] p-0.5",
+                    id: msg.id + "-reactions",
+                  });
+                })}
+            </div>
           </div>
         </div>
       )}
