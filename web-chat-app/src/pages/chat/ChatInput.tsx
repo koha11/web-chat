@@ -63,13 +63,13 @@ const ChatInput = ({
   choosenUsers: IUser[];
   scrollToBottom: () => void;
 }) => {
-  const { setUploadProgress, userId, chat } = useChatDetailContext();
-  const client = useApolloClient();
+  const { setUploadProgress, userId, chat, client } = useChatDetailContext();
   const navigate = useNavigate();
 
   // refs
   const audioRef = useRef<HTMLAudioElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const sentMsgAudioRef = useRef<HTMLAudioElement>(null);
 
   // states
   const [isAudioRecording, setAudioRecording] = useState(false);
@@ -261,6 +261,8 @@ const ChatInput = ({
           isForwarded,
         },
       });
+
+    sentMsgAudioRef.current?.play();
   };
 
   const handleUploadFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -277,6 +279,8 @@ const ChatInput = ({
 
   return (
     <div className="container min-h-[5%] flex items-center flex-col pb-8 pt-4">
+      <audio src="/assets/sounds/sent-msg.ogg" ref={sentMsgAudioRef}></audio>
+
       {watch("msg.replyForMsg") != undefined && chat && (
         <ReplyMsgInput
           msg={watch("msg.replyForMsg") as IMessage}
