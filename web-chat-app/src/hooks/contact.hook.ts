@@ -20,12 +20,14 @@ import ContactRelationship from "@/enums/ContactRelationship.enum";
 export const useGetContacts = ({
   after,
   first = 10,
+  search,
 }: {
   first?: number;
   after?: string;
+  search?: string;
 }): IMyQueryResult<IModelConnection<IContact>> => {
   const myQuery = useQuery(GET_CONTACTS, {
-    variables: { first, after },
+    variables: { first, after, search },
   });
 
   return {

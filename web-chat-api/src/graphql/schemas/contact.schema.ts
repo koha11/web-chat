@@ -24,7 +24,7 @@ export const contactTypeDefs = gql`
   }
 
   extend type Query {
-    contacts(after: ID, first: Int = 10): ContactConnection!
+    contacts(after: ID, first: Int = 10, search: String): ContactConnection!
   }
 
   extend type Mutation {

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CONTACTS = gql`
-  query GetContacts($after: ID, $first: Int) {
-    contacts(after: $after, first: $first) {
+  query GetContacts($after: ID, $first: Int, $search: String) {
+    contacts(after: $after, first: $first, search: $search) {
       edges {
         cursor
         node {

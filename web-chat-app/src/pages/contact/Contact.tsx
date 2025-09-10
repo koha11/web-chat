@@ -16,17 +16,25 @@ import ReceivedConnectRequestDialog from "../../components/contact/ReceivedConne
 import SentConnectRequestDialog from "@/components/contact/SentConnectRequestDialog";
 import ActiveList from "./ActiveList";
 import ContactActionBar from "./ContactActionBar";
+import { Input } from "@/components/ui/input";
+import ContactGrid from "@/components/contact/ContactGrid";
 
 const Contact = () => {
-  const userId = Cookies.get("userId") ?? "";
-
   const [searchValue, setSearchValue] = useState("");
+  const [draft, setDraft] = useState(searchValue);
 
-  const { data: contacts, loading: isContactsLoading } = useGetContacts({});
+  const { data: contacts, loading: isContactsLoading } = useGetContacts({
+    search: draft,
+  });
 
-  const [removeContact] = useRemoveConnect({});
+  // keep draft in sync if the external value changes
+  useEffect(() => setDraft(searchValue), [searchValue]);
 
-  if (isContactsLoading) return <Loading></Loading>;
+  // push to parent state after user pauses typing
+  useEffect(() => {
+    const t = setTimeout(() => setSearchValue(draft), 300);
+    return () => clearTimeout(t);
+  }, [draft, setSearchValue]);
 
   return (
     <div className="flex justify-center text-black h-screen">
@@ -39,59 +47,22 @@ const Contact = () => {
         >
           <div className="h-[10%] flex items-center py-4 px-2 gap-4">
             <form action="" className="relative flex-auto">
-              <input
+              <Input
                 type="text"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
                 placeholder="Search Contacts"
-              ></input>
+              ></Input>
               <i className="bx bx-search absolute left-3 top-[50%] translate-y-[-50%] text-gray-500"></i>
             </form>
           </div>
 
           <ContactActionBar></ContactActionBar>
 
-          <div className="h-[80%] grid grid-cols-2 gap-4 auto-rows-min px-2">
-            {contacts?.edges.map((edge) => {
-              const contact = edge.node.users.find((user) => user.id != userId);
-
-              return (
-                <div
-                  className={
-                    "flex shadow rounded-2xl justify-center items-center px-4 py-2"
-                  }
-                  key={contact?.id}
-                >
-                  <div
-                    className="rounded-2xl h-22 w-22 bg-contain bg-no-repeat bg-center"
-                    style={{ backgroundImage: `url(${contact?.avatar})` }}
-                  ></div>
-
-                  <div className="flex-auto px-4">
-                    <div className="font-bold">{contact?.fullname}</div>
-                    <div className="">{contact?.username}</div>
-                  </div>
-
-                  <Popover>
-                    <PopoverTrigger className="p-2 rounded-full hover:bg-gray-200 font-bold cursor-pointer">
-                      <MoreHorizontal></MoreHorizontal>
-                    </PopoverTrigger>
-                    <PopoverContent className="max-w-fit">
-                      <Button
-                        className="w-full text-black bg-white cursor-pointer hover:bg-gray-200"
-                        onClick={() => {
-                          removeContact({ variables: { userId: contact?.id } });
-                        }}
-                      >
-                        Remove contact
-                      </Button>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              );
-            })}
-          </div>
+          <ContactGrid
+            contacts={contacts?.edges.map((edge) => edge.node)}
+          ></ContactGrid>
         </section>
       </div>
     </div>

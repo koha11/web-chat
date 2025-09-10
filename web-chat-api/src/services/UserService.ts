@@ -14,6 +14,30 @@ import { after } from "node:test";
 import { IChatUsersInfo } from "../interfaces/chat.interface.js";
 
 class UserService {
+  getUsersBySearch = async ({
+    userId,
+    search,
+    includeSelf = false,
+  }: {
+    userId: string;
+    search: string;
+    includeSelf?: boolean;
+  }) => {
+    const rx = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // 1) Find user ids by name
+    const userIds = await User.find({
+      $or: [
+        { username: { $regex: rx, $options: "i" } },
+        { fullname: { $regex: rx, $options: "i" } },
+      ],
+    }).distinct("_id");
+
+    // Optional: avoid matching the requester themself
+    const userIdsNoSelf = userIds.filter((id: any) => id.toString() !== userId);
+
+    return includeSelf ? userIds : userIdsNoSelf;
+  };
+
   getConnectableUsers = async ({
     userId,
     first = 10,

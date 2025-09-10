@@ -12,11 +12,12 @@ import { IResolvers } from "@graphql-tools/utils";
 
 export const contactResolvers: IResolvers = {
   Query: {
-    contacts: async (_p: any, { first, after }, { user }: IMyContext) => {
+    contacts: async (_p: any, { first, after, search }, { user }: IMyContext) => {
       const result = await contactService.getContacts({
         userId: user.id.toString(),
         after,
         first,
+        search
       });
 
       return result;

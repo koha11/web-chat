@@ -57,7 +57,7 @@ const AddContactDialog = ({
               size={14}
             ></Search>
           </div>
-          <div className="h-[1000px]">
+          <div className="">
             <span className="font-bold">Suggested People</span>
 
             <div className="py-2">
