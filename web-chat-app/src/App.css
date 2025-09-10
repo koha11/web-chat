@@ -64,3 +64,47 @@ body {
     transform: rotate(1turn);
   }
 }
+
+/* Pop animation + temporary outline */
+@keyframes msg-pop {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.04);
+  }
+  40% {
+    transform: scale(1.06);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  80% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@layer utilities {
+  .msg-highlight {
+    /* white outer border + blue ring look */
+    position: relative;
+    border-radius: 0.9rem; /* match your bubble radius */
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(59, 130, 246, 0.85); /* blue ring (Tailwind blue-500) */
+    animation: msg-pop 1s 0.5s linear;
+  }
+
+  /* small blue underline like the mockup */
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .msg-highlight {
+      animation: none;
+    }
+  }
+}

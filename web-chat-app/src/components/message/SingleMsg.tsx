@@ -33,14 +33,8 @@ const SingleMsg = ({
   msg: IMessage;
   isFirstMsg: boolean;
 }) => {
-  const {
-    userId,
-    usersMap,
-    handleReplyMsg,
-    handleNavigateToReplyMsg,
-    setMediaId,
-    uploadProgress,
-  } = useChatDetailContext();
+  const { userId, usersMap, handleReplyMsg, setMediaId, uploadProgress } =
+    useChatDetailContext();
 
   const [isHover, setHover] = useState<boolean>(false);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -76,7 +70,6 @@ const SingleMsg = ({
         <ReplyMsg
           key={"reply-" + replyMsg.id}
           replyMsg={replyMsg}
-          handleNavigateToReplyMsg={handleNavigateToReplyMsg}
           isSentMsg={isSentMsg}
           name={name}
           targetName={targetName}
@@ -185,8 +178,11 @@ const SingleMsg = ({
               ></MessageActions>
             )}
 
+            {/* MSG body container  */}
             <div
-              className={`relative w-fit ${isSentMsg ? "order-2" : "order-1"}`}
+              className={`relative w-fit msg-body ${
+                isSentMsg ? "order-2" : "order-1"
+              }`}
             >
               {/* Hien thi noi dung tin nhan  */}
               {msg.status == MessageStatus.UNSEND ? (

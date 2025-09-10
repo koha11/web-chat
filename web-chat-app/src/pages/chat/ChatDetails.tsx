@@ -292,7 +292,8 @@ const ChatDetails = ({
     e: React.MouseEvent,
     msgId: string
   ) => {
-    // check that msgId is in messages
+    clearMsgBodyHighlight();
+
     if (!messages) {
       e.preventDefault();
       return;
@@ -318,16 +319,30 @@ const ChatDetails = ({
         if (msgEl.id == msgId) {
           isScrolled = true;
 
+          console.log("scroll to msg", msgEl);
+
           msgEl.scrollIntoView({
             behavior: "smooth",
-            block: "start",
+            block: "center",
             inline: "nearest",
           });
+
+          const msgBodyEl = msgEl.querySelector(".msg-body");
+          if (msgBodyEl) msgBodyEl.classList.add("msg-highlight");
         }
       });
 
       if (isScrolled) setNavigatedReplyMsg("");
     }
+  };
+
+  const clearMsgBodyHighlight = () => {
+    const highlightMsg =
+      msgsContainerRef.current?.querySelectorAll(".msg-highlight");
+
+    highlightMsg?.forEach((msgEl) => {
+      msgEl.classList.remove("msg-highlight");
+    });
   };
 
   return (
@@ -448,7 +463,7 @@ const ChatDetails = ({
         )}
 
         <div
-          className="container h-[85%] overflow-y-scroll flex flex-col-reverse text-[0.9rem] py-4"
+          className="container h-[85%] overflow-y-scroll overflow-x-hidden flex flex-col-reverse text-[0.9rem] py-4"
           ref={msgsContainerRef}
           onScroll={() => {
             const el = msgsContainerRef.current;

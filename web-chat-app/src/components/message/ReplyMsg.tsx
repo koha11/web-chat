@@ -1,23 +1,20 @@
 import MessageType from "@/enums/MessageType.enum";
+import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 import { IMessage } from "@/interfaces/messages/message.interface";
 import { Forward, Image, Link, Reply, Video } from "lucide-react";
 
 const ReplyMsg = ({
   replyMsg,
-  handleNavigateToReplyMsg,
   isSentMsg,
   name,
   targetName,
 }: {
   replyMsg: IMessage;
-  handleNavigateToReplyMsg: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    id: string
-  ) => Promise<void>;
   isSentMsg: boolean;
   name: string;
   targetName: string;
 }) => {
+  const { handleNavigateToReplyMsg } = useChatDetailContext();
   let component;
 
   switch (replyMsg.type) {
