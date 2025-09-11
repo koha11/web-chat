@@ -11,8 +11,18 @@ export const GET_USERS = gql`
 `;
 
 export const GET_CONNECTABLE_USERS = gql`
-  query GetConnectableUsers($userId: ID!, $first: Int, $after: ID) {
-    connectableUsers(userId: $userId, first: $first, after: $after) {
+  query GetConnectableUsers(
+    $userId: ID!
+    $first: Int
+    $after: ID
+    $search: String
+  ) {
+    connectableUsers(
+      userId: $userId
+      first: $first
+      after: $after
+      search: $search
+    ) {
       edges {
         cursor
         node {
@@ -31,8 +41,18 @@ export const GET_CONNECTABLE_USERS = gql`
 `;
 
 export const GET_CHAT_ADDABLE_USERS = gql`
-  query GetChatAddableUsers($userId: ID!, $chatId: ID!, $first: Int, $after: ID) {
-    chatAddableUsers(userId: $userId, chatId: $chatId, first: $first, after: $after) {
+  query GetChatAddableUsers(
+    $userId: ID!
+    $chatId: ID!
+    $first: Int
+    $after: ID
+  ) {
+    chatAddableUsers(
+      userId: $userId
+      chatId: $chatId
+      first: $first
+      after: $after
+    ) {
       edges {
         cursor
         node {

@@ -42,11 +42,13 @@ class UserService {
     userId,
     first = 10,
     after,
+    search,
   }: {
     userId: string;
     sort?: any;
     first?: number;
     after?: string;
+    search?: string;
   }): Promise<IModelConnection<IUser>> => {
     const filter = {
       _id: { $ne: toObjectId(userId) },
@@ -55,8 +57,18 @@ class UserService {
 
     if (after) {
       // decode cursor into ObjectId timestamp or full id
-      filter._id = { $lt: toObjectId(after) };
+      filter._id = { ...filter._id, $lt: toObjectId(after) };
     }
+
+    if (search) {
+      const rx = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.$or = [
+        { username: { $regex: rx, $options: "i" } },
+        { fullname: { $regex: rx, $options: "i" } },
+      ];
+    }
+
+    console.log("Filter:", filter);
 
     const users = await User.find(filter).sort({ _id: -1 });
 

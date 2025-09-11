@@ -8,6 +8,7 @@ import Loading from "../ui/loading";
 import { useHandleRequest, useSendRequest } from "../../hooks/contact.hook";
 import { useGetConnectableUsers } from "../../hooks/user.hook";
 import { useEffect, useState } from "react";
+import ConnectableUsersList from "./ConnectableUsersList";
 
 const AddContactDialog = ({
   isOpen,
@@ -18,28 +19,23 @@ const AddContactDialog = ({
 }) => {
   const userId = Cookies.get("userId") ?? "";
 
+  const [searchValue, setSearchValue] = useState("");
+  const [draft, setDraft] = useState(searchValue);
+
   const { data: connectableUsersConnection, loading: isConnectableUsers } =
     useGetConnectableUsers({
       userId,
+      search: searchValue,
     });
 
-  const [sendRequest] = useSendRequest({});
-  const [handleRequest] = useHandleRequest({ userId });
+  // keep draft in sync if the external value changes
+  useEffect(() => setDraft(searchValue), [searchValue]);
 
-  const [requestMap, setRequestMap] = useState<Record<string, boolean>>({});
-
+  // push to parent state after user pauses typing
   useEffect(() => {
-    if (connectableUsersConnection) {
-      let myMap = {} as Record<string, boolean>;
-
-      for (let edge of connectableUsersConnection.edges)
-        myMap[edge.cursor] = false;
-
-      setRequestMap(myMap);
-    }
-  }, [connectableUsersConnection]);
-
-  if (isConnectableUsers) return <Loading></Loading>;
+    const t = setTimeout(() => setSearchValue(draft), 300);
+    return () => clearTimeout(t);
+  }, [draft, setSearchValue]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -51,62 +47,22 @@ const AddContactDialog = ({
         </DialogHeader>
         <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
           <div className="sticky py-2 top-0 z-10 bg-white shadow-2xs">
-            <Input placeholder="Search for people" className="px-6"></Input>
+            <Input
+              placeholder="Search for people"
+              className="px-6"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            ></Input>
             <Search
               className="absolute left-1.5 top-[50%] translate-y-[-50%]"
               size={14}
             ></Search>
           </div>
-          <div className="">
-            <span className="font-bold">Suggested People</span>
-
-            <div className="py-2">
-              {connectableUsersConnection?.edges.map((edge) => {
-                const user = edge.node;
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-gray-300"
-                  >
-                    <div className="flex gap-4 items-center">
-                      <div
-                        className={`w-8 h-8 rounded-full bg-contain bg-no-repeat bg-center`}
-                        style={{
-                          backgroundImage: `url(${user.avatar})`,
-                        }}
-                      ></div>
-                      <span className="font-bold">{user.fullname}</span>
-                    </div>
-                    {requestMap[user.id] ? (
-                      <Button
-                        className="cursor-pointer h-8 w-16 bg-gray-400 text-white"
-                        variant={"outline"}
-                        onClick={() => {
-                          handleRequest({
-                            variables: { userId: user.id, isAccepted: false },
-                          });
-                          setRequestMap({ ...requestMap, [user.id]: false });
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    ) : (
-                      <Button
-                        className="cursor-pointer h-8 w-16 bg-blue-400 text-white"
-                        variant={"outline"}
-                        onClick={() => {
-                          sendRequest({ variables: { userId: user.id } });
-                          setRequestMap({ ...requestMap, [user.id]: true });
-                        }}
-                      >
-                        Connect
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <ConnectableUsersList
+            connectableUsersConnection={connectableUsersConnection}
+            userId={userId}
+            searchValue={searchValue}
+          ></ConnectableUsersList>
         </div>
       </DialogContent>
     </Dialog>

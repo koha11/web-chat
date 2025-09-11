@@ -34,13 +34,15 @@ export const useGetConnectableUsers = ({
   userId,
   first = 10,
   after,
+  search,
 }: {
   userId: string;
   first?: number;
   after?: string;
+  search?: string;
 }): IMyQueryResult<IModelConnection<IUser>> => {
   const myQuery = useQuery(GET_CONNECTABLE_USERS, {
-    variables: { userId, first, after },
+    variables: { userId, first, after, search },
     skip: !userId,
   });
 

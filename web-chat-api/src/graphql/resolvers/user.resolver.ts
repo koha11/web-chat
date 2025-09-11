@@ -15,8 +15,8 @@ export const userResolvers: IResolvers = {
 
       return data;
     },
-    connectableUsers: async (_p: any, { userId }) => {
-      const data = await userService.getConnectableUsers({ userId });
+    connectableUsers: async (_p: any, { userId, search }) => {
+      const data = await userService.getConnectableUsers({ userId, search });
 
       return data;
     },
