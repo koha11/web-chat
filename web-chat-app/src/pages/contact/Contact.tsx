@@ -24,7 +24,7 @@ const Contact = () => {
   const [draft, setDraft] = useState(searchValue);
 
   const { data: contacts, loading: isContactsLoading } = useGetContacts({
-    search: draft,
+    search: searchValue,
   });
 
   // keep draft in sync if the external value changes
@@ -49,8 +49,8 @@ const Contact = () => {
             <form action="" className="relative flex-auto">
               <Input
                 type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
                 className="rounded-3xl bg-gray-200 px-8 py-2 w-full text-gray-500"
                 placeholder="Search Contacts"
               ></Input>
