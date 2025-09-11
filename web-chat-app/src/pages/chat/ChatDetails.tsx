@@ -244,7 +244,7 @@ const ChatDetails = ({
   }, [chatId]);
 
   useEffect(() => {
-    if (navigatedReplyMsg != "") scrollToMsg(navigatedReplyMsg);
+    if (navigatedReplyMsg != "") scrollToMsg(navigatedReplyMsg).then();
   }, [navigatedReplyMsg, messages]);
 
   useEffect(() => {
@@ -286,28 +286,18 @@ const ChatDetails = ({
         },
       });
     }
-  };
+  };  
 
-  const handleNavigateToReplyMsg = async (
-    e: React.MouseEvent,
-    msgId: string
-  ) => {
-    if (!messages) {
-      e.preventDefault();
-      return;
-    }
-
-    const msgIds = messages
-      .map((msgGroup) => msgGroup.messages.map((msg) => msg.id))
-      .flat();
-
-    if (!msgIds.includes(msgId)) await handleLoadMoreMessages({ until: msgId });
-
-    setNavigatedReplyMsg(msgId);
-  };
-
-  const scrollToMsg = (msgId: string) => {
+  const scrollToMsg = async (msgId: string) => {
     if (msgId != "") {
+      if (!messages) return;
+      const msgIds = messages
+        .map((msgGroup) => msgGroup.messages.map((msg) => msg.id))
+        .flat();
+
+      if (!msgIds.includes(msgId))
+        await handleLoadMoreMessages({ until: msgId });
+
       clearMsgBodyHighlight();
 
       let isScrolled = false;
@@ -355,7 +345,7 @@ const ChatDetails = ({
       }
       handleReplyMsg={handleReplyMsg}
       setMediaId={setMediaId}
-      handleNavigateToReplyMsg={handleNavigateToReplyMsg}
+      setNavigatedReplyMsg={setNavigatedReplyMsg}
       uploadProgress={uploadProgress}
       setUploadProgress={setUploadProgress}
       chat={isNewChat ? existedChat : chat}

@@ -14,7 +14,7 @@ const ReplyMsg = ({
   name: string;
   targetName: string;
 }) => {
-  const { handleNavigateToReplyMsg } = useChatDetailContext();
+  const { setNavigatedReplyMsg } = useChatDetailContext();
   let component;
 
   switch (replyMsg.type) {
@@ -74,7 +74,7 @@ const ReplyMsg = ({
         className={`bg-gray-100 pt-1 pb-4 px-3 rounded-2xl absolute cursor-pointer flex items-center gap-2 ${
           isSentMsg ? "top-5 right-0" : "top-5 left-10"
         }`}
-        onClick={async (e) => await handleNavigateToReplyMsg(e, replyMsg.id)}
+        onClick={(e) => setNavigatedReplyMsg(replyMsg.id)}
       >
         {component}
       </div>

@@ -11,10 +11,7 @@ export type ChatDetailCtx = {
   usersMap: UsersMap;
   handleReplyMsg: (msg: IMessage) => void;
   setMediaId: (msgId: string) => void;
-  handleNavigateToReplyMsg: (
-    e: React.MouseEvent,
-    msgId: string
-  ) => Promise<void>;
+  setNavigatedReplyMsg: (msgId: string) => void;
   uploadProgress: UploadProgressMap;
   setUploadProgress: Function;
   chat: IChat | undefined;
@@ -29,10 +26,7 @@ type ChatDetailProviderProps = React.PropsWithChildren<{
   usersMap: UsersMap;
   handleReplyMsg: (msg: IMessage) => void;
   setMediaId: (msgId: string) => void;
-  handleNavigateToReplyMsg: (
-    e: React.MouseEvent,
-    msgId: string
-  ) => Promise<void>;
+  setNavigatedReplyMsg: (msgId: string) => void;
   uploadProgress?: UploadProgressMap;
   setUploadProgress: Function;
   chat: IChat | undefined;
@@ -46,7 +40,7 @@ export function ChatDetailProvider({
   usersMap,
   handleReplyMsg,
   setMediaId,
-  handleNavigateToReplyMsg,
+  setNavigatedReplyMsg,
   uploadProgress = {},
   setUploadProgress,
   chat,
@@ -59,7 +53,7 @@ export function ChatDetailProvider({
       usersMap,
       handleReplyMsg,
       setMediaId,
-      handleNavigateToReplyMsg,
+      setNavigatedReplyMsg,
       uploadProgress,
       setUploadProgress,
       chat,
@@ -71,7 +65,7 @@ export function ChatDetailProvider({
       usersMap,
       handleReplyMsg,
       setMediaId,
-      handleNavigateToReplyMsg,
+      setNavigatedReplyMsg,
       uploadProgress,
       setUploadProgress,
       chat,
