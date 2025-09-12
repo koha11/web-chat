@@ -33,19 +33,30 @@ const AddMembersDialog = ({
 }) => {
   const userId = Cookies.get("userId") ?? "";
 
+  const [searchValue, setSearchValue] = useState("");
+  const [draft, setDraft] = useState(searchValue);
+
   const {
     data: chatAddableUsersConnection,
     loading: isChatAddableUsersLoading,
   } = useGetChatAddableUsers({
     userId,
     chatId,
+    search: searchValue,
   });
+
+  // keep draft in sync if the external value changes
+  useEffect(() => setDraft(searchValue), [searchValue]);
+
+  // push to parent state after user pauses typing
+  useEffect(() => {
+    const t = setTimeout(() => setSearchValue(draft), 300);
+    return () => clearTimeout(t);
+  }, [draft, setSearchValue]);
 
   const [choosenUsers, setChoosenUsers] = useState<IUser[]>();
 
   const [addMembers, { loading: isAddingMembers }] = useAddMembers({ userId });
-
-  if (isChatAddableUsersLoading) return <Loading></Loading>;
 
   return (
     <Dialog
@@ -61,11 +72,16 @@ const AddMembersDialog = ({
             Add Members
           </DialogTitle>
         </DialogHeader>
-        <Form>
+        <div>
           <div className="overflow-y-scroll space-y-2 px-4 h-[400px] relative">
             <div className="sticky top-0 z-10 bg-white shadow-2xs">
               <div className="relative">
-                <Input placeholder="Search for people" className="px-6"></Input>
+                <Input
+                  placeholder="Search for people"
+                  className="px-6"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                ></Input>
                 <Search
                   className="absolute left-1.5 top-[50%] translate-y-[-50%]"
                   size={14}
@@ -103,10 +119,20 @@ const AddMembersDialog = ({
               </div>
             </div>
 
-            <div className="py-2 min-h-[40rem]">
-              <span className="font-bold">Suggested People</span>
+            <div className="py-2">
+              {searchValue.trim() == "" ? (
+                <span className="font-bold">Suggested People</span>
+              ) : (
+                <span className="font-bold">Search Results</span>
+              )}
 
               <div className="py-2">
+                {chatAddableUsersConnection &&
+                chatAddableUsersConnection.edges.length == 0 ? (
+                  <span>No Result found</span>
+                ) : (
+                  ""
+                )}
                 {chatAddableUsersConnection?.edges.map((edge) => {
                   const user = edge.node;
                   return (
@@ -185,7 +211,7 @@ const AddMembersDialog = ({
               Confirm
             </Button>
           </DialogFooter>
-        </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );

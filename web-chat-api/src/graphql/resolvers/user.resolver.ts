@@ -20,8 +20,8 @@ export const userResolvers: IResolvers = {
 
       return data;
     },
-    chatAddableUsers: async (_p: any, { userId, chatId }) => {
-      const data = await userService.getChatAddableUsers({ userId, chatId });
+    chatAddableUsers: async (_p: any, { userId, chatId, search }) => {
+      const data = await userService.getChatAddableUsers({ userId, chatId, search });
 
       return data;
     },

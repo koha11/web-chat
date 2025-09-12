@@ -39,6 +39,7 @@ export const userTypeDefs = gql`
       chatId: ID!
       first: Int
       after: ID
+      search: String
     ): UserConnection!
     receivedConnectRequests(after: ID, first: Int = 10): UserConnection!
     sentConnectRequests(after: ID, first: Int = 10): UserConnection!

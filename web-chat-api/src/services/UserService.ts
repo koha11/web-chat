@@ -68,8 +68,6 @@ class UserService {
       ];
     }
 
-    console.log("Filter:", filter);
-
     const users = await User.find(filter).sort({ _id: -1 });
 
     const userContacts = await Contact.find({
@@ -165,11 +163,13 @@ class UserService {
     chatId,
     first = 10,
     after,
+    search,
   }: {
     userId: string;
     chatId: string;
     first?: number;
     after?: string;
+    search?: string;
   }): Promise<IModelConnection<IUser>> => {
     const filter = {
       users: userId,
@@ -190,12 +190,20 @@ class UserService {
       throw new Error("Chat not found");
     }
 
+    const rx = (search ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     const addableUsersContact = contacts.filter((contact) => {
       const otherUser = contact.users.find(
         (user) => user.id.toString() !== userId
-      );
+      ) as IUser | undefined;
 
       if (!otherUser) throw new Error("Other user not found in contact");
+
+      if (
+        otherUser.fullname.match(new RegExp(rx, "i")) === null &&
+        otherUser.username.match(new RegExp(rx, "i")) === null
+      )
+        return false;
 
       return !(chat.users as Types.ObjectId[]).includes(
         otherUser.id as Types.ObjectId

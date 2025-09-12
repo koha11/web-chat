@@ -46,12 +46,14 @@ export const GET_CHAT_ADDABLE_USERS = gql`
     $chatId: ID!
     $first: Int
     $after: ID
+    $search: String
   ) {
     chatAddableUsers(
       userId: $userId
       chatId: $chatId
       first: $first
       after: $after
+      search: $search
     ) {
       edges {
         cursor

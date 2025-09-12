@@ -60,14 +60,16 @@ export const useGetChatAddableUsers = ({
   chatId,
   first = 10,
   after,
+  search,
 }: {
   userId: string;
   chatId: string;
   first?: number;
   after?: string;
+  search?: string;
 }): IMyQueryResult<IModelConnection<IUser>> => {
   const myQuery = useQuery(GET_CHAT_ADDABLE_USERS, {
-    variables: { userId, chatId, first, after },
+    variables: { userId, chatId, first, after, search },
     skip: !userId,
   });
 
