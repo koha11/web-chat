@@ -17,12 +17,14 @@ const MemberDropdown = ({
   user,
   role,
   chatId,
+  privateChatId,
 }: {
   userId: string;
   userRole: "member" | "creator" | "leader";
   user: IUser;
   role: "member" | "creator" | "leader";
   chatId: string;
+  privateChatId?: string;
 }) => {
   const [removeMember, { loading: isRemoving }] = useRemoveMember({ userId });
   return (
@@ -44,7 +46,9 @@ const MemberDropdown = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent side="top" className="p-2 space-y-1">
         <DropdownMenuItem className="cursor-pointer font-bold">
-          <Link to={`/m`}>Chat with {user.fullname.split(" ")[0]}</Link>
+          <Link to={`/m/${privateChatId}`}>
+            Chat with {user.fullname.split(" ")[0]}
+          </Link>
         </DropdownMenuItem>
         {userRole != "member" && (
           <>
