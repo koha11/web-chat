@@ -42,9 +42,10 @@ const Chat = () => {
     setChatInfoOpen(false);
   }, [id]);
 
+  console.log(updatedChatMap);
+
   return (
     <div className="flex justify-center text-black h-[100vh]">
-      
       <div className="container flex bg-white gap-4 py-4">
         <ChatList
           currChatId={id ?? ""}
@@ -65,7 +66,7 @@ const Chat = () => {
           <ChatDetails
             userId={userId!}
             chatId={id!}
-            hasUpdated={false}
+            hasUpdated={updatedChatMap[id!] ?? false}
             setUpdatedChatMap={setUpdatedChatMap}
             setChatInfoOpen={() => setChatInfoOpen(!chatInfoOpen)}
             setMediaId={setMediaId}

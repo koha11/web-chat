@@ -70,7 +70,7 @@ const Mainlayout = () => {
           setUpdatedChatMap((old) => {
             return {
               ...old,
-              [chatChanged.id]: true,
+              [chatChanged.id]: false,
             };
           });
 

@@ -149,6 +149,13 @@ const ChatDetails = ({
       setMessages(grouped);
       setFetchMore(false);
 
+      setUpdatedChatMap((old: any) => {
+        return {
+          ...old,
+          [chatId]: true,
+        };
+      });
+
       // lang msg bi thay doi
       const unsubscribeMsgChanged = subscribeToMore({
         document: MESSAGE_CHANGED_SUB,
@@ -248,6 +255,10 @@ const ChatDetails = ({
   }, [navigatedReplyMsg, messages]);
 
   useEffect(() => {
+    if (!hasUpdated) refetchMessages();
+  }, [hasUpdated]);
+
+  useEffect(() => {
     window.onclick = () => setContactListOpen(false);
   }, []);
 
@@ -286,7 +297,7 @@ const ChatDetails = ({
         },
       });
     }
-  };  
+  };
 
   const scrollToMsg = async (msgId: string) => {
     if (msgId != "") {
