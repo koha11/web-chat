@@ -44,6 +44,7 @@ const Mainlayout = () => {
   }>({});
 
   const incomingMsgAudioRef = useRef<HTMLAudioElement>(null);
+  const incomingCallAudioRef = useRef<HTMLAudioElement>(null);
 
   loadErrorMessages();
   loadDevMessages();
@@ -106,6 +107,8 @@ const Mainlayout = () => {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData) return prev;
           setOngoingCall(subscriptionData.data.ongoingCall);
+          console.log("Ongoing Call Subscription fired");
+          incomingCallAudioRef.current?.play();
         },
       });
 
@@ -117,6 +120,8 @@ const Mainlayout = () => {
           const responseCall = subscriptionData.data.responseCall;
 
           if (!responseCall) setOngoingCall(null);
+
+          incomingCallAudioRef.current?.pause();
         },
       });
 
@@ -135,6 +140,11 @@ const Mainlayout = () => {
       <audio
         src="/assets/sounds/incoming-msg.wav"
         ref={incomingMsgAudioRef}
+      ></audio>
+      <audio
+        src="/assets/sounds/phone.wav"
+        ref={incomingCallAudioRef}
+        loop
       ></audio>
 
       <Outlet
