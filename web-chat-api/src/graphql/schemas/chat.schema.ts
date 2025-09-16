@@ -37,6 +37,7 @@ export const chatTypeDefs = gql`
   type ChatChanged {
     chat: Chat!
     publisherId: ID!
+    action: String
   }
 
   extend type Query {

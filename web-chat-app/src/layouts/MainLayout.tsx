@@ -59,10 +59,11 @@ const Mainlayout = () => {
           const chatChanged = subscriptionData.data.chatChanged.chat as IChat;
           const publisherId = subscriptionData.data.chatChanged
             .publisherId as string;
+          const action = subscriptionData.data.chatChanged.action as
+            | string
+            | undefined;
 
-          console.log("chatChanged", subscriptionData.data.chatChanged);
-
-          if (publisherId !== userId) {
+          if (publisherId !== userId && action == "messageAdded") {
             incomingMsgAudioRef.current?.play();
           }
 
@@ -135,6 +136,7 @@ const Mainlayout = () => {
         src="/assets/sounds/incoming-msg.wav"
         ref={incomingMsgAudioRef}
       ></audio>
+
       <Outlet
         context={{
           chats,

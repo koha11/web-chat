@@ -227,6 +227,7 @@ export const CHAT_CHANGED_SUB = gql`
         }
       }
       publisherId
+      action
     }
   }
 `;

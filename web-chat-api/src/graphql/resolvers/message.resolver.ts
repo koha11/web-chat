@@ -177,6 +177,7 @@ export const messageResolvers: IResolvers = {
             chatChanged: {
               chat: chatChanged,
               publisherId: user.id.toString(),
+              action: "messsageAdded",
             },
           } as PubsubEvents[SocketEvent.chatChanged]);
 
@@ -204,6 +205,7 @@ export const messageResolvers: IResolvers = {
         chatChanged: {
           chat: chatChanged,
           publisherId: user.id.toString(),
+          action: "messsageAdded",
         },
       } as PubsubEvents[SocketEvent.chatChanged]);
 
@@ -296,6 +298,7 @@ export const messageResolvers: IResolvers = {
             chatChanged: {
               chat: chatChanged,
               publisherId: user.id.toString(),
+              action: "messsageAdded",
             },
           } as PubsubEvents[SocketEvent.chatChanged]);
 
