@@ -92,11 +92,11 @@ const Login = () => {
         </div>
         <Button
           type="submit"
-          className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-4xl mt-6"
+          className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-md mt-6"
         >
-          Continue
+          Login
         </Button>
-        <div className="mt-6 flex justify-center items-center gap-4">
+        {/* <div className="mt-6 flex justify-center items-center gap-4">
           <Input
             id="rbmBtn"
             type="checkbox"
@@ -106,21 +106,19 @@ const Login = () => {
           <Label htmlFor="rbmBtn" className="">
             Keep Logining
           </Label>
-        </div>
+        </div> */}
       </form>
       <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
-      <div className="mt-4 flex items-center justify-evenly w-[50%]">
-        <Link to="/register" className="cursor-pointer hover:opacity-70">
+      <div className="mt-4 flex items-center justify-center w-[50%] gap-4">
+        <Link
+          to="/register"
+          className="cursor-pointer hover:opacity-70 underline text-blue-600"
+        >
           Register
         </Link>
-        <Link to="" className="cursor-pointer hover:opacity-70">
-          Forgot Password
-        </Link>
-      </div>
-      <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
-      <div className="mt-4 flex items-center justify-evenly w-[50%]">
+        or login with
         <Button
-          className="cursor-pointer hover:opacity-70 w-12 h-12 bg-contain bg-no-repeat bg-center rounded-full"
+          className="cursor-pointer hover:opacity-70 w-8 h-8 bg-contain bg-no-repeat bg-center rounded-full"
           style={{ backgroundImage: `url(/assets/images/google-logo.png)` }}
           variant={"outline"}
           onClick={() => {
@@ -131,7 +129,12 @@ const Login = () => {
             window.open(URL, "_blank");
           }}
         ></Button>
+        {/* <Link to="" className="cursor-pointer hover:opacity-70">
+          Forgot Password
+        </Link> */}
       </div>
+      <hr className="w-[40%] h-[1px] text-gray-300 mt-4"></hr>
+      <div className="mt-4 flex items-center justify-evenly w-[50%]"></div>
     </section>
   );
 };
