@@ -7,9 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { registerSchema, RegisterSchemaType } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import Loading from "@/components/ui/loading";
 
 const Register = () => {
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -21,11 +25,15 @@ const Register = () => {
   const [registerAccount] = useRegister();
 
   const handleRegister = (data: IRegisterRequest) => {
+    setIsLoading(true);
+
     registerAccount({
       variables: {
         ...data,
       },
       onCompleted({ register: response }) {
+        setIsLoading(false);
+
         if (response) {
           Cookies.set("accessToken", response.accessToken);
           Cookies.set("userId", response.userId);
@@ -33,6 +41,8 @@ const Register = () => {
         }
       },
       onError: ({ message }) => {
+        setIsLoading(false);
+
         if (message.startsWith("Username")) setError("username", { message });
 
         if (message.startsWith("Email")) setError("email", { message });
@@ -42,7 +52,12 @@ const Register = () => {
 
   return (
     <section className="flex justify-center items-center flex-col h-[100vh]">
-      <image href="/favicon.ico"></image>
+      {isLoading && (
+        <div className="bg-[rgba(0,0,0,0.2)] w-full h-full absolute top-0 left-0 z-0">
+          <Loading></Loading>
+        </div>
+      )}
+
       <h2 className="py-4 text-3xl font-mono font-bold">WEB CHAT</h2>
       <form
         className="flex flex-col w-[40%] items-center mt-4"

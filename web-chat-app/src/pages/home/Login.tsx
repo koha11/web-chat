@@ -35,6 +35,8 @@ const Login = () => {
         ...data,
       },
       onCompleted({ login: response }) {
+        setIsLoading(false);
+
         if (response) {
           Cookies.set("accessToken", response.accessToken);
           Cookies.set("userId", response.userId);
@@ -42,6 +44,7 @@ const Login = () => {
         }
       },
       onError: ({ message }) => {
+        setIsLoading(false);
         if (message.startsWith("Username")) setError("username", { message });
 
         if (message.startsWith("Password")) setError("password", { message });
@@ -55,7 +58,7 @@ const Login = () => {
         <div className="bg-[rgba(0,0,0,0.2)] w-full h-full absolute top-0 left-0 z-0">
           <Loading></Loading>
         </div>
-      )}``
+      )}
 
       <h2 className="py-4 text-3xl font-mono font-bold">WEB CHAT</h2>
       <form
