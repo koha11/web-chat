@@ -28,6 +28,11 @@ import { IUser } from "@/interfaces/user.interface";
 import { strimText } from "@/utils/text.helper";
 import { useGetReceivedConnectRequests } from "@/hooks/user.hook";
 import { useApolloClient } from "@apollo/client";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ChatList = ({
   chatList,
@@ -81,30 +86,42 @@ const ChatList = ({
       <div className="flex justify-between items-center py-2 px-2">
         <h1 className="text-xl font-bold">My Chat</h1>
         <div className="flex items-center gap-2">
-          <Link
-            to="/m/new"
-            className="p-2 rounded-full bg-gray-200 hover:opacity-50"
-          >
-            <MessageCirclePlus></MessageCirclePlus>
-          </Link>
-          <Link
-            to="/me"
-            className="p-2 rounded-full bg-gray-200 hover:opacity-50"
-          >
-            <User></User>
-          </Link>
-          <Link
-            to="/contact"
-            className="p-2 rounded-full bg-gray-200 hover:opacity-50 relative"
-          >
-            <Contact></Contact>
-            {receivedConnectRequests?.edges.length != 0 &&
-              !isReceivedConnectRequestsLoading && (
-                <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
-                  {receivedConnectRequests?.edges.length}
-                </div>
-              )}
-          </Link>
+          <Tooltip>
+            <TooltipTrigger className="p-2 rounded-full bg-gray-200 hover:opacity-50">
+              <Link to="/m/new">
+                <MessageCirclePlus></MessageCirclePlus>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create new chat</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger className="p-2 rounded-full bg-gray-200 hover:opacity-50">
+              <Link to="/me">
+                <User></User>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Account</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger className="p-2 rounded-full bg-gray-200 hover:opacity-50">
+              <Link to="/contact" className="relative">
+                <Contact></Contact>
+              </Link>
+              {receivedConnectRequests?.edges.length != 0 &&
+                !isReceivedConnectRequestsLoading && (
+                  <div className="absolute h-5 w-5 bg-red-700 rounded-full flex justify-center items-center font-bold text-[0.6rem] text-white -right-2 -top-2">
+                    {receivedConnectRequests?.edges.length}
+                  </div>
+                )}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Contacts</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
