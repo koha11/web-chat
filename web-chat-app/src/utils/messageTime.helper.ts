@@ -94,14 +94,14 @@ export const getUnroundTimeDiff = ({
   firstTime = new Date(firstTime);
   secondTime = new Date(secondTime);
 
-  let diffTime = Math.round(
+  let diffTime = Math.floor(
     (firstTime.getTime() - secondTime.getTime()) / 1000
   );
 
   let timeString = "";
   let flag = true;
 
-  let n = diffTime / (60 * 60 * 24);
+  let n = Math.floor(diffTime / (60 * 60 * 24));
 
   if (n >= 1) {
     timeString += `${n} days, `;
@@ -109,7 +109,7 @@ export const getUnroundTimeDiff = ({
     flag = false;
   }
 
-  n = diffTime / (60 * 60);
+  n = Math.floor(diffTime / (60 * 60));
 
   if (n >= 1) {
     timeString += `${n} hours, `;
@@ -117,7 +117,7 @@ export const getUnroundTimeDiff = ({
     flag = false;
   }
 
-  n = diffTime / 60;
+  n = Math.floor(diffTime / 60);
 
   if (n >= 1) {
     timeString += `${n} minutes, `;
@@ -125,9 +125,11 @@ export const getUnroundTimeDiff = ({
     flag = false;
   }
 
+  n = Math.floor(diffTime);
+
   if (n >= 1) timeString += `${n} seconds`;
 
-  if (flag) timeString += `${diffTime} seconds`;
+  // if (flag) timeString += `${diffTime} seconds`;
 
   return timeString;
 };
