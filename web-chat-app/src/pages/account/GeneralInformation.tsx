@@ -44,17 +44,15 @@ const GeneralInformation = () => {
 
             const result = await uploadUserAvatar({ variables: { file } });
             avatarRef.current!.src = result.data.uploadUserAvatar;
-              
-            console.log("Uploaded URL:", result.data.uploadUserAvatar);
           }}
         ></Input>
       </div>
-      <Form>
+      {/* <Form>
         <div className="flex items-center gap-8">
           <Label>Fullname</Label>
           <Input {...register("fullname")}></Input>
         </div>
-      </Form>
+      </Form> */}
     </div>
   );
 };
