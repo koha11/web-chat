@@ -66,14 +66,20 @@ const Register = () => {
       >
         <Input
           {...register("fullname")}
-          placeholder="Fullname"
+          placeholder="Fullname (*)"
           className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
             errors.fullname && "border-red-700"
           }`}
         ></Input>
         <div className="py-2 relative w-full">
-          <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
-            {errors.fullname && errors.fullname.message}
+          <div
+            className={`text-sm absolute text-nowrap left-2 top-1 ${
+              errors.fullname ? "text-red-600" : "text-gray-400"
+            } `}
+          >
+            {errors.fullname
+              ? errors.fullname.message
+              : "Do not contain number and special characters"}
           </div>
         </div>
         <Input
@@ -90,7 +96,7 @@ const Register = () => {
         </div>
         <Input
           {...register("username")}
-          placeholder="Username"
+          placeholder="Username (*)"
           className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
             errors.username && "border-red-700"
           }`}
@@ -102,7 +108,7 @@ const Register = () => {
         </div>
         <Input
           {...register("password")}
-          placeholder="Password"
+          placeholder="Password (*)"
           className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
             errors.password && "border-red-700"
           }`}
@@ -110,12 +116,12 @@ const Register = () => {
         ></Input>
         <div className="py-2 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
-            {errors.password && errors.password.message}
+            {errors.password ? errors.password.message : ""}
           </div>
         </div>
         <Input
           {...register("confirmPassword")}
-          placeholder="Confirm Password"
+          placeholder="Confirm Password (*)"
           className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
             errors.confirmPassword && "border-red-700"
           }`}
