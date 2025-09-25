@@ -31,11 +31,11 @@ const GroupMsg = ({
 
   return (
     <div className="msg-group py-2" key={timeString}>
-      <div className="msg-time text-center text-gray-400 text-[0.75rem]">
+      <div className="msg-time text-center text-gray-400 text-[0.75rem] py-2">
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
 
-      <div className="flex flex-col-reverse gap-2">
+      <div className="flex flex-col-reverse gap-4">
         {messages.map((msg, index) => {
           const isRemovedMsg = msg.isHiddenFor?.includes(userId);
 

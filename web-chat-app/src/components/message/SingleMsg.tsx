@@ -149,9 +149,13 @@ const SingleMsg = ({
             })
           )}
 
-          <div className="order-2 flex items-center gap-2">
+          <div
+            className={`order-2 flex items-center gap-2 w-full ${
+              isSentMsg ? "justify-end" : "justify-start"
+            }`}
+          >
             {/* Hien action  */}
-            {(isHover || isOpen) && (
+            {isHover || isOpen ? (
               <MessageActions
                 isUnsendMsg={msg.status == MessageStatus.UNSEND}
                 isCallMsg={
@@ -176,11 +180,17 @@ const SingleMsg = ({
                   });
                 }}
               ></MessageActions>
+            ) : (
+              <div
+                className={`relative flex ${
+                  isSentMsg ? "order-1 flex-row-reverse" : "order-2"
+                }`}
+              ></div>
             )}
 
             {/* MSG body container  */}
             <div
-              className={`relative w-fit msg-body ${
+              className={`relative max-w-[80%] msg-body ${
                 isSentMsg ? "order-2" : "order-1"
               }`}
             >
