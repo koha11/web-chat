@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 const Home = () => {
+
   return (
     <div className="max-w-xl mx-auto mt-10 p-8 text-center bg-white rounded shadow">
       <h1 className="text-3xl font-bold mb-4 text-gray-800">

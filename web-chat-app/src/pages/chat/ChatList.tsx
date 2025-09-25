@@ -107,8 +107,8 @@ const ChatList = ({
             </TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger className="p-2 rounded-full bg-gray-200 hover:opacity-50">
-              <Link to="/contact" className="relative">
+            <TooltipTrigger className="p-2 rounded-full bg-gray-200 hover:opacity-50 relative">
+              <Link to="/contact" className="">
                 <Contact></Contact>
               </Link>
               {receivedConnectRequests?.edges.length != 0 &&

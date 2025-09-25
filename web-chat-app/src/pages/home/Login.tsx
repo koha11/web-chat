@@ -16,6 +16,10 @@ import PasswordInput from "@/components/ui/password-input";
 const Login = () => {
   const navigate = useNavigate();
 
+  if (Cookies.get("accessToken")) {
+    navigate("/m");
+  }
+
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -134,7 +138,7 @@ const Login = () => {
               ? `http://${SERVER_HOST}:${SERVER_PORT}/auth/google`
               : `https://${SERVER_HOST}/auth/google`;
 
-            window.open(URL, "_blank");
+            window.open(URL, "_blank", "width=1200, height=800");
           }}
         ></Button>
         {/* <Link to="" className="cursor-pointer hover:opacity-70">

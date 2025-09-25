@@ -15,6 +15,10 @@ import PasswordInput from "@/components/ui/password-input";
 const Register = () => {
   const navigate = useNavigate();
 
+  if (Cookies.get("accessToken")) {
+    navigate("/m");
+  }
+
   const [isLoading, setIsLoading] = useState(false);
 
   const {
