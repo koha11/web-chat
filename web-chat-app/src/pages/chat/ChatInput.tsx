@@ -44,6 +44,11 @@ import { updateMsgCache } from "@/utils/updateCache.helper";
 import UserType from "@/enums/UserType.enum";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 import ReplyMsgInput from "@/components/chat/ReplyMsgInput";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ChatInput = ({
   isReplyMsgOpen,
@@ -296,7 +301,11 @@ const ChatInput = ({
         ref={formRef}
         onSubmit={handleSubmit(async ({ msg, files }) => {
           if (files?.length) {
-            for (let file of files) if (file.size > 10_000_000) return;
+            for (let file of files)
+              if (file.size > 10_000_000) {
+                alert("Each file size must not over 10MB");
+                return;
+              }
           }
 
           if (
@@ -351,13 +360,20 @@ const ChatInput = ({
           ) && (
             <>
               {/* External blue plus (left) */}
-              <Label
-                htmlFor="uploaded-image"
-                className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
-                title="Add"
-              >
-                <Plus size={16}></Plus>
-              </Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Label
+                    htmlFor="uploaded-image"
+                    className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
+                    title="Add"
+                  >
+                    <Plus size={16}></Plus>
+                  </Label>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Max file size is not over 10MB</p>
+                </TooltipContent>
+              </Tooltip>
 
               <Button
                 className="h-9 w-9 rounded-full cursor-pointer grid place-items-center text-black shadow hover:opacity-90"
