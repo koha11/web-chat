@@ -6,13 +6,10 @@ A real-time web chat application built with modern technologies for seamless com
 - Real-time messaging with text, file attachments (all types), emoji reactions, threaded replies, forwards, and voice messages
 - Supported DMs and group chats, with cursor-based pagination for both conversation lists and message history.
 - Implemented 1-to-1 calling, real-time presence/typing indicators, and delivery/read states using WebSocket/Pusher.
-- Designed a GraphQL API with subscriptions for live updates; structured connections/edges for efficient pagi-
-nation and cache friendliness.
+- Designed a GraphQL API with subscriptions for live updates; structured connections/edges for efficient pagination and cache friendliness.
 - Added global search across messages, conversations, and users
-- Integrated a personal chatbot powered by Gemini API with Google search augmentation for quick info lookups
-inside the chat.
-- Secured the platform with JWT authentication, guarded resolvers, and upload authorization; stored media via
-Cloudinary
+- Integrated a personal chatbot powered by Gemini API with Google search augmentation for quick info lookups inside the chat.
+- Secured the platform with JWT authentication, guarded resolvers, and upload authorization; stored media via Cloudinary
 
 ## Tech Stack
 
@@ -27,6 +24,9 @@ Cloudinary
 ## Demo
 
 [![Watch on YouTube](https://img.youtube.com/vi/hq_9L81bXUs/0.jpg)](https://www.youtube.com/watch?v=hq_9L81bXUs)
+
+## Deloy
+- https://web-chat-app-orpin.vercel.app/
 
 ## License
 
