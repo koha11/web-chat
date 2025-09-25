@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Loading from "@/components/ui/loading";
 import { IS_DEV_ENV, SERVER_HOST, SERVER_PORT } from "@/apollo";
+import PasswordInput from "@/components/ui/password-input";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -67,11 +68,11 @@ const Register = () => {
         <Input
           {...register("fullname")}
           placeholder="Fullname (*)"
-          className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
             errors.fullname && "border-red-700"
           }`}
         ></Input>
-        <div className="py-2 relative w-full">
+        <div className="py-4 relative w-full">
           <div
             className={`text-sm absolute text-nowrap left-2 top-1 ${
               errors.fullname ? "text-red-600" : "text-gray-400"
@@ -85,11 +86,11 @@ const Register = () => {
         <Input
           {...register("email")}
           placeholder="Email"
-          className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
             errors.email && "border-red-700"
           }`}
         ></Input>
-        <div className="py-2 relative w-full">
+        <div className="py-4 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.email && errors.email.message}
           </div>
@@ -97,44 +98,42 @@ const Register = () => {
         <Input
           {...register("username")}
           placeholder="Username (*)"
-          className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
             errors.username && "border-red-700"
           }`}
         ></Input>
-        <div className="py-2 relative w-full">
+        <div className="py-4 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.username && errors.username.message}
           </div>
         </div>
-        <Input
-          {...register("password")}
-          placeholder="Password (*)"
-          className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
+        <PasswordInput
+          className={`py-4 px-3 border rounded border-gray-400 w-full ${
             errors.password && "border-red-700"
           }`}
-          type="password"
-        ></Input>
-        <div className="py-2 relative w-full">
+          register={register("password")}
+          placeholder="Password (*)"
+        ></PasswordInput>
+        <div className="py-4 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.password ? errors.password.message : ""}
           </div>
         </div>
-        <Input
-          {...register("confirmPassword")}
-          placeholder="Confirm Password (*)"
-          className={`py-2 px-3 mt-6 border rounded border-gray-400 w-full ${
+        <PasswordInput
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
             errors.confirmPassword && "border-red-700"
           }`}
-          type="password"
-        ></Input>
-        <div className="py-2 relative w-full">
+          register={register("confirmPassword")}
+          placeholder="Confirm Password (*)"
+        ></PasswordInput>
+        <div className="py-4 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.confirmPassword && errors.confirmPassword.message}
           </div>
         </div>
         <Button
           type="submit"
-          className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-md mt-6"
+          className="bg-blue-700 text-white p-2 cursor-pointer w-[20%] hover:opacity-70 rounded-md"
         >
           Register
         </Button>

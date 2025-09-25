@@ -11,6 +11,7 @@ import { LoginSchemaType, loginSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loading from "@/components/ui/loading";
 import { useState } from "react";
+import PasswordInput from "@/components/ui/password-input";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -77,14 +78,21 @@ const Login = () => {
             {errors.username && errors.username.message}
           </div>
         </div>
-        <Input
+        <PasswordInput
+          className={`py-2 px-3 border rounded border-gray-400 w-full ${
+            errors.password && "border-red-700"
+          }`}
+          register={register("password")}
+          placeholder="Password"
+        ></PasswordInput>
+        {/* <Input
           {...register("password")}
           placeholder="Password"
           type="password"
           className={`py-2 px-3 border rounded border-gray-400 w-full ${
             errors.password && "border-red-700"
           }`}
-        ></Input>
+        ></Input> */}
         <div className="py-4 relative w-full">
           <div className="text-sm absolute text-nowrap left-2 top-1 text-red-600">
             {errors.password && errors.password.message}

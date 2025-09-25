@@ -48,6 +48,12 @@ body {
   box-shadow: none;
 }
 
+/* Hide Edge's password reveal eye (and the clear 'x' for completeness) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+}
+
 @keyframes bblFadInOut {
   0%,
   80%,
