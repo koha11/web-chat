@@ -9,9 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoginSchemaType, loginSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Loading from "@/components/ui/loading";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -25,6 +29,7 @@ const Login = () => {
   const [login] = useLogin();
 
   const handleLogin = (data: ILoginRequest) => {
+    setIsLoading(true);
     login({
       variables: {
         ...data,
@@ -46,7 +51,12 @@ const Login = () => {
 
   return (
     <section className="flex justify-center items-center flex-col h-[100vh]">
-      <image href="/favicon.ico"></image>
+      {isLoading && (
+        <div className="bg-[rgba(0,0,0,0.2)] w-full h-full absolute top-0 left-0 z-0">
+          <Loading></Loading>
+        </div>
+      )}``
+
       <h2 className="py-4 text-3xl font-mono font-bold">WEB CHAT</h2>
       <form
         className="flex flex-col w-[40%] items-center mt-12"
