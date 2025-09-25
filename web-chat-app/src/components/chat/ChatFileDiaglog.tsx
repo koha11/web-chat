@@ -63,7 +63,7 @@ const ChatFileDiaglog = ({
           <div className="overflow-y-scroll px-4 h-[400px] relative py-2">
             <TabsContent value="media-files" className="space-y-2">
               <div className="space-y-2">
-                <div className="font-bold text-xl">July</div>
+                {/* <div className="font-bold text-xl">July</div> */}
                 <div className="grid grid-cols-3 gap-2">
                   {isFilesLoading && <Loading></Loading>}
                   {fileMessageConnection &&
@@ -126,7 +126,7 @@ const ChatFileDiaglog = ({
                           <File></File>
                         </div>
                         <div className="space-y-1">
-                          <div>{strimText(file.filename, 30)}</div>
+                          <div>{strimText(file.filename, 40)}</div>
                           <div>{getDisplayFileSize(file.size)}</div>
                         </div>
                       </div>

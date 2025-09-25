@@ -17,6 +17,7 @@ export type ChatDetailCtx = {
   chat: IChat | undefined;
   chatId: string;
   client: ApolloClient<any>;
+  isChatBot: boolean;
 };
 
 const ChatDetailContext = createContext<ChatDetailCtx | undefined>(undefined);
@@ -32,6 +33,7 @@ type ChatDetailProviderProps = React.PropsWithChildren<{
   chat: IChat | undefined;
   chatId: string;
   client: ApolloClient<any>;
+  isChatBot: boolean;
 }>;
 
 export function ChatDetailProvider({
@@ -46,6 +48,7 @@ export function ChatDetailProvider({
   chat,
   chatId,
   client,
+  isChatBot,
 }: ChatDetailProviderProps) {
   const value = useMemo<ChatDetailCtx>(
     () => ({
@@ -59,6 +62,7 @@ export function ChatDetailProvider({
       chat,
       chatId,
       client,
+      isChatBot,
     }),
     [
       userId,
@@ -71,6 +75,7 @@ export function ChatDetailProvider({
       chat,
       chatId,
       client,
+      isChatBot,
     ]
   );
 

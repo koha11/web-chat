@@ -18,7 +18,7 @@ const ChatInfo = ({
   userId,
   open,
   setMediaId,
-  setNavigatedReplyMsg
+  setNavigatedReplyMsg,
 }: {
   chatId: string;
   userId: string;
@@ -71,9 +71,9 @@ const ChatInfo = ({
           </div>
 
           <div className="flex items-center justify-center w-full gap-6 mt-2">
-            <Button className="rounded-full cursor-pointer" variant={"outline"}>
+            {/* <Button className="rounded-full cursor-pointer" variant={"outline"}>
               <BellOffIcon></BellOffIcon>
-            </Button>
+            </Button> */}
             <Button
               className="rounded-full cursor-pointer"
               variant={"outline"}

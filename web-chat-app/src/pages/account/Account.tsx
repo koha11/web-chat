@@ -22,7 +22,7 @@ const Account = () => {
                 <ArrowLeftCircle></ArrowLeftCircle>
               </Link>
             </div>
-            <h1 className="text-2xl font-bold">Tài khoản</h1>
+            <h1 className="text-2xl font-bold">Account</h1>
           </div>
 
           <nav className="h-[90%] overflow-y-scroll flex flex-col gap-2 mt-4 px-2">
@@ -53,7 +53,7 @@ const Account = () => {
                 <div className="font-bold">Security</div>
               </div>
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to={"/me/settings"}
               className={({ isActive }) =>
                 `flex items-center justify-between rounded-xl py-2 px-4  ${
@@ -65,7 +65,7 @@ const Account = () => {
                 <Settings></Settings>
                 <div className="font-bold">Settings</div>
               </div>
-            </NavLink>
+            </NavLink> */}
             <NavLink
               to={"/login"}
               onClick={() => {
@@ -84,7 +84,7 @@ const Account = () => {
             >
               <div className="flex gap-4 items-center">
                 <LogOut></LogOut>
-                <div className="font-bold">LogOut</div>
+                <div className="font-bold">Logout</div>
               </div>
             </NavLink>
           </nav>

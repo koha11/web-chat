@@ -52,9 +52,9 @@ const MemberDropdown = ({
         </DropdownMenuItem>
         {userRole != "member" && (
           <>
-            <DropdownMenuItem className="cursor-pointer font-bold">
+            {/* <DropdownMenuItem className="cursor-pointer font-bold">
               bổ nhiệm làm nhóm trưởng
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem
               className="cursor-pointer font-bold"
               onClick={async () => {

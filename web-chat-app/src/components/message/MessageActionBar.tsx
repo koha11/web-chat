@@ -163,7 +163,7 @@ const MessageActions = ({
             Forward
           </DropdownMenuItem>
 
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             className={`cursor-pointer font-bold ${
               !isSentMsg || isUnsendMsg || isCallMsg ? "hidden" : ""
             }`}
@@ -185,7 +185,7 @@ const MessageActions = ({
             }`}
           >
             Report
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 

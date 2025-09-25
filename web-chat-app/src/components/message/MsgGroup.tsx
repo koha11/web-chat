@@ -35,17 +35,13 @@ const GroupMsg = ({
         {getDisplaySendMsgTime(new Date(timeString))}
       </div>
 
-      <div className="flex flex-col-reverse gap-4">
+      <div className="flex flex-col-reverse gap-2">
         {messages.map((msg, index) => {
           const isRemovedMsg = msg.isHiddenFor?.includes(userId);
 
           if (isRemovedMsg) return <></>;
 
           const user = usersMap[msg.user.toString()];
-
-          const seenList = Object.keys(usersMap).filter((userId) =>
-            Object.keys(msg.seenList).includes(userId)
-          );
 
           const isLongGap =
             index < messages.length - 1 &&

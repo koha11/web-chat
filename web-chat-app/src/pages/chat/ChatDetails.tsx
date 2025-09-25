@@ -32,6 +32,7 @@ import { ChatDetailProvider } from "@/hooks/useChatDetailContext";
 import { useGetChat } from "@/hooks/chat.hook";
 import { set } from "mongoose";
 import { useApolloClient } from "@apollo/client";
+import UserType from "@/enums/UserType.enum";
 
 const ChatDetails = ({
   chatId,
@@ -362,6 +363,13 @@ const ChatDetails = ({
       chat={isNewChat ? existedChat : chat}
       chatId={chatId}
       client={client}
+      isChatBot={
+        chat
+          ? (chat.users as IUser[]).some(
+              (user) => user.userType === UserType.CHATBOT
+            )
+          : false
+      }
     >
       <section
         className="flex-5 h-full px-2 bg-white rounded-2xl flex flex-col justify-center items-center"

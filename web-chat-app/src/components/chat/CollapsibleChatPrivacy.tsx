@@ -28,15 +28,15 @@ const CollapsibleChatPrivacy = ({
   return (
     <MyCollapsible
       data={[
-        {
-          content: (
-            <>
-              <MessageCircleWarning></MessageCircleWarning>
-              <span>Report chat</span>
-            </>
-          ),
-          onClick: () => {},
-        },
+        // {
+        //   content: (
+        //     <>
+        //       <MessageCircleWarning></MessageCircleWarning>
+        //       <span>Report chat</span>
+        //     </>
+        //   ),
+        //   onClick: () => {},
+        // },
         {
           hidden: !isGroupChat,
           content: (

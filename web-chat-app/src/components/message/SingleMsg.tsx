@@ -33,7 +33,7 @@ const SingleMsg = ({
   msg: IMessage;
   isFirstMsg: boolean;
 }) => {
-  const { userId, usersMap, handleReplyMsg, setMediaId, uploadProgress } =
+  const { userId, usersMap, handleReplyMsg, setMediaId, uploadProgress, isChatBot } =
     useChatDetailContext();
 
   const [isHover, setHover] = useState<boolean>(false);
@@ -155,7 +155,7 @@ const SingleMsg = ({
             }`}
           >
             {/* Hien action  */}
-            {isHover || isOpen ? (
+            {!isChatBot && (isHover || isOpen) ? (
               <MessageActions
                 isUnsendMsg={msg.status == MessageStatus.UNSEND}
                 isCallMsg={

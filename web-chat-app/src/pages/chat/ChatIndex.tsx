@@ -5,7 +5,7 @@ const ChatIndex = () => {
       style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0 0 5px 2px" }}
     >
       <div className="flex justify-center items-center h-full">
-        <p className="text-4xl font-bold">Hãy chọn một đoạn chat bất kỳ</p>
+        <p className="text-4xl font-bold">Choose a chat to start</p>
       </div>
     </section>
   );

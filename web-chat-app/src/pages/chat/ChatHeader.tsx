@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserType from "@/enums/UserType.enum";
 import { useMakeCall } from "@/hooks/chat.hook";
-import { IChat } from "@/interfaces/chat.interface";
 import { IUser } from "@/interfaces/user.interface";
 import { getDisplayTimeDiff } from "@/utils/messageTime.helper";
 import { Phone, Video, MoreHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { useChatDetailContext } from "@/hooks/useChatDetailContext";
 
 const ChatHeader = ({ setChatInfoOpen }: { setChatInfoOpen: Function }) => {
@@ -94,18 +92,23 @@ const ChatHeader = ({ setChatInfoOpen }: { setChatInfoOpen: Function }) => {
           (user) => user.userType == UserType.CHATBOT
         ) && (
           <div className="text-2xl flex items-center gap-4 ">
-            <Button
-              className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-              onClick={async () => await handleMakeCall(false)}
-            >
-              <Phone></Phone>
-            </Button>
-            <Button
-              className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
-              onClick={async () => await handleMakeCall(true)}
-            >
-              <Video></Video>
-            </Button>
+            {chat.chatType == "PRIVATE" && (
+              <>
+                <Button
+                  className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+                  onClick={async () => await handleMakeCall(false)}
+                >
+                  <Phone></Phone>
+                </Button>
+                <Button
+                  className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
+                  onClick={async () => await handleMakeCall(true)}
+                >
+                  <Video></Video>
+                </Button>
+              </>
+            )}
+
             <Button
               className="p-2 rounded-full hover:bg-gray-200 bg-white text-black cursor-pointer"
               onClick={() => setChatInfoOpen()}
